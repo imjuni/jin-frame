@@ -34,7 +34,7 @@ task('publish-develop', () => {
 });
 
 task('publish-production', () => {
-  const cmd = 'npm publish --registry https://www.npmjs.org';
+  const cmd = 'npm publish';
 
   logger.info('Publish package to npm registry: ', cmd);
 
