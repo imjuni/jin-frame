@@ -1,4 +1,6 @@
 # jin-frame
+[![Download Status](https://img.shields.io/npm/dw/jin-frame.svg)](https://npmcharts.com/compare/jin-frame?minimal=true) [![Github Star](https://img.shields.io/github/stars/imjuni/jin-frame.svg?style=popout)](https://github.com/imjuni/jin-frame) [![Github Issues](https://img.shields.io/github/issues-raw/imjuni/jin-frame.svg)](https://github.com/imjuni/jin-frame/issues) [![NPM version](https://img.shields.io/npm/v/jin-frame.svg)](https://www.npmjs.com/package/jin-frame) [![License](https://img.shields.io/npm/l/jin-frame.svg)](https://github.com/imjuni/jin-frame/blob/master/LICENSE) [![cti](https://circleci.com/gh/imjuni/jin-frame.svg?style=shield)](https://app.circleci.com/pipelines/github/imjuni/jin-frame?branch=master)
+
 Repeatable HTTP request definitation library
 
 jin-frame is tool that create repeatable HTTP request. If you develop under MSA architecture or AWS, Azure who use same API call over and over again. This action is sucessfully processed but sometimes raise error in copy and paste. If you definitation HTTP request to TypeScript class, jin-frame create same request every time, reduce fail.
