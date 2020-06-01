@@ -1,10 +1,10 @@
 # jin-frame
-Repeatable HTTP request definitation library
+Repeatable HTTP request definition library
 
-jin-frame is tool that create repeatable HTTP request. If you develop under MSA architecture or AWS, Azure who use same API call over and over again. This action is sucessfully processed but sometimes raise error in copy and paste. If you definitation HTTP request to TypeScript class, jin-frame create same request every time, reduce fail.
+jin-frame is tool that create repeatable HTTP request. If you develop under MSA architecture or AWS, Azure who use same API call over and over again. This action is sucessfully processed but sometimes raise error in copy and paste. If you definition HTTP request to TypeScript class, jin-frame create same request every time, reduce fail.
 
 ## Why jin-frame?
-You can define HTTP request to TypeScript class. Also you can pass TypeScript type at sucess or fail. See below benefits of the this definitation.
+You can define HTTP request to TypeScript class. Also you can pass TypeScript type at sucess or fail. See below benefits of the this definition.
 
 1. TypeScript can detect error at compile-time
 1. Automate HTTP request creation

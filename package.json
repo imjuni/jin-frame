@@ -1,7 +1,7 @@
 {
   "name": "jin-frame",
-  "version": "0.8.1",
-  "description": "Repeatable HTTP request definitation library",
+  "version": "0.8.2",
+  "description": "Repeatable HTTP request definition library",
   "scripts": {
     "debug": "node --nolazy --require ts-node/register --inspect-brk=9229 ./node_modules/.bin/jest --no-cache --runInBand --detectOpenHandles",
     "build": "just build",
