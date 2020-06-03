@@ -25,7 +25,7 @@ const config = {
   },
 
   entry: {
-    'tools-axios-ex': ['./src/index.ts'],
+    'jin-frame-prod': ['./src/index.ts'],
   },
 
   output: {
@@ -51,7 +51,7 @@ const config = {
         test: /\.tsx?$/,
         options: {
           configFile: 'tsconfig.prod.json',
-        }
+        },
       },
     ],
   },

@@ -5,51 +5,51 @@ import { exec } from 'just-scripts-utils';
 
 option('env', { default: { env: 'develop' } });
 
-task('clean', () => {
-  exec('rimraf dist artifact', {
+task('clean', async () => {
+  await exec('rimraf dist artifact', {
     stderr: process.stderr,
     stdout: process.stdout,
   });
 });
 
-task('build-only', () => {
+task('build-only', async () => {
   const cmd = 'NODE_ENV=production webpack --config webpack.config.prod.js';
   logger.info('Build: ', cmd);
 
-  exec(cmd, {
+  await exec(cmd, {
     stderr: process.stderr,
     stdout: process.stdout,
   });
 });
 
-task('publish-develop', () => {
+task('publish-develop', async () => {
   const cmd = 'npm publish --registry http://localhost:8901 --force';
 
   logger.info('Publish package to verdaccio: ', cmd);
 
-  exec(cmd, {
+  await exec(cmd, {
     stderr: process.stderr,
     stdout: process.stdout,
   });
 });
 
-task('publish-production', () => {
+task('publish-production', async () => {
   const cmd = 'npm publish';
 
   logger.info('Publish package to npm registry: ', cmd);
 
-  exec(cmd, {
+  await exec(cmd, {
     stderr: process.stderr,
     stdout: process.stdout,
   });
 });
 
-task('clean', () => {
+task('clean', async () => {
   const cmd = 'rimraf dist';
 
   logger.info('Clean builded directory: ', cmd);
 
-  exec(cmd, {
+  await exec(cmd, {
     stderr: process.stderr,
     stdout: process.stdout,
   });

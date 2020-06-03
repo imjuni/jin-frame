@@ -1,4 +1,6 @@
 # jin-frame
+[![Download Status](https://img.shields.io/npm/dw/jin-frame.svg)](https://npmcharts.com/compare/jin-frame?minimal=true) [![Github Star](https://img.shields.io/github/stars/imjuni/jin-frame.svg?style=popout)](https://github.com/imjuni/jin-frame) [![Github Issues](https://img.shields.io/github/issues-raw/imjuni/jin-frame.svg)](https://github.com/imjuni/jin-frame/issues) [![NPM version](https://img.shields.io/npm/v/jin-frame.svg)](https://www.npmjs.com/package/jin-frame) [![License](https://img.shields.io/npm/l/jin-frame.svg)](https://github.com/imjuni/jin-frame/blob/master/LICENSE) [![cti](https://circleci.com/gh/imjuni/jin-frame.svg?style=shield)](https://app.circleci.com/pipelines/github/imjuni/jin-frame?branch=master)
+
 Repeatable HTTP request definition library
 
 jin-frame is tool that create repeatable HTTP request. If you develop under MSA architecture or AWS, Azure who use same API call over and over again. This action is sucessfully processed but sometimes raise error in copy and paste. If you definition HTTP request to TypeScript class, jin-frame create same request every time, reduce fail.
@@ -14,10 +16,15 @@ You can define HTTP request to TypeScript class. Also you can pass TypeScript ty
 1. TypeScript
 1. Decorator
 
+# Install
+```sh
+npm i jin-frame --save
+```
+
 # Useage
 jin-frame using [axios](https://github.com/axios/axios) library. See below example.
 
-```typescript
+```ts
 class TestPostQuery extends JinFrame {
   @JinFrame.param()
   public readonly passing: string;
@@ -44,12 +51,12 @@ class TestPostQuery extends JinFrame {
 
 TestPostQuery class create AxiosRequestConfig object below.
 
-```typescript
+```ts
 const query = new TestPostQuery('ironman', 'beam');
 console.log(query.request());
 ```
 
-```javascript
+```js
 {
   timeout: 2000,
   headers: { test: { hello: { marvel: { skill: 'beam' } } }, 'Content-Type': 'application/json' },
@@ -65,7 +72,7 @@ You can change name or skill parameter at run-time. Even if you can change host 
 
 Execution is simple. Create curried function after execute that function. jin-frame using axios library so using on browser. 
 
-```typescript
+```ts
 const query = new TestPostQuery('ironman', 'beam');
 const requester = query.createWithoutEither();
 
@@ -74,7 +81,7 @@ const res = await requester();
 
 If you can use easy-fp, use either. See below.
 
-```typescript
+```ts
 const query = new TestPostQuery('ironman', 'beam');
 const requester = query.create();
 
@@ -86,7 +93,6 @@ if (isFail(res)) {
 ```
 
 # Arguments
-
 ## request function
 * timeout?: number
     * request timeout, milliseconds
@@ -94,7 +100,6 @@ if (isFail(res)) {
     * custom user-agent string
 * validateStatus?: AxiosRequestConfig['validateStatus'];
     * validateStatus function. See validateStatus description in [request config](https://github.com/axios/axios#request-config)
-
 ## create function
 * timeout?: number
     * request timeout, milliseconds
@@ -102,7 +107,6 @@ if (isFail(res)) {
     * custom user-agent string
 * validateStatus?: AxiosRequestConfig['validateStatus'];
     * validateStatus function. See validateStatus description in [request config](https://github.com/axios/axios#request-config)
-
 ## createWithoutEither function
 * timeout?: number
     * request timeout, milliseconds

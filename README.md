@@ -16,6 +16,11 @@ You can define HTTP request to TypeScript class. Also you can pass TypeScript ty
 1. TypeScript
 1. Decorator
 
+# Install
+```sh
+npm i jin-frame --save
+```
+
 # Useage
 jin-frame using [axios](https://github.com/axios/axios) library. See below example.
 

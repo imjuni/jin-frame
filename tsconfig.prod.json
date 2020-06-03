@@ -6,9 +6,7 @@
     "dist/**",
     "**/__test__",
     "**/__tests__",
-    "awsdeploy.ts",
-    "dminst.ts",
-    "shellwork.ts",
+    "just.config.ts",
     "webpack.config.dev.ts",
     "webpack.config.prod.ts"
   ]

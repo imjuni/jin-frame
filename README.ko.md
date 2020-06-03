@@ -14,6 +14,11 @@ MSA 아키텍처에서 개발하거나 OpenAPI를 사용하는 경우, 여러 AP
 1. TypeScript
 1. Decorator
 
+# Install
+```sh
+npm i jin-frame --save
+```
+
 # Useage
 jin-frame은 [axios](https://github.com/axios/axios)를 사용하여 동작합니다. 아래는 jin-frame을 사용한 예제입니다. 
 

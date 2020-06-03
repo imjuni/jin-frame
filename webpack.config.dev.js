@@ -25,7 +25,7 @@ const config = {
   },
 
   entry: {
-    'tools-axios-ex': ['./src/index.ts'],
+    'jin-frame-dev': ['./src/index.ts'],
   },
 
   output: {
@@ -50,8 +50,8 @@ const config = {
         loader: 'ts-loader',
         test: /\.tsx?$/,
         options: {
-          configFile: 'tsconfig.json'
-        }
+          configFile: 'tsconfig.json',
+        },
       },
     ],
   },
