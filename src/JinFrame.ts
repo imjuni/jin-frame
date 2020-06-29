@@ -1,6 +1,7 @@
 import axios, { AxiosRequestConfig, AxiosResponse, Method } from 'axios';
 import httpStatusCodes from 'http-status-codes';
-import { efail, Either, epass, isEmpty, isFalse, isNotUndefined } from 'my-easy-fp';
+import { isEmpty, isFalse, isNotUndefined } from 'my-easy-fp';
+import { Either, right, left } from 'fp-ts/lib/Either';
 import { compile } from 'path-to-regexp';
 import 'reflect-metadata';
 import { IFieldOption } from './IFieldOption';
@@ -78,12 +79,12 @@ function paramize<T>(
       if (option.bit.enable && Array.isArray(value)) {
         const bitwisedValue = bitwised(value);
 
-        // 0을 제외하는 스펙
+        // include zero value in bit value
         if (isFalse(option.bit.withZero) && bitwisedValue === 0) {
           return datas;
         }
 
-        // 0을 포함하는 스펙
+        // exclude zero value in bit value
         setter(option?.key ?? param.key, `${bitwisedValue}`, datas);
         return datas;
       }
@@ -266,8 +267,8 @@ export class JinFrame<PASS = unknown, FAIL = PASS> {
     args?: IJinFrameRequestParams,
   ): () => Promise<
     Either<
-      AxiosResponse<PASS> & { $req: AxiosRequestConfig },
-      AxiosResponse<FAIL> & { err: Error; $req: AxiosRequestConfig }
+      AxiosResponse<FAIL> & { err: Error; $req: AxiosRequestConfig },
+      AxiosResponse<PASS> & { $req: AxiosRequestConfig }
     >
   > {
     const req = this.request(args);
@@ -277,12 +278,12 @@ export class JinFrame<PASS = unknown, FAIL = PASS> {
         const res = await axios.request(req);
 
         if (res.status >= httpStatusCodes.BAD_REQUEST) {
-          return efail({ ...res, $req: req, err: new Error('Error caused from API response') });
+          return left({ ...res, $req: req, err: new Error('Error caused from API response') });
         }
 
-        return epass({ ...res, $req: req });
+        return right({ ...res, $req: req });
       } catch (err) {
-        return efail({
+        return left({
           status: httpStatusCodes.INTERNAL_SERVER_ERROR,
           statusText: `Internal Server Error: [${err.message}]`,
           headers: req.headers,
