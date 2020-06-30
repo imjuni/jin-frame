@@ -1,7 +1,8 @@
 import axios, { AxiosRequestConfig, AxiosResponse, Method } from 'axios';
+import { Either, left, right } from 'fp-ts/lib/Either';
+import * as TE from 'fp-ts/lib/TaskEither';
 import httpStatusCodes from 'http-status-codes';
 import { isEmpty, isFalse, isNotUndefined } from 'my-easy-fp';
-import { Either, right, left } from 'fp-ts/lib/Either';
 import { compile } from 'path-to-regexp';
 import 'reflect-metadata';
 import { IFieldOption } from './IFieldOption';
@@ -261,6 +262,15 @@ export class JinFrame<PASS = unknown, FAIL = PASS> {
     };
 
     return req;
+  }
+
+  public createTE(args?: IJinFrameRequestParams) {
+    const teRequester = (): TE.TaskEither<
+      AxiosResponse<FAIL> & { err: Error; $req: AxiosRequestConfig },
+      AxiosResponse<PASS> & { $req: AxiosRequestConfig }
+    > => this.create(args);
+
+    return teRequester;
   }
 
   public create(
