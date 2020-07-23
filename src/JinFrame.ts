@@ -57,6 +57,20 @@ function simpleSetter<T = unknown>(key: string, value: T, object: any) {
   }
 }
 
+function encodeSetter<T = unknown>(
+  key: string,
+  value: T,
+  object: any,
+  encoder?: (uriComponent: string | number | boolean) => string,
+) {
+  if (value !== undefined && value !== null) {
+    object[key] =
+      (typeof value === 'string' || typeof value === 'number' || typeof value === 'boolean') && isNotUndefined(encoder)
+        ? encoder(value)
+        : value;
+  }
+}
+
 function stringSetter<T = unknown>(key: string, value: T, object: any) {
   if (value !== undefined && value !== null) {
     const refined = typeof value !== 'string' ? `${value ?? ''}` : value;
@@ -69,7 +83,12 @@ function stringSetter<T = unknown>(key: string, value: T, object: any) {
 
 function paramize<T>(
   obj: T,
-  setter: <X>(key: string, value: X, object: any) => void,
+  setter: <X>(
+    key: string,
+    value: X,
+    object: any,
+    encoder?: (uriComponent: string | number | boolean) => string,
+  ) => void,
   params: Array<{ key: string; option?: IFieldOption }>,
 ) {
   return params.reduce<{ [key: string]: any }>((datas, param) => {
@@ -86,7 +105,7 @@ function paramize<T>(
         }
 
         // exclude zero value in bit value
-        setter(option?.key ?? param.key, `${bitwisedValue}`, datas);
+        setter(option?.key ?? param.key, `${bitwisedValue}`, datas, option?.encode ? encodeURIComponent : undefined);
         return datas;
       }
 
@@ -96,15 +115,15 @@ function paramize<T>(
     if (isNotUndefined(option) && isNotUndefined(option.comma)) {
       if (option.comma.enable && Array.isArray(value)) {
         const searchParam = value.join(',');
-        setter(option?.key ?? param.key, searchParam, datas);
+        setter(option?.key ?? param.key, searchParam, datas, option?.encode ? encodeURIComponent : undefined);
         return datas;
       }
 
-      setter(option?.key ?? param.key, `${value}`, datas);
+      setter(option?.key ?? param.key, `${value}`, datas, option?.encode ? encodeURIComponent : undefined);
       return datas;
     }
 
-    setter(option?.key ?? param.key, value, datas);
+    setter(option?.key ?? param.key, value, datas, option?.encode ? encodeURIComponent : undefined);
     return datas;
   }, {});
 }
@@ -198,7 +217,7 @@ export class JinFrame<PASS = unknown, FAIL = PASS> {
       { QUERY: [], BODY: [], PARAM: [], HEADER: [] },
     );
 
-    const queries = paramize(this, simpleSetter, fields.QUERY); // query 파라미터를 생성한다
+    const queries = paramize(this, encodeSetter, fields.QUERY); // query 파라미터를 생성한다
     const headers = fields.HEADER.length <= 0 ? {} : paramize(this, objectSetter, fields.HEADER); // header 파라미터를 생성한다
     const paths = paramize(this, stringSetter, fields.PARAM); // path 파라미터를 생성한다
     const bodies = (() => {

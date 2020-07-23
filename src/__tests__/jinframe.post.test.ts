@@ -1,7 +1,6 @@
 /* eslint-disable max-classes-per-file */
 
-import axios from 'axios';
-import { isPass } from 'my-easy-fp';
+import * as TE from 'fp-ts/lib/Either';
 import nock from 'nock';
 import { JinFrame } from '../JinFrame';
 import debug from 'debug';
@@ -63,16 +62,16 @@ describe('jinframe.test', () => {
     const requester = tq.create();
     const res = await requester();
 
-    if (isPass(res)) {
+    if (TE.isRight(res)) {
       log(tq.request());
-      log('Data-Pass: ', JSON.stringify(res.pass.$req, null, 2));
-      log('test?', res.pass.status, res.pass.data);
+      log('Data-Pass: ', JSON.stringify(res.right.$req, null, 2));
+      log('test?', res.right.status, res.right.data);
     } else {
-      log('Data-Fail: ', res.fail.$req);
-      log('Data-Fail: ', res.fail.status);
+      log('Data-Fail: ', res.left.$req);
+      log('Data-Fail: ', res.left.status);
     }
 
-    expect(isPass(res)).toEqual(true);
+    expect(TE.isRight(res)).toEqual(true);
   });
 
   test('nock-post-without-eiter-jinframe', async () => {
@@ -105,14 +104,14 @@ describe('jinframe.test', () => {
     const requester = tq.create();
     const res = await requester();
 
-    if (isPass(res)) {
-      log('Data-Pass: ', JSON.stringify(res.pass.$req, null, 2));
-      log('test?', res.pass.status, res.pass.data);
+    if (TE.isRight(res)) {
+      log('Data-Pass: ', JSON.stringify(res.right.$req, null, 2));
+      log('test?', res.right.status, res.right.data);
     } else {
-      log('Data-Fail: ', res.fail.$req);
-      log('Data-Fail: ', res.fail.status);
+      log('Data-Fail: ', res.left.$req);
+      log('Data-Fail: ', res.left.status);
     }
 
-    expect(isPass(res)).toEqual(true);
+    expect(TE.isRight(res)).toEqual(true);
   });
 });

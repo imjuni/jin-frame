@@ -1,7 +1,7 @@
 /* eslint-disable max-classes-per-file */
 
 import axios from 'axios';
-import { isPass } from 'my-easy-fp';
+import * as TE from 'fp-ts/lib/Either';
 import nock from 'nock';
 import { JinFrame } from '../JinFrame';
 import debug from 'debug';
@@ -13,7 +13,7 @@ class TestGetQuery extends JinFrame {
   public readonly passing: string;
   @JinFrame.query()
   public readonly name: string;
-  @JinFrame.query()
+  @JinFrame.query({ encode: true })
   public readonly skill: string[];
 
   constructor() {
@@ -21,7 +21,7 @@ class TestGetQuery extends JinFrame {
 
     this.passing = 'pass';
     this.name = 'ironman';
-    this.skill = ['beam', 'flying'];
+    this.skill = ['beam', 'flying!'];
   }
 }
 
@@ -58,7 +58,7 @@ describe('jinframe.test', () => {
   });
 
   test('nock-get01-with-jinframe', async () => {
-    nock('http://some.api.yanolja.com').get('/jinframe/pass?name=ironman&skill=beam&skill=flying').reply(200, {
+    nock('http://some.api.yanolja.com').get('/jinframe/pass?name=ironman&skill=beam&skill=flying!').reply(200, {
       message: 'hello',
     });
 
@@ -66,13 +66,14 @@ describe('jinframe.test', () => {
     const requester = tq.create();
     const res = await requester();
 
-    if (isPass(res)) {
-      log('Pass', res.pass.status, res.pass.data);
+    if (TE.isRight(res)) {
+      log('Pass', res.right.status, res.right.data);
     } else {
-      log('Fail', res.fail.status, res.fail.$req);
+      log('Fail', res.left.status, res.left.$req);
     }
 
-    expect(isPass(res)).toEqual(true);
+    log('테스트: ', res);
+    expect(TE.isRight(res)).toEqual(true);
   });
 
   test('nock-get02-with-jinframe', async () => {
@@ -84,12 +85,12 @@ describe('jinframe.test', () => {
     const requester = tq.create();
     const res = await requester();
 
-    if (isPass(res)) {
-      log('test?', res.pass.status, res.pass.data);
+    if (TE.isRight(res)) {
+      log('test?', res.right.status, res.right.data);
     } else {
-      log('Data: ', JSON.stringify(res.fail.$req, null, 2));
+      log('Data: ', JSON.stringify(res.left.$req, null, 2));
     }
 
-    expect(isPass(res)).toEqual(false);
+    expect(TE.isRight(res)).toEqual(false);
   });
 });
