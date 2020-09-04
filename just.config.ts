@@ -5,6 +5,13 @@ import { exec } from 'just-scripts-utils';
 
 option('env', { default: { env: 'develop' } });
 
+task('ctix', async () => {
+  await exec('ctix create -p ./tsconfig.json', {
+    stderr: process.stderr,
+    stdout: process.stdout,
+  });
+});
+
 task('clean', async () => {
   await exec('rimraf dist artifact', {
     stderr: process.stderr,

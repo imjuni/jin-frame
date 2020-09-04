@@ -93,4 +93,22 @@ describe('jinframe.test', () => {
 
     expect(TE.isRight(res)).toEqual(false);
   });
+
+  test('nock-get03-with-proxy-jinframe', async () => {
+    nock('http://some.api.yanolja.com').get('/jinframe/pass?name=ironman').reply(200, {
+      message: 'hello',
+    });
+
+    const tq = new TestGet2Query();
+    const requester = tq.create({ proxy: { host: 'localhost', port: 8933, protocol: 'http' } });
+    const res = await requester();
+
+    if (TE.isRight(res)) {
+      log('test?', res.right.status, res.right.data);
+    } else {
+      log('Data: ', JSON.stringify(res.left.$req, null, 2));
+    }
+
+    expect(TE.isRight(res)).toEqual(false);
+  });
 });

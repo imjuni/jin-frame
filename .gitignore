@@ -109,3 +109,6 @@ dist/
 
 # lint logging
 tslint-to-eslint-config.log
+
+# backup file
+src/*.ts.bak

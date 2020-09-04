@@ -1,4 +1,4 @@
-import axios, { AxiosRequestConfig, AxiosResponse, Method } from 'axios';
+import axios, { AxiosRequestConfig, AxiosResponse, Method, AxiosProxyConfig } from 'axios';
 import { Either, left, right } from 'fp-ts/lib/Either';
 import * as TE from 'fp-ts/lib/TaskEither';
 import httpStatusCodes from 'http-status-codes';
@@ -6,14 +6,8 @@ import { isEmpty, isFalse, isNotUndefined } from 'my-easy-fp';
 import { compile } from 'path-to-regexp';
 import 'reflect-metadata';
 import { IFieldOption } from './IFieldOption';
-
-export type TREQUEST_PART = 'QUERY' | 'BODY' | 'HEADER' | 'PARAM';
-
-export interface IJinFrameRequestParams {
-  timeout?: number;
-  userAgent?: string;
-  validateStatus?: AxiosRequestConfig['validateStatus'];
-}
+import IJinFrameRequestParams from './IJinFrameRequestParams';
+import { TREQUEST_PART } from './TREQUEST_PART';
 
 function bitwised(values: number[]): number {
   return values.reduce((bitwise, value) => bitwise | value, 0); // eslint-disable-line no-bitwise
