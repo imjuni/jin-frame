@@ -270,6 +270,7 @@ export class JinFrame<PASS = unknown, FAIL = PASS> {
       method: this.method,
       data: bodies,
       transformRequest,
+      proxy: args?.proxy,
       url: this.host !== undefined ? url.href : `${startWithSlash(url.pathname)}${url.search}`,
       validateStatus: () => true,
     };

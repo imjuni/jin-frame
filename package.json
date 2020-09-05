@@ -1,6 +1,6 @@
 {
   "name": "jin-frame",
-  "version": "0.12.0",
+  "version": "0.12.1",
   "description": "Repeatable HTTP request definition library",
   "main": "dist/index.js",
   "typings": "dist/index.d.ts",
