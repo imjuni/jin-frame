@@ -5,4 +5,6 @@ export default interface IJinFrameRequestParams {
   userAgent?: string;
   validateStatus?: AxiosRequestConfig['validateStatus'];
   proxy?: AxiosProxyConfig;
+  httpAgent?: any;
+  httpsAgent?: any;
 }

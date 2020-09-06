@@ -273,6 +273,8 @@ export class JinFrame<PASS = unknown, FAIL = PASS> {
       proxy: args?.proxy,
       url: this.host !== undefined ? url.href : `${startWithSlash(url.pathname)}${url.search}`,
       validateStatus: () => true,
+      httpAgent: args?.httpAgent,
+      httpsAgent: args?.httpsAgent,
     };
 
     return req;
