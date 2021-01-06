@@ -35,7 +35,7 @@
   ],
   "homepage": "https://github.com/imjuni/jin-frame#readme",
   "dependencies": {
-    "axios": "^0.19.2",
+    "axios": "^0.21.1",
     "fp-ts": "^2.6.6",
     "http-status-codes": "^1.4.0",
     "my-easy-fp": "^0.5.1",
