@@ -62,6 +62,28 @@ task('clean', async () => {
   });
 });
 
-task('build', series('clean', 'build-only'));
+task('ctix:create', async () => {
+  const cmd = 'ctix create -p ./tsconfig.json';
+
+  logger.info('Create index file : ', cmd);
+
+  await exec(cmd, {
+    stderr: process.stderr,
+    stdout: process.stdout,
+  });
+});
+
+task('ctix:clean', async () => {
+  const cmd = 'ctix clean -p ./tsconfig.json';
+
+  logger.info('Create index file : ', cmd);
+
+  await exec(cmd, {
+    stderr: process.stderr,
+    stdout: process.stdout,
+  });
+});
+
+task('build', series('clean', 'ctix:create', 'build-only', 'ctix:clean'));
 task('pub', series('build', 'publish-develop'));
 task('pub:prod', series('build', 'publish-production'));

@@ -1,6 +1,6 @@
-import axios, { AxiosRequestConfig, AxiosResponse, Method, AxiosProxyConfig } from 'axios';
-import { Either, left, right } from 'fp-ts/lib/Either';
-import * as TE from 'fp-ts/lib/TaskEither';
+import axios, { AxiosRequestConfig, AxiosResponse, Method } from 'axios';
+import * as TEI from 'fp-ts/Either';
+import * as TTE from 'fp-ts/TaskEither';
 import httpStatusCodes from 'http-status-codes';
 import { isEmpty, isFalse, isNotUndefined } from 'my-easy-fp';
 import { compile } from 'path-to-regexp';
@@ -281,7 +281,7 @@ export class JinFrame<PASS = unknown, FAIL = PASS> {
   }
 
   public createTE(args?: IJinFrameRequestParams) {
-    const teRequester = (): TE.TaskEither<
+    const teRequester = (): TTE.TaskEither<
       AxiosResponse<FAIL> & { err: Error; $req: AxiosRequestConfig },
       AxiosResponse<PASS> & { $req: AxiosRequestConfig }
     > => this.create(args);
@@ -292,7 +292,7 @@ export class JinFrame<PASS = unknown, FAIL = PASS> {
   public create(
     args?: IJinFrameRequestParams,
   ): () => Promise<
-    Either<
+    TEI.Either<
       AxiosResponse<FAIL> & { err: Error; $req: AxiosRequestConfig },
       AxiosResponse<PASS> & { $req: AxiosRequestConfig }
     >
@@ -304,12 +304,12 @@ export class JinFrame<PASS = unknown, FAIL = PASS> {
         const res = await axios.request(req);
 
         if (res.status >= httpStatusCodes.BAD_REQUEST) {
-          return left({ ...res, $req: req, err: new Error('Error caused from API response') });
+          return TEI.left({ ...res, $req: req, err: new Error('Error caused from API response') });
         }
 
-        return right({ ...res, $req: req });
+        return TEI.right({ ...res, $req: req });
       } catch (err) {
-        return left({
+        return TEI.left({
           status: httpStatusCodes.INTERNAL_SERVER_ERROR,
           statusText: `Internal Server Error: [${err.message}]`,
           headers: req.headers,
