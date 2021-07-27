@@ -1,69 +1,22 @@
 const path = require('path');
 const tsconfigPathsWebpackPlugin = require('tsconfig-paths-webpack-plugin');
 const webpackNodeExternals = require('webpack-node-externals');
-
 const distPath = path.resolve(path.join(__dirname, 'dist'));
+const devConfig = require('./webpack.config.dev');
 
 const config = {
-  devtool: 'eval-source-map',
-  externals: [
-    webpackNodeExternals({
-      whitelist: ['tslib'],
-    }),
-  ],
+  ...devConfig,
+  devtool: 'source-map',
   mode: 'production',
   target: 'node',
 
   resolve: {
-    extensions: ['.ts', '.tsx', '.js', '.jsx', '.json'],
-    modules: [path.resolve(__dirname, 'src'), 'node_modules'],
+    ...devConfig.resolve,
     plugins: [
       new tsconfigPathsWebpackPlugin({
         configFile: 'tsconfig.prod.json',
       }),
     ],
-  },
-
-  entry: {
-    'jin-frame-prod': ['./src/index.ts'],
-  },
-
-  output: {
-    filename: 'index.js',
-    libraryTarget: 'commonjs',
-    path: distPath,
-  },
-
-  optimization: {
-    minimize: false, // <---- disables uglify.
-    // minimizer: [new UglifyJsPlugin()] if you want to customize it.
-  },
-
-  module: {
-    rules: [
-      {
-        loader: 'json-loader',
-        test: /\.json$/,
-      },
-      {
-        exclude: /node_modules/,
-        loader: 'ts-loader',
-        test: /\.tsx?$/,
-        options: {
-          configFile: 'tsconfig.prod.json',
-        },
-      },
-    ],
-  },
-
-  devtool: 'inline-source-map',
-
-  node: {
-    __dirname: false,
-    __filename: false,
-    console: false,
-    global: false,
-    process: false,
   },
 };
 

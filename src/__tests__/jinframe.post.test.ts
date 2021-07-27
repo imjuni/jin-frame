@@ -86,7 +86,7 @@ describe('jinframe.test', () => {
     if (res.status <= 400) {
       log(tq.request());
       log('Data-Pass: ', JSON.stringify(res.$req, null, 2));
-      log('test?', res.status, res.data);
+      log('test?', res.status, res.data, res.debug);
     } else {
       log('Data-Fail: ', res.$req);
       log('Data-Fail: ', res.status);
@@ -106,7 +106,7 @@ describe('jinframe.test', () => {
 
     if (TE.isRight(res)) {
       log('Data-Pass: ', JSON.stringify(res.right.$req, null, 2));
-      log('test?', res.right.status, res.right.data);
+      log('test?', res.right.status, res.right.data, res.right.debug);
     } else {
       log('Data-Fail: ', res.left.$req);
       log('Data-Fail: ', res.left.status);

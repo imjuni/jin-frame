@@ -8,6 +8,10 @@ import 'reflect-metadata';
 import { IFieldOption } from './IFieldOption';
 import IJinFrameRequestParams from './IJinFrameRequestParams';
 import { TREQUEST_PART } from './TREQUEST_PART';
+import dayjs from 'dayjs';
+import { IDebugInfo } from './IDebugInfo';
+
+export const defaultJinFrameTimeout = 2000;
 
 function bitwised(values: number[]): number {
   return values.reduce((bitwise, value) => bitwise | value, 0); // eslint-disable-line no-bitwise
@@ -282,8 +286,8 @@ export class JinFrame<PASS = unknown, FAIL = PASS> {
 
   public createTE(args?: IJinFrameRequestParams) {
     const teRequester = (): TTE.TaskEither<
-      AxiosResponse<FAIL> & { err: Error; $req: AxiosRequestConfig },
-      AxiosResponse<PASS> & { $req: AxiosRequestConfig }
+      AxiosResponse<FAIL> & { err: Error; $req: AxiosRequestConfig; debug: IDebugInfo },
+      AxiosResponse<PASS> & { $req: AxiosRequestConfig; debug: IDebugInfo }
     > => this.create(args);
 
     return teRequester;
@@ -293,22 +297,48 @@ export class JinFrame<PASS = unknown, FAIL = PASS> {
     args?: IJinFrameRequestParams,
   ): () => Promise<
     TEI.Either<
-      AxiosResponse<FAIL> & { err: Error; $req: AxiosRequestConfig },
-      AxiosResponse<PASS> & { $req: AxiosRequestConfig }
+      AxiosResponse<FAIL> & { err: Error; $req: AxiosRequestConfig; debug: IDebugInfo },
+      AxiosResponse<PASS> & { $req: AxiosRequestConfig; debug: IDebugInfo }
     >
   > {
     const req = this.request(args);
+    const timeout = args?.timeout ?? defaultJinFrameTimeout;
 
     return async () => {
+      const startAt = dayjs();
+      const debugInfo: Omit<IDebugInfo, 'duration'> = {
+        timeout,
+        ts: {
+          unix: `${startAt.unix()}.${startAt.millisecond()}`,
+          iso: startAt.format('YYYYMMDDTHHmmss.SSS'),
+        },
+        url: req.url,
+        httpAgent: isNotUndefined(args?.httpAgent),
+        httpsAgent: isNotUndefined(args?.httpsAgent),
+        proxy: args?.proxy,
+      };
+
       try {
         const res = await axios.request(req);
+        const endAt = dayjs();
 
         if (res.status >= httpStatusCodes.BAD_REQUEST) {
-          return TEI.left({ ...res, $req: req, err: new Error('Error caused from API response') });
+          return TEI.left({
+            ...res,
+            $req: req,
+            debug: { ...debugInfo, duration: endAt.diff(startAt, 'millisecond') },
+            err: new Error('Error caused from API response'),
+          });
         }
 
-        return TEI.right({ ...res, $req: req });
+        return TEI.right({
+          ...res,
+          $req: req,
+          debug: { ...debugInfo, duration: endAt.diff(startAt, 'millisecond') },
+        });
       } catch (err) {
+        const endAt = dayjs();
+
         return TEI.left({
           status: httpStatusCodes.INTERNAL_SERVER_ERROR,
           statusText: `Internal Server Error: [${err.message}]`,
@@ -318,6 +348,7 @@ export class JinFrame<PASS = unknown, FAIL = PASS> {
           data: {} as any,
           err,
           $req: req,
+          debug: { ...debugInfo, duration: endAt.diff(startAt, 'millisecond') },
         });
       }
     };
@@ -325,12 +356,28 @@ export class JinFrame<PASS = unknown, FAIL = PASS> {
 
   public createWithoutEither(
     args?: IJinFrameRequestParams,
-  ): () => Promise<AxiosResponse<PASS> & { $req: AxiosRequestConfig }> {
+  ): () => Promise<AxiosResponse<PASS> & { $req: AxiosRequestConfig; debug: IDebugInfo }> {
     const req = this.request(args);
+    const timeout = args?.timeout ?? defaultJinFrameTimeout;
 
     return async () => {
-      const res = await axios.request<PASS>(req);
-      return { ...res, $req: req };
+      const startAt = dayjs();
+      const res = await axios.request<PASS>({ ...req, timeout });
+      const endAt = dayjs();
+      const debugInfo: IDebugInfo = {
+        duration: endAt.diff(startAt, 'millisecond'),
+        ts: {
+          unix: `${startAt.unix()}.${startAt.millisecond()}`,
+          iso: startAt.format('YYYYMMDDTHHmmssZ'),
+        },
+        timeout,
+        url: req.url,
+        httpAgent: isNotUndefined(args?.httpAgent),
+        httpsAgent: isNotUndefined(args?.httpsAgent),
+        proxy: args?.proxy,
+      };
+
+      return { ...res, $req: req, debug: debugInfo };
     };
   }
 }
