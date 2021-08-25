@@ -1,15 +1,16 @@
 import axios, { AxiosRequestConfig, AxiosResponse, Method } from 'axios';
+import dayjs from 'dayjs';
 import * as TEI from 'fp-ts/Either';
 import * as TTE from 'fp-ts/TaskEither';
 import httpStatusCodes from 'http-status-codes';
 import { isEmpty, isFalse, isNotUndefined } from 'my-easy-fp';
 import { compile } from 'path-to-regexp';
 import 'reflect-metadata';
+import { IDebugInfo } from './IDebugInfo';
 import { IFieldOption } from './IFieldOption';
 import IJinFrameRequestParams from './IJinFrameRequestParams';
 import { TREQUEST_PART } from './TREQUEST_PART';
-import dayjs from 'dayjs';
-import { IDebugInfo } from './IDebugInfo';
+import { TWithFailJinFrame, TWithPassJinFrame } from './typehelper';
 
 export const defaultJinFrameTimeout = 2000;
 
@@ -286,8 +287,8 @@ export class JinFrame<PASS = unknown, FAIL = PASS> {
 
   public createTE(args?: IJinFrameRequestParams) {
     const teRequester = (): TTE.TaskEither<
-      AxiosResponse<FAIL> & { err: Error; $req: AxiosRequestConfig; debug: IDebugInfo },
-      AxiosResponse<PASS> & { $req: AxiosRequestConfig; debug: IDebugInfo }
+      TWithFailJinFrame<AxiosResponse<FAIL>>,
+      TWithPassJinFrame<AxiosResponse<PASS>>
     > => this.create(args);
 
     return teRequester;
@@ -295,13 +296,9 @@ export class JinFrame<PASS = unknown, FAIL = PASS> {
 
   public create(
     args?: IJinFrameRequestParams,
-  ): () => Promise<
-    TEI.Either<
-      AxiosResponse<FAIL> & { err: Error; $req: AxiosRequestConfig; debug: IDebugInfo },
-      AxiosResponse<PASS> & { $req: AxiosRequestConfig; debug: IDebugInfo }
-    >
-  > {
+  ): () => Promise<TEI.Either<TWithFailJinFrame<AxiosResponse<FAIL>>, TWithPassJinFrame<AxiosResponse<PASS>>>> {
     const req = this.request(args);
+    const frame = this;
     const timeout = args?.timeout ?? defaultJinFrameTimeout;
 
     return async () => {
@@ -326,6 +323,7 @@ export class JinFrame<PASS = unknown, FAIL = PASS> {
           return TEI.left({
             ...res,
             $req: req,
+            frame,
             debug: { ...debugInfo, duration: endAt.diff(startAt, 'millisecond') },
             err: new Error('Error caused from API response'),
           });
@@ -334,6 +332,7 @@ export class JinFrame<PASS = unknown, FAIL = PASS> {
         return TEI.right({
           ...res,
           $req: req,
+          frame,
           debug: { ...debugInfo, duration: endAt.diff(startAt, 'millisecond') },
         });
       } catch (err) {
@@ -345,6 +344,7 @@ export class JinFrame<PASS = unknown, FAIL = PASS> {
           headers: req.headers,
           config: req,
           request: req,
+          frame,
           data: {} as any,
           err,
           $req: req,
@@ -354,10 +354,9 @@ export class JinFrame<PASS = unknown, FAIL = PASS> {
     };
   }
 
-  public createWithoutEither(
-    args?: IJinFrameRequestParams,
-  ): () => Promise<AxiosResponse<PASS> & { $req: AxiosRequestConfig; debug: IDebugInfo }> {
+  public createWithoutEither(args?: IJinFrameRequestParams): () => Promise<TWithPassJinFrame<AxiosResponse<PASS>>> {
     const req = this.request(args);
+    const frame = this;
     const timeout = args?.timeout ?? defaultJinFrameTimeout;
 
     return async () => {
@@ -377,7 +376,7 @@ export class JinFrame<PASS = unknown, FAIL = PASS> {
         proxy: args?.proxy,
       };
 
-      return { ...res, $req: req, debug: debugInfo };
+      return { ...res, $req: req, debug: debugInfo, frame };
     };
   }
 }
