@@ -4,8 +4,8 @@
     "node_modules",
     "server/**",    
     "dist/**",
-    "**/__test__",
-    "**/__tests__",
+    "**/__test__/*",
+    "**/__tests__/*",
     "just.config.ts",
     "webpack.config.dev.ts",
     "webpack.config.prod.ts"
