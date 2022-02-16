@@ -1,6 +1,6 @@
 // import { readFileSync } from 'fs';
 // import { argv, logger, option, task } from 'just-scripts';
-import { logger, option, task, series } from 'just-scripts';
+import { logger, option, task, series, parallel } from 'just-scripts';
 import { exec } from 'just-scripts-utils';
 
 option('env', { default: { env: 'develop' } });
@@ -20,7 +20,7 @@ task('clean', async () => {
 });
 
 task('build-only', async () => {
-  const cmd = 'NODE_ENV=production webpack --config webpack.config.prod.js';
+  const cmd = 'cross-env NODE_ENV=production webpack --config webpack.config.prod.js';
   logger.info('Build: ', cmd);
 
   await exec(cmd, {
@@ -51,7 +51,7 @@ task('publish-production', async () => {
   });
 });
 
-task('clean', async () => {
+task('clean:file', async () => {
   const cmd = 'rimraf dist';
 
   logger.info('Clean builded directory: ', cmd);
@@ -86,4 +86,5 @@ task('ctix:clean', async () => {
 
 task('build', series('clean', 'ctix:create', 'build-only', 'ctix:clean'));
 task('pub', series('build', 'publish-develop'));
+task('clean', parallel('clean:file', 'ctix:clean'));
 task('pub:prod', series('build', 'publish-production'));

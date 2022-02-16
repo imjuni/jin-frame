@@ -1,7 +1,4 @@
-const path = require('path');
 const tsconfigPathsWebpackPlugin = require('tsconfig-paths-webpack-plugin');
-const webpackNodeExternals = require('webpack-node-externals');
-const distPath = path.resolve(path.join(__dirname, 'dist'));
 const devConfig = require('./webpack.config.dev');
 
 const config = {

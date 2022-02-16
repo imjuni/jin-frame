@@ -3,6 +3,7 @@ import dayjs from 'dayjs';
 import * as TEI from 'fp-ts/Either';
 import * as TTE from 'fp-ts/TaskEither';
 import httpStatusCodes from 'http-status-codes';
+import { DateTime } from 'luxon';
 import { isEmpty, isFalse, isNotUndefined } from 'my-easy-fp';
 import { compile } from 'path-to-regexp';
 import 'reflect-metadata';
@@ -122,7 +123,17 @@ function paramize<T>(
       return datas;
     }
 
-    setter(option?.key ?? param.key, value, datas, option?.encode ? encodeURIComponent : undefined);
+    if (isNotUndefined(option) && isNotUndefined(option.dateFormat) && value instanceof Date) {
+      setter(
+        option?.key ?? param.key,
+        DateTime.fromJSDate(value).toFormat(option.dateFormat),
+        datas,
+        option?.encode ? encodeURIComponent : undefined,
+      );
+    } else {
+      setter(option?.key ?? param.key, value, datas, option?.encode ? encodeURIComponent : undefined);
+    }
+
     return datas;
   }, {});
 }
@@ -302,12 +313,12 @@ export class JinFrame<PASS = unknown, FAIL = PASS> {
     const timeout = args?.timeout ?? defaultJinFrameTimeout;
 
     return async () => {
-      const startAt = dayjs();
+      const startAt = DateTime.local();
       const debugInfo: Omit<IDebugInfo, 'duration'> = {
         timeout,
         ts: {
-          unix: `${startAt.unix()}.${startAt.millisecond()}`,
-          iso: startAt.format('YYYYMMDDTHHmmss.SSS'),
+          unix: `${startAt.toMillis()}.${startAt.millisecond}`,
+          iso: startAt.toFormat('YYYYLLDDTHHmmss.SSS'),
         },
         url: req.url,
         httpAgent: isNotUndefined(args?.httpAgent),
@@ -317,14 +328,14 @@ export class JinFrame<PASS = unknown, FAIL = PASS> {
 
       try {
         const res = await axios.request(req);
-        const endAt = dayjs();
+        const endAt = DateTime.local();
 
         if (res.status >= httpStatusCodes.BAD_REQUEST) {
           return TEI.left({
             ...res,
             $req: req,
             frame,
-            debug: { ...debugInfo, duration: endAt.diff(startAt, 'millisecond') },
+            debug: { ...debugInfo, duration: endAt.diff(startAt).as('millisecond') },
             err: new Error('Error caused from API response'),
           });
         }
@@ -333,22 +344,23 @@ export class JinFrame<PASS = unknown, FAIL = PASS> {
           ...res,
           $req: req,
           frame,
-          debug: { ...debugInfo, duration: endAt.diff(startAt, 'millisecond') },
+          debug: { ...debugInfo, duration: endAt.diff(startAt).as('millisecond') },
         });
-      } catch (err) {
-        const endAt = dayjs();
+      } catch (catched) {
+        const err = catched instanceof Error ? catched : new Error('unkonwn error raised from jinframe');
+        const endAt = DateTime.local();
 
         return TEI.left({
           status: httpStatusCodes.INTERNAL_SERVER_ERROR,
           statusText: `Internal Server Error: [${err.message}]`,
-          headers: req.headers,
+          headers: req.headers ?? ({} as Record<string, any>),
           config: req,
           request: req,
           frame,
           data: {} as any,
           err,
           $req: req,
-          debug: { ...debugInfo, duration: endAt.diff(startAt, 'millisecond') },
+          debug: { ...debugInfo, duration: endAt.diff(startAt).as('millisecond') },
         });
       }
     };

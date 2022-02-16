@@ -1,8 +1,6 @@
 const path = require('path');
 const tsconfigPathsWebpackPlugin = require('tsconfig-paths-webpack-plugin');
 const webpackNodeExternals = require('webpack-node-externals');
-const aliasHelp = require('alias-help');
-
 const distPath = path.resolve(path.join(__dirname, 'dist'));
 
 const config = {
