@@ -1,5 +1,4 @@
 import axios, { AxiosRequestConfig, AxiosResponse, Method } from 'axios';
-import dayjs from 'dayjs';
 import * as TEI from 'fp-ts/Either';
 import * as TTE from 'fp-ts/TaskEither';
 import httpStatusCodes from 'http-status-codes';
@@ -318,7 +317,7 @@ export class JinFrame<PASS = unknown, FAIL = PASS> {
         timeout,
         ts: {
           unix: `${startAt.toMillis()}.${startAt.millisecond}`,
-          iso: startAt.toFormat('YYYYLLDDTHHmmss.SSS'),
+          iso: startAt.toISO(),
         },
         url: req.url,
         httpAgent: isNotUndefined(args?.httpAgent),
@@ -372,14 +371,14 @@ export class JinFrame<PASS = unknown, FAIL = PASS> {
     const timeout = args?.timeout ?? defaultJinFrameTimeout;
 
     return async () => {
-      const startAt = dayjs();
+      const startAt = DateTime.local();
       const res = await axios.request<PASS>({ ...req, timeout });
-      const endAt = dayjs();
+      const endAt = DateTime.local();
       const debugInfo: IDebugInfo = {
-        duration: endAt.diff(startAt, 'millisecond'),
+        duration: endAt.diff(startAt).as('millisecond'),
         ts: {
-          unix: `${startAt.unix()}.${startAt.millisecond()}`,
-          iso: startAt.format('YYYYMMDDTHHmmssZ'),
+          unix: `${startAt.toMillis()}.${startAt.millisecond}`,
+          iso: startAt.toISO(),
         },
         timeout,
         url: req.url,
