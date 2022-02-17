@@ -310,6 +310,12 @@ export class JinFrame<PASS = unknown, FAIL = PASS> {
     const req = this.request(args);
     const frame = this;
     const timeout = args?.timeout ?? defaultJinFrameTimeout;
+    const isValidateStatus =
+      args?.validateStatus === undefined || args?.validateStatus === null
+        ? (status: number) => {
+            return status >= httpStatusCodes.BAD_REQUEST;
+          }
+        : args.validateStatus;
 
     return async () => {
       const startAt = DateTime.local();
@@ -329,9 +335,10 @@ export class JinFrame<PASS = unknown, FAIL = PASS> {
         const res = await axios.request(req);
         const endAt = DateTime.local();
 
-        if (res.status >= httpStatusCodes.BAD_REQUEST) {
+        if (isFalse(isValidateStatus(res.status))) {
           return TEI.left({
             ...res,
+            type: 'fail',
             $req: req,
             frame,
             debug: { ...debugInfo, duration: endAt.diff(startAt).as('millisecond') },
@@ -341,6 +348,7 @@ export class JinFrame<PASS = unknown, FAIL = PASS> {
 
         return TEI.right({
           ...res,
+          type: 'pass',
           $req: req,
           frame,
           debug: { ...debugInfo, duration: endAt.diff(startAt).as('millisecond') },
@@ -355,6 +363,7 @@ export class JinFrame<PASS = unknown, FAIL = PASS> {
           headers: req.headers ?? ({} as Record<string, any>),
           config: req,
           request: req,
+          type: 'fail',
           frame,
           data: {} as any,
           err,
@@ -365,17 +374,22 @@ export class JinFrame<PASS = unknown, FAIL = PASS> {
     };
   }
 
-  public createWithoutEither(args?: IJinFrameRequestParams): () => Promise<TWithPassJinFrame<AxiosResponse<PASS>>> {
+  public createWithoutEither(
+    args?: IJinFrameRequestParams,
+  ): () => Promise<TWithPassJinFrame<AxiosResponse<PASS>> | TWithFailJinFrame<AxiosResponse<FAIL>>> {
     const req = this.request(args);
     const frame = this;
     const timeout = args?.timeout ?? defaultJinFrameTimeout;
+    const isValidateStatus =
+      args?.validateStatus === undefined || args?.validateStatus === null
+        ? (status: number) => {
+            return status >= httpStatusCodes.BAD_REQUEST;
+          }
+        : args.validateStatus;
 
     return async () => {
       const startAt = DateTime.local();
-      const res = await axios.request<PASS>({ ...req, timeout });
-      const endAt = DateTime.local();
-      const debugInfo: IDebugInfo = {
-        duration: endAt.diff(startAt).as('millisecond'),
+      const debugInfo: Omit<IDebugInfo, 'duration'> = {
         ts: {
           unix: `${startAt.toMillis()}.${startAt.millisecond}`,
           iso: startAt.toISO(),
@@ -387,7 +401,51 @@ export class JinFrame<PASS = unknown, FAIL = PASS> {
         proxy: args?.proxy,
       };
 
-      return { ...res, $req: req, debug: debugInfo, frame };
+      try {
+        const res = await axios.request<PASS>({ ...req, timeout });
+        const endAt = DateTime.local();
+
+        if (isFalse(isValidateStatus(res.status))) {
+          const failRes = res as any as AxiosResponse<FAIL>;
+          const err = new Error('Error caused from API response');
+          return {
+            ...failRes,
+            type: 'fail',
+            err,
+            $req: req,
+            debug: { ...debugInfo, duration: endAt.diff(startAt).as('millisecond') },
+            frame,
+          };
+        }
+
+        return {
+          ...res,
+          type: 'pass',
+          $req: req,
+          debug: {
+            ...debugInfo,
+            duration: endAt.diff(startAt).as('millisecond'),
+          },
+          frame,
+        };
+      } catch (catched) {
+        const err = catched instanceof Error ? catched : new Error('unkonwn error raised from jinframe');
+        const endAt = DateTime.local();
+
+        return {
+          status: httpStatusCodes.INTERNAL_SERVER_ERROR,
+          statusText: `Internal Server Error: [${err.message}]`,
+          headers: req.headers ?? ({} as Record<string, any>),
+          config: req,
+          request: req,
+          type: 'fail',
+          frame,
+          data: {} as any,
+          err,
+          $req: req,
+          debug: { ...debugInfo, duration: endAt.diff(startAt).as('millisecond') },
+        };
+      }
     };
   }
 }
