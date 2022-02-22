@@ -153,6 +153,10 @@ function startWithSlash(value: string): string {
   return value.startsWith('/') ? value : `/${value}`;
 }
 
+function isValidateStatusDefault(status: number): boolean {
+  return status < httpStatusCodes.BAD_REQUEST;
+}
+
 export class JinFrame<PASS = unknown, FAIL = PASS> {
   public static SymbolBox = Symbol('SymbolBoxForJinFrame'); // tslint:disable-line
 
@@ -312,9 +316,7 @@ export class JinFrame<PASS = unknown, FAIL = PASS> {
     const timeout = args?.timeout ?? defaultJinFrameTimeout;
     const isValidateStatus =
       args?.validateStatus === undefined || args?.validateStatus === null
-        ? (status: number) => {
-            return status >= httpStatusCodes.BAD_REQUEST;
-          }
+        ? isValidateStatusDefault
         : args.validateStatus;
 
     return async () => {
@@ -382,9 +384,7 @@ export class JinFrame<PASS = unknown, FAIL = PASS> {
     const timeout = args?.timeout ?? defaultJinFrameTimeout;
     const isValidateStatus =
       args?.validateStatus === undefined || args?.validateStatus === null
-        ? (status: number) => {
-            return status >= httpStatusCodes.BAD_REQUEST;
-          }
+        ? isValidateStatusDefault
         : args.validateStatus;
 
     return async () => {
