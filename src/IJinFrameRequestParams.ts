@@ -1,4 +1,4 @@
-import { AxiosRequestConfig, AxiosProxyConfig } from 'axios';
+import { AxiosProxyConfig, AxiosRequestConfig } from 'axios';
 
 export default interface IJinFrameRequestParams {
   timeout?: number;

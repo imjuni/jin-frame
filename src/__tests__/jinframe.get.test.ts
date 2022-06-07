@@ -1,23 +1,25 @@
 /* eslint-disable max-classes-per-file */
 
 import axios from 'axios';
+import debug from 'debug';
 import * as TE from 'fp-ts/lib/Either';
 import nock from 'nock';
 import { JinFrame } from '../JinFrame';
-import debug from 'debug';
 
 const log = debug('jinframe:test');
 
 class TestGetQuery extends JinFrame {
   @JinFrame.param()
   public readonly passing: string;
+
   @JinFrame.query()
   public readonly name: string;
+
   @JinFrame.query({ encode: true })
   public readonly skill: string[];
 
   constructor() {
-    super({ host: 'http://some.api.yanolja.com', path: '/jinframe/:passing', method: 'GET' });
+    super({ host: 'http://some.api.google.com', path: '/jinframe/:passing', method: 'GET' });
 
     this.passing = 'pass';
     this.name = 'ironman';
@@ -28,8 +30,10 @@ class TestGetQuery extends JinFrame {
 class TestGet2Query extends JinFrame {
   @JinFrame.param()
   public readonly passing: string;
+
   @JinFrame.query()
   public readonly name: string;
+
   @JinFrame.header()
   public readonly ttt: string;
 
@@ -48,17 +52,17 @@ describe('jinframe.test', () => {
   });
 
   test('nock-with-axios', async () => {
-    nock('http://some.api.yanolja.com').get('/test').reply(200, {
+    nock('http://some.api.google.com').get('/test').reply(200, {
       message: 'hello',
     });
 
-    const res = await axios.get('http://some.api.yanolja.com/test');
+    const res = await axios.get('http://some.api.google.com/test');
 
     log('test?', res.status, res.data);
   });
 
   test('nock-get01-with-jinframe', async () => {
-    nock('http://some.api.yanolja.com').get('/jinframe/pass?name=ironman&skill=beam&skill=flying!').reply(200, {
+    nock('http://some.api.google.com').get('/jinframe/pass?name=ironman&skill=beam&skill=flying!').reply(200, {
       message: 'hello',
     });
 
@@ -77,7 +81,7 @@ describe('jinframe.test', () => {
   });
 
   test('nock-get02-with-jinframe', async () => {
-    nock('http://some.api.yanolja.com').get('/jinframe/pass?name=ironman').reply(200, {
+    nock('http://some.api.google.com').get('/jinframe/pass?name=ironman').reply(200, {
       message: 'hello',
     });
 
@@ -95,7 +99,7 @@ describe('jinframe.test', () => {
   });
 
   test('nock-get03-with-proxy-jinframe', async () => {
-    nock('http://some.api.yanolja.com').get('/jinframe/pass?name=ironman').reply(200, {
+    nock('http://some.api.google.com').get('/jinframe/pass?name=ironman').reply(200, {
       message: 'hello',
     });
 

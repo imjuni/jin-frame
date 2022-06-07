@@ -1,8 +1,12 @@
 {
   "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "allowJs": true
+  },
   "include": [
     "**/*.ts",
     ".eslintrc.js",
+    "just.config.ts",
     "**/__test__",
     "**/__tests__"
   ],
@@ -10,10 +14,7 @@
     "node_modules",
     "server/**",    
     "dist/**",
-    "awsdeploy.ts",
-    "dminst.ts",
-    "shellwork.ts",
-    "webpack.config.dev.ts",
-    "webpack.config.prod.ts"
+    "webpack.config.dev.js",
+    "webpack.config.prod.js"
   ]
 }
