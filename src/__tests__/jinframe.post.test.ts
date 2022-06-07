@@ -1,24 +1,27 @@
 /* eslint-disable max-classes-per-file */
 
+import debug from 'debug';
 import * as TE from 'fp-ts/lib/Either';
 import nock from 'nock';
 import { JinFrame } from '../JinFrame';
-import debug from 'debug';
 
 const log = debug('jinframe:test');
 
 class TestPostQuery extends JinFrame {
   @JinFrame.param()
   public readonly passing: string;
+
   @JinFrame.body({ key: 'test.hello.marvel.name' })
   public readonly name: string;
+
   @JinFrame.header({ key: 'test.hello.marvel.skill' })
   public readonly skill: string;
+
   @JinFrame.body({ key: 'test.hello.marvel.gender' })
   public readonly gender: string;
 
   constructor() {
-    super({ host: 'http://some.api.yanolja.com/jinframe/:passing', method: 'POST' });
+    super({ host: 'http://some.api.google.com/jinframe/:passing', method: 'POST' });
 
     this.passing = 'pass';
     this.name = 'ironman';
@@ -30,14 +33,16 @@ class TestPostQuery extends JinFrame {
 class TestUrlencodedPostQuery extends JinFrame {
   @JinFrame.param()
   public readonly passing: string;
+
   @JinFrame.body()
   public readonly username: string;
+
   @JinFrame.body()
   public readonly password: string;
 
   constructor() {
     super({
-      host: 'http://some.api.yanolja.com/jinframe/:passing',
+      host: 'http://some.api.google.com/jinframe/:passing',
       contentType: 'x-www-form-urlencoded',
       method: 'POST',
     });
@@ -54,7 +59,7 @@ describe('jinframe.test', () => {
   });
 
   test('nock-post-with-jinframe', async () => {
-    nock('http://some.api.yanolja.com').post('/jinframe/pass').reply(200, {
+    nock('http://some.api.google.com').post('/jinframe/pass').reply(200, {
       message: 'hello',
     });
 
@@ -75,7 +80,7 @@ describe('jinframe.test', () => {
   });
 
   test('nock-post-without-eiter-jinframe', async () => {
-    nock('http://some.api.yanolja.com').post('/jinframe/pass').reply(200, {
+    nock('http://some.api.google.com').post('/jinframe/pass').reply(200, {
       message: 'hello',
     });
 
@@ -96,7 +101,7 @@ describe('jinframe.test', () => {
   });
 
   test('nock-post-urlencoded', async () => {
-    nock('http://some.api.yanolja.com').post('/jinframe/pass', 'username=ironman&password=marvel').reply(200, {
+    nock('http://some.api.google.com').post('/jinframe/pass', 'username=ironman&password=marvel').reply(200, {
       message: 'hello',
     });
 

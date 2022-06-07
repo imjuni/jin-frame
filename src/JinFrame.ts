@@ -30,12 +30,12 @@ function objectSetter<T = unknown>(key: string, value: T, object: any) {
   const dotSplited = key.split('.');
 
   if (dotSplited.length <= 1) {
+    // eslint-disable-next-line no-param-reassign
     object[key] = value;
     return;
   }
 
   let current: any = object;
-
   for (let i = 0; i < dotSplited.length; i += 1) {
     const currentKey = dotSplited[i];
 
@@ -50,12 +50,6 @@ function objectSetter<T = unknown>(key: string, value: T, object: any) {
   }
 }
 
-function simpleSetter<T = unknown>(key: string, value: T, object: any) {
-  if (value !== undefined && value !== null) {
-    object[key] = value;
-  }
-}
-
 function encodeSetter<T = unknown>(
   key: string,
   value: T,
@@ -63,6 +57,7 @@ function encodeSetter<T = unknown>(
   encoder?: (uriComponent: string | number | boolean) => string,
 ) {
   if (value !== undefined && value !== null) {
+    // eslint-disable-next-line no-param-reassign
     object[key] =
       (typeof value === 'string' || typeof value === 'number' || typeof value === 'boolean') && isNotUndefined(encoder)
         ? encoder(value)
@@ -75,6 +70,7 @@ function stringSetter<T = unknown>(key: string, value: T, object: any) {
     const refined = typeof value !== 'string' ? `${value ?? ''}` : value;
 
     if (refined !== '') {
+      // eslint-disable-next-line no-param-reassign
       object[key] = refined;
     }
   }
@@ -92,7 +88,7 @@ function paramize<T>(
 ) {
   return params.reduce<{ [key: string]: any }>((datas, param) => {
     const value = access(obj, param.key as any);
-    const option = param.option;
+    const { option } = param;
 
     if (isNotUndefined(option) && isNotUndefined(option.bit)) {
       if (option.bit.enable && Array.isArray(value)) {
@@ -161,14 +157,21 @@ export class JinFrame<PASS = unknown, FAIL = PASS> {
   public static SymbolBox = Symbol('SymbolBoxForJinFrame'); // tslint:disable-line
 
   public static param = (option?: IFieldOption) => Reflect.metadata(JinFrame.SymbolBox, ['PARAM', option]);
+
   public static query = (option?: IFieldOption) => Reflect.metadata(JinFrame.SymbolBox, ['QUERY', option]);
+
   public static body = (option?: IFieldOption) => Reflect.metadata(JinFrame.SymbolBox, ['BODY', option]);
+
   public static header = (option?: IFieldOption) => Reflect.metadata(JinFrame.SymbolBox, ['HEADER', option]);
 
   public readonly host?: string;
+
   public readonly path?: string;
+
   public readonly method: Method;
+
   public readonly contentType: string;
+
   public readonly customBody?: { [key: string]: any };
 
   constructor({
@@ -376,6 +379,13 @@ export class JinFrame<PASS = unknown, FAIL = PASS> {
     };
   }
 
+  public execute(
+    args?: IJinFrameRequestParams,
+  ): Promise<TEI.Either<TWithFailJinFrame<AxiosResponse<FAIL>>, TWithPassJinFrame<AxiosResponse<PASS>>>> {
+    const requester = this.create(args);
+    return requester();
+  }
+
   public createWithoutEither(
     args?: IJinFrameRequestParams,
   ): () => Promise<TWithPassJinFrame<AxiosResponse<PASS>> | TWithFailJinFrame<AxiosResponse<FAIL>>> {
@@ -447,5 +457,12 @@ export class JinFrame<PASS = unknown, FAIL = PASS> {
         };
       }
     };
+  }
+
+  public executeWithoutEither(
+    args?: IJinFrameRequestParams,
+  ): Promise<TWithPassJinFrame<AxiosResponse<PASS>> | TWithFailJinFrame<AxiosResponse<FAIL>>> {
+    const requester = this.createWithoutEither(args);
+    return requester();
   }
 }

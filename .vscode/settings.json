@@ -23,7 +23,17 @@
     "**/build": true,
     "**/dist": true
   },
- "typescript.tsdk": "node_modules/typescript/lib",
+  "files.eol": "\n",
+  "typescript.tsdk": "node_modules/typescript/lib",
   "editor.formatOnSave": true,
-  "git.ignoreLimitWarning": true
- }
+  "git.ignoreLimitWarning": true,
+  "files.associations": {
+    "**/.ctiignore": "jsonc",
+    ".ctirc": "jsonc"
+  },
+  "jest.autoRun": {
+    "watch": false
+    // "onStartup": ["all-tests"],
+    // "onSave": "test-src-file"
+  }
+}

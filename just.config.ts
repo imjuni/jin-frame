@@ -1,6 +1,6 @@
 // import { readFileSync } from 'fs';
 // import { argv, logger, option, task } from 'just-scripts';
-import { logger, option, task, series, parallel } from 'just-scripts';
+import { logger, option, parallel, series, task } from 'just-scripts';
 import { exec } from 'just-scripts-utils';
 
 option('env', { default: { env: 'develop' } });
@@ -14,6 +14,15 @@ task('ctix', async () => {
 
 task('clean', async () => {
   await exec('rimraf dist artifact', {
+    stderr: process.stderr,
+    stdout: process.stdout,
+  });
+});
+
+task('lint', async () => {
+  const cmd = 'eslint --no-ignore --ext ts,tsx,json ./src/**/*';
+
+  await exec(cmd, {
     stderr: process.stderr,
     stdout: process.stdout,
   });
