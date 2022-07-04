@@ -126,14 +126,14 @@ if (isFail(res)) {
     * custom user-agent string
 * validateStatus?: AxiosRequestConfig['validateStatus'];
     * validateStatus function. See validateStatus description in [request config](https://github.com/axios/axios#request-config)
-## create function
+## createWithEither function
 * timeout?: number
     * request timeout, milliseconds
 * userAgent?: string;
     * custom user-agent string
 * validateStatus?: AxiosRequestConfig['validateStatus'];
     * validateStatus function. See validateStatus description in [request config](https://github.com/axios/axios#request-config)
-## createWithoutEither function
+## create function
 * timeout?: number
     * request timeout, milliseconds
 * userAgent?: string;

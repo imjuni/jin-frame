@@ -7,7 +7,7 @@ import { exec } from 'just-scripts-utils';
 option('env', { default: { env: 'develop' } });
 
 task('ctix', async () => {
-  await exec('ctix create -p ./tsconfig.json', {
+  await exec('ctix create -p ./tsconfig.json --config ./.config/.ctirc', {
     stderr: process.stderr,
     stdout: process.stdout,
   });
@@ -30,7 +30,7 @@ task('lint', async () => {
 });
 
 task('build-only', async () => {
-  const cmd = 'cross-env NODE_ENV=production webpack --config webpack.config.prod.js';
+  const cmd = 'cross-env NODE_ENV=production webpack --config ./.config/webpack.config.prod.js';
   logger.info('Build: ', cmd);
 
   await exec(cmd, {
@@ -72,8 +72,28 @@ task('clean:file', async () => {
   });
 });
 
+task('clean:dts', async () => {
+  const cmd = 'rimraf dist/src';
+
+  logger.info('Clean dts directory: ', cmd);
+
+  await exec(cmd, {
+    stderr: process.stderr,
+    stdout: process.stdout,
+  });
+});
+
+task('+dts-bundle', async () => {
+  const cmd = 'dts-bundle-generator --no-banner dist/src/index.d.ts -o dist/index.d.ts';
+
+  await exec(cmd, {
+    stderr: process.stderr,
+    stdout: process.stdout,
+  });
+});
+
 task('ctix:create', async () => {
-  const cmd = 'ctix create -p ./tsconfig.json';
+  const cmd = 'ctix create -p ./tsconfig.json --config ./.config/.ctirc';
 
   logger.info('Create index file : ', cmd);
 
@@ -84,7 +104,7 @@ task('ctix:create', async () => {
 });
 
 task('ctix:remove', async () => {
-  const cmd = 'ctix remove -p ./tsconfig.json';
+  const cmd = 'ctix remove -p ./tsconfig.json --config ./.config/.ctirc';
 
   logger.info('Create index file : ', cmd);
 
@@ -94,7 +114,8 @@ task('ctix:remove', async () => {
   });
 });
 
-task('build', series('clean', 'ctix:create', 'build-only', 'ctix:remove'));
+task('build', series('clean', 'ctix:create', 'build-only', 'ctix:remove', '+dts-bundle', 'clean:dts'));
+task('dts-bundle', series('+dts-bundle', 'clean:dts'));
 task('pub', series('build', 'publish-develop'));
 task('clean', parallel('clean:file', 'ctix:remove'));
 task('pub:prod', series('build', 'publish-production'));

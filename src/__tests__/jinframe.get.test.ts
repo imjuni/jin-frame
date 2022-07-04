@@ -67,7 +67,7 @@ describe('jinframe.test', () => {
     });
 
     const tq = new TestGetQuery();
-    const requester = tq.create();
+    const requester = tq.createWithEither();
     const res = await requester();
 
     if (TE.isRight(res)) {
@@ -86,7 +86,7 @@ describe('jinframe.test', () => {
     });
 
     const tq = new TestGet2Query();
-    const requester = tq.create();
+    const requester = tq.createWithEither();
     const res = await requester();
 
     if (TE.isRight(res)) {
@@ -104,7 +104,7 @@ describe('jinframe.test', () => {
     });
 
     const tq = new TestGet2Query();
-    const requester = tq.create({ proxy: { host: 'localhost', port: 8933, protocol: 'http' } });
+    const requester = tq.createWithEither({ proxy: { host: 'localhost', port: 8933, protocol: 'http' } });
     const res = await requester();
 
     if (TE.isRight(res)) {

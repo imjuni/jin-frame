@@ -64,7 +64,7 @@ describe('jinframe.test', () => {
     });
 
     const tq = new TestPostQuery();
-    const requester = tq.create();
+    const requester = tq.createWithEither();
     const res = await requester();
 
     if (TE.isRight(res)) {
@@ -85,7 +85,7 @@ describe('jinframe.test', () => {
     });
 
     const tq = new TestPostQuery();
-    const requester = tq.createWithoutEither();
+    const requester = tq.create();
     const res = await requester();
 
     if (res.status <= 400) {
@@ -106,7 +106,7 @@ describe('jinframe.test', () => {
     });
 
     const tq = new TestUrlencodedPostQuery();
-    const requester = tq.create();
+    const requester = tq.createWithEither();
     const res = await requester();
 
     if (TE.isRight(res)) {

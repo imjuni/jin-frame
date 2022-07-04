@@ -306,12 +306,12 @@ export class JinFrame<PASS = unknown, FAIL = PASS> {
     const teRequester = (): TTE.TaskEither<
       TWithFailJinFrame<AxiosResponse<FAIL>>,
       TWithPassJinFrame<AxiosResponse<PASS>>
-    > => this.create(args);
+    > => this.createWithEither(args);
 
     return teRequester;
   }
 
-  public create(
+  public createWithEither(
     args?: IJinFrameRequestParams,
   ): () => Promise<TEI.Either<TWithFailJinFrame<AxiosResponse<FAIL>>, TWithPassJinFrame<AxiosResponse<PASS>>>> {
     const req = this.request(args);
@@ -379,14 +379,14 @@ export class JinFrame<PASS = unknown, FAIL = PASS> {
     };
   }
 
-  public execute(
+  public executeWithEither(
     args?: IJinFrameRequestParams,
   ): Promise<TEI.Either<TWithFailJinFrame<AxiosResponse<FAIL>>, TWithPassJinFrame<AxiosResponse<PASS>>>> {
-    const requester = this.create(args);
+    const requester = this.createWithEither(args);
     return requester();
   }
 
-  public createWithoutEither(
+  public create(
     args?: IJinFrameRequestParams,
   ): () => Promise<TWithPassJinFrame<AxiosResponse<PASS>> | TWithFailJinFrame<AxiosResponse<FAIL>>> {
     const req = this.request(args);
@@ -459,10 +459,10 @@ export class JinFrame<PASS = unknown, FAIL = PASS> {
     };
   }
 
-  public executeWithoutEither(
+  public execute(
     args?: IJinFrameRequestParams,
   ): Promise<TWithPassJinFrame<AxiosResponse<PASS>> | TWithFailJinFrame<AxiosResponse<FAIL>>> {
-    const requester = this.createWithoutEither(args);
+    const requester = this.create(args);
     return requester();
   }
 }
