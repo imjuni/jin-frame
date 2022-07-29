@@ -1,21 +1,21 @@
 /* eslint-disable max-classes-per-file */
 
+import JinEitherFrame from '@frames/JinEitherFrame';
 import axios from 'axios';
 import debug from 'debug';
-import * as TE from 'fp-ts/lib/Either';
+import { isPass } from 'my-only-either';
 import nock from 'nock';
-import { JinFrame } from '../JinFrame';
 
 const log = debug('jinframe:test');
 
-class TestGetQuery extends JinFrame {
-  @JinFrame.param()
+class TestGetFrame extends JinEitherFrame {
+  @JinEitherFrame.param()
   public readonly passing: string;
 
-  @JinFrame.query()
+  @JinEitherFrame.query()
   public readonly name: string;
 
-  @JinFrame.query({ encode: true })
+  @JinEitherFrame.query({ encode: true })
   public readonly skill: string[];
 
   constructor() {
@@ -27,14 +27,14 @@ class TestGetQuery extends JinFrame {
   }
 }
 
-class TestGet2Query extends JinFrame {
-  @JinFrame.param()
+class TestGet2Frame extends JinEitherFrame {
+  @JinEitherFrame.param()
   public readonly passing: string;
 
-  @JinFrame.query()
+  @JinEitherFrame.query()
   public readonly name: string;
 
-  @JinFrame.header()
+  @JinEitherFrame.header()
   public readonly ttt: string;
 
   constructor() {
@@ -66,53 +66,52 @@ describe('jinframe.test', () => {
       message: 'hello',
     });
 
-    const tq = new TestGetQuery();
-    const requester = tq.createWithEither();
-    const res = await requester();
+    const frame = new TestGetFrame();
+    const resp = await frame.execute();
 
-    if (TE.isRight(res)) {
-      log('Pass', res.right.status, res.right.data);
+    if (isPass(resp)) {
+      log('Pass', resp.pass.status, resp.pass.data);
     } else {
-      log('Fail', res.left.status, res.left.$req);
+      log('Fail', resp.fail.$progress, resp.fail.$debug.req, resp.fail.$debug);
     }
 
-    log('테스트: ', res);
-    expect(TE.isRight(res)).toEqual(true);
+    expect(isPass(resp)).toEqual(true);
   });
 
   test('nock-get02-with-jinframe', async () => {
-    nock('http://some.api.google.com').get('/jinframe/pass?name=ironman').reply(200, {
+    nock('http://localhost').get('/jinframe/hello/test?name=ironman').reply(200, {
       message: 'hello',
     });
 
-    const tq = new TestGet2Query();
-    const requester = tq.createWithEither();
-    const res = await requester();
+    const frame = new TestGet2Frame();
+    const resp = await frame.execute();
 
-    if (TE.isRight(res)) {
-      log('test?', res.right.status, res.right.data);
+    if (isPass(resp)) {
+      log('Pass', resp.pass.status, resp.pass.data);
     } else {
-      log('Data: ', JSON.stringify(res.left.$req, null, 2));
+      log('message: ', resp.fail.$err.message);
+      log('Fail', resp.fail.$progress, resp.fail.$debug.req, resp.fail.$debug.req);
     }
 
-    expect(TE.isRight(res)).toEqual(false);
+    expect(isPass(resp)).toEqual(true);
   });
 
-  test('nock-get03-with-proxy-jinframe', async () => {
-    nock('http://some.api.google.com').get('/jinframe/pass?name=ironman').reply(200, {
+  test('nock-get03-axios-request', async () => {
+    nock('http://localhost').get('/jinframe/hello/test?name=ironman').reply(200, {
       message: 'hello',
     });
 
-    const tq = new TestGet2Query();
-    const requester = tq.createWithEither({ proxy: { host: 'localhost', port: 8933, protocol: 'http' } });
-    const res = await requester();
+    const frame = new TestGet2Frame();
+    const req = frame.request();
+    const resp = await axios.request(req);
 
-    if (TE.isRight(res)) {
-      log('test?', res.right.status, res.right.data);
+    if (resp.status < 400) {
+      log('Pass', resp.status, resp.data);
     } else {
-      log('Data: ', JSON.stringify(res.left.$req, null, 2));
+      log('message: ', resp.data);
+      log('Fail', resp.status);
     }
 
-    expect(TE.isRight(res)).toEqual(false);
+    expect(resp.status < 400).toEqual(true);
   });
 });

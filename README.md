@@ -1,66 +1,42 @@
 # jin-frame
+
 [![Download Status](https://img.shields.io/npm/dw/jin-frame.svg)](https://npmcharts.com/compare/jin-frame?minimal=true) [![Github Star](https://img.shields.io/github/stars/imjuni/jin-frame.svg?style=popout)](https://github.com/imjuni/jin-frame) [![Github Issues](https://img.shields.io/github/issues-raw/imjuni/jin-frame.svg)](https://github.com/imjuni/jin-frame/issues) [![NPM version](https://img.shields.io/npm/v/jin-frame.svg)](https://www.npmjs.com/package/jin-frame) [![License](https://img.shields.io/npm/l/jin-frame.svg)](https://github.com/imjuni/jin-frame/blob/master/LICENSE) [![cti](https://circleci.com/gh/imjuni/jin-frame.svg?style=shield)](https://app.circleci.com/pipelines/github/imjuni/jin-frame?branch=master)
 
-Repeatable HTTP request definition library
+Reusable HTTP request definition library
 
-jin-frame is tool that create repeatable HTTP request. If you develop under MSA architecture or AWS, Azure who use same API call over and over again. This action is sucessfully processed but sometimes raise error in copy and paste. If you definition HTTP request to TypeScript class, jin-frame create same request every time, reduce fail.
+# Why jin-frame?
 
-## Breaking change
-Either data type change.
+When the system designed by MSA architecture, it invokes many APIs repeatedly. These repetitive API calls can be optimized for method extraction by refectoring, but are hardly reusabled and easily make to mistakes. Jin-frame defines the API as a class. Defining APIs in this class allows static type verification with the help of the TypeScript compiler and reduces the probability of errors by abstracting API calls. Jin-frame can use [Axios](https://github.com/axios/axios) to call APIs directly or automatically process up to run.
 
-
-From
-
-```ts
-import { Either } from 'my-easy-fp';
-```
-
-To
-
-```ts
-import { Either } from 'fp-ts/lib/Either';
-```
-
-### Why?
-
-#### Pros.
-1. fp-ts have variety feature. Especially pipe and chain is fantastic feature.
-1. my-easy-fp cannot support pipe, chain, toMap etc.
-
-#### Cons.
-1. left, right, isLeft, isRight hard to understanding than efail, epass, isFail, isPass.
-
-
-## Why jin-frame?
-You can define HTTP request to TypeScript class. Also you can pass TypeScript type at sucess or fail. See below benefits of the this definition.
-
-1. TypeScript can detect error at compile-time
-1. Automate HTTP request creation
-1. Use variety axios ecosystem
+1. TypeScript compiler can detect error at compile-time
+1. HTTP request definition
+1. Use Axios ecosystem
 
 # Requirement
+
 1. TypeScript
 1. Decorator
+   - enable experimentalDecorators, emitDecoratorMetadata option in tsconfig.json
 
 # Install
+
 ```sh
 npm i jin-frame --save
 ```
 
 # Useage
-jin-frame using [axios](https://github.com/axios/axios) library. See below example.
 
 ```ts
 class TestPostQuery extends JinFrame {
   @JinFrame.param()
   public readonly passing: string;
-  
+
   @JinFrame.body({ key: 'test.hello.marvel.name' })
   public readonly name: string;
 
   @JinFrame.header({ key: 'test.hello.marvel.skill' })
   public readonly skill: string;
-  
+
   @JinFrame.body({ key: 'test.hello.marvel.gender' })
   public readonly gender: string;
 
@@ -80,9 +56,8 @@ TestPostQuery class create AxiosRequestConfig object below.
 ```ts
 const query = new TestPostQuery('ironman', 'beam');
 console.log(query.request());
-```
 
-```js
+// console.log show below,
 {
   timeout: 2000,
   headers: { test: { hello: { marvel: { skill: 'beam' } } }, 'Content-Type': 'application/json' },
@@ -94,49 +69,34 @@ console.log(query.request());
 }
 ```
 
-You can change name or skill parameter at run-time. Even if you can change host address. Every change don't make fail and create well-formed AxiosRequestConfig object. Also you can change request time and transformRequest, validateStatus parameter. _x-www-form-urlencoded_ transformRequest already include. You only set content-type params. See _x-www-form-urlencoded_ [testcase](https://github.com/imjuni/jin-frame/blob/master/src/__tests__/jinframe.post.test.ts). 
+You can change name or skill parameter at run-time. Even if you can change host address. Every change don't make fail and create well-formed AxiosRequestConfig object. Also you can change request time and transformRequest, validateStatus parameter. _x-www-form-urlencoded_ transformRequest already include. You only set content-type params. See _x-www-form-urlencoded_ [testcase](https://github.com/imjuni/jin-frame/blob/master/src/__tests__/jinframe.post.test.ts).
 
-Execution is simple. Create curried function after execute that function. jin-frame using axios library so using on browser. 
+Execution is simple. Create curried function after execute that function. jin-frame using axios library so using on browser.
 
 ```ts
 const query = new TestPostQuery('ironman', 'beam');
-const requester = query.createWithoutEither();
+const res = await query.execute();
 
-const res = await requester();
+// or
+const resp = await axios.request(query.request());
 ```
 
-If you can use easy-fp, use either. See below.
+Also you can use either,
 
 ```ts
-const query = new TestPostQuery('ironman', 'beam');
-const requester = query.create();
+// change base calss JinFrame to JinEitherFrame
+class TestPostQuery extends JinEitherFrame {
+  // your definition ...
+}
 
-const res = await requester();
+const query = new TestPostQuery('ironman', 'beam');
+const res = await query.execute();
 
 if (isFail(res)) {
   // failover action
 }
 ```
 
-# Arguments
-## request function
-* timeout?: number
-    * request timeout, milliseconds
-* userAgent?: string;
-    * custom user-agent string
-* validateStatus?: AxiosRequestConfig['validateStatus'];
-    * validateStatus function. See validateStatus description in [request config](https://github.com/axios/axios#request-config)
-## createWithEither function
-* timeout?: number
-    * request timeout, milliseconds
-* userAgent?: string;
-    * custom user-agent string
-* validateStatus?: AxiosRequestConfig['validateStatus'];
-    * validateStatus function. See validateStatus description in [request config](https://github.com/axios/axios#request-config)
-## create function
-* timeout?: number
-    * request timeout, milliseconds
-* userAgent?: string;
-    * custom user-agent string
-* validateStatus?: AxiosRequestConfig['validateStatus'];
-    * validateStatus function. See validateStatus description in [request config](https://github.com/axios/axios#request-config)
+# Example
+
+You can find more [examples directory](https://github.com/imjuni/jin-frame/tree/master/examples).

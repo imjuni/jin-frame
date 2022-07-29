@@ -4,6 +4,7 @@
     "node_modules",
     "server/**",    
     "dist/**",
+    "examples/**",
     "**/__test__/*",
     "**/__tests__/*",
     "just.config.ts",

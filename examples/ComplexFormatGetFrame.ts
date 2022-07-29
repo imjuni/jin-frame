@@ -1,0 +1,58 @@
+import { format, parse } from 'date-fns';
+import JinEitherFrame from '../src/frames/JinEitherFrame';
+
+interface IFirstBody {
+  name: string;
+  data: {
+    signDate: string;
+    age: number;
+    more: {
+      birthday: string;
+      weddingAnniversary: Date;
+    };
+  };
+}
+
+/**
+ * Complex date formatting In jin-frame
+ */
+export default class ComplexFormatGetFrame extends JinEitherFrame {
+  @JinEitherFrame.param()
+  public readonly passing: string;
+
+  @JinEitherFrame.query()
+  public readonly name: string;
+
+  @JinEitherFrame.query()
+  public readonly skill: string[];
+
+  @JinEitherFrame.body({
+    formatters: [
+      {
+        key: 'data.more.weddingAnniversary',
+        dateTime: (value: Date) => format(value, 'yyyy-MM-dd HH:mm:ss'),
+      },
+      {
+        key: 'data.more.birthday',
+        string: (value: string) => parse(value, "yyyy-MM-dd'T'HH:mm:ss", new Date()),
+        dateTime: (value: Date) => format(value, 'yyyy-MM-dd HH:mm:ss'),
+      },
+      {
+        key: 'data.signDate',
+        string: (value: string) => parse(value, "yyyy-MM-dd'T'HH:mm:ss", new Date()),
+        dateTime: (value: Date) => format(value, 'yyyy-MM-dd HH:mm:ss'),
+      },
+    ],
+  })
+  public readonly body: IFirstBody;
+
+  constructor({ body }: { body: IFirstBody }) {
+    super({ host: 'http://some.api.google.com', path: '/jinframe/:passing', method: 'GET' });
+
+    this.passing = 'pass';
+    this.name = 'ironman';
+    this.skill = ['beam', 'flying!'];
+
+    this.body = { ...body };
+  }
+}

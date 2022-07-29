@@ -13,6 +13,10 @@ const config = merge(devConfig, {
       }),
     ],
   },
+  optimization: {
+    minimize: true, // <---- disables uglify.
+    // minimizer: [new UglifyJsPlugin()] if you want to customize it.
+  },
 });
 
 module.exports = config;
