@@ -4,12 +4,13 @@ const webpackNodeExternals = require('webpack-node-externals');
 const distPath = path.resolve(path.join(__dirname, '..', 'dist'));
 
 const config = {
-  devtool: 'eval-source-map',
+  devtool: 'inline-source-map',
   externals: [
     webpackNodeExternals({
-      allowlist: ['tslib'],
+      allowlist: ['date-fns'],
     }),
   ],
+
   mode: 'development',
   target: 'node',
 
@@ -31,7 +32,7 @@ const config = {
   },
 
   entry: {
-    'jin-frame-dev': ['./src/index.ts'],
+    'jin-frame-dev': ['./src/frames/JinFrame.ts', './src/frames/JinEitherFrame.ts'],
   },
 
   output: {

@@ -112,3 +112,4 @@ tslint-to-eslint-config.log
 
 # backup file
 src/*.ts.bak
+docs/

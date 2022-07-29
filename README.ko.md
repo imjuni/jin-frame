@@ -1,18 +1,17 @@
 # jin-frame
-Repeatable HTTP request definitation library
-
-jin-frame은 HTTP 요청을 반복적으로 보낼 때 실수를 방지하기 위한 최고의 도구입니다. AWS 또는 Azure를 사용하거나 MSA 아키텍처 기반에서 개발을 진행할 때 다양한 목적으로 동일한 API를 반복해서 호출합니다. 이러한 반복적인 HTTP 요청은 대부분 실수 없이 처리되지만 여러 곳에서 이런 반복이 일어나면 실수가 발생할 확률은 더 높아집니다. jin-frame은 RAII를 클래스 생성자에 위임하는 것에 영감을 받아 개발되었습니다. HTTP 요청을 생성자와 클래스 형식으로 제한하여 실수를 줄이고 반복적인 요청을 간소화 시킵니다.
+Reusable HTTP request definitation library
 
 ## Why jin-frame?
-MSA 아키텍처에서 개발하거나 OpenAPI를 사용하는 경우, 여러 API를 조합해서 API를 만들어내는 작업을 많이 하게 됩니다. 반복되는 HTTP request 요청을 실수를 하기 쉽습니다. JinFrame은 HTTP 요청을 클래스 선언에 포함시켜 실수를 줄이고 반복적인 HTTP 요청을 구체화 하는 방법을 간단하게 만듭니다. 또한 생성자 행동의 일부라서 TypeScript가 오류를 미리 탐지 할 수 있습니다. JinFrame의 장점을 정리하면 다음과 같습니다.
+MSA 아키텍처로 시스템이 구성되면 여러 API를 반복적으로 호출합니다. 이런 반복적인 API 호출은 리펙토링에 의해서 메소드 추출로 최적화할 수 있지만 확장성이 떨어지고 실수를 만들기 쉽습니다. jin-frame은 API를 클래스로 정의합니다. 이렇게 클래스로 API를 정의하면 TypeScript 컴파일러의 도움을 받아 정적 타입 확인을 할 수 있고 반복적인 API 호출을 추상화하여 오류가 발생할 확률을 줄여줍니다. jin-frame은 [Axios](https://github.com/axios/axios)를 사용하여 직접 Axios로 API를 호출하거나 실행까지 자동으로 처리할 수 있습니다.
 
-1. 생성자 정의를 사용하여 TypesScript 가 오류를 미리 탐지
-1. 생성자에 HTTP 요청을 정의해서 반복되는 HTTP 요청을 자동화
-1. 다양한 axios 에코 시스템과 결합
+1. 타입 정의를 통한 정적 타입분석
+1. AxiosRequestConfig를 자동 생성하거나 API 호출
+1. Axios 에코 시스템과 결합
 
 # Requirement
 1. TypeScript
-1. Decorator
+1. Reflect-Metadata
+  * tsconfig.json > experimentalDecorators, emitDecoratorMetadata 옵션 활성화
 
 # Install
 ```sh
@@ -20,8 +19,6 @@ npm i jin-frame --save
 ```
 
 # Useage
-jin-frame은 [axios](https://github.com/axios/axios)를 사용하여 동작합니다. 아래는 jin-frame을 사용한 예제입니다. 
-
 ```ts
 class TestPostQuery extends JinFrame {
   @JinFrame.param()
@@ -72,14 +69,37 @@ console.log(query.request());
 
 ```ts
 const query = new TestPostQuery('ironman', 'beam');
-const requester = query.createWithoutEither();
+const requester = query.create();
 
 const res = await requester();
 ```
 
-만약 easy-fp를 사용한다면 다음과 같이 할 수 있습니다. 
+만약 my-only-either를 사용한다면 다음과 같이 할 수 있습니다. 
 
 ```ts
+class TestPostQuery extends JinEitherFrame {
+  @JinFrame.param()
+  public readonly passing: string;
+  
+  @JinFrame.body({ key: 'test.hello.marvel.name' })
+  public readonly name: string;
+
+  @JinFrame.header({ key: 'test.hello.marvel.skill' })
+  public readonly skill: string;
+  
+  @JinFrame.body({ key: 'test.hello.marvel.gender' })
+  public readonly gender: string;
+
+  constructor(name: string, skill: string) {
+    super({ host: 'http://some.api.yanolja.com/jinframe/:passing', method: 'POST' });
+
+    this.passing = 'pass';
+    this.name = name;
+    this.skill = skill;
+    this.gender = 'male';
+  }
+}
+
 const query = new TestPostQuery('ironman', 'beam');
 const requester = query.create();
 
@@ -89,12 +109,3 @@ if (isFail(res)) {
   // failover action
 }
 ```
-
-# Arguments
-## create function
-* timeout?: number
-    * request timeout, milliseconds
-* userAgent?: string;
-    * custom user-agent string
-* validateStatus?: AxiosRequestConfig['validateStatus'];
-    * validateStatus function. See validateStatus description in [request config](https://github.com/axios/axios#request-config)
