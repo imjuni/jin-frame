@@ -1,23 +1,23 @@
 /* eslint-disable max-classes-per-file */
 
+import JinEitherFrame from '@frames/JinEitherFrame';
 import debug from 'debug';
-import * as TE from 'fp-ts/lib/Either';
+import { isPass } from 'my-only-either';
 import nock from 'nock';
-import { JinFrame } from '../JinFrame';
 
 const log = debug('jinframe:test');
 
-class TestPostQuery extends JinFrame {
-  @JinFrame.param()
+class TestPostFrame extends JinEitherFrame {
+  @JinEitherFrame.param()
   public readonly passing: string;
 
-  @JinFrame.body({ key: 'test.hello.marvel.name' })
+  @JinEitherFrame.body({ key: 'test.hello.marvel.name' })
   public readonly name: string;
 
-  @JinFrame.header({ key: 'test.hello.marvel.skill' })
+  @JinEitherFrame.header({ key: 'test.hello.marvel.skill' })
   public readonly skill: string;
 
-  @JinFrame.body({ key: 'test.hello.marvel.gender' })
+  @JinEitherFrame.body({ key: 'test.hello.marvel.gender' })
   public readonly gender: string;
 
   constructor() {
@@ -30,14 +30,14 @@ class TestPostQuery extends JinFrame {
   }
 }
 
-class TestUrlencodedPostQuery extends JinFrame {
-  @JinFrame.param()
+class TestUrlencodedPostFrame extends JinEitherFrame {
+  @JinEitherFrame.param()
   public readonly passing: string;
 
-  @JinFrame.body()
+  @JinEitherFrame.body()
   public readonly username: string;
 
-  @JinFrame.body()
+  @JinEitherFrame.body()
   public readonly password: string;
 
   constructor() {
@@ -63,20 +63,16 @@ describe('jinframe.test', () => {
       message: 'hello',
     });
 
-    const tq = new TestPostQuery();
-    const requester = tq.createWithEither();
-    const res = await requester();
+    const frame = new TestPostFrame();
+    const resp = await frame.execute();
 
-    if (TE.isRight(res)) {
-      log(tq.request());
-      log('Data-Pass: ', JSON.stringify(res.right.$req, null, 2));
-      log('test?', res.right.status, res.right.data);
+    if (isPass(resp)) {
+      log('Pass', resp.pass.status, resp.pass.data);
     } else {
-      log('Data-Fail: ', res.left.$req);
-      log('Data-Fail: ', res.left.status);
+      log('Fail', resp.fail.$progress, resp.fail.$debug.req, resp.fail.$debug);
     }
 
-    expect(TE.isRight(res)).toEqual(true);
+    expect(isPass(resp)).toEqual(true);
   });
 
   test('nock-post-without-eiter-jinframe', async () => {
@@ -84,20 +80,16 @@ describe('jinframe.test', () => {
       message: 'hello',
     });
 
-    const tq = new TestPostQuery();
-    const requester = tq.create();
-    const res = await requester();
+    const frame = new TestPostFrame();
+    const resp = await frame.execute();
 
-    if (res.status <= 400) {
-      log(tq.request());
-      log('Data-Pass: ', JSON.stringify(res.$req, null, 2));
-      log('test?', res.status, res.data, res.debug);
+    if (isPass(resp)) {
+      log('Pass', resp.pass.status, resp.pass.data);
     } else {
-      log('Data-Fail: ', res.$req);
-      log('Data-Fail: ', res.status);
+      log('Fail', resp.fail.$progress, resp.fail.$debug.req, resp.fail.$debug);
     }
 
-    expect(res.status <= 400).toEqual(true);
+    expect(isPass(resp)).toEqual(true);
   });
 
   test('nock-post-urlencoded', async () => {
@@ -105,18 +97,16 @@ describe('jinframe.test', () => {
       message: 'hello',
     });
 
-    const tq = new TestUrlencodedPostQuery();
-    const requester = tq.createWithEither();
-    const res = await requester();
+    const frame = new TestUrlencodedPostFrame();
+    const resp = await frame.execute();
 
-    if (TE.isRight(res)) {
-      log('Data-Pass: ', JSON.stringify(res.right.$req, null, 2));
-      log('test?', res.right.status, res.right.data, res.right.debug);
+    if (isPass(resp)) {
+      log('Pass', resp.pass.status, resp.pass.data);
     } else {
-      log('Data-Fail: ', res.left.$req);
-      log('Data-Fail: ', res.left.status);
+      log(resp.fail.$err.message, resp.fail.$err.stack);
+      log('Fail', resp.fail.$progress, resp.fail.$debug.req, resp.fail.$debug);
     }
 
-    expect(TE.isRight(res)).toEqual(true);
+    expect(isPass(resp)).toEqual(true);
   });
 });

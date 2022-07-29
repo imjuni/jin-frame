@@ -20,7 +20,8 @@
   "quote": "'",
   
   // overwrite index.ts file also index.ts file already exist that create backup file
-  "overwrite": false,
+  "overwrite": true,
+  
   // keep file extension in export statement path
   "keepFileExt": false,
   
@@ -30,9 +31,10 @@
 
   // only single command configuration
   // Output directory. It works only single mode.
-  "output": ".",
+  "output": "./src",
+
   // Use rootDir or rootDirs configuration in tsconfig.json.
-  "useRootDir": true,
+  "useRootDir": false,
 
   // only remove command configuration
   // remove with backup file

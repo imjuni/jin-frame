@@ -35,5 +35,8 @@
     "watch": false
     // "onStartup": ["all-tests"],
     // "onSave": "test-src-file"
+  },
+  "jest.nodeEnv": {
+    "DEBUG": "jinframe:*"
   }
 }

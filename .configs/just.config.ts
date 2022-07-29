@@ -6,13 +6,6 @@ import { exec } from 'just-scripts-utils';
 
 option('env', { default: { env: 'develop' } });
 
-task('ctix', async () => {
-  await exec('ctix create -p ./tsconfig.json --config ./.config/.ctirc', {
-    stderr: process.stderr,
-    stdout: process.stdout,
-  });
-});
-
 task('clean', async () => {
   await exec('rimraf dist artifact', {
     stderr: process.stderr,
@@ -21,7 +14,7 @@ task('clean', async () => {
 });
 
 task('lint', async () => {
-  const cmd = 'eslint --no-ignore --ext ts,tsx,json ./src/**/*';
+  const cmd = 'eslint --no-ignore --ext ts,tsx,json .';
 
   await exec(cmd, {
     stderr: process.stderr,
@@ -29,8 +22,8 @@ task('lint', async () => {
   });
 });
 
-task('build-only', async () => {
-  const cmd = 'cross-env NODE_ENV=production webpack --config ./.config/webpack.config.prod.js';
+task('+webpack:prod', async () => {
+  const cmd = 'cross-env NODE_ENV=production webpack --config ./.configs/webpack.config.prod.js';
   logger.info('Build: ', cmd);
 
   await exec(cmd, {
@@ -39,7 +32,27 @@ task('build-only', async () => {
   });
 });
 
-task('publish-develop', async () => {
+task('+build', async () => {
+  const cmd = 'cross-env NODE_ENV=production tsc --incremental';
+  logger.info('Build: ', cmd);
+
+  await exec(cmd, {
+    stderr: process.stderr,
+    stdout: process.stdout,
+  });
+});
+
+task('+webpack:dev', async () => {
+  const cmd = 'cross-env NODE_ENV=production webpack --config ./.configs/webpack.config.dev.js';
+  logger.info('Build: ', cmd);
+
+  await exec(cmd, {
+    stderr: process.stderr,
+    stdout: process.stdout,
+  });
+});
+
+task('+pub', async () => {
   const cmd = 'npm publish --registry http://localhost:8901 --force';
 
   logger.info('Publish package to verdaccio: ', cmd);
@@ -50,7 +63,7 @@ task('publish-develop', async () => {
   });
 });
 
-task('publish-production', async () => {
+task('+pub:prod', async () => {
   const cmd = 'npm publish';
 
   logger.info('Publish package to npm registry: ', cmd);
@@ -73,7 +86,7 @@ task('clean:file', async () => {
 });
 
 task('clean:dts', async () => {
-  const cmd = 'rimraf dist/src';
+  const cmd = 'rimraf dist/src dist/examples';
 
   logger.info('Clean dts directory: ', cmd);
 
@@ -84,7 +97,7 @@ task('clean:dts', async () => {
 });
 
 task('+dts-bundle', async () => {
-  const cmd = 'dts-bundle-generator --no-banner dist/src/index.d.ts -o dist/index.d.ts';
+  const cmd = 'dts-bundle-generator --no-check --no-banner dist/src/frames/JinFrame.d.ts -o dist/index.d.ts';
 
   await exec(cmd, {
     stderr: process.stderr,
@@ -92,8 +105,8 @@ task('+dts-bundle', async () => {
   });
 });
 
-task('ctix:create', async () => {
-  const cmd = 'ctix create -p ./tsconfig.json --config ./.config/.ctirc';
+task('ctix:single', async () => {
+  const cmd = 'ctix single -p ./tsconfig.prod.json --config ./.configs/.ctirc';
 
   logger.info('Create index file : ', cmd);
 
@@ -104,7 +117,7 @@ task('ctix:create', async () => {
 });
 
 task('ctix:remove', async () => {
-  const cmd = 'ctix remove -p ./tsconfig.json --config ./.config/.ctirc';
+  const cmd = 'ctix remove -p ./tsconfig.json --config ./.configs/.ctirc';
 
   logger.info('Create index file : ', cmd);
 
@@ -114,8 +127,32 @@ task('ctix:remove', async () => {
   });
 });
 
-task('build', series('clean', 'ctix:create', 'build-only', 'ctix:remove', '+dts-bundle', 'clean:dts'));
+task('+docs', async () => {
+  const cmd = 'typedoc --out docs src/index.ts';
+  logger.info('Create document file : ', cmd);
+
+  await exec(cmd, {
+    stderr: process.stderr,
+    stdout: process.stdout,
+  });
+});
+
+task('+docs-watch', async () => {
+  const cmd = 'typedoc --watch --out docs src/index.ts';
+  logger.info('Create document file : ', cmd);
+
+  await exec(cmd, {
+    stderr: process.stderr,
+    stdout: process.stdout,
+  });
+});
+
+task('docs', series('clean', 'ctix:single', '+docs', 'ctix:remove'));
+task('docs-watch', series('clean', 'ctix:single', '+docs-watch'));
+task('webpack:prod', series('clean', '+webpack:prod', '+dts-bundle', 'clean:dts'));
+task('webpack:dev', series('clean', '+webpack:dev', '+dts-bundle', 'clean:dts'));
+task('build', '+build');
 task('dts-bundle', series('+dts-bundle', 'clean:dts'));
-task('pub', series('build', 'publish-develop'));
+task('pub', series('build', '+pub'));
 task('clean', parallel('clean:file', 'ctix:remove'));
-task('pub:prod', series('build', 'publish-production'));
+task('pub:prod', series('build', '+pub:prod'));
