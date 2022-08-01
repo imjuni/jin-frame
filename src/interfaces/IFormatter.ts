@@ -1,7 +1,7 @@
 /**
  * Define formatter for querystring, param, headers, body
  */
-export default interface IFormatter {
+export interface IFormatter {
   /** function is JavaScript Date type convert to string */
   dateTime?: (value: Date) => string;
 

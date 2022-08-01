@@ -1,3 +1,1 @@
-const defaultJinFrameTimeout = 120000;
-
-export default defaultJinFrameTimeout;
+export const defaultJinFrameTimeout = 120000;

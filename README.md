@@ -99,4 +99,4 @@ if (isFail(res)) {
 
 # Example
 
-You can find more [examples directory](https://github.com/imjuni/jin-frame/tree/master/examples).
+You can find more examples in [examples directory](https://github.com/imjuni/jin-frame/tree/master/examples).

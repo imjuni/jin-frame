@@ -32,7 +32,7 @@ const config = {
   },
 
   entry: {
-    'jin-frame-dev': ['./src/frames/JinFrame.ts', './src/frames/JinEitherFrame.ts'],
+    'jin-frame-dev': ['./src/index.ts'],
   },
 
   output: {

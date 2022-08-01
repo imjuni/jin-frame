@@ -1,3 +1,3 @@
-import { AxiosRequestConfig } from 'axios';
+import type { AxiosRequestConfig } from 'axios';
 
-export default interface IJinFrameCreateConfig extends Pick<AxiosRequestConfig, 'validateStatus'> {}
+export interface IJinFrameCreateConfig extends Pick<AxiosRequestConfig, 'validateStatus'> {}

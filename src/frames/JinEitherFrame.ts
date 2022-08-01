@@ -1,12 +1,12 @@
-import AbstractJinFrame from '@frames/AbstractJinFrame';
-import IDebugInfo from '@interfaces/IDebugInfo';
-import IJinFrameCreateConfig from '@interfaces/IJinFrameCreateConfig';
-import IJinFrameRequestConfig from '@interfaces/IJinFrameRequestConfig';
-import TFailExceptionJinEitherFrame from '@interfaces/TFailExceptionJinEitherFrame';
-import TFailJinEitherFrame from '@interfaces/TFailJinEitherFrame';
-import TPassJinEitherFrame from '@interfaces/TPassJinEitherFrame';
-import isValidateStatusDefault from '@tools/isValidateStatusDefault';
-import axios, { AxiosResponse, Method } from 'axios';
+import { AbstractJinFrame } from '@frames/AbstractJinFrame';
+import type { IDebugInfo } from '@interfaces/IDebugInfo';
+import type { IJinFrameCreateConfig } from '@interfaces/IJinFrameCreateConfig';
+import type { IJinFrameRequestConfig } from '@interfaces/IJinFrameRequestConfig';
+import type { TFailExceptionJinEitherFrame } from '@interfaces/TFailExceptionJinEitherFrame';
+import type { TFailJinEitherFrame } from '@interfaces/TFailJinEitherFrame';
+import type { TPassJinEitherFrame } from '@interfaces/TPassJinEitherFrame';
+import { isValidateStatusDefault } from '@tools/isValidateStatusDefault';
+import axios, { type AxiosResponse, type Method } from 'axios';
 import formatISO from 'date-fns/formatISO';
 import getUnixTime from 'date-fns/getUnixTime';
 import intervalToDuration from 'date-fns/intervalToDuration';
@@ -23,7 +23,7 @@ import 'reflect-metadata';
  * @typeParam TFAIL AxiosResponse type argument case of invalid status.
  * eg. AxiosResponse<TFAIL>
  */
-export default class JinEitherFrame<PASS = unknown, FAIL = PASS> extends AbstractJinFrame<PASS, FAIL> {
+export class JinEitherFrame<PASS = unknown, FAIL = PASS> extends AbstractJinFrame<PASS, FAIL> {
   /**
    * @param __namedParameters.host - host of API Request endpoint
    * @param __namedParameters.path - pathname of API Request endpoint

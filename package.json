@@ -1,6 +1,6 @@
 {
   "name": "jin-frame",
-  "version": "2.0.0",
+  "version": "2.1.0",
   "description": "Reusable HTTP API request definition library",
   "main": "dist/index.js",
   "typings": "dist/index.d.ts",
@@ -20,7 +20,7 @@
     "deploy": "cross-env PUBLIC_URL=\"jin-frame\" gh-pages -d docs",
     "docs": "just --config ./.configs/just.config.ts docs",
     "docs-watch": "just --config ./.configs/just.config.ts  docs-watch",
-    "httpd": "http-server ./docs -p 9983"
+    "httpd": "http-server ./docs -p 19983"
   },
   "keywords": [
     "axios",
@@ -63,7 +63,7 @@
     "@typescript-eslint/parser": "^5.30.4",
     "clone-deep": "^4.0.1",
     "cross-env": "^7.0.3",
-    "ctix": "^1.2.2",
+    "ctix": "^1.2.3",
     "debug": "^4.3.4",
     "dts-bundle-generator": "^6.12.0",
     "eslint": "^8.19.0",

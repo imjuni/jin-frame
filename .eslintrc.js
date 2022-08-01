@@ -36,6 +36,7 @@ module.exports = {
         argsIgnorePattern: '^_.+$',
       },
     ],
+    'import/prefer-default-export': 'off',
   },
   settings: {},
 };

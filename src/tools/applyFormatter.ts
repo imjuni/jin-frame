@@ -1,8 +1,8 @@
-import IFormatter from '@interfaces/IFormatter';
+import type { IFormatter } from '@interfaces/IFormatter';
 import formatISO from 'date-fns/formatISO';
 import { isNotEmpty } from 'my-easy-fp';
 
-export default function applyFormatter(initialValue: string | Date | number, formatter: IFormatter) {
+export function applyFormatter(initialValue: string | Date | number, formatter: IFormatter) {
   let formatted = initialValue;
 
   if (typeof formatted === 'number') {

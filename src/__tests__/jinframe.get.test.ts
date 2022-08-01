@@ -1,6 +1,6 @@
 /* eslint-disable max-classes-per-file */
 
-import JinEitherFrame from '@frames/JinEitherFrame';
+import { JinEitherFrame } from '@frames/JinEitherFrame';
 import axios from 'axios';
 import debug from 'debug';
 import { isPass } from 'my-only-either';

@@ -1,4 +1,4 @@
-import JinEitherFrame from '@frames/JinEitherFrame';
+import { JinEitherFrame } from '@frames/JinEitherFrame';
 import debug from 'debug';
 import { isPass } from 'my-only-either';
 import nock from 'nock';

@@ -1,7 +1,7 @@
-import ICommonFieldOption from '@interfaces/ICommonFieldOption';
-import IFormatter from './IFormatter';
+import type { ICommonFieldOption } from '@interfaces/ICommonFieldOption';
+import type { IFormatter } from '@interfaces/IFormatter';
 
-export default interface IBodyHeaderCommonFieldOption extends ICommonFieldOption {
+export interface IBodyHeaderCommonFieldOption extends ICommonFieldOption {
   /** if you set header field more than one, sort by order value asc after merged. */
   order?: number;
 
