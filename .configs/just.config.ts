@@ -97,7 +97,7 @@ task('clean:dts', async () => {
 });
 
 task('+dts-bundle', async () => {
-  const cmd = 'dts-bundle-generator --no-check --no-banner dist/src/frames/JinFrame.d.ts -o dist/index.d.ts';
+  const cmd = 'dts-bundle-generator --no-check --no-banner dist/src/index.d.ts -o dist/index.d.ts';
 
   await exec(cmd, {
     stderr: process.stderr,
@@ -149,7 +149,7 @@ task('+docs-watch', async () => {
 
 task('docs', series('clean', 'ctix:single', '+docs', 'ctix:remove'));
 task('docs-watch', series('clean', 'ctix:single', '+docs-watch'));
-task('webpack:prod', series('clean', '+webpack:prod', '+dts-bundle', 'clean:dts'));
+task('webpack:prod', series('clean', 'ctix:single', '+webpack:prod', '+dts-bundle', 'clean:dts', 'ctix:remove'));
 task('webpack:dev', series('clean', '+webpack:dev', '+dts-bundle', 'clean:dts'));
 task('build', '+build');
 task('dts-bundle', series('+dts-bundle', 'clean:dts'));

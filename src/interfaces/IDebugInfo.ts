@@ -1,9 +1,9 @@
-import { AxiosRequestConfig } from 'axios';
+import type { AxiosRequestConfig } from 'axios';
 
 /**
  * Debugging information
  */
-export default interface IDebugInfo {
+export interface IDebugInfo {
   /** timestamp information at request start at */
   ts: {
     /** unix timestamp style timestamp with milliseconds */

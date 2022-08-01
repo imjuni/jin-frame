@@ -1,6 +1,6 @@
-import IBodyHeaderCommonFieldOption from '@interfaces/IBodyHeaderCommonFieldOption';
-import ICommonFieldOption from '@interfaces/ICommonFieldOption';
+import type { IBodyHeaderCommonFieldOption } from '@interfaces/IBodyHeaderCommonFieldOption';
+import type { ICommonFieldOption } from '@interfaces/ICommonFieldOption';
 
-export default interface IBodyFieldOption extends ICommonFieldOption, IBodyHeaderCommonFieldOption {
+export interface IBodyFieldOption extends ICommonFieldOption, IBodyHeaderCommonFieldOption {
   type: 'body';
 }

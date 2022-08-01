@@ -1,23 +1,23 @@
-import defaultJinFrameTimeout from '@frames/defaultJinFrameTimeout';
-import IBodyFieldOption from '@interfaces/IBodyFieldOption';
-import IHeaderFieldOption from '@interfaces/IHeaderFieldOption';
-import IJinFrameCreateConfig from '@interfaces/IJinFrameCreateConfig';
-import IJinFrameRequestConfig from '@interfaces/IJinFrameRequestConfig';
-import IParamFieldOption from '@interfaces/IParamFieldOption';
-import IQueryFieldOption from '@interfaces/IQueryFieldOption';
-import TFailExceptionJinEitherFrame from '@interfaces/TFailExceptionJinEitherFrame';
-import TFailJinEitherFrame from '@interfaces/TFailJinEitherFrame';
-import TFieldRecords from '@interfaces/TFieldRecords';
-import TPassJinEitherFrame from '@interfaces/TPassJinEitherFrame';
-import TRequestPart from '@interfaces/TRequestPart';
+import { defaultJinFrameTimeout } from '@frames/defaultJinFrameTimeout';
+import type { IBodyFieldOption } from '@interfaces/IBodyFieldOption';
+import type { IHeaderFieldOption } from '@interfaces/IHeaderFieldOption';
+import type { IJinFrameCreateConfig } from '@interfaces/IJinFrameCreateConfig';
+import type { IJinFrameRequestConfig } from '@interfaces/IJinFrameRequestConfig';
+import type { IParamFieldOption } from '@interfaces/IParamFieldOption';
+import type { IQueryFieldOption } from '@interfaces/IQueryFieldOption';
+import type { TFailExceptionJinEitherFrame } from '@interfaces/TFailExceptionJinEitherFrame';
+import type { TFailJinEitherFrame } from '@interfaces/TFailJinEitherFrame';
+import type { TFieldRecords } from '@interfaces/TFieldRecords';
+import type { TPassJinEitherFrame } from '@interfaces/TPassJinEitherFrame';
+import type { TRequestPart } from '@interfaces/TRequestPart';
 import {
   getDefaultBodyFieldOption,
   getDefaultHeaderFieldOption,
   getDefaultParamFieldOption,
   getDefaultQueryFieldOption,
 } from '@tools/getDefaultOption';
-import getHeaderBodyInfo from '@tools/getHeaderBodyInfo';
-import getQueryParamInfo from '@tools/getQueryParamInfo';
+import { getHeaderBodyInfo } from '@tools/getHeaderBodyInfo';
+import { getQueryParamInfo } from '@tools/getQueryParamInfo';
 import { removeBothSlash, removeEndSlash, startWithSlash } from '@tools/slashUtils';
 import { AxiosRequestConfig, AxiosResponse, Method } from 'axios';
 import { isNotUndefined } from 'my-easy-fp';
@@ -25,7 +25,7 @@ import { PassFailEither } from 'my-only-either';
 import { compile } from 'path-to-regexp';
 import 'reflect-metadata';
 
-export default abstract class AbstractJinFrame<TPASS = unknown, TFAIL = TPASS> {
+export abstract class AbstractJinFrame<TPASS = unknown, TFAIL = TPASS> {
   public static ParamSymbolBox = Symbol('ParamSymbolBoxForAbstractJinFrame');
 
   public static QuerySymbolBox = Symbol('QuerySymbolBoxForAbstractJinFrame');

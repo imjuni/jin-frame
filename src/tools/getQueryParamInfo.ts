@@ -1,11 +1,11 @@
-import IParamFieldOption from '@interfaces/IParamFieldOption';
-import IQueryFieldOption from '@interfaces/IQueryFieldOption';
-import applyFormatter from '@tools/applyFormatter';
-import bitwised from '@tools/bitwised';
-import encode from '@tools/encode';
+import type { IParamFieldOption } from '@interfaces/IParamFieldOption';
+import type { IQueryFieldOption } from '@interfaces/IQueryFieldOption';
+import { applyFormatter } from '@tools/applyFormatter';
+import { bitwised } from '@tools/bitwised';
+import { encode } from '@tools/encode';
 import { isFalse, isNotEmpty } from 'my-easy-fp';
 
-export default function getQueryParamInfo<T extends Record<string, any>>(
+export function getQueryParamInfo<T extends Record<string, any>>(
   origin: T,
   fields: Array<{ key: string; option: IQueryFieldOption | IParamFieldOption }>,
 ) {

@@ -1,8 +1,8 @@
-import IDebugInfo from '@interfaces/IDebugInfo';
-import { AxiosResponse } from 'axios';
-import type JinFrame from './JinFrame';
+import type { JinFrame } from '@frames/JinFrame';
+import type { IDebugInfo } from '@interfaces/IDebugInfo';
+import type { AxiosResponse } from 'axios';
 
-export default class JinFrameError<TPASS, TFAIL = any> extends Error {
+export class JinFrameError<TPASS, TFAIL = any> extends Error {
   __discriminator = 'JinFrameError';
 
   #debug: IDebugInfo;

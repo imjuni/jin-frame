@@ -28,7 +28,7 @@
     // "checkJs": true,                       /* Report errors in .js files. */
     // "jsx": "preserve",                     /* Specify JSX code generation: 'preserve', 'react-native', or 'react'. */
     "declaration": true, /* Generates corresponding '.d.ts' file. */
-    // "declarationMap": true,                /* Generates a sourcemap for each corresponding '.d.ts' file. */
+    "declarationMap": true,                /* Generates a sourcemap for each corresponding '.d.ts' file. */
     "sourceMap": true,                     /* Generates corresponding '.map' file. */
     // "outFile": "./",                       /* Concatenate and emit output to single file. */
     // "outDir": "dist", /* Redirect output structure to the directory. */
@@ -71,7 +71,6 @@
     /* Experimental Options */
     "experimentalDecorators": true, /* Enables experimental support for ES7 decorators. */
     "emitDecoratorMetadata": true, /* Enables experimental support for emitting type metadata for decorators. */
-    
     "outDir": "dist",
     "rootDir": ".",
     "baseUrl": ".",
@@ -88,6 +87,7 @@
     "node_modules",
     "server/**",
     "dist/**",
+    "examples/**",
     "just.config.ts",
     "webpack.config.dev.ts",
     "webpack.config.prod.ts"

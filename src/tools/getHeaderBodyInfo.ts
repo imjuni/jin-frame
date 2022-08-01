@@ -1,11 +1,11 @@
-import IBodyFieldOption from '@interfaces/IBodyFieldOption';
-import IHeaderFieldOption from '@interfaces/IHeaderFieldOption';
-import applyFormatter from '@tools/applyFormatter';
-import mergeBody from '@tools/mergeBody';
+import type { IBodyFieldOption } from '@interfaces/IBodyFieldOption';
+import type { IHeaderFieldOption } from '@interfaces/IHeaderFieldOption';
+import { applyFormatter } from '@tools/applyFormatter';
+import { mergeBody } from '@tools/mergeBody';
 import { get, set } from 'dot-prop';
 import { isError, isNotEmpty } from 'my-easy-fp';
 
-export default function getHeaderBodyInfo<T extends Record<string, any>>(
+export function getHeaderBodyInfo<T extends Record<string, any>>(
   origin: T,
   fields: Array<{ key: string; option: IBodyFieldOption | IHeaderFieldOption }>,
 ) {
