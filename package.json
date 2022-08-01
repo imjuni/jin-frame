@@ -1,6 +1,6 @@
 {
   "name": "jin-frame",
-  "version": "2.1.0",
+  "version": "2.1.1",
   "description": "Reusable HTTP API request definition library",
   "main": "dist/index.js",
   "typings": "dist/index.d.ts",

@@ -150,9 +150,9 @@ task('+docs-watch', async () => {
 task('docs', series('clean', 'ctix:single', '+docs', 'ctix:remove'));
 task('docs-watch', series('clean', 'ctix:single', '+docs-watch'));
 task('webpack:prod', series('clean', 'ctix:single', '+webpack:prod', '+dts-bundle', 'clean:dts', 'ctix:remove'));
-task('webpack:dev', series('clean', '+webpack:dev', '+dts-bundle', 'clean:dts'));
+task('webpack:dev', series('clean', 'ctix:single', '+webpack:dev', '+dts-bundle', 'clean:dts', 'ctix:remove'));
 task('build', '+build');
 task('dts-bundle', series('+dts-bundle', 'clean:dts'));
-task('pub', series('build', '+pub'));
+task('pub', series('webpack:prod', '+pub'));
 task('clean', parallel('clean:file', 'ctix:remove'));
-task('pub:prod', series('build', '+pub:prod'));
+task('pub:prod', series('webpack:prod', '+pub:prod'));
