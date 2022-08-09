@@ -1,6 +1,6 @@
 import type { IParamFieldOption } from '@interfaces/IParamFieldOption';
 import type { IQueryFieldOption } from '@interfaces/IQueryFieldOption';
-import { applyFormatter } from '@tools/applyFormatter';
+import { applyFormatters } from '@tools/applyFormatters';
 import { bitwised } from '@tools/bitwised';
 import { encode } from '@tools/encode';
 import { isFalse, isNotEmpty } from 'my-easy-fp';
@@ -42,7 +42,7 @@ export function getQueryParamInfo<T extends Record<string, any>>(
 
       // stage 03. apply formatter
       if (isNotEmpty(formatter)) {
-        const formatted = applyFormatter(value, formatter);
+        const formatted = applyFormatters(value, formatter);
         return { ...resultObj, [fieldKey]: encode(option.encode, formatted) };
       }
 

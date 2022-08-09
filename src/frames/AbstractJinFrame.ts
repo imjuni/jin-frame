@@ -1,6 +1,6 @@
 import { defaultJinFrameTimeout } from '@frames/defaultJinFrameTimeout';
 import type { IBodyFieldOption } from '@interfaces/IBodyFieldOption';
-import type { IHeaderFieldOption } from '@interfaces/IHeaderFieldOption';
+import type { IHeaderFieldOption, THeaderFieldOption } from '@interfaces/IHeaderFieldOption';
 import type { IJinFrameCreateConfig } from '@interfaces/IJinFrameCreateConfig';
 import type { IJinFrameRequestConfig } from '@interfaces/IJinFrameRequestConfig';
 import type { IParamFieldOption } from '@interfaces/IParamFieldOption';
@@ -10,13 +10,14 @@ import type { TFailJinEitherFrame } from '@interfaces/TFailJinEitherFrame';
 import type { TFieldRecords } from '@interfaces/TFieldRecords';
 import type { TPassJinEitherFrame } from '@interfaces/TPassJinEitherFrame';
 import type { TRequestPart } from '@interfaces/TRequestPart';
+import { getBodyInfo } from '@tools/getBodyInfo';
 import {
   getDefaultBodyFieldOption,
   getDefaultHeaderFieldOption,
   getDefaultParamFieldOption,
   getDefaultQueryFieldOption,
 } from '@tools/getDefaultOption';
-import { getHeaderBodyInfo } from '@tools/getHeaderBodyInfo';
+import { getHeaderInfo } from '@tools/getHeaderInfo';
 import { getQueryParamInfo } from '@tools/getQueryParamInfo';
 import { removeBothSlash, removeEndSlash, startWithSlash } from '@tools/slashUtils';
 import { AxiosRequestConfig, AxiosResponse, Method } from 'axios';
@@ -24,6 +25,7 @@ import { isNotUndefined } from 'my-easy-fp';
 import { PassFailEither } from 'my-only-either';
 import { compile } from 'path-to-regexp';
 import 'reflect-metadata';
+import { Except } from 'type-fest';
 
 export abstract class AbstractJinFrame<TPASS = unknown, TFAIL = TPASS> {
   public static ParamSymbolBox = Symbol('ParamSymbolBoxForAbstractJinFrame');
@@ -52,14 +54,14 @@ export abstract class AbstractJinFrame<TPASS = unknown, TFAIL = TPASS> {
    * decorator to set class variable to HTTP API body parameter
    * @param option body parameter option
    */
-  public static body = (option?: Partial<Omit<IBodyFieldOption, 'type'>>) =>
+  public static body = (option?: Partial<Except<IBodyFieldOption, 'type'>>) =>
     Reflect.metadata(AbstractJinFrame.BodySymbolBox, ['BODY', getDefaultBodyFieldOption(option)]);
 
   /**
    * decorator to set class variable to HTTP API header parameter
    * @param option header parameter option
    */
-  public static header = (option?: Partial<Omit<IHeaderFieldOption, 'type'>>) =>
+  public static header = (option?: Partial<Except<THeaderFieldOption, 'type'>>) =>
     Reflect.metadata(AbstractJinFrame.HeaderSymbolBox, ['HEADER', getDefaultHeaderFieldOption(option)]);
 
   /** host of API Request endpoint */
@@ -150,7 +152,7 @@ export abstract class AbstractJinFrame<TPASS = unknown, TFAIL = TPASS> {
     );
 
     const queries = getQueryParamInfo(this, fields.query); // create querystring information
-    const headers = fields.header.length <= 0 ? {} : getHeaderBodyInfo(this, fields.header); // create header information
+    const headers = fields.header.length <= 0 ? {} : getHeaderInfo(this, fields.header); // create header information
     const paths = getQueryParamInfo(this, fields.param); // create param information
     const bodies = (() => {
       if (isNotUndefined(this.customBody)) {
@@ -161,7 +163,7 @@ export abstract class AbstractJinFrame<TPASS = unknown, TFAIL = TPASS> {
         return undefined;
       }
 
-      return getHeaderBodyInfo(this, fields.body);
+      return getBodyInfo(this, fields.body);
     })();
 
     const buildEndpoint = [this.host ?? 'http://localhost', this.path ?? '']

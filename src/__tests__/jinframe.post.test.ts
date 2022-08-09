@@ -11,13 +11,13 @@ class TestPostFrame extends JinEitherFrame {
   @JinEitherFrame.param()
   public readonly passing: string;
 
-  @JinEitherFrame.body({ key: 'test.hello.marvel.name' })
+  @JinEitherFrame.body({ replaceAt: 'test.hello.marvel.name' })
   public readonly name: string;
 
   @JinEitherFrame.header({ key: 'test.hello.marvel.skill' })
   public readonly skill: string;
 
-  @JinEitherFrame.body({ key: 'test.hello.marvel.gender' })
+  @JinEitherFrame.body({ replaceAt: 'test.hello.marvel.gender' })
   public readonly gender: string;
 
   constructor() {
