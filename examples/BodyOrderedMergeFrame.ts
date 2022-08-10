@@ -1,5 +1,5 @@
 import { format, parse } from 'date-fns';
-import JinEitherFrame from '../src/frames/JinEitherFrame';
+import { JinEitherFrame } from '../src/frames/JinEitherFrame';
 
 interface IFirstBody {
   name: string;
@@ -43,8 +43,7 @@ export default class BodyOrderedMergeFrame extends JinEitherFrame {
   @JinEitherFrame.query({ encode: true })
   public readonly skill: string[];
 
-  @JinEitherFrame.body({
-    key: 'body',
+  @JinEitherFrame.objectBody({
     order: 3,
     formatters: [
       {
@@ -65,8 +64,7 @@ export default class BodyOrderedMergeFrame extends JinEitherFrame {
   })
   public readonly firstBody: IFirstBody;
 
-  @JinEitherFrame.body({
-    key: 'body',
+  @JinEitherFrame.objectBody({
     order: 1,
     formatters: [
       {
@@ -78,8 +76,7 @@ export default class BodyOrderedMergeFrame extends JinEitherFrame {
   })
   public readonly secondBody: ISecondBody;
 
-  @JinEitherFrame.body({
-    key: 'body',
+  @JinEitherFrame.objectBody({
     order: 2,
   })
   public readonly thirdBody: IThirdBody;

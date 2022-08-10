@@ -1,5 +1,6 @@
 import { defaultJinFrameTimeout } from '@frames/defaultJinFrameTimeout';
 import type { IBodyFieldOption } from '@interfaces/body/IBodyFieldOption';
+import { IObjectBodyFieldOption } from '@interfaces/body/IObjectBodyFieldOption';
 import type { IHeaderFieldOption } from '@interfaces/IHeaderFieldOption';
 import type { IJinFrameCreateConfig } from '@interfaces/IJinFrameCreateConfig';
 import type { IJinFrameRequestConfig } from '@interfaces/IJinFrameRequestConfig';
@@ -14,6 +15,7 @@ import { getBodyInfo } from '@processors/getBodyInfo';
 import {
   getDefaultBodyFieldOption,
   getDefaultHeaderFieldOption,
+  getDefaultObjectBodyFieldOption,
   getDefaultParamFieldOption,
   getDefaultQueryFieldOption,
 } from '@processors/getDefaultOption';
@@ -21,6 +23,7 @@ import { getHeaderInfo } from '@processors/getHeaderInfo';
 import { getQueryParamInfo } from '@processors/getQueryParamInfo';
 import { removeBothSlash, removeEndSlash, startWithSlash } from '@tools/slashUtils';
 import { AxiosRequestConfig, AxiosResponse, Method } from 'axios';
+import fastSafeStringify from 'fast-safe-stringify';
 import { isNotUndefined } from 'my-easy-fp';
 import { PassFailEither } from 'my-only-either';
 import { compile } from 'path-to-regexp';
@@ -33,6 +36,8 @@ export abstract class AbstractJinFrame<TPASS = unknown, TFAIL = TPASS> {
   public static QuerySymbolBox = Symbol('QuerySymbolBoxForAbstractJinFrame');
 
   public static BodySymbolBox = Symbol('BodySymbolBoxForAbstractJinFrame');
+
+  public static ObjectBodySymbolBox = Symbol('ObjectBodySymbolBoxForAbstractJinFrame');
 
   public static HeaderSymbolBox = Symbol('HeaderSymbolBoxForAbstractJinFrame');
 
@@ -56,6 +61,13 @@ export abstract class AbstractJinFrame<TPASS = unknown, TFAIL = TPASS> {
    */
   public static body = (option?: Partial<Except<IBodyFieldOption, 'type'>>) =>
     Reflect.metadata(AbstractJinFrame.BodySymbolBox, ['BODY', getDefaultBodyFieldOption(option)]);
+
+  /**
+   * decorator to set class variable to HTTP API body parameter
+   * @param option body parameter option
+   */
+  public static objectBody = (option?: Partial<Except<IObjectBodyFieldOption, 'type'>>) =>
+    Reflect.metadata(AbstractJinFrame.ObjectBodySymbolBox, ['OBJECTBODY', getDefaultObjectBodyFieldOption(option)]);
 
   /**
    * decorator to set class variable to HTTP API header parameter
@@ -129,28 +141,39 @@ export abstract class AbstractJinFrame<TPASS = unknown, TFAIL = TPASS> {
     const bodyKeys: string[] = thisObjectKeys.filter((key: string): key is string =>
       Reflect.hasMetadata(AbstractJinFrame.BodySymbolBox, this, key),
     );
+    const objectBodyKeys: string[] = thisObjectKeys.filter((key: string): key is string =>
+      Reflect.hasMetadata(AbstractJinFrame.ObjectBodySymbolBox, this, key),
+    );
     const headerKeys: string[] = thisObjectKeys.filter((key: string): key is string =>
       Reflect.hasMetadata(AbstractJinFrame.HeaderSymbolBox, this, key),
     );
 
+    // stage 01. extract request parameter and option
     const fields = [
       ...queryKeys.map((key) => ({ key, symbol: AbstractJinFrame.QuerySymbolBox })),
       ...paramKeys.map((key) => ({ key, symbol: AbstractJinFrame.ParamSymbolBox })),
       ...bodyKeys.map((key) => ({ key, symbol: AbstractJinFrame.BodySymbolBox })),
+      ...objectBodyKeys.map((key) => ({ key, symbol: AbstractJinFrame.ObjectBodySymbolBox })),
       ...headerKeys.map((key) => ({ key, symbol: AbstractJinFrame.HeaderSymbolBox })),
     ].reduce<TFieldRecords>(
       (box, keyWithSymbol) => {
         const [, fieldOption] = Reflect.getMetadata(keyWithSymbol.symbol, this, keyWithSymbol.key) as [
           TRequestPart,
-          IQueryFieldOption | IParamFieldOption | IBodyFieldOption | IHeaderFieldOption,
+          IQueryFieldOption | IParamFieldOption | IBodyFieldOption | IObjectBodyFieldOption | IHeaderFieldOption,
         ];
 
-        const fieldKey = fieldOption.type;
-        return { ...box, [fieldKey]: [...(box[fieldKey] ?? []), { key: keyWithSymbol.key, option: fieldOption }] };
+        const rawFieldKey = fieldOption.type;
+        const fieldKey = rawFieldKey === 'object-body' ? 'body' : rawFieldKey;
+
+        return {
+          ...box,
+          [fieldKey]: [...(box[fieldKey] ?? []), { key: keyWithSymbol.key, option: fieldOption }],
+        };
       },
       { query: [], body: [], param: [], header: [] },
     );
 
+    // stage 02. each request parameter apply option
     const queries = getQueryParamInfo(this, fields.query); // create querystring information
     const headers = fields.header.length <= 0 ? {} : getHeaderInfo(this, fields.header) ?? {}; // create header information
     const paths = getQueryParamInfo(this, fields.param); // create param information
@@ -166,17 +189,27 @@ export abstract class AbstractJinFrame<TPASS = unknown, TFAIL = TPASS> {
       return getBodyInfo(this, fields.body);
     })();
 
+    // stage 03. path parameter array value stringify
+    const safePaths = Object.entries(paths).reduce(
+      (processing, [key, value]) =>
+        Array.isArray(value) ? { ...processing, [key]: fastSafeStringify(value) } : processing,
+      { ...paths },
+    );
+
+    // stage 04. url endpoint build
     const buildEndpoint = [this.host ?? 'http://localhost', this.path ?? '']
       .map((endpointPart) => endpointPart.trim())
       .map((endpointPart) => removeBothSlash(endpointPart))
       .join('/');
 
     const url = new URL(buildEndpoint);
-    const pathfunc = compile(url.pathname);
 
-    const buildPath = pathfunc(paths);
+    // stage 05. path parameter evaluation
+    const pathfunc = compile(url.pathname);
+    const buildPath = pathfunc(safePaths);
     url.pathname = removeEndSlash(buildPath);
 
+    // stage 06. querystring post processing
     Object.entries(queries).forEach(([key, value]) => {
       if (Array.isArray(value)) {
         value.forEach((val) => url.searchParams.append(key, typeof val !== 'string' ? `${val}` : val));

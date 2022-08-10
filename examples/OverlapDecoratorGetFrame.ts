@@ -1,4 +1,4 @@
-import JinEitherFrame from '../src/frames/JinEitherFrame';
+import { JinEitherFrame } from '../src/frames/JinEitherFrame';
 
 /**
  * Overlap decorator in class variable

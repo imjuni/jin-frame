@@ -1,4 +1,3 @@
-import { IBodyField } from '@interfaces/body/IBodyField';
 import { IBodyFieldOption, TMultipleBodyFormatter, TSingleBodyFormatter } from '@interfaces/body/IBodyFieldOption';
 import { applyFormatters } from '@tools/applyFormatters';
 import { isValidPrimitiveType, typeAssert } from '@tools/typeAssert';
@@ -10,7 +9,7 @@ import { SetOptional, SetRequired } from 'type-fest';
 export function processBodyFormatters<T extends Record<string, any>>(
   strict: boolean,
   thisFrame: T,
-  field: IBodyField,
+  field: { key: string; option: IBodyFieldOption },
   formatterArgs: SetRequired<IBodyFieldOption, 'formatters'>['formatters'],
 ) {
   const { key: thisFrameAccessKey, option } = field;

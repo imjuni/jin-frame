@@ -15,10 +15,10 @@ import 'reflect-metadata';
  * Definition HTTP Request
  *
  * @typeParam TPASS AxiosResponse type argument case of valid status.
- * eg. AxiosResponse<TPASS>
+ * eg. `AxiosResponse<TPASS>`
  *
  * @typeParam TFAIL AxiosResponse type argument case of invalid status.
- * eg. AxiosResponse<TFAIL>
+ * eg. `AxiosResponse<TFAIL>`
  */
 export class JinFrame<TPASS = unknown, TFAIL = TPASS> extends AbstractJinFrame<TPASS, TFAIL> {
   /**

@@ -1,12 +1,66 @@
 import { IBodyField } from '@interfaces/body/IBodyField';
+import { IBodyFieldOption } from '@interfaces/body/IBodyFieldOption';
+import { IObjectBodyFieldOption } from '@interfaces/body/IObjectBodyFieldOption';
 import { processBodyFormatters } from '@processors/processBodyFormatters';
+import { processObjectBodyFormatters } from '@processors/processObjectBodyFormatters';
 import { isValidArrayType, isValidPrimitiveType } from '@tools/typeAssert';
 import { set } from 'dot-prop';
 import { recursive } from 'merge';
 import { isError } from 'my-easy-fp';
 
 export function getBodyInfo<T extends Record<string, any>>(thisFrame: T, fields: IBodyField[], strict?: boolean) {
-  return fields
+  const objectBodyFields = fields.filter(
+    (field): field is { key: string; option: IObjectBodyFieldOption } => field.option.type === 'object-body',
+  );
+
+  const sortedObjectBodyFields = objectBodyFields.sort((l, r) => (l.option.order ?? 0) - (r.option.order ?? 0));
+
+  const objectBodyFieldsProcessed = sortedObjectBodyFields
+    .map<Record<string, any> | undefined>((field) => {
+      try {
+        const { key: thisFrameAccessKey, option } = field;
+        const value: any = thisFrame[thisFrameAccessKey];
+
+        // stage 01. general action - undefined or null type
+        if (value === undefined || value === null) {
+          return undefined;
+        }
+
+        // stage 02. formatters apply
+        if ('formatters' in option && option.formatters !== undefined && option.formatters !== null) {
+          return processObjectBodyFormatters(strict ?? false, thisFrame, field, option.formatters);
+        }
+
+        // general action start
+        // stage 04. general action - array of primitive type
+        if (isValidArrayType(value)) {
+          return value;
+        }
+
+        // stage 05. general action - object of complexed type
+        if (typeof value === 'object') {
+          return value;
+        }
+
+        if (strict) {
+          throw new Error(`unknown type of value: ${typeof value} - ${value}`);
+        }
+
+        // unkonwn type
+        return undefined;
+      } catch (catched) {
+        const err = isError(catched) ?? new Error('unknown error raised body');
+        throw err;
+      }
+    })
+    .filter((processed): processed is Record<string, any> => processed !== undefined && processed !== null)
+    .reduce<Record<string, any>>((aggregation, processing) => recursive(aggregation, processing), {});
+
+  const bodyFields = fields.filter(
+    (field): field is { key: string; option: IBodyFieldOption } => field.option.type === 'body',
+  );
+
+  const bodyFieldsProcessed = bodyFields
     .map<Record<string, any> | undefined>((field) => {
       try {
         const { key: thisFrameAccessKey, option } = field;
@@ -53,4 +107,6 @@ export function getBodyInfo<T extends Record<string, any>>(thisFrame: T, fields:
     })
     .filter((processed): processed is Record<string, any> => processed !== undefined && processed !== null)
     .reduce<Record<string, any>>((aggregation, processing) => recursive(aggregation, processing), {});
+
+  return recursive(objectBodyFieldsProcessed, bodyFieldsProcessed);
 }
