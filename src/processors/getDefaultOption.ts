@@ -1,5 +1,5 @@
-import type { IBodyFieldOption } from '@interfaces/IBodyFieldOption';
-import type { THeaderFieldOption } from '@interfaces/IHeaderFieldOption';
+import type { IBodyFieldOption } from '@interfaces/body/IBodyFieldOption';
+import type { IHeaderFieldOption } from '@interfaces/IHeaderFieldOption';
 import type { IParamFieldOption } from '@interfaces/IParamFieldOption';
 import type { IQueryFieldOption } from '@interfaces/IQueryFieldOption';
 import { Except } from 'type-fest';
@@ -62,21 +62,13 @@ export function getDefaultBodyFieldOption(
 }
 
 export function getDefaultHeaderFieldOption(
-  option?: Partial<THeaderFieldOption> | Omit<Partial<THeaderFieldOption>, 'type'>,
-): THeaderFieldOption {
+  option?: Partial<IHeaderFieldOption> | Omit<Partial<IHeaderFieldOption>, 'type'>,
+): IHeaderFieldOption {
   if (option === undefined || option === null) {
     return {
       type: 'header',
       encode: true,
-    };
-  }
-
-  if ('formatter' in option) {
-    return {
-      type: 'header',
-      formatter: option?.formatter ?? undefined,
-      key: option?.key ?? undefined,
-      encode: option?.encode ?? true,
+      comma: false,
     };
   }
 
@@ -84,12 +76,16 @@ export function getDefaultHeaderFieldOption(
     return {
       type: 'header',
       formatters: option?.formatters ?? undefined,
+      replaceAt: option?.replaceAt ?? undefined,
+      comma: option.comma ?? false,
       encode: option?.encode ?? true,
     };
   }
 
   return {
     type: 'header',
-    encode: true,
+    replaceAt: option?.replaceAt ?? undefined,
+    comma: option.comma ?? false,
+    encode: option?.encode ?? true,
   };
 }

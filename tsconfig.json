@@ -76,6 +76,7 @@
     "baseUrl": ".",
     "paths": {
       "@tools/*": ["src/tools/*"],
+      "@processors/*": ["src/processors/*"],
       "@frames/*": ["src/frames/*"],
       "@interfaces/*": ["src/interfaces/*"]
     }
