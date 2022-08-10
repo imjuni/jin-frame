@@ -3,25 +3,38 @@ import formatISO from 'date-fns/formatISO';
 import { isNotEmpty } from 'my-easy-fp';
 
 function applyFormatter(initialValue: string | boolean | number | Date, formatter: IFormatter) {
-  let formatted = initialValue;
+  const orders = formatter.order ?? ['number', 'string', 'dateTime'];
 
-  if (typeof formatted === 'number' || typeof formatted === 'boolean') {
-    formatted = `${formatted}`;
-  }
+  const formatted: any = orders.reduce((processing, order) => {
+    // stage 01. number format processing
+    if (order === 'number' && isNotEmpty(formatter.number) && typeof processing === 'number') {
+      return formatter.number(processing);
+    }
 
-  // stage 01. string format processing
-  if (isNotEmpty(formatter.string) && typeof formatted === 'string') {
-    formatted = formatter.string(formatted);
-  }
+    // stage 02. string format processing
+    if (
+      order === 'string' &&
+      isNotEmpty(formatter.string) &&
+      (typeof processing === 'string' || typeof processing === 'boolean' || typeof processing === 'number')
+    ) {
+      if (typeof processing === 'number' || typeof processing === 'boolean') {
+        return formatter.string(`${processing}`);
+      }
 
-  // stage 02. date format processing
-  if (isNotEmpty(formatter.dateTime) && formatted instanceof Date) {
-    formatted = formatter.dateTime(formatted);
-  }
+      return formatter.string(processing);
+    }
+
+    // stage 03. date format processing
+    if (order === 'dateTime' && isNotEmpty(formatter.dateTime) && processing instanceof Date) {
+      return formatter.dateTime(processing);
+    }
+
+    return processing;
+  }, initialValue);
 
   // stage 03. force convert date instance to string
   if (isNotEmpty(formatted) && formatted instanceof Date) {
-    formatted = formatISO(formatted);
+    return formatISO(formatted);
   }
 
   return formatted;

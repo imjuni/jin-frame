@@ -1,6 +1,6 @@
 import { defaultJinFrameTimeout } from '@frames/defaultJinFrameTimeout';
-import type { IBodyFieldOption } from '@interfaces/IBodyFieldOption';
-import type { IHeaderFieldOption, THeaderFieldOption } from '@interfaces/IHeaderFieldOption';
+import type { IBodyFieldOption } from '@interfaces/body/IBodyFieldOption';
+import type { IHeaderFieldOption } from '@interfaces/IHeaderFieldOption';
 import type { IJinFrameCreateConfig } from '@interfaces/IJinFrameCreateConfig';
 import type { IJinFrameRequestConfig } from '@interfaces/IJinFrameRequestConfig';
 import type { IParamFieldOption } from '@interfaces/IParamFieldOption';
@@ -10,15 +10,15 @@ import type { TFailJinEitherFrame } from '@interfaces/TFailJinEitherFrame';
 import type { TFieldRecords } from '@interfaces/TFieldRecords';
 import type { TPassJinEitherFrame } from '@interfaces/TPassJinEitherFrame';
 import type { TRequestPart } from '@interfaces/TRequestPart';
-import { getBodyInfo } from '@tools/getBodyInfo';
+import { getBodyInfo } from '@processors/getBodyInfo';
 import {
   getDefaultBodyFieldOption,
   getDefaultHeaderFieldOption,
   getDefaultParamFieldOption,
   getDefaultQueryFieldOption,
-} from '@tools/getDefaultOption';
-import { getHeaderInfo } from '@tools/getHeaderInfo';
-import { getQueryParamInfo } from '@tools/getQueryParamInfo';
+} from '@processors/getDefaultOption';
+import { getHeaderInfo } from '@processors/getHeaderInfo';
+import { getQueryParamInfo } from '@processors/getQueryParamInfo';
 import { removeBothSlash, removeEndSlash, startWithSlash } from '@tools/slashUtils';
 import { AxiosRequestConfig, AxiosResponse, Method } from 'axios';
 import { isNotUndefined } from 'my-easy-fp';
@@ -61,7 +61,7 @@ export abstract class AbstractJinFrame<TPASS = unknown, TFAIL = TPASS> {
    * decorator to set class variable to HTTP API header parameter
    * @param option header parameter option
    */
-  public static header = (option?: Partial<Except<THeaderFieldOption, 'type'>>) =>
+  public static header = (option?: Partial<Except<IHeaderFieldOption, 'type'>>) =>
     Reflect.metadata(AbstractJinFrame.HeaderSymbolBox, ['HEADER', getDefaultHeaderFieldOption(option)]);
 
   /** host of API Request endpoint */
@@ -152,7 +152,7 @@ export abstract class AbstractJinFrame<TPASS = unknown, TFAIL = TPASS> {
     );
 
     const queries = getQueryParamInfo(this, fields.query); // create querystring information
-    const headers = fields.header.length <= 0 ? {} : getHeaderInfo(this, fields.header); // create header information
+    const headers = fields.header.length <= 0 ? {} : getHeaderInfo(this, fields.header) ?? {}; // create header information
     const paths = getQueryParamInfo(this, fields.param); // create param information
     const bodies = (() => {
       if (isNotUndefined(this.customBody)) {

@@ -1,11 +1,11 @@
-import { IBodyField } from '@interfaces/IBodyField';
-import { IBodyFieldOption, TMultipleFormatter, TSingleFormatter } from '@interfaces/IBodyFieldOption';
+import { IBodyField } from '@interfaces/body/IBodyField';
+import { IBodyFieldOption, TMultipleBodyFormatter, TSingleBodyFormatter } from '@interfaces/body/IBodyFieldOption';
+import { applyFormatters } from '@tools/applyFormatters';
+import { isValidPrimitiveType, typeAssert } from '@tools/typeAssert';
 import { get, set } from 'dot-prop';
 import { recursive } from 'merge';
 import { isEmpty, isFalse, isNotEmpty } from 'my-easy-fp';
 import { SetOptional, SetRequired } from 'type-fest';
-import { applyFormatters } from './applyFormatters';
-import { isValidPrimitiveType, typeAssert } from './typeAssert';
 
 export function processBodyFormatters<T extends Record<string, any>>(
   strict: boolean,
@@ -15,7 +15,7 @@ export function processBodyFormatters<T extends Record<string, any>>(
 ) {
   const { key: thisFrameAccessKey, option } = field;
   const value: any = thisFrame[thisFrameAccessKey];
-  const formatters: TMultipleFormatter = Array.isArray(formatterArgs)
+  const formatters: TMultipleBodyFormatter = Array.isArray(formatterArgs)
     ? formatterArgs
     : [{ ...formatterArgs, findFrom: option.replaceAt ?? thisFrameAccessKey }];
 
@@ -71,12 +71,12 @@ export function processBodyFormatters<T extends Record<string, any>>(
   if (typeof value === 'object') {
     const resultAccessKey = option.replaceAt ?? thisFrameAccessKey;
 
-    const validFormatters = formatters.filter((formatter): formatter is SetRequired<TSingleFormatter, 'findFrom'> =>
+    const validFormatters = formatters.filter((formatter): formatter is SetRequired<TSingleBodyFormatter, 'findFrom'> =>
       isNotEmpty(formatter.findFrom),
     );
 
-    const invalidFormatters = formatters.filter((formatter): formatter is SetOptional<TSingleFormatter, 'findFrom'> =>
-      isEmpty(formatter.findFrom),
+    const invalidFormatters = formatters.filter(
+      (formatter): formatter is SetOptional<TSingleBodyFormatter, 'findFrom'> => isEmpty(formatter.findFrom),
     );
 
     if (strict && invalidFormatters.length > 0) {

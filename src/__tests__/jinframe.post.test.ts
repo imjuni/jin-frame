@@ -14,7 +14,7 @@ class TestPostFrame extends JinEitherFrame {
   @JinEitherFrame.body({ replaceAt: 'test.hello.marvel.name' })
   public readonly name: string;
 
-  @JinEitherFrame.header({ key: 'test.hello.marvel.skill' })
+  @JinEitherFrame.header({ replaceAt: 'test.hello.marvel.skill' })
   public readonly skill: string;
 
   @JinEitherFrame.body({ replaceAt: 'test.hello.marvel.gender' })
