@@ -1,5 +1,5 @@
 import { format, parse } from 'date-fns';
-import JinEitherFrame from '../src/frames/JinEitherFrame';
+import { JinEitherFrame } from '../src/frames/JinEitherFrame';
 
 interface IFirstBody {
   name: string;
@@ -26,7 +26,7 @@ export default class ComplexFormatGetFrame extends JinEitherFrame {
   @JinEitherFrame.query()
   public readonly skill: string[];
 
-  @JinEitherFrame.body({
+  @JinEitherFrame.objectBody({
     formatters: [
       {
         key: 'data.more.weddingAnniversary',

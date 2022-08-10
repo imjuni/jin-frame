@@ -3,6 +3,7 @@ import type { IQueryFieldOption } from '@interfaces/IQueryFieldOption';
 import { applyFormatters } from '@tools/applyFormatters';
 import { bitwised } from '@tools/bitwised';
 import { encode } from '@tools/encode';
+import { isValidArrayType } from '@tools/typeAssert';
 import { isFalse, isNotEmpty } from 'my-easy-fp';
 
 export function getQueryParamInfo<T extends Record<string, any>>(
@@ -32,18 +33,19 @@ export function getQueryParamInfo<T extends Record<string, any>>(
         return { ...resultObj, [fieldKey]: encode(option.encode, bitwisedValue) };
       }
 
-      // stage 02. comma seperation processing
-      if (option.comma && Array.isArray(value)) {
-        const commaJoinValue = value.join(',');
-        return { ...resultObj, [fieldKey]: encode(option.encode, commaJoinValue) };
-      }
-
       const { formatter } = option;
 
-      // stage 03. apply formatter
+      // stage 02. apply formatter
       if (isNotEmpty(formatter)) {
-        const formatted = applyFormatters(value, formatter);
-        return { ...resultObj, [fieldKey]: encode(option.encode, formatted) };
+        const formatted: string | string[] = applyFormatters(value, formatter);
+        const commaApplied = isValidArrayType(formatted) && option.comma ? formatted.join(',') : formatted;
+        return { ...resultObj, [fieldKey]: encode(option.encode, commaApplied) };
+      }
+
+      // stage 03. comma seperation processing
+      if (Array.isArray(value)) {
+        const commaApplied = option.comma ? encode(option.encode, value.join(',')) : value;
+        return { ...resultObj, [fieldKey]: commaApplied };
       }
 
       if (isNotEmpty(value)) {

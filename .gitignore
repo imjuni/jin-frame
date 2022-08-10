@@ -112,4 +112,7 @@ tslint-to-eslint-config.log
 
 # backup file
 src/*.ts.bak
-docs/
+
+# Automatically generated vuepress
+docs/.vuepress
+docs/api

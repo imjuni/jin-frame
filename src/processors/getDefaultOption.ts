@@ -1,4 +1,5 @@
 import type { IBodyFieldOption } from '@interfaces/body/IBodyFieldOption';
+import { IObjectBodyFieldOption } from '@interfaces/body/IObjectBodyFieldOption';
 import type { IHeaderFieldOption } from '@interfaces/IHeaderFieldOption';
 import type { IParamFieldOption } from '@interfaces/IParamFieldOption';
 import type { IQueryFieldOption } from '@interfaces/IQueryFieldOption';
@@ -58,6 +59,33 @@ export function getDefaultBodyFieldOption(
     type: 'body',
     replaceAt: option?.replaceAt ?? undefined,
     encode: option?.encode ?? true,
+  };
+}
+
+export function getDefaultObjectBodyFieldOption(
+  option?: Partial<IObjectBodyFieldOption> | Except<Partial<IObjectBodyFieldOption>, 'type'>,
+): IObjectBodyFieldOption {
+  if (option === undefined || option === null) {
+    return {
+      type: 'object-body',
+      encode: true,
+      order: 0,
+    };
+  }
+
+  if ('formatters' in option) {
+    return {
+      type: 'object-body',
+      formatters: option?.formatters ?? undefined,
+      encode: option?.encode ?? true,
+      order: option?.order ?? 0,
+    };
+  }
+
+  return {
+    type: 'object-body',
+    encode: option?.encode ?? true,
+    order: option?.order ?? 0,
   };
 }
 

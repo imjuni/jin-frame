@@ -1,6 +1,7 @@
 /* eslint-disable max-classes-per-file, no-console */
-import { fromUnixTime, lightFormat, parse } from 'date-fns';
-import { JinEitherFrame } from '../../frames/JinEitherFrame';
+import { lightFormat, parse } from 'date-fns';
+import { format } from 'date-fns-tz';
+import { JinEitherFrame } from '../frames/JinEitherFrame';
 
 class Test001PostFrame extends JinEitherFrame {
   @JinEitherFrame.param()
@@ -174,8 +175,8 @@ class Test004PostFrame extends JinEitherFrame {
     formatters: [
       {
         order: ['number', 'dateTime'],
-        number: (value) => fromUnixTime(value),
-        dateTime: (value) => lightFormat(value, `yyyyMMdd'T'HHmmss`),
+        number: (value) => new Date(new Date(value * 1000).toLocaleString('en-US', { timeZone: 'Asia/Seoul' })),
+        dateTime: (value) => format(value, `yyyyMMdd'T'HHmmss`, { timeZone: 'utc' }),
       },
     ],
   })

@@ -1,4 +1,4 @@
-import JinEitherFrame from '../src/frames/JinEitherFrame';
+import { JinEitherFrame } from '../src/frames/JinEitherFrame';
 
 /**
  * In case of array parameter in querystring, apply comma sepearted string
