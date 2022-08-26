@@ -1,4 +1,5 @@
 /* eslint-disable max-classes-per-file, no-console */
+import { OmitConstructorType } from '@tools/ConstructorType';
 import { JinEitherFrame } from '../frames/JinEitherFrame';
 
 class Test001PostFrame extends JinEitherFrame {
@@ -11,7 +12,7 @@ class Test001PostFrame extends JinEitherFrame {
   @JinEitherFrame.body()
   public readonly password: string;
 
-  constructor(args: { passing: string; username: string[]; password: string }) {
+  constructor(args: OmitConstructorType<Test001PostFrame, 'host' | 'method' | 'contentType'>) {
     super({
       host: 'http://some.api.google.com/jinframe/:passing',
       method: 'POST',

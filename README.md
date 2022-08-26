@@ -2,7 +2,7 @@
 
 [![Download Status](https://img.shields.io/npm/dw/jin-frame.svg)](https://npmcharts.com/compare/jin-frame?minimal=true) [![Github Star](https://img.shields.io/github/stars/imjuni/jin-frame.svg?style=popout)](https://github.com/imjuni/jin-frame) [![Github Issues](https://img.shields.io/github/issues-raw/imjuni/jin-frame.svg)](https://github.com/imjuni/jin-frame/issues) [![NPM version](https://img.shields.io/npm/v/jin-frame.svg)](https://www.npmjs.com/package/jin-frame) [![License](https://img.shields.io/npm/l/jin-frame.svg)](https://github.com/imjuni/jin-frame/blob/master/LICENSE) [![cti](https://circleci.com/gh/imjuni/jin-frame.svg?style=shield)](https://app.circleci.com/pipelines/github/imjuni/jin-frame?branch=master)
 
-Reusable HTTP request definition library
+Reusable HTTP request definition library. Ok, Create `template` for Your HTTP Request!
 
 ## Why jin-frame?
 
@@ -40,13 +40,13 @@ class TestPostQuery extends JinFrame {
   @JinFrame.body({ replaceAt: 'test.hello.marvel.gender' })
   public readonly gender: string;
 
-  constructor(id: number, name: string, skill: string) {
+  constructor(args: OmitConstructorType<TestPostQuery, 'host' | 'method' | 'contentType'>) {
     super({ host: 'http://some.api.yanolja.com/jinframe/:id', method: 'POST' });
 
-    this.id = id;
-    this.name = name;
-    this.skill = skill;
-    this.gender = 'male';
+    this.id = args.id;
+    this.name = args.name;
+    this.skill = args.skill;
+    this.gender = args.gender;
   }
 }
 ```
