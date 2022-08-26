@@ -35,6 +35,15 @@ const navs: NavbarConfig = [
     ],
   },
   {
+    text: 'More',
+    children: [
+      {
+        text: 'Utility Types',
+        link: '/more/types.md',
+      },
+    ],
+  },
+  {
     text: 'API Reference',
     link: '/api/README.md',
   },
