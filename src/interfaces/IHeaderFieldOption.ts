@@ -44,7 +44,6 @@ export interface IHeaderFieldOption extends ICommonFieldOption {
    *
    * ```
    * {
-   *   key: 'data.more.birthday',
    *   string: (value: string) => parse(value, "yyyy-MM-dd'T'HH:mm:ss", new Date()),
    *   dateTime: (value: Date) => format(value, 'yyyy-MM-dd HH:mm:ss'),
    * }

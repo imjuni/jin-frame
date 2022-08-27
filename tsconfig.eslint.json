@@ -8,14 +8,11 @@
     ".eslintrc.js",
     "just.config.ts",
     "**/__test__",
-    "**/__tests__"
+    "**/__tests__",
+    "tsconfig.**.json"
   ],
   "exclude": [
-    "node_modules",
-    "server/**",    
-    "dist/**",
-    "jest.config.js",
-    "webpack.config.dev.js",
-    "webpack.config.prod.js"
+    "dist/**/*",
+    "**/dist/**/*"
   ]
 }

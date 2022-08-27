@@ -1,3 +1,5 @@
+/* eslint-disable import/no-extraneous-dependencies */
+
 import { format, parse } from 'date-fns';
 import { JinEitherFrame } from '../src/frames/JinEitherFrame';
 
@@ -29,16 +31,16 @@ export default class ComplexFormatGetFrame extends JinEitherFrame {
   @JinEitherFrame.objectBody({
     formatters: [
       {
-        key: 'data.more.weddingAnniversary',
+        findFrom: 'data.more.weddingAnniversary',
         dateTime: (value: Date) => format(value, 'yyyy-MM-dd HH:mm:ss'),
       },
       {
-        key: 'data.more.birthday',
+        findFrom: 'data.more.birthday',
         string: (value: string) => parse(value, "yyyy-MM-dd'T'HH:mm:ss", new Date()),
         dateTime: (value: Date) => format(value, 'yyyy-MM-dd HH:mm:ss'),
       },
       {
-        key: 'data.signDate',
+        findFrom: 'data.signDate',
         string: (value: string) => parse(value, "yyyy-MM-dd'T'HH:mm:ss", new Date()),
         dateTime: (value: Date) => format(value, 'yyyy-MM-dd HH:mm:ss'),
       },

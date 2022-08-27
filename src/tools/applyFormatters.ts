@@ -1,3 +1,5 @@
+/* eslint-disable import/no-extraneous-dependencies */
+
 import type { IFormatter } from '@interfaces/IFormatter';
 import formatISO from 'date-fns/formatISO';
 import { isNotEmpty } from 'my-easy-fp';
