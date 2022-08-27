@@ -4,6 +4,8 @@
  * [TypeScript: Create a condition-based subset types - DailyJS](https://medium.com/dailyjs/typescript-create-a-condition-based-subset-types-9d902cea5b8c)
  */
 
+import { AbstractJinFrame } from '@frames/AbstractJinFrame';
+
 // 1 Transform the type to flag all the undesired keys as 'never'
 type FlagExcludedType<Base, Type> = { [Key in keyof Base]: Base[Key] extends Type ? never : Key };
 
@@ -17,3 +19,13 @@ type OmitType<Base, Type> = Pick<Base, AllowedNames<Base, Type>>;
 export type ConstructorType<T> = OmitType<T, Function>;
 
 export type OmitConstructorType<T, M extends keyof ConstructorType<T>> = Omit<ConstructorType<T>, M>;
+
+export type JinConstructorType<T extends AbstractJinFrame> = Omit<
+  ConstructorType<T>,
+  'host' | 'path' | 'method' | 'contentType' | 'customBody'
+>;
+
+export type JinOmitConstructorType<T extends AbstractJinFrame, M extends keyof ConstructorType<T>> = Omit<
+  ConstructorType<T>,
+  'host' | 'path' | 'method' | 'contentType' | 'customBody' | M
+>;
