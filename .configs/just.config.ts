@@ -14,7 +14,7 @@ task('clean', async () => {
 });
 
 task('lint', async () => {
-  const cmd = 'eslint --no-ignore --ext ts,tsx,json .';
+  const cmd = 'eslint --cache --ext ts,tsx .';
 
   await exec(cmd, {
     stderr: process.stderr,
@@ -22,8 +22,18 @@ task('lint', async () => {
   });
 });
 
-task('+webpack:prod', async () => {
-  const cmd = 'cross-env NODE_ENV=production webpack --config ./.configs/webpack.config.prod.js';
+task('+rollup:dev', async () => {
+  const cmd = 'cross-env NODE_ENV=production rollup --config ./.configs/rollup.config.dev.ts --configPlugin ts';
+  logger.info('Build: ', cmd);
+
+  await exec(cmd, {
+    stderr: process.stderr,
+    stdout: process.stdout,
+  });
+});
+
+task('+rollup:prod', async () => {
+  const cmd = 'cross-env NODE_ENV=production rollup --config ./.configs/rollup.config.prod.ts --configPlugin ts';
   logger.info('Build: ', cmd);
 
   await exec(cmd, {
@@ -34,16 +44,6 @@ task('+webpack:prod', async () => {
 
 task('+build', async () => {
   const cmd = 'cross-env NODE_ENV=production tsc --incremental';
-  logger.info('Build: ', cmd);
-
-  await exec(cmd, {
-    stderr: process.stderr,
-    stdout: process.stdout,
-  });
-});
-
-task('+webpack:dev', async () => {
-  const cmd = 'cross-env NODE_ENV=production webpack --config ./.configs/webpack.config.dev.js';
   logger.info('Build: ', cmd);
 
   await exec(cmd, {
@@ -78,26 +78,6 @@ task('clean:file', async () => {
   const cmd = 'rimraf dist';
 
   logger.info('Clean builded directory: ', cmd);
-
-  await exec(cmd, {
-    stderr: process.stderr,
-    stdout: process.stdout,
-  });
-});
-
-task('clean:dts', async () => {
-  const cmd = 'rimraf dist/src dist/examples';
-
-  logger.info('Clean dts directory: ', cmd);
-
-  await exec(cmd, {
-    stderr: process.stderr,
-    stdout: process.stdout,
-  });
-});
-
-task('+dts-bundle', async () => {
-  const cmd = 'dts-bundle-generator --no-check --no-banner dist/src/index.d.ts -o dist/index.d.ts';
 
   await exec(cmd, {
     stderr: process.stderr,
@@ -149,10 +129,9 @@ task('+docs-watch', async () => {
 
 task('docs', series('clean', 'ctix:single', '+docs', 'ctix:remove'));
 task('docs-watch', series('clean', 'ctix:single', '+docs-watch'));
-task('webpack:prod', series('clean', 'ctix:single', '+webpack:prod', '+dts-bundle', 'clean:dts', 'ctix:remove'));
-task('webpack:dev', series('clean', 'ctix:single', '+webpack:dev', '+dts-bundle', 'clean:dts', 'ctix:remove'));
 task('build', '+build');
-task('dts-bundle', series('+dts-bundle', 'clean:dts'));
-task('pub', series('webpack:prod', '+pub'));
+task('rollup:dev', series('clean', 'ctix:single', '+rollup:dev', 'ctix:remove'));
+task('rollup:prod', series('clean', 'ctix:single', '+rollup:prod', 'ctix:remove'));
+task('pub', series('rollup:prod', '+pub'));
 task('clean', parallel('clean:file', 'ctix:remove'));
-task('pub:prod', series('webpack:prod', '+pub:prod'));
+task('pub:prod', series('rollup:prod', '+pub:prod'));

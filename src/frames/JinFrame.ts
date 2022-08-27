@@ -1,3 +1,5 @@
+/* eslint-disable import/no-extraneous-dependencies */
+
 import { AbstractJinFrame } from '@frames/AbstractJinFrame';
 import { JinFrameError } from '@frames/JinFrameError';
 import type { IDebugInfo } from '@interfaces/IDebugInfo';

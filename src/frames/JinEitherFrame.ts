@@ -1,3 +1,5 @@
+/* eslint-disable import/no-extraneous-dependencies */
+
 import { AbstractJinFrame } from '@frames/AbstractJinFrame';
 import type { IDebugInfo } from '@interfaces/IDebugInfo';
 import type { IJinFrameCreateConfig } from '@interfaces/IJinFrameCreateConfig';
@@ -10,6 +12,7 @@ import axios, { type AxiosResponse, type Method } from 'axios';
 import formatISO from 'date-fns/formatISO';
 import getUnixTime from 'date-fns/getUnixTime';
 import intervalToDuration from 'date-fns/intervalToDuration';
+import httpStatusCodes, { getReasonPhrase } from 'http-status-codes';
 import { isFalse, isNotEmpty } from 'my-easy-fp';
 import { fail, pass, PassFailEither } from 'my-only-either';
 import 'reflect-metadata';
@@ -118,6 +121,8 @@ export class JinEitherFrame<PASS = unknown, FAIL = PASS> extends AbstractJinFram
           $err: err,
           $debug: { ...debugInfo, duration },
           $frame: frame,
+          status: httpStatusCodes.INTERNAL_SERVER_ERROR,
+          statusText: getReasonPhrase(httpStatusCodes.INTERNAL_SERVER_ERROR),
         };
 
         return fail(failInfo);
