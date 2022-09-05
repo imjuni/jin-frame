@@ -1,6 +1,7 @@
 import type { JinEitherFrame } from '@frames/JinEitherFrame';
 import type { IDebugInfo } from '@interfaces/IDebugInfo';
 import type { AxiosResponse } from 'axios';
+import { IFail } from 'my-only-either';
 
 export interface IFailJinEitherFrame<T> extends Pick<AxiosResponse, 'status' | 'statusText'> {
   /** exception class, $err representative message, stacktrace */
@@ -21,3 +22,5 @@ export interface IFailReplyJinEitherFrame<T> extends AxiosResponse<T>, IFailJinE
   /** progress of jin-frame, fail representative success communication but result is fail */
   $progress: 'fail';
 }
+
+export type TJinFail<T> = IFail<IFailExceptionJinEitherFrame<T> | IFailReplyJinEitherFrame<T>>;
