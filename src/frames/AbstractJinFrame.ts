@@ -1,13 +1,12 @@
 import { defaultJinFrameTimeout } from '@frames/defaultJinFrameTimeout';
 import type { IBodyFieldOption } from '@interfaces/body/IBodyFieldOption';
 import { IObjectBodyFieldOption } from '@interfaces/body/IObjectBodyFieldOption';
+import type { IFailExceptionJinEitherFrame, IFailReplyJinEitherFrame } from '@interfaces/IFailJinEitherFrame';
 import type { IHeaderFieldOption } from '@interfaces/IHeaderFieldOption';
 import type { IJinFrameCreateConfig } from '@interfaces/IJinFrameCreateConfig';
 import type { IJinFrameRequestConfig } from '@interfaces/IJinFrameRequestConfig';
 import type { IParamFieldOption } from '@interfaces/IParamFieldOption';
 import type { IQueryFieldOption } from '@interfaces/IQueryFieldOption';
-import type { TFailExceptionJinEitherFrame } from '@interfaces/TFailExceptionJinEitherFrame';
-import type { TFailJinEitherFrame } from '@interfaces/TFailJinEitherFrame';
 import type { TFieldRecords } from '@interfaces/TFieldRecords';
 import type { TPassJinEitherFrame } from '@interfaces/TPassJinEitherFrame';
 import type { TRequestPart } from '@interfaces/TRequestPart';
@@ -260,7 +259,10 @@ export abstract class AbstractJinFrame<TPASS = unknown, TFAIL = TPASS> {
   ):
     | (() => Promise<AxiosResponse<TPASS>>)
     | (() => Promise<
-        PassFailEither<TFailJinEitherFrame<TFAIL> | TFailExceptionJinEitherFrame<TFAIL>, TPassJinEitherFrame<TPASS>>
+        PassFailEither<
+          IFailReplyJinEitherFrame<TFAIL> | IFailExceptionJinEitherFrame<TFAIL>,
+          TPassJinEitherFrame<TPASS>
+        >
       >);
 
   public abstract execute(
@@ -268,6 +270,9 @@ export abstract class AbstractJinFrame<TPASS = unknown, TFAIL = TPASS> {
   ):
     | Promise<AxiosResponse<TPASS>>
     | Promise<
-        PassFailEither<TFailJinEitherFrame<TFAIL> | TFailExceptionJinEitherFrame<TFAIL>, TPassJinEitherFrame<TPASS>>
+        PassFailEither<
+          IFailReplyJinEitherFrame<TFAIL> | IFailExceptionJinEitherFrame<TFAIL>,
+          TPassJinEitherFrame<TPASS>
+        >
       >;
 }
