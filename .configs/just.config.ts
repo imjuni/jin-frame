@@ -96,6 +96,17 @@ task('ctix:single', async () => {
   });
 });
 
+task('ctix:create', async () => {
+  const cmd = 'ctix create -p ./tsconfig.prod.json --config ./.configs/.ctirc --startAt src';
+
+  logger.info('Create index file : ', cmd);
+
+  await exec(cmd, {
+    stderr: process.stderr,
+    stdout: process.stdout,
+  });
+});
+
 task('ctix:remove', async () => {
   const cmd = 'ctix remove -p ./tsconfig.json --config ./.configs/.ctirc';
 

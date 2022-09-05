@@ -2,10 +2,9 @@
 
 import { AbstractJinFrame } from '@frames/AbstractJinFrame';
 import type { IDebugInfo } from '@interfaces/IDebugInfo';
+import type { IFailExceptionJinEitherFrame, IFailReplyJinEitherFrame } from '@interfaces/IFailJinEitherFrame';
 import type { IJinFrameCreateConfig } from '@interfaces/IJinFrameCreateConfig';
 import type { IJinFrameRequestConfig } from '@interfaces/IJinFrameRequestConfig';
-import type { TFailExceptionJinEitherFrame } from '@interfaces/TFailExceptionJinEitherFrame';
-import type { TFailJinEitherFrame } from '@interfaces/TFailJinEitherFrame';
 import type { TPassJinEitherFrame } from '@interfaces/TPassJinEitherFrame';
 import { isValidateStatusDefault } from '@tools/isValidateStatusDefault';
 import axios, { type AxiosResponse, type Method } from 'axios';
@@ -59,7 +58,7 @@ export class JinEitherFrame<PASS = unknown, FAIL = PASS> extends AbstractJinFram
   public override create(
     option?: IJinFrameRequestConfig & IJinFrameCreateConfig,
   ): () => Promise<
-    PassFailEither<TFailJinEitherFrame<FAIL> | TFailExceptionJinEitherFrame<FAIL>, TPassJinEitherFrame<PASS>>
+    PassFailEither<IFailReplyJinEitherFrame<FAIL> | IFailExceptionJinEitherFrame<FAIL>, TPassJinEitherFrame<PASS>>
   > {
     const req = this.request({ ...option, validateStatus: () => true });
     const frame: JinEitherFrame<PASS, FAIL> = this;
@@ -88,7 +87,7 @@ export class JinEitherFrame<PASS = unknown, FAIL = PASS> extends AbstractJinFram
           const durationSeconds = intervalToDuration({ start: startAt, end: endAt }).seconds;
           const duration = isNotEmpty(durationSeconds) ? durationSeconds * 1000 : -1;
 
-          const failInfo: TFailJinEitherFrame<FAIL> = {
+          const failInfo: IFailReplyJinEitherFrame<FAIL> = {
             ...failRes,
             $progress: 'fail',
             $err: new Error('Error caused from API response'),
@@ -116,7 +115,7 @@ export class JinEitherFrame<PASS = unknown, FAIL = PASS> extends AbstractJinFram
         const durationSeconds = intervalToDuration({ start: startAt, end: endAt }).seconds;
         const duration = isNotEmpty(durationSeconds) ? durationSeconds * 1000 : -1;
 
-        const failInfo: TFailExceptionJinEitherFrame<FAIL> = {
+        const failInfo: IFailExceptionJinEitherFrame<FAIL> = {
           $progress: 'error',
           $err: err,
           $debug: { ...debugInfo, duration },
@@ -139,7 +138,7 @@ export class JinEitherFrame<PASS = unknown, FAIL = PASS> extends AbstractJinFram
   public override execute(
     option?: IJinFrameRequestConfig & IJinFrameCreateConfig,
   ): Promise<
-    PassFailEither<TFailJinEitherFrame<FAIL> | TFailExceptionJinEitherFrame<FAIL>, TPassJinEitherFrame<PASS>>
+    PassFailEither<IFailReplyJinEitherFrame<FAIL> | IFailExceptionJinEitherFrame<FAIL>, TPassJinEitherFrame<PASS>>
   > {
     const requester = this.create(option);
     return requester();
