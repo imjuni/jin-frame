@@ -97,6 +97,18 @@ if (isFail(res)) {
 }
 ```
 
+## Form
+
+The form data is `multipart/form-data` and `application/x-www-form-urlencoded`. Use to upload files or submit form fields data.
+
+### application/x-www-form-urlencoded
+
+`application/x-www-form-urlencoded` converts from data using the `trasformRequest` function in [axios](https://github.com/axios/axios). For jin-frame, if you set the `application/x-www-form-urlencoded` to content-type, use the built-in transformRequest function or pass transformRequest function to constructor.
+
+### multipart/form-data
+
+jin-frame uses the [form-data](https://github.com/form-data/form-data) package for form-data processing. If you set the `multipart/form-data` content-type, use the form-data package to generate the AxiosRequestConfig data field value. Alternatively, upload the file by passing the customBody constructor parameter.
+
 ## Example
 
 You can find more examples in [examples directory](https://github.com/imjuni/jin-frame/tree/master/examples).
