@@ -1,4 +1,5 @@
 import { defaultJinFrameTimeout } from '@frames/defaultJinFrameTimeout';
+import { JinFile } from '@frames/JinFile';
 import type { IBodyFieldOption } from '@interfaces/body/IBodyFieldOption';
 import { IObjectBodyFieldOption } from '@interfaces/body/IObjectBodyFieldOption';
 import type { IFailExceptionJinEitherFrame, IFailReplyJinEitherFrame } from '@interfaces/IFailJinEitherFrame';
@@ -23,7 +24,7 @@ import { getQueryParamInfo } from '@processors/getQueryParamInfo';
 import { removeBothSlash, removeEndSlash, startWithSlash } from '@tools/slashUtils';
 import { AxiosRequestConfig, AxiosResponse, Method } from 'axios';
 import fastSafeStringify from 'fast-safe-stringify';
-import { isNotUndefined } from 'my-easy-fp';
+import FormData from 'form-data';
 import { PassFailEither } from 'my-only-either';
 import { compile } from 'path-to-regexp';
 import 'reflect-metadata';
@@ -90,6 +91,9 @@ export abstract class AbstractJinFrame<TPASS = unknown, TFAIL = TPASS> {
   /** custom object of POST Request body data */
   public readonly customBody?: { [key: string]: any };
 
+  /** transformRequest function of POST Request */
+  public readonly transformRequest?: AxiosRequestConfig['transformRequest'];
+
   /**
    * @param __namedParameters.host - host of API Request endpoint
    * @param __namedParameters.path - pathname of API Request endpoint
@@ -103,12 +107,14 @@ export abstract class AbstractJinFrame<TPASS = unknown, TFAIL = TPASS> {
     method,
     contentType,
     customBody,
+    transformRequest,
   }: {
     host?: string;
     path?: string;
     method: Method;
     contentType?: string;
     customBody?: { [key: string]: any };
+    transformRequest?: AxiosRequestConfig['transformRequest'];
   }) {
     this.host = host;
     this.path = path;
@@ -116,10 +122,56 @@ export abstract class AbstractJinFrame<TPASS = unknown, TFAIL = TPASS> {
     this.customBody = customBody;
 
     this.contentType = contentType ?? 'application/json';
+    this.transformRequest = transformRequest;
 
     if (host === undefined && path === undefined) {
       throw new Error('Invalid host & path. Cannot set undefined both');
     }
+  }
+
+  public getTransformRequest() {
+    if (this.contentType !== 'application/x-www-form-urlencoded') {
+      return undefined;
+    }
+
+    if (this.transformRequest != null) {
+      return this.transformRequest;
+    }
+
+    return (formData: any) =>
+      Object.entries<string>(formData)
+        .filter(([_key, value]) => value !== undefined && value !== null)
+        .map(([key, value]) => {
+          return `${encodeURIComponent(key)}=${encodeURIComponent(value)}`;
+        })
+        .join('&');
+  }
+
+  getFormData(bodies: Record<string, any>): FormData | Record<string, any> {
+    if (this.method !== 'post' && this.method !== 'POST') {
+      return bodies;
+    }
+
+    if (this.contentType === 'multipart/form-data') {
+      const formData = new FormData();
+      const keys = Object.keys(bodies);
+
+      keys.forEach((key) => {
+        const formElement = bodies[key];
+
+        if (Array.isArray(formElement) && formElement.at(0) instanceof JinFile) {
+          formElement.forEach((jinFile) => formData.append(key, jinFile.file, jinFile.name));
+        } else if (formElement instanceof JinFile) {
+          formData.append(key, formElement.file, formElement.name);
+        } else {
+          formData.append(key, formElement);
+        }
+      });
+
+      return formData;
+    }
+
+    return bodies;
   }
 
   /**
@@ -177,7 +229,7 @@ export abstract class AbstractJinFrame<TPASS = unknown, TFAIL = TPASS> {
     const headers = fields.header.length <= 0 ? {} : getHeaderInfo(this, fields.header) ?? {}; // create header information
     const paths = getQueryParamInfo(this, fields.param); // create param information
     const bodies = (() => {
-      if (isNotUndefined(this.customBody)) {
+      if (this.customBody != null) {
         return this.customBody;
       }
 
@@ -226,16 +278,8 @@ export abstract class AbstractJinFrame<TPASS = unknown, TFAIL = TPASS> {
 
     headers['Content-Type'] = this.contentType;
 
-    const transformRequest =
-      this.contentType.indexOf('x-www-form-urlencoded') >= 0
-        ? (formData: any) =>
-            Object.entries<string>(formData)
-              .filter(([_key, value]) => value !== undefined && value !== null)
-              .map(([key, value]) => {
-                return `${encodeURIComponent(key)}=${encodeURIComponent(value)}`;
-              })
-              .join('&')
-        : undefined;
+    const transformRequest = this.getTransformRequest();
+    const data = this.getFormData(bodies);
 
     const targetUrl = this.host !== undefined ? url.href : `${startWithSlash(url.pathname)}${url.search}`;
     const req: AxiosRequestConfig = {
@@ -244,7 +288,7 @@ export abstract class AbstractJinFrame<TPASS = unknown, TFAIL = TPASS> {
         timeout: option?.timeout ?? defaultJinFrameTimeout,
         headers,
         method: this.method,
-        data: bodies,
+        data,
         transformRequest: option?.transformRequest ?? transformRequest,
         url: targetUrl,
         validateStatus: option?.validateStatus,

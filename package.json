@@ -1,6 +1,6 @@
 {
   "name": "jin-frame",
-  "version": "2.5.1",
+  "version": "2.6.0",
   "description": "Reusable HTTP API request definition library",
   "scripts": {
     "debug": "node --inspect-brk -r ts-node/register ./node_modules/jest/bin/jest --no-cache --runInBand --detectOpenHandles",
@@ -14,7 +14,7 @@
     "lint": "just --config ./.configs/just.config.ts lint",
     "test": "cross-env DEBUG=jinframe:* jest --config jest.config.js",
     "just": "just --config ./.configs/just.config.ts",
-    "ctix": "just --config ./.configs/just.config.ts ctix:create",
+    "ctix": "just --config ./.configs/just.config.ts ctix:single",
     "ctix:remove": "just --config ./.configs/just.config.ts ctix:remove",
     "deploy": "cross-env PUBLIC_URL=\"jin-frame\" gh-pages -d docs/.vuepress/dist",
     "docs": "just --config ./.configs/just.config.ts docs",
@@ -50,6 +50,7 @@
     "axios": "^0.27.2",
     "dot-prop": "^6.0.1",
     "fast-safe-stringify": "^2.1.1",
+    "form-data": "^4.0.0",
     "http-status-codes": "^2.2.0",
     "merge": "^2.1.1",
     "my-easy-fp": "^0.16.0",
@@ -75,6 +76,7 @@
     "erdia": "^2.1.1",
     "eslint": "^8.23.0",
     "eslint-config-airbnb": "^19.0.4",
+    "eslint-config-airbnb-base": "^15.0.0",
     "eslint-config-airbnb-typescript": "^17.0.0",
     "eslint-config-prettier": "^8.5.0",
     "eslint-plugin-import": "^2.26.0",
@@ -102,9 +104,10 @@
     "ts-node": "^10.9.1",
     "tsconfig-paths": "^4.1.0",
     "typedoc": "^0.23.14",
+    "typedoc-plugin-markdown": "^3.13.6",
     "typescript": "^4.8.2",
     "typescript-json-schema": "^0.53.1",
-    "vuepress": "^2.0.0-beta.49",
+    "vuepress": "^2.0.0-beta.51",
     "vuepress-plugin-typedoc": "^0.11.1"
   },
   "directories": {

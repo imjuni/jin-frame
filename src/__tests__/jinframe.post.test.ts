@@ -43,7 +43,7 @@ class TestUrlencodedPostFrame extends JinEitherFrame {
   constructor() {
     super({
       host: 'http://some.api.google.com/jinframe/:passing',
-      contentType: 'x-www-form-urlencoded',
+      contentType: 'application/x-www-form-urlencoded',
       method: 'POST',
     });
 
