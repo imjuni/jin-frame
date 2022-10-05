@@ -19,7 +19,7 @@ class TestGetFrame extends JinEitherFrame {
   public readonly skill: string[];
 
   constructor() {
-    super({ host: 'http://some.api.google.com', path: '/jinframe/:passing', method: 'GET' });
+    super({ host: 'http://some.api.google.com', path: '/jinframe/:passing', method: 'get' });
 
     this.passing = 'pass';
     this.name = 'ironman';
@@ -38,7 +38,7 @@ class TestGet2Frame extends JinEitherFrame {
   public readonly ttt: string;
 
   constructor() {
-    super({ path: '/jinframe/:passing/test', method: 'GET' });
+    super({ path: '/jinframe/:passing/test', method: 'get' });
 
     this.passing = 'hello';
     this.name = 'ironman';

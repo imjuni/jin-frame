@@ -22,15 +22,9 @@ export default [
     plugins: [
       nodeResolve({
         resolveOnly: (module) => {
-          const isLocal =
-            (pkg?.dependencies?.[module] === undefined || pkg?.dependencies?.[module] === null) &&
-            (pkg?.devDependencies?.[module] === undefined || pkg?.devDependencies?.[module] === null);
-
-          if (module === 'date-fns') {
-            return true;
-          }
-
-          return isLocal;
+          return module === 'date-fns'
+            ? true
+            : pkg?.dependencies?.[module] == null && pkg?.devDependencies?.[module] == null;
         },
       }),
       ts({ tsconfig: 'tsconfig.prod.json' }),
