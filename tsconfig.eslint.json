@@ -4,6 +4,7 @@
     "allowJs": true
   },
   "include": [
+    "prepublish.js",
     "**/*.ts",
     ".eslintrc.js",
     "just.config.ts",
