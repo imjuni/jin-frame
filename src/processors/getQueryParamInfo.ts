@@ -4,7 +4,6 @@ import { applyFormatters } from '@tools/applyFormatters';
 import { bitwised } from '@tools/bitwised';
 import { encode } from '@tools/encode';
 import { isValidArrayType } from '@tools/typeAssert';
-import { isFalse, isNotEmpty } from 'my-easy-fp';
 
 export function getQueryParamInfo<T extends Record<string, any>>(
   origin: T,
@@ -17,7 +16,7 @@ export function getQueryParamInfo<T extends Record<string, any>>(
 
       // stage 01. bit-wised operator processing
       if (
-        isNotEmpty(option.bit) &&
+        option.bit != null &&
         option.bit.enable &&
         Array.isArray(value) &&
         value.every((num) => typeof num === 'number')
@@ -25,7 +24,7 @@ export function getQueryParamInfo<T extends Record<string, any>>(
         const bitwisedValue = bitwised(value);
 
         // include zero value in bit value
-        if (isFalse(option.bit.withZero) && bitwisedValue === 0) {
+        if (option.bit.withZero === false && bitwisedValue === 0) {
           return resultObj;
         }
 
@@ -36,7 +35,7 @@ export function getQueryParamInfo<T extends Record<string, any>>(
       const { formatter } = option;
 
       // stage 02. apply formatter
-      if (isNotEmpty(formatter)) {
+      if (formatter != null) {
         const formatted: string | string[] = applyFormatters(value, formatter);
         const commaApplied = isValidArrayType(formatted) && option.comma ? formatted.join(',') : formatted;
         return { ...resultObj, [fieldKey]: encode(option.encode, commaApplied) };
@@ -48,7 +47,7 @@ export function getQueryParamInfo<T extends Record<string, any>>(
         return { ...resultObj, [fieldKey]: commaApplied };
       }
 
-      if (isNotEmpty(value)) {
+      if (value != null) {
         return { ...resultObj, [fieldKey]: origin[fieldKey] };
       }
 

@@ -37,8 +37,8 @@ class TestGet2Frame extends JinEitherFrame {
   @JinEitherFrame.header()
   public readonly ttt: string;
 
-  constructor() {
-    super({ path: '/jinframe/:passing/test', method: 'get' });
+  constructor(host: string) {
+    super({ host, path: '/jinframe/:passing/test', method: 'get' });
 
     this.passing = 'hello';
     this.name = 'ironman';
@@ -79,11 +79,11 @@ describe('jinframe.test', () => {
   });
 
   test('nock-get02-with-jinframe', async () => {
-    nock('http://localhost').get('/jinframe/hello/test?name=ironman').reply(200, {
+    nock('http://some.api.google.com').get('/jinframe/hello/test?name=ironman').reply(200, {
       message: 'hello',
     });
 
-    const frame = new TestGet2Frame();
+    const frame = new TestGet2Frame('http://some.api.google.com');
     const resp = await frame.execute();
 
     if (isPass(resp)) {
@@ -97,21 +97,26 @@ describe('jinframe.test', () => {
   });
 
   test('nock-get03-axios-request', async () => {
-    nock('http://localhost').get('/jinframe/hello/test?name=ironman').reply(200, {
+    nock('http://some.api.google.com').get('/jinframe/hello/test?name=ironman').reply(200, {
       message: 'hello',
     });
 
-    const frame = new TestGet2Frame();
+    const frame = new TestGet2Frame('http://some.api.google.com');
     const req = frame.request();
-    const resp = await axios.request(req);
+    try {
+      const resp = await axios.get(req.url ?? '', { ...req, validateStatus: () => true });
+      if (resp.status < 400) {
+        log('Pass', resp.status, resp.data);
+      } else {
+        log('message: ', resp.data);
+        log('Fail', resp.status);
+      }
 
-    if (resp.status < 400) {
-      log('Pass', resp.status, resp.data);
-    } else {
-      log('message: ', resp.data);
-      log('Fail', resp.status);
+      expect(resp.status < 400).toEqual(true);
+    } catch (err) {
+      log((err as Error).message);
+      log((err as Error).stack);
+      expect(err).toBeFalsy();
     }
-
-    expect(resp.status < 400).toEqual(true);
   });
 });

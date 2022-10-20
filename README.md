@@ -12,11 +12,20 @@ When the system designed by MSA architecture, it invokes many APIs repeatedly. T
 1. HTTP request definition
 1. Use Axios ecosystem
 
+Yes, You can declare `AxiosRequestConfig` as TypeScript Class.
+
 ## Requirement
 
 1. TypeScript
 1. Decorator
    - enable experimentalDecorators, emitDecoratorMetadata option in tsconfig.json
+
+## Axios version
+
+| jin-frame | axios     |
+| --------- | --------- |
+| 2.x       | <= 0.27.x |
+| 3.x       | >= 1.1.x  |
 
 ## Install
 

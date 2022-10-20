@@ -282,7 +282,7 @@ export abstract class AbstractJinFrame<TPASS = unknown, TFAIL = TPASS> {
     const transformRequest = this.getTransformRequest();
     const data = this.getFormData(bodies);
 
-    const targetUrl = this.host !== undefined ? url.href : `${startWithSlash(url.pathname)}${url.search}`;
+    const targetUrl = this.host != null ? url.href : `${startWithSlash(url.pathname)}${url.search}`;
     const req: AxiosRequestConfig = {
       ...option,
       ...{
