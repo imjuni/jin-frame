@@ -1,3 +1,5 @@
+import { first } from 'my-easy-fp';
+
 export function isValidPrimitiveType(value: unknown): value is string | boolean | number | Date {
   if (
     typeof value === 'string' ||
@@ -14,10 +16,10 @@ export function isValidPrimitiveType(value: unknown): value is string | boolean 
 export function isValidArrayType(value: unknown): value is string[] | boolean[] | number[] | Date[] {
   if (typeof value === 'object' && Array.isArray(value)) {
     if (
-      typeof value.at(0) === 'string' ||
-      typeof value.at(0) === 'boolean' ||
-      typeof value.at(0) === 'number' ||
-      (typeof value.at(0) === 'object' && value.at(0) instanceof Date)
+      typeof first(value) === 'string' ||
+      typeof first(value) === 'boolean' ||
+      typeof first(value) === 'number' ||
+      (typeof first(value) === 'object' && first(value) instanceof Date)
     ) {
       return true;
     }
@@ -35,10 +37,10 @@ export function typeAssert(strict: boolean, value: unknown): boolean {
 
   if (typeof value === 'object' && Array.isArray(value)) {
     if (
-      typeof value.at(0) === 'string' ||
-      typeof value.at(0) === 'boolean' ||
-      typeof value.at(0) === 'number' ||
-      (typeof value.at(0) === 'object' && value.at(0) instanceof Date)
+      typeof first(value) === 'string' ||
+      typeof first(value) === 'boolean' ||
+      typeof first(value) === 'number' ||
+      (typeof first(value) === 'object' && first(value) instanceof Date)
     ) {
       return true;
     }

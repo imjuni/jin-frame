@@ -3,7 +3,7 @@ import { applyFormatters } from '@tools/applyFormatters';
 import { typeAssert } from '@tools/typeAssert';
 import { get, set } from 'dot-prop';
 import { recursive } from 'merge';
-import { isFalse } from 'my-easy-fp';
+import { first } from 'my-easy-fp';
 import { SetRequired } from 'type-fest';
 
 export function processObjectBodyFormatters<T extends Record<string, any>>(
@@ -19,14 +19,10 @@ export function processObjectBodyFormatters<T extends Record<string, any>>(
     : [{ ...formatterArgs, findFrom: formatterArgs.findFrom }];
 
   // case 01. array of primitive type & array of Date instance
-  if (typeof value === 'object' && Array.isArray(value)) {
+  if (typeof value === 'object' && Array.isArray(value) && typeAssert(strict, first(value))) {
     const formattersApplied = formatters.reduce(
       (processing, formatter) => {
         try {
-          if (isFalse(typeAssert(strict, processing))) {
-            return processing;
-          }
-
           return applyFormatters(processing, formatter);
         } catch {
           return processing;
@@ -38,13 +34,50 @@ export function processObjectBodyFormatters<T extends Record<string, any>>(
     return formattersApplied;
   }
 
-  // case 02. object of complex type
+  // case 02. array of user-defined type & array of Date instance
+  if (typeof value === 'object' && Array.isArray(value)) {
+    const formattersAppliedArray = value.map((eachValue) => {
+      const formattersApplied = formatters.reduce((aggregation, formatter) => {
+        try {
+          const childValue = get<any>(aggregation, formatter.findFrom);
+          if (typeAssert(strict, childValue) === false) {
+            return {};
+          }
+
+          const formatted = applyFormatters(childValue, formatter);
+          return set(aggregation, formatter.findFrom, formatted);
+        } catch {
+          return aggregation;
+        }
+      }, eachValue);
+
+      return formattersApplied;
+    });
+
+    return formattersAppliedArray;
+  }
+
+  // case 03. object of Date instance
+  if (typeof value === 'object' && value instanceof Date) {
+    const formattersApplied = formatters.reduce<Date | string>((aggregation, formatter) => {
+      try {
+        const formatted = applyFormatters(aggregation, formatter);
+        return formatted;
+      } catch {
+        return aggregation;
+      }
+    }, value);
+
+    return formattersApplied;
+  }
+
+  // case 04. object of complex type
   if (typeof value === 'object') {
     const formattersApplied = formatters
       .map((formatter) => {
         try {
           const childValue = get<any>(value, formatter.findFrom);
-          if (isFalse(typeAssert(strict, childValue))) {
+          if (typeAssert(strict, childValue) === false) {
             return {};
           }
 
