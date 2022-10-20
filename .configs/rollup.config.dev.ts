@@ -24,7 +24,9 @@ export default [
         resolveOnly: (module) => {
           return module === 'date-fns'
             ? true
-            : pkg?.dependencies?.[module] == null && pkg?.devDependencies?.[module] == null;
+            : pkg?.dependencies?.[module] == null &&
+                pkg?.devDependencies?.[module] == null &&
+                pkg?.peerDependencies?.[module] == null;
         },
       }),
       ts({ tsconfig: 'tsconfig.json' }),

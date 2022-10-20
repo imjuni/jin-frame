@@ -10,7 +10,6 @@ import axios, { AxiosResponse, Method } from 'axios';
 import formatISO from 'date-fns/formatISO';
 import getUnixTime from 'date-fns/getUnixTime';
 import intervalToDuration from 'date-fns/intervalToDuration';
-import { isFalse, isNotEmpty } from 'my-easy-fp';
 import 'reflect-metadata';
 
 /**
@@ -75,10 +74,10 @@ export class JinFrame<TPASS = unknown, TFAIL = TPASS> extends AbstractJinFrame<T
         const res = await axios.request<TPASS, AxiosResponse<TPASS>, TFAIL>(req);
         const endAt = new Date();
 
-        if (isFalse(isValidateStatus(res.status))) {
+        if (isValidateStatus(res.status) === false) {
           const failRes = res as any as AxiosResponse<TFAIL>;
           const durationSeconds = intervalToDuration({ start: startAt, end: endAt }).seconds;
-          const duration = isNotEmpty(durationSeconds) ? durationSeconds * 1000 : -1;
+          const duration = durationSeconds != null ? durationSeconds * 1000 : -1;
 
           const err = new JinFrameError<TPASS, TFAIL>({
             resp: failRes,
@@ -91,7 +90,7 @@ export class JinFrame<TPASS = unknown, TFAIL = TPASS> extends AbstractJinFrame<T
         }
 
         const durationSeconds = intervalToDuration({ start: startAt, end: endAt }).seconds;
-        const duration = isNotEmpty(durationSeconds) ? durationSeconds * 1000 : -1;
+        const duration = durationSeconds != null ? durationSeconds * 1000 : -1;
 
         return {
           ...res,
@@ -103,7 +102,7 @@ export class JinFrame<TPASS = unknown, TFAIL = TPASS> extends AbstractJinFrame<T
         const endAt = new Date();
 
         const durationSeconds = intervalToDuration({ start: startAt, end: endAt }).seconds;
-        const duration = isNotEmpty(durationSeconds) ? durationSeconds * 1000 : -1;
+        const duration = durationSeconds != null ? durationSeconds * 1000 : -1;
 
         const jinFrameError = new JinFrameError<TPASS, TFAIL>({
           resp: undefined,

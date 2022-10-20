@@ -12,7 +12,6 @@ import formatISO from 'date-fns/formatISO';
 import getUnixTime from 'date-fns/getUnixTime';
 import intervalToDuration from 'date-fns/intervalToDuration';
 import httpStatusCodes, { getReasonPhrase } from 'http-status-codes';
-import { isFalse, isNotEmpty } from 'my-easy-fp';
 import { fail, pass, PassFailEither } from 'my-only-either';
 import 'reflect-metadata';
 
@@ -82,10 +81,10 @@ export class JinEitherFrame<PASS = unknown, FAIL = PASS> extends AbstractJinFram
         const res = await axios.request<PASS, AxiosResponse<PASS>, FAIL>(req);
         const endAt = new Date();
 
-        if (isFalse(isValidateStatus(res.status))) {
+        if (isValidateStatus(res.status) === false) {
           const failRes = res as any as AxiosResponse<FAIL>;
           const durationSeconds = intervalToDuration({ start: startAt, end: endAt }).seconds;
-          const duration = isNotEmpty(durationSeconds) ? durationSeconds * 1000 : -1;
+          const duration = durationSeconds != null ? durationSeconds * 1000 : -1;
 
           const failInfo: IFailReplyJinEitherFrame<FAIL> = {
             ...failRes,
@@ -99,7 +98,7 @@ export class JinEitherFrame<PASS = unknown, FAIL = PASS> extends AbstractJinFram
         }
 
         const durationSeconds = intervalToDuration({ start: startAt, end: endAt }).seconds;
-        const duration = isNotEmpty(durationSeconds) ? durationSeconds * 1000 : -1;
+        const duration = durationSeconds != null ? durationSeconds * 1000 : -1;
 
         const passInfo: TPassJinEitherFrame<PASS> = {
           ...res,
@@ -113,7 +112,7 @@ export class JinEitherFrame<PASS = unknown, FAIL = PASS> extends AbstractJinFram
         const err = catched instanceof Error ? catched : new Error('unkonwn error raised from jinframe');
         const endAt = new Date();
         const durationSeconds = intervalToDuration({ start: startAt, end: endAt }).seconds;
-        const duration = isNotEmpty(durationSeconds) ? durationSeconds * 1000 : -1;
+        const duration = durationSeconds != null ? durationSeconds * 1000 : -1;
 
         const failInfo: IFailExceptionJinEitherFrame<FAIL> = {
           $progress: 'error',

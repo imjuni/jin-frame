@@ -3,7 +3,6 @@ import { applyFormatters } from '@tools/applyFormatters';
 import { isValidPrimitiveType, typeAssert } from '@tools/typeAssert';
 import { get, set } from 'dot-prop';
 import { recursive } from 'merge';
-import { isEmpty, isFalse, isNotEmpty } from 'my-easy-fp';
 import { SetOptional, SetRequired } from 'type-fest';
 
 export function processBodyFormatters<T extends Record<string, any>>(
@@ -26,7 +25,7 @@ export function processBodyFormatters<T extends Record<string, any>>(
         try {
           const childValue = get<any>(processing, resultAccessKey);
 
-          if (isFalse(typeAssert(strict, childValue))) {
+          if (typeAssert(strict, childValue) === false) {
             return processing;
           }
 
@@ -50,7 +49,7 @@ export function processBodyFormatters<T extends Record<string, any>>(
         try {
           const childValue = get<any>(processing, resultAccessKey);
 
-          if (isFalse(typeAssert(strict, childValue))) {
+          if (typeAssert(strict, childValue) === false) {
             return processing;
           }
 
@@ -70,12 +69,12 @@ export function processBodyFormatters<T extends Record<string, any>>(
   if (typeof value === 'object') {
     const resultAccessKey = option.replaceAt ?? thisFrameAccessKey;
 
-    const validFormatters = formatters.filter((formatter): formatter is SetRequired<TSingleBodyFormatter, 'findFrom'> =>
-      isNotEmpty(formatter.findFrom),
+    const validFormatters = formatters.filter(
+      (formatter): formatter is SetRequired<TSingleBodyFormatter, 'findFrom'> => formatter.findFrom != null,
     );
 
     const invalidFormatters = formatters.filter(
-      (formatter): formatter is SetOptional<TSingleBodyFormatter, 'findFrom'> => isEmpty(formatter.findFrom),
+      (formatter): formatter is SetOptional<TSingleBodyFormatter, 'findFrom'> => formatter.findFrom == null,
     );
 
     if (strict && invalidFormatters.length > 0) {
@@ -86,7 +85,7 @@ export function processBodyFormatters<T extends Record<string, any>>(
       .map((formatter) => {
         try {
           const childValue = get<any>(value, formatter.findFrom);
-          if (isFalse(typeAssert(strict, childValue))) {
+          if (typeAssert(strict, childValue) === false) {
             return {};
           }
 

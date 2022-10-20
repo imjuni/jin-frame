@@ -4,7 +4,7 @@ import { applyFormatters } from '@tools/applyFormatters';
 import { encodes } from '@tools/encode';
 import { isValidArrayType, isValidPrimitiveType } from '@tools/typeAssert';
 import fastSafeStringify from 'fast-safe-stringify';
-import { isError, isFalse, isTrue } from 'my-easy-fp';
+import { isError } from 'my-easy-fp';
 
 interface IHeaderField {
   key: string;
@@ -27,13 +27,13 @@ function processHeaderFormatters<T extends Record<string, any>>(
       const formatted: string | string[] = applyFormatters(value, formatter);
 
       // stage 02-1. array processing - comma seperated string
-      if (Array.isArray(formatted) && isTrue(option.comma ?? false)) {
+      if (Array.isArray(formatted) && (option.comma ?? false) === true) {
         const encoded = encodes(option.encode, formatted.join(','));
         return { [resultAccessKey]: encoded };
       }
 
       // stage 02-2. array processing - json serialization
-      if (Array.isArray(formatted) && isFalse(option.comma ?? false)) {
+      if (Array.isArray(formatted) && (option.comma ?? false) === false) {
         const encoded = encodes(option.encode, fastSafeStringify(formatted));
         return { [resultAccessKey]: encoded };
       }
@@ -79,7 +79,7 @@ export function getHeaderInfo<T extends Record<string, any>>(thisFrame: T, field
         // header not support dot-props set action
         if (isValidArrayType(value)) {
           // stage 04-1. array processing - comma seperated string
-          if (isTrue(option.comma ?? false)) {
+          if ((option.comma ?? false) === true) {
             const encoded = encodes(option.encode, value.join(','));
             return { [resultAccessKey]: encoded };
           }
