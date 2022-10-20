@@ -25,6 +25,7 @@ import { removeBothSlash, removeEndSlash, startWithSlash } from '@tools/slashUti
 import { AxiosRequestConfig, AxiosResponse, Method } from 'axios';
 import fastSafeStringify from 'fast-safe-stringify';
 import FormData from 'form-data';
+import { first } from 'my-easy-fp';
 import { PassFailEither } from 'my-only-either';
 import { compile } from 'path-to-regexp';
 import 'reflect-metadata';
@@ -159,7 +160,7 @@ export abstract class AbstractJinFrame<TPASS = unknown, TFAIL = TPASS> {
       keys.forEach((key) => {
         const formElement = bodies[key];
 
-        if (Array.isArray(formElement) && formElement.at(0) instanceof JinFile) {
+        if (Array.isArray(formElement) && first(formElement) instanceof JinFile) {
           formElement.forEach((jinFile) => formData.append(key, jinFile.file, jinFile.name));
         } else if (formElement instanceof JinFile) {
           formData.append(key, formElement.file, formElement.name);

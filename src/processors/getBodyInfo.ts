@@ -6,7 +6,7 @@ import { processObjectBodyFormatters } from '@processors/processObjectBodyFormat
 import { isValidArrayType, isValidPrimitiveType } from '@tools/typeAssert';
 import { set } from 'dot-prop';
 import { recursive } from 'merge';
-import { isError } from 'my-easy-fp';
+import { first, isError } from 'my-easy-fp';
 
 export function getBodyInfo<T extends Record<string, any>>(thisFrame: T, fields: IBodyField[], strict?: boolean) {
   const objectBodyFields = fields.filter(
@@ -15,7 +15,7 @@ export function getBodyInfo<T extends Record<string, any>>(thisFrame: T, fields:
 
   const sortedObjectBodyFields = objectBodyFields.sort((l, r) => (l.option.order ?? 0) - (r.option.order ?? 0));
 
-  const objectBodyFieldsProcessed = sortedObjectBodyFields
+  const objectBodyFieldsFormatted = sortedObjectBodyFields
     .map<Record<string, any> | undefined>((field) => {
       try {
         const { key: thisFrameAccessKey, option } = field;
@@ -32,6 +32,11 @@ export function getBodyInfo<T extends Record<string, any>>(thisFrame: T, fields:
         }
 
         // general action start
+        // stage 03. general action - primitive type
+        if (isValidPrimitiveType(value)) {
+          return value;
+        }
+
         // stage 04. general action - array of primitive type
         if (isValidArrayType(value)) {
           return value;
@@ -53,8 +58,26 @@ export function getBodyInfo<T extends Record<string, any>>(thisFrame: T, fields:
         throw err;
       }
     })
-    .filter((processed): processed is Record<string, any> => processed !== undefined && processed !== null)
-    .reduce<Record<string, any>>((aggregation, processing) => recursive(aggregation, processing), {});
+    .filter((processed): processed is Record<string, any> => processed !== undefined && processed !== null);
+
+  if (
+    objectBodyFieldsFormatted.length > 0 &&
+    objectBodyFieldsFormatted.every((element) => isValidPrimitiveType(element))
+  ) {
+    return first(objectBodyFieldsFormatted);
+  }
+
+  if (objectBodyFieldsFormatted.length > 0 && objectBodyFieldsFormatted.some((element) => Array.isArray(element))) {
+    const objectBodyArrayFields: any[] = objectBodyFieldsFormatted.filter((element) => Array.isArray(element));
+    return objectBodyArrayFields.reduce<any[]>((aggregation, objectBodyArrayField) => {
+      return [...aggregation, ...objectBodyArrayField];
+    }, []);
+  }
+
+  const objectBodyFieldsProcessed = objectBodyFieldsFormatted.reduce<Record<string, any>>(
+    (aggregation, processing) => recursive(aggregation, processing),
+    {},
+  );
 
   const bodyFields = fields.filter(
     (field): field is { key: string; option: IBodyFieldOption } => field.option.type === 'body',

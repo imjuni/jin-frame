@@ -1,6 +1,6 @@
 {
   "name": "jin-frame",
-  "version": "2.6.1",
+  "version": "2.7.0",
   "description": "Reusable HTTP API request definition library",
   "scripts": {
     "debug": "node --inspect-brk -r ts-node/register ./node_modules/jest/bin/jest --no-cache --runInBand --detectOpenHandles",
@@ -36,6 +36,9 @@
   "repository": {
     "type": "git",
     "url": "git+https://github.com/imjuni/jin-frame.git"
+  },
+  "engines": {
+    "node": ">=14"
   },
   "author": "ByungJoon Lee <imjuni+github@gmail.com>",
   "license": "MIT",
