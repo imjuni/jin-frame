@@ -44,7 +44,7 @@ test('T001-primitive-type-multiple-formatters', async () => {
     validateStatus: undefined,
   };
 
-  console.log(req);
+  // console.log(req);
 
   expect(req).toEqual(excpetation);
 });
@@ -125,7 +125,7 @@ test('T002-zero-depth-post-frame', async () => {
     validateStatus: undefined,
   };
 
-  console.log(req);
+  // console.log(req);
 
   expect(req).toEqual(excpetation);
 });

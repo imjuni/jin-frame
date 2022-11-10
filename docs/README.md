@@ -2,7 +2,11 @@
 
 [![Download Status](https://img.shields.io/npm/dw/jin-frame.svg)](https://npmcharts.com/compare/jin-frame?minimal=true) [![Github Star](https://img.shields.io/github/stars/imjuni/jin-frame.svg?style=popout)](https://github.com/imjuni/jin-frame) [![Github Issues](https://img.shields.io/github/issues-raw/imjuni/jin-frame.svg)](https://github.com/imjuni/jin-frame/issues) [![NPM version](https://img.shields.io/npm/v/jin-frame.svg)](https://www.npmjs.com/package/jin-frame) [![License](https://img.shields.io/npm/l/jin-frame.svg)](https://github.com/imjuni/jin-frame/blob/master/LICENSE) [![cti](https://circleci.com/gh/imjuni/jin-frame.svg?style=shield)](https://app.circleci.com/pipelines/github/imjuni/jin-frame?branch=master)
 
-Reusable HTTP request definition library
+Reusable HTTP request definition library. Ok, Create `template` for Your HTTP Request!
+
+| Axios                             | Jin-Frame                                |
+| --------------------------------- | ---------------------------------------- |
+| ![axios](./media/axios-usage.svg) | ![jin-frame](./media/jinframe-usage.svg) |
 
 ## Why jin-frame?
 
@@ -17,6 +21,13 @@ When the system designed by MSA architecture, it invokes many APIs repeatedly. T
 1. TypeScript
 1. Decorator
    - enable experimentalDecorators, emitDecoratorMetadata option in tsconfig.json
+
+## Axios version
+
+| jin-frame | axios     |
+| --------- | --------- |
+| 2.x       | <= 0.27.x |
+| 3.x       | >= 1.1.x  |
 
 ## Install
 
@@ -40,13 +51,13 @@ class TestPostQuery extends JinFrame {
   @JinFrame.body({ replaceAt: 'test.hello.marvel.gender' })
   public readonly gender: string;
 
-  constructor(id: number, name: string, skill: string) {
+  constructor(args: OmitConstructorType<TestPostQuery, 'host' | 'method' | 'contentType'>) {
     super({ host: 'http://some.api.yanolja.com/jinframe/:id', method: 'POST' });
 
-    this.id = id;
-    this.name = name;
-    this.skill = skill;
-    this.gender = 'male';
+    this.id = args.id;
+    this.name = args.name;
+    this.skill = args.skill;
+    this.gender = args.gender;
   }
 }
 ```
@@ -96,6 +107,18 @@ if (isFail(res)) {
   // failover action
 }
 ```
+
+## Form
+
+The form data is `multipart/form-data` and `application/x-www-form-urlencoded`. Use to upload files or submit form fields data.
+
+### application/x-www-form-urlencoded
+
+`application/x-www-form-urlencoded` converts from data using the `trasformRequest` function in [axios](https://github.com/axios/axios). For jin-frame, if you set the `application/x-www-form-urlencoded` to content-type, use the built-in transformRequest function or pass transformRequest function to constructor.
+
+### multipart/form-data
+
+jin-frame uses the [form-data](https://github.com/form-data/form-data) package for form-data processing. If you set the `multipart/form-data` content-type, use the form-data package to generate the AxiosRequestConfig data field value. Alternatively, upload the file by passing the customBody constructor parameter.
 
 ## Example
 

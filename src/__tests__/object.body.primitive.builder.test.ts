@@ -37,7 +37,7 @@ test('T001-primitive-number', async () => {
     validateStatus: undefined,
   };
 
-  console.log(req.data);
+  // console.log(req.data);
 
   expect(req).toEqual(excpetation);
 });
@@ -77,7 +77,7 @@ test('T002-primitive-string', async () => {
     validateStatus: undefined,
   };
 
-  console.log(req.data);
+  // console.log(req.data);
 
   expect(req).toEqual(excpetation);
 });
@@ -123,7 +123,7 @@ test('T003-primitive-date-with-format', async () => {
     validateStatus: undefined,
   };
 
-  console.log(req.data);
+  // console.log(req.data);
 
   expect(req).toEqual(excpetation);
 });
@@ -164,7 +164,7 @@ test('T004-primitive-boolean', async () => {
     validateStatus: undefined,
   };
 
-  console.log(req.data);
+  // console.log(req.data);
 
   expect(req).toEqual(excpetation);
 });

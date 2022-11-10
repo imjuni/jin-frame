@@ -115,7 +115,7 @@ test('T003-primitive-type-key-replace-using-dot-props', async () => {
     validateStatus: undefined,
   };
 
-  console.log(req.data);
+  // console.log(req.data);
 
   expect(req).toEqual(excpetation);
 });
@@ -173,7 +173,7 @@ test('T004-plain-object-type-without-formatter', async () => {
     validateStatus: undefined,
   };
 
-  console.log(req);
+  // console.log(req);
 
   expect(req).toEqual(excpetation);
 });

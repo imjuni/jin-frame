@@ -42,7 +42,7 @@ test('T001-plain-array-body', async () => {
     validateStatus: undefined,
   };
 
-  console.log(req);
+  // console.log(req);
 
   expect(req).toEqual(excpetation);
 });
@@ -93,7 +93,7 @@ test('T002-plain-array-overwrite', async () => {
     validateStatus: undefined,
   };
 
-  console.log(req);
+  // console.log(req);
 
   expect(req).toEqual(excpetation);
 });

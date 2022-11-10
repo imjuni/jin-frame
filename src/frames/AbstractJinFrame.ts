@@ -164,8 +164,18 @@ export abstract class AbstractJinFrame<TPASS = unknown, TFAIL = TPASS> {
           formElement.forEach((jinFile) => formData.append(key, jinFile.file, jinFile.name));
         } else if (formElement instanceof JinFile) {
           formData.append(key, formElement.file, formElement.name);
-        } else {
+        } else if (typeof formElement === 'string') {
           formData.append(key, formElement);
+        } else if (typeof formElement === 'number') {
+          formData.append(key, `${formElement}`);
+        } else if (typeof formElement === 'boolean') {
+          formData.append(key, `${formElement}`);
+        } else if (typeof formElement === 'object') {
+          formData.append(key, fastSafeStringify(formElement));
+        } else {
+          throw new Error(
+            `Invalid data type: ${typeof formElement}/ ${formElement}, only support JinFile, string, number, boolean, object type`,
+          );
         }
       });
 

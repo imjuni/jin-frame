@@ -4,6 +4,10 @@
 
 Reusable HTTP request definition library. Ok, Create `template` for Your HTTP Request!
 
+| Axios Usage                       | Jin-Frame                                |
+| --------------------------------- | ---------------------------------------- |
+| ![axios](./media/axios-usage.svg) | ![jin-frame](./media/jinframe-usage.svg) |
+
 ## Why jin-frame?
 
 When the system designed by MSA architecture, it invokes many APIs repeatedly. These repetitive API calls can be optimized for method extraction by refectoring, but are hardly reusabled and easily make to mistakes. Jin-frame defines the API as a class. Defining APIs in this class allows static type verification with the help of the TypeScript compiler and reduces the probability of errors by abstracting API calls. Jin-frame can use [Axios](https://github.com/axios/axios) to call APIs directly or automatically process up to run.
@@ -11,8 +15,8 @@ When the system designed by MSA architecture, it invokes many APIs repeatedly. T
 1. TypeScript compiler can detect error at compile-time
 1. HTTP request definition
 1. Use Axios ecosystem
-
-Yes, You can declare `AxiosRequestConfig` as TypeScript Class.
+1. Inheritance
+1. Support FileUpload
 
 ## Requirement
 
