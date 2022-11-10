@@ -1,6 +1,6 @@
 {
   "name": "jin-frame",
-  "version": "3.0.0",
+  "version": "3.0.1",
   "description": "Reusable HTTP API request definition library",
   "scripts": {
     "debug": "node --inspect-brk -r ts-node/register ./node_modules/jest/bin/jest --no-cache --runInBand --detectOpenHandles",
@@ -13,7 +13,8 @@
     "pub:dev": "just --config ./.configs/just.config.ts pub",
     "clean": "just --config ./.configs/just.config.ts clean",
     "lint": "just --config ./.configs/just.config.ts lint",
-    "test": "cross-env DEBUG=jinframe:* jest --config jest.config.js",
+    "test:only": "jest --detectOpenHandles --runInBand",
+    "test": "cross-env DEBUG=jinframe:* jest --coverage --config jest.config.js",
     "just": "just --config ./.configs/just.config.ts",
     "ctix": "just --config ./.configs/just.config.ts ctix:single",
     "ctix:remove": "just --config ./.configs/just.config.ts ctix:remove",
@@ -22,7 +23,7 @@
     "docs-watch": "just --config ./.configs/just.config.ts  docs-watch",
     "docs:dev": "vuepress dev docs --config ./.configs/vuepress.config.ts",
     "docs:build": "vuepress build docs --config ./.configs/vuepress.config.ts",
-    "deps-diff": "deps-diff md -d dev -d prod -d peer --title-list-type '*' --deps-list-type '*' --content-list-type '*'",
+    "dd": "deps-diff md -d dev -d prod -d peer --title-list-type '*' --deps-list-type '*' --content-list-type '*'",
     "httpd": "http-server ./docs -p 19983",
     "prepublishOnly": "node prepublish.js"
   },
@@ -75,7 +76,7 @@
     "@typescript-eslint/parser": "^5.39.0",
     "clone-deep": "^4.0.1",
     "cross-env": "^7.0.3",
-    "ctix": "^1.4.0",
+    "ctix": "^1.5.4",
     "date-fns": "^2.29.3",
     "date-fns-tz": "^1.3.7",
     "debug": "^4.3.4",
@@ -103,7 +104,6 @@
     "read-pkg": "^5.2.0",
     "rimraf": "^3.0.2",
     "rollup": "^2.79.1",
-    "rollup-plugin-sourcemaps": "^0.6.3",
     "rollup-plugin-terser": "^7.0.2",
     "rollup-plugin-ts": "^3.0.2",
     "ts-jest": "^29.0.3",

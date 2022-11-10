@@ -116,3 +116,6 @@ src/*.ts.bak
 # Automatically generated vuepress
 docs/.vuepress
 docs/api
+docs/classes
+docs/interfaces
+docs/media

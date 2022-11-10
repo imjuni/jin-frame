@@ -71,7 +71,7 @@ test('T001-plain-array-body', async () => {
     validateStatus: undefined,
   };
 
-  console.log(req.data);
+  // console.log(req.data);
 
   expect(req).toEqual(excpetation);
 });
@@ -150,7 +150,7 @@ test('T002-plain-array-with-formatters', async () => {
     validateStatus: undefined,
   };
 
-  console.log(req.data);
+  // console.log(req.data);
 
   expect(req).toEqual(excpetation);
 });
@@ -191,7 +191,7 @@ test('T003-primitive-array', async () => {
     validateStatus: undefined,
   };
 
-  console.log(req.data);
+  // console.log(req.data);
 
   expect(req).toEqual(excpetation);
 });
@@ -237,7 +237,7 @@ test('T004-primitive-date-array', async () => {
     validateStatus: undefined,
   };
 
-  console.log(req.data);
+  // console.log(req.data);
 
   expect(req).toEqual(excpetation);
 });
@@ -295,7 +295,7 @@ test('T005-primitive-date-array-ordered-merge', async () => {
     validateStatus: undefined,
   };
 
-  console.log(req.data);
+  // console.log(req.data);
 
   expect(req).toEqual(excpetation);
 });
@@ -349,7 +349,7 @@ test('T006-primitive-date-complex-type-merge', async () => {
     validateStatus: undefined,
   };
 
-  console.log(req.data);
+  // console.log(req.data);
 
   expect(req).toEqual(excpetation);
 });
@@ -449,7 +449,7 @@ test('T007-primitive-date-complex-type-merge', async () => {
     validateStatus: undefined,
   };
 
-  console.log(req.data);
+  // console.log(req.data);
 
   expect(req).toEqual(excpetation);
 });

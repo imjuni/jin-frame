@@ -47,7 +47,7 @@ test('T001-datetime-formatter', async () => {
     validateStatus: undefined,
   };
 
-  console.log(req.headers);
+  // console.log(req.headers);
 
   expect(req).toEqual(excpetation);
 });
@@ -156,7 +156,7 @@ test('T003-primitive-type-key-replace-at-not-support-dot-props', async () => {
     validateStatus: undefined,
   };
 
-  console.log(req.headers);
+  // console.log(req.headers);
 
   expect(req).toEqual(excpetation);
 });
@@ -216,7 +216,7 @@ test('T005-plain-object-type-json-serialization', async () => {
     validateStatus: undefined,
   };
 
-  console.log(req.headers);
+  // console.log(req.headers);
 
   expect(req).toEqual(excpetation);
 });

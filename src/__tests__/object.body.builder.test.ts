@@ -60,7 +60,7 @@ test('T001-plain-object-type', async () => {
     validateStatus: undefined,
   };
 
-  console.log(req.data);
+  // console.log(req.data);
 
   expect(req).toEqual(excpetation);
 });
@@ -125,7 +125,7 @@ test('T002-merge-two-object', async () => {
     validateStatus: undefined,
   };
 
-  console.log(req.data);
+  // console.log(req.data);
 
   expect(req).toEqual(excpetation);
 });
@@ -204,7 +204,7 @@ test('T003-merge-and-formatting', async () => {
     validateStatus: undefined,
   };
 
-  console.log(req.data);
+  // console.log(req.data);
 
   expect(req).toEqual(excpetation);
 });
@@ -286,7 +286,7 @@ test('T004-merge-and-formatting', async () => {
     validateStatus: undefined,
   };
 
-  console.log(req.data);
+  // console.log(req.data);
 
   expect(req).toEqual(excpetation);
 });

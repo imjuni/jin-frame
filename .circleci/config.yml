@@ -13,7 +13,7 @@ jobs:
           command: npm install
       - run:
           name: npm-test
-          command: npm run test
+          command: npm run test:only
       - run:
           name: npm-build
           command: npm run build

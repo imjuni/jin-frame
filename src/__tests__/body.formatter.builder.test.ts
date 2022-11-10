@@ -46,7 +46,7 @@ test('T001-array-type-formatter', async () => {
     validateStatus: undefined,
   };
 
-  console.log(req);
+  // console.log(req);
 
   expect(req).toEqual(excpetation);
 });
@@ -95,7 +95,7 @@ test('T002-string-type-formatter', async () => {
     validateStatus: undefined,
   };
 
-  console.log(req);
+  // console.log(req);
 
   expect(req).toEqual(excpetation);
 });
@@ -157,7 +157,7 @@ test('T003-string-array-and-string-formatter', async () => {
     validateStatus: undefined,
   };
 
-  console.log(req);
+  // console.log(req);
 
   expect(req).toEqual(excpetation);
 });
@@ -223,7 +223,7 @@ test('T004-plain-date-formatter', async () => {
     validateStatus: undefined,
   };
 
-  console.log(req);
+  // console.log(req);
 
   expect(req).toEqual(excpetation);
 });
@@ -290,7 +290,7 @@ test('T005-string-datetime-formatter-sequential', async () => {
     validateStatus: undefined,
   };
 
-  console.log(req);
+  // console.log(req);
 
   expect(req).toEqual(excpetation);
 });
@@ -359,7 +359,7 @@ test('T006-date-type-key-replace', async () => {
     validateStatus: undefined,
   };
 
-  console.log(req);
+  // console.log(req);
 
   expect(req).toEqual(excpetation);
 });

@@ -112,7 +112,7 @@ test('T003-primitive-type-key-replace-at-not-support-dot-props', async () => {
     validateStatus: undefined,
   };
 
-  console.log(req.headers);
+  // console.log(req.headers);
 
   expect(req).toEqual(excpetation);
 });
@@ -173,7 +173,7 @@ test('T004-plain-object-type-json-serialization', async () => {
     validateStatus: undefined,
   };
 
-  console.log(req.headers);
+  // console.log(req.headers);
 
   expect(req).toEqual(excpetation);
 });
@@ -222,7 +222,7 @@ test('T005-plain-object-type-array-comma-seperated', async () => {
     validateStatus: undefined,
   };
 
-  console.log(req.headers);
+  // console.log(req.headers);
 
   expect(req).toEqual(excpetation);
 });
