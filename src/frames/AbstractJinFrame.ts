@@ -1,15 +1,13 @@
 import { defaultJinFrameTimeout } from '@frames/defaultJinFrameTimeout';
 import { JinFile } from '@frames/JinFile';
 import type { IBodyFieldOption } from '@interfaces/body/IBodyFieldOption';
-import { IObjectBodyFieldOption } from '@interfaces/body/IObjectBodyFieldOption';
-import type { IFailExceptionJinEitherFrame, IFailReplyJinEitherFrame } from '@interfaces/IFailJinEitherFrame';
+import type { IObjectBodyFieldOption } from '@interfaces/body/IObjectBodyFieldOption';
 import type { IHeaderFieldOption } from '@interfaces/IHeaderFieldOption';
 import type { IJinFrameCreateConfig } from '@interfaces/IJinFrameCreateConfig';
 import type { IJinFrameRequestConfig } from '@interfaces/IJinFrameRequestConfig';
 import type { IParamFieldOption } from '@interfaces/IParamFieldOption';
 import type { IQueryFieldOption } from '@interfaces/IQueryFieldOption';
 import type { TFieldRecords } from '@interfaces/TFieldRecords';
-import type { TPassJinEitherFrame } from '@interfaces/TPassJinEitherFrame';
 import type { TRequestPart } from '@interfaces/TRequestPart';
 import { getBodyInfo } from '@processors/getBodyInfo';
 import {
@@ -22,16 +20,15 @@ import {
 import { getHeaderInfo } from '@processors/getHeaderInfo';
 import { getQueryParamInfo } from '@processors/getQueryParamInfo';
 import { removeBothSlash, removeEndSlash, startWithSlash } from '@tools/slashUtils';
-import { AxiosRequestConfig, AxiosResponse, Method } from 'axios';
+import { type AxiosRequestConfig, type Method } from 'axios';
 import fastSafeStringify from 'fast-safe-stringify';
 import FormData from 'form-data';
 import { first } from 'my-easy-fp';
-import { PassFailEither } from 'my-only-either';
 import { compile } from 'path-to-regexp';
 import 'reflect-metadata';
-import { Except } from 'type-fest';
+import type { Except } from 'type-fest';
 
-export abstract class AbstractJinFrame<TPASS = unknown, TFAIL = TPASS> {
+export abstract class AbstractJinFrame {
   public static ParamSymbolBox = Symbol('ParamSymbolBoxForAbstractJinFrame');
 
   public static QuerySymbolBox = Symbol('QuerySymbolBoxForAbstractJinFrame');
@@ -308,26 +305,4 @@ export abstract class AbstractJinFrame<TPASS = unknown, TFAIL = TPASS> {
 
     return req;
   }
-
-  public abstract create(
-    args?: IJinFrameRequestConfig & IJinFrameCreateConfig,
-  ):
-    | (() => Promise<AxiosResponse<TPASS>>)
-    | (() => Promise<
-        PassFailEither<
-          IFailReplyJinEitherFrame<TFAIL> | IFailExceptionJinEitherFrame<TFAIL>,
-          TPassJinEitherFrame<TPASS>
-        >
-      >);
-
-  public abstract execute(
-    args?: IJinFrameRequestConfig & IJinFrameCreateConfig,
-  ):
-    | Promise<AxiosResponse<TPASS>>
-    | Promise<
-        PassFailEither<
-          IFailReplyJinEitherFrame<TFAIL> | IFailExceptionJinEitherFrame<TFAIL>,
-          TPassJinEitherFrame<TPASS>
-        >
-      >;
 }

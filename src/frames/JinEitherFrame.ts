@@ -4,6 +4,7 @@ import { AbstractJinFrame } from '@frames/AbstractJinFrame';
 import type { IDebugInfo } from '@interfaces/IDebugInfo';
 import type { IFailExceptionJinEitherFrame, IFailReplyJinEitherFrame } from '@interfaces/IFailJinEitherFrame';
 import type { IJinFrameCreateConfig } from '@interfaces/IJinFrameCreateConfig';
+import type { IJinFrameFunction } from '@interfaces/IJinFrameFunction';
 import type { IJinFrameRequestConfig } from '@interfaces/IJinFrameRequestConfig';
 import type { TPassJinEitherFrame } from '@interfaces/TPassJinEitherFrame';
 import { isValidateStatusDefault } from '@tools/isValidateStatusDefault';
@@ -24,7 +25,10 @@ import 'reflect-metadata';
  * @typeParam TFAIL AxiosResponse type argument case of invalid status.
  * eg. `AxiosResponse<TFAIL>`
  */
-export class JinEitherFrame<PASS = unknown, FAIL = PASS> extends AbstractJinFrame<PASS, FAIL> {
+export class JinEitherFrame<PASS = unknown, FAIL = PASS>
+  extends AbstractJinFrame
+  implements IJinFrameFunction<PASS, FAIL>
+{
   /**
    * @param __namedParameters.host - host of API Request endpoint
    * @param __namedParameters.path - pathname of API Request endpoint
@@ -54,7 +58,7 @@ export class JinEitherFrame<PASS = unknown, FAIL = PASS> extends AbstractJinFram
    * @param option same with AxiosRequestConfig, bug exclude some filed ignored
    * @returns Functions that invoke HTTP APIs
    */
-  public override create(
+  public create(
     option?: IJinFrameRequestConfig & IJinFrameCreateConfig,
   ): () => Promise<
     PassFailEither<IFailReplyJinEitherFrame<FAIL> | IFailExceptionJinEitherFrame<FAIL>, TPassJinEitherFrame<PASS>>
@@ -134,7 +138,7 @@ export class JinEitherFrame<PASS = unknown, FAIL = PASS> extends AbstractJinFram
    * @param option same with AxiosRequestConfig, bug exclude some filed ignored
    * @returns AxiosResponse With PassFailEither
    */
-  public override execute(
+  public execute(
     option?: IJinFrameRequestConfig & IJinFrameCreateConfig,
   ): Promise<
     PassFailEither<IFailReplyJinEitherFrame<FAIL> | IFailExceptionJinEitherFrame<FAIL>, TPassJinEitherFrame<PASS>>

@@ -1,5 +1,5 @@
-import { IFormatter } from '@interfaces/IFormatter';
-import { IHeaderFieldOption } from '@interfaces/IHeaderFieldOption';
+import type { IFormatter } from '@interfaces/IFormatter';
+import type { IHeaderFieldOption } from '@interfaces/IHeaderFieldOption';
 import { applyFormatters } from '@tools/applyFormatters';
 import { encodes } from '@tools/encode';
 import { isValidArrayType, isValidPrimitiveType } from '@tools/typeAssert';

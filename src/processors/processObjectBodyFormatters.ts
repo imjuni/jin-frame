@@ -1,10 +1,10 @@
-import { IObjectBodyFieldOption, TMultipleObjectBodyFormatter } from '@interfaces/body/IObjectBodyFieldOption';
+import type { IObjectBodyFieldOption, TMultipleObjectBodyFormatter } from '@interfaces/body/IObjectBodyFieldOption';
 import { applyFormatters } from '@tools/applyFormatters';
 import { typeAssert } from '@tools/typeAssert';
 import { get, set } from 'dot-prop';
 import { recursive } from 'merge';
 import { first } from 'my-easy-fp';
-import { SetRequired } from 'type-fest';
+import type { SetRequired } from 'type-fest';
 
 export function processObjectBodyFormatters<T extends Record<string, any>>(
   strict: boolean,

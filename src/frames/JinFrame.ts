@@ -4,9 +4,10 @@ import { AbstractJinFrame } from '@frames/AbstractJinFrame';
 import { JinFrameError } from '@frames/JinFrameError';
 import type { IDebugInfo } from '@interfaces/IDebugInfo';
 import type { IJinFrameCreateConfig } from '@interfaces/IJinFrameCreateConfig';
+import type { IJinFrameFunction } from '@interfaces/IJinFrameFunction';
 import type { IJinFrameRequestConfig } from '@interfaces/IJinFrameRequestConfig';
 import { isValidateStatusDefault } from '@tools/isValidateStatusDefault';
-import axios, { AxiosResponse, Method } from 'axios';
+import axios, { type AxiosResponse, type Method } from 'axios';
 import formatISO from 'date-fns/formatISO';
 import getUnixTime from 'date-fns/getUnixTime';
 import intervalToDuration from 'date-fns/intervalToDuration';
@@ -21,7 +22,10 @@ import 'reflect-metadata';
  * @typeParam TFAIL AxiosResponse type argument case of invalid status.
  * eg. `AxiosResponse<TFAIL>`
  */
-export class JinFrame<TPASS = unknown, TFAIL = TPASS> extends AbstractJinFrame<TPASS, TFAIL> {
+export class JinFrame<TPASS = unknown, TFAIL = TPASS>
+  extends AbstractJinFrame
+  implements IJinFrameFunction<TPASS, TFAIL>
+{
   /**
    * @param __namedParameters.host - host of API Request endpoint
    * @param __namedParameters.path - pathname of API Request endpoint
@@ -51,7 +55,7 @@ export class JinFrame<TPASS = unknown, TFAIL = TPASS> extends AbstractJinFrame<T
    * @param option same with AxiosRequestConfig, bug exclude some filed ignored
    * @returns Functions that invoke HTTP APIs
    */
-  public override create(option?: IJinFrameRequestConfig & IJinFrameCreateConfig): () => Promise<AxiosResponse<TPASS>> {
+  public create(option?: IJinFrameRequestConfig & IJinFrameCreateConfig): () => Promise<AxiosResponse<TPASS>> {
     const req = this.request({ ...option, validateStatus: () => true });
     const frame: JinFrame<TPASS, TFAIL> = this;
 
@@ -122,7 +126,7 @@ export class JinFrame<TPASS = unknown, TFAIL = TPASS> extends AbstractJinFrame<T
    * @param option same with AxiosRequestConfig, bug exclude some filed ignored
    * @returns AxiosResponse With PassFailEither
    */
-  public override execute(option?: IJinFrameRequestConfig & IJinFrameCreateConfig): Promise<AxiosResponse<TPASS>> {
+  public execute(option?: IJinFrameRequestConfig & IJinFrameCreateConfig): Promise<AxiosResponse<TPASS>> {
     const requester = this.create(option);
     return requester();
   }
