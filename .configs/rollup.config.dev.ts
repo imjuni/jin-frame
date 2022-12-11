@@ -10,12 +10,12 @@ export default [
     output: [
       {
         format: 'cjs',
-        file: 'dist/cjs/index.js',
+        file: 'dist/cjs/index.cjs',
         sourcemap: true,
       },
       {
         format: 'esm',
-        file: 'dist/esm/index.js',
+        file: 'dist/esm/index.mjs',
         sourcemap: true,
       },
     ],
