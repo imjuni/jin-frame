@@ -1,6 +1,6 @@
-import { IBodyField } from '@interfaces/body/IBodyField';
-import { IBodyFieldOption } from '@interfaces/body/IBodyFieldOption';
-import { IObjectBodyFieldOption } from '@interfaces/body/IObjectBodyFieldOption';
+import type { IBodyField } from '@interfaces/body/IBodyField';
+import type { IBodyFieldOption } from '@interfaces/body/IBodyFieldOption';
+import type { IObjectBodyFieldOption } from '@interfaces/body/IObjectBodyFieldOption';
 import { processBodyFormatters } from '@processors/processBodyFormatters';
 import { processObjectBodyFormatters } from '@processors/processObjectBodyFormatters';
 import { isValidArrayType, isValidPrimitiveType } from '@tools/typeAssert';
