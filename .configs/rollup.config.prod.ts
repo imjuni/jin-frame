@@ -1,4 +1,5 @@
 import { nodeResolve } from '@rollup/plugin-node-resolve';
+import terser from '@rollup/plugin-terser';
 import readPackage from 'read-pkg';
 import ts from 'rollup-plugin-ts';
 
@@ -10,13 +11,13 @@ export default [
     output: [
       {
         format: 'cjs',
-        file: 'dist/cjs/index.js',
-        sourcemap: true,
+        file: 'dist/cjs/index.cjs',
+        sourcemap: false,
       },
       {
         format: 'esm',
-        file: 'dist/esm/index.js',
-        sourcemap: true,
+        file: 'dist/esm/index.mjs',
+        sourcemap: false,
       },
     ],
     plugins: [
@@ -29,7 +30,10 @@ export default [
                 pkg?.peerDependencies?.[module] == null;
         },
       }),
-      ts({ tsconfig: 'tsconfig.prod.json' }),
+      ts({
+        tsconfig: 'tsconfig.prod.json',
+      }),
+      terser(),
     ],
   },
 ];

@@ -11,8 +11,8 @@
       "DOM"
     ],
     "declaration": true, 
-    "declarationDir": "dist/typings", 
-    "declarationMap": true,                
+    // "declarationDir": "dist/typings", 
+    // "declarationMap": true,                
     "sourceMap": true,                     
     "removeComments": false, 
     "importHelpers": false,                 
