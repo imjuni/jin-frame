@@ -4,11 +4,11 @@
 
 Reusable HTTP request definition library. Ok, Create `template` for Your HTTP Request!
 
-| Axios Usage                       | Jin-Frame                                |
-| --------------------------------- | ---------------------------------------- |
-| ![axios](./media/axios-usage.svg) | ![jin-frame](./media/jinframe-usage.svg) |
+| Axios Usage                        | Jin-Frame                                 |
+| ---------------------------------- | ----------------------------------------- |
+| ![axios](./assets/axios-usage.png) | ![jin-frame](./assets/jinframe-usage.png) |
 
-## Why jin-frame?
+## Why?
 
 When the system designed by MSA architecture, it invokes many APIs repeatedly. These repetitive API calls can be optimized for method extraction by refectoring, but are hardly reusabled and easily make to mistakes. Jin-frame defines the API as a class. Defining APIs in this class allows static type verification with the help of the TypeScript compiler and reduces the probability of errors by abstracting API calls. Jin-frame can use [Axios](https://github.com/axios/axios) to call APIs directly or automatically process up to run.
 
@@ -121,6 +121,29 @@ The form data is `multipart/form-data` and `application/x-www-form-urlencoded`. 
 ### multipart/form-data
 
 jin-frame uses the [form-data](https://github.com/form-data/form-data) package for form-data processing. If you set the `multipart/form-data` content-type, use the form-data package to generate the AxiosRequestConfig data field value. Alternatively, upload the file by passing the customBody constructor parameter.
+
+## Mocking
+
+jin-frame use axios internally. So you can use [axios-mock-adapter](https://github.com/ctimmerm/axios-mock-adapter).
+
+```ts
+import axios from 'axios';
+import MockAdapter from 'axios-mock-adpater';
+
+// This sets the mock adapter on the default instance
+const mock = new MockAdapter(axios);
+
+// Mock any GET request to /users
+// arguments for reply are (status, data, headers)
+mock.onGet('/users').reply(200, {
+  users: [{ id: 1, name: 'John Smith' }],
+});
+
+const frame = new UserFrame({ params: { searchText: 'John' } });
+const reply = await frame.execute();
+
+console.log(response.data);
+```
 
 ## Example
 
