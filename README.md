@@ -4,9 +4,9 @@
 
 Reusable HTTP request definition library. Ok, Create `template` for Your HTTP Request!
 
-| Axios Usage                        | Jin-Frame                                 |
-| ---------------------------------- | ----------------------------------------- |
-| ![axios](./assets/axios-usage.png) | ![jin-frame](./assets/jinframe-usage.png) |
+| Axios Usage                      | Jin-Frame                               |
+| -------------------------------- | --------------------------------------- |
+| ![axios](assets/axios-usage.png) | ![jin-frame](assets/jinframe-usage.png) |
 
 ## Why?
 
@@ -42,24 +42,21 @@ npm i jin-frame --save
 ```ts
 class TestPostQuery extends JinFrame {
   @JinFrame.param()
-  public readonly id: number;
+  public readonly id!: number;
 
   @JinFrame.body({ replaceAt: 'test.hello.marvel.name' })
-  public readonly name: string;
+  public readonly name!: string;
 
   @JinFrame.header({ replaceAt: 'test.hello.marvel.skill' })
-  public readonly skill: string;
+  public readonly skill!: string;
 
   @JinFrame.body({ replaceAt: 'test.hello.marvel.gender' })
-  public readonly gender: string;
+  public readonly gender!: string;
 
+  // automatically initialize via base class, have to use same name of args and JinFrame class
+  // execute `Object.keys(args).forEach(key => this[key] = args[key])`
   constructor(args: OmitConstructorType<TestPostQuery, 'host' | 'method' | 'contentType'>) {
-    super({ host: 'http://some.api.yanolja.com/jinframe/:id', method: 'POST' });
-
-    this.id = args.id;
-    this.name = args.name;
-    this.skill = args.skill;
-    this.gender = args.gender;
+    super({ host: 'http://some.api.yanolja.com/jinframe/:id', method: 'POST', ...args });
   }
 }
 ```

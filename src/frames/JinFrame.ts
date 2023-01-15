@@ -33,20 +33,14 @@ export class JinFrame<TPASS = unknown, TFAIL = TPASS>
    * @param __namedParameters.contentType - content-type of API Request endpoint
    * @param __namedParameters.customBody - custom object of POST Request body data
    */
-  constructor({
-    host,
-    path,
-    method,
-    contentType,
-    customBody,
-  }: {
+  constructor(args: {
     host?: string;
     path?: string;
     method: Method;
     contentType?: string;
     customBody?: { [key: string]: any };
   }) {
-    super({ host, path, method, customBody, contentType });
+    super({ ...args });
   }
 
   /**

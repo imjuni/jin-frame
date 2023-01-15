@@ -36,20 +36,14 @@ export class JinEitherFrame<PASS = unknown, FAIL = PASS>
    * @param __namedParameters.contentType - content-type of API Request endpoint
    * @param __namedParameters.customBody - custom object of POST Request body data
    */
-  constructor({
-    host,
-    path,
-    method,
-    contentType,
-    customBody,
-  }: {
+  constructor(args: {
     host?: string;
     path?: string;
     method: Method;
     contentType?: string;
     customBody?: { [key: string]: any };
   }) {
-    super({ host, path, method, contentType, customBody });
+    super({ ...args });
   }
 
   /**
