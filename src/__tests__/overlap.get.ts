@@ -10,20 +10,16 @@ class TestGetFrame extends JinEitherFrame {
   @JinEitherFrame.query()
   @JinEitherFrame.body()
   @JinEitherFrame.header()
-  public readonly id: string;
+  public readonly id!: string;
 
   @JinEitherFrame.query()
-  public readonly name: string;
+  public readonly name!: string;
 
   @JinEitherFrame.query({ encode: false, comma: true })
-  public readonly skills: string[];
+  public readonly skills!: string[];
 
-  constructor({ id, name, skills }: { id: string; name: string; skills: string[] }) {
-    super({ host: 'http://some.api.google.com', path: '/jinframe/:id', method: 'post' });
-
-    this.id = id;
-    this.name = name;
-    this.skills = skills;
+  constructor(args: { id: string; name: string; skills: string[] }) {
+    super({ host: 'http://some.api.google.com', path: '/jinframe/:id', method: 'post', ...args });
   }
 }
 

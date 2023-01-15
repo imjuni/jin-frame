@@ -10,25 +10,22 @@ const log = debug('jinframe:test');
 
 class TestGetFrame extends JinEitherFrame {
   @JinEitherFrame.body()
-  public readonly description: string;
+  public readonly description!: string;
 
   @JinEitherFrame.body()
-  public readonly myFile: JinFile;
+  public readonly myFile!: JinFile;
 
   @JinEitherFrame.body()
-  public readonly myFiles: JinFile[];
+  public readonly myFiles!: JinFile[];
 
-  constructor({ description, file, files }: { description: string; file: JinFile; files: JinFile[] }) {
+  constructor(args: { description: string; file: JinFile; files: JinFile[] }) {
     super({
       host: 'http://some.api.google.com',
       path: '/fileupload-case04',
       method: 'post',
       contentType: 'multipart/form-data',
+      ...args,
     });
-
-    this.description = description;
-    this.myFile = file;
-    this.myFiles = files;
   }
 }
 

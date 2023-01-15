@@ -99,14 +99,7 @@ export abstract class AbstractJinFrame {
    * @param __namedParameters.contentType - content-type of API Request endpoint
    * @param __namedParameters.customBody - custom object of POST Request body data
    */
-  constructor({
-    host,
-    path,
-    method,
-    contentType,
-    customBody,
-    transformRequest,
-  }: {
+  constructor(args: {
     host?: string;
     path?: string;
     method: Method;
@@ -114,15 +107,14 @@ export abstract class AbstractJinFrame {
     customBody?: { [key: string]: any };
     transformRequest?: AxiosRequestConfig['transformRequest'];
   }) {
-    this.host = host;
-    this.path = path;
-    this.method = method;
-    this.customBody = customBody;
+    (Object.keys(args) as Array<keyof typeof args>).forEach((key) => {
+      (this[key] as any) = args[key];
+    });
 
-    this.contentType = contentType ?? 'application/json';
-    this.transformRequest = transformRequest;
+    this.method = args.method;
+    this.contentType = args.contentType ?? 'application/json';
 
-    if (host === undefined && path === undefined) {
+    if (args.host === undefined && args.path === undefined) {
       throw new Error('Invalid host & path. Cannot set undefined both');
     }
   }

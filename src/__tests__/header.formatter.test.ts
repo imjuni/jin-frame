@@ -5,10 +5,10 @@ import { JinEitherFrame } from '../frames/JinEitherFrame';
 
 class Test001PostFrame extends JinEitherFrame {
   @JinEitherFrame.param()
-  public readonly passing: string;
+  public readonly passing!: string;
 
   @JinEitherFrame.header()
-  public readonly username: string;
+  public readonly username!: string;
 
   @JinEitherFrame.header({
     replaceAt: 'send-at',
@@ -16,17 +16,14 @@ class Test001PostFrame extends JinEitherFrame {
       dateTime: (value) => lightFormat(value, `yyyyMMdd'T'HHmmss`),
     },
   })
-  public readonly sendAt: Date;
+  public readonly sendAt!: Date;
 
   constructor(args: { passing: string; username: string; sendAt: Date }) {
     super({
       host: 'http://some.api.google.com/jinframe/:passing',
       method: 'POST',
+      ...args,
     });
-
-    this.passing = args.passing;
-    this.username = args.username;
-    this.sendAt = args.sendAt;
   }
 }
 

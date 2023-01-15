@@ -3,23 +3,20 @@ import { JinEitherFrame } from '../frames/JinEitherFrame';
 
 class Test001PostFrame extends JinEitherFrame {
   @JinEitherFrame.param()
-  public readonly passing: string;
+  public readonly passing!: string;
 
   @JinEitherFrame.body()
-  public readonly username: string;
+  public readonly username!: string;
 
   @JinEitherFrame.body()
-  public readonly password: string;
+  public readonly password!: string;
 
   constructor(args: { passing: string; username: string; password: string }) {
     super({
       host: 'http://some.api.google.com/jinframe/:passing',
       method: 'POST',
+      ...args,
     });
-
-    this.passing = args.passing;
-    this.username = args.username;
-    this.password = args.password;
   }
 }
 
@@ -42,23 +39,20 @@ test('T001-primitive-type', async () => {
 
 class Test002PostFrame extends JinEitherFrame {
   @JinEitherFrame.param()
-  public readonly passing: string;
+  public readonly passing!: string;
 
   @JinEitherFrame.body({ replaceAt: 'uuu' })
-  public readonly username: string;
+  public readonly username!: string;
 
   @JinEitherFrame.body({ replaceAt: 'ppp' })
-  public readonly password: string;
+  public readonly password!: string;
 
   constructor(args: { passing: string; username: string; password: string }) {
     super({
       host: 'http://some.api.google.com/jinframe/:passing',
       method: 'POST',
+      ...args,
     });
-
-    this.passing = args.passing;
-    this.username = args.username;
-    this.password = args.password;
   }
 }
 
@@ -81,23 +75,20 @@ test('T002-primitive-type-key-replace', async () => {
 
 class Test003PostFrame extends JinEitherFrame {
   @JinEitherFrame.param()
-  public readonly passing: string;
+  public readonly passing!: string;
 
   @JinEitherFrame.body({ replaceAt: 'uuu.username' })
-  public readonly username: string;
+  public readonly username!: string;
 
   @JinEitherFrame.body({ replaceAt: 'ppp.password' })
-  public readonly password: string;
+  public readonly password!: string;
 
   constructor(args: { passing: string; username: string; password: string }) {
     super({
       host: 'http://some.api.google.com/jinframe/:passing',
       method: 'POST',
+      ...args,
     });
-
-    this.passing = args.passing;
-    this.username = args.username;
-    this.password = args.password;
   }
 }
 
@@ -122,13 +113,13 @@ test('T003-primitive-type-key-replace-using-dot-props', async () => {
 
 class Test004ZeroDepthPostFrame extends JinEitherFrame {
   @JinEitherFrame.param()
-  public readonly passing: string;
+  public readonly passing!: string;
 
   @JinEitherFrame.body()
-  public readonly username: string;
+  public readonly username!: string;
 
   @JinEitherFrame.body()
-  public readonly hero: {
+  public readonly hero!: {
     name: string;
     ability: string;
     age: number;
@@ -146,11 +137,8 @@ class Test004ZeroDepthPostFrame extends JinEitherFrame {
     super({
       host: 'http://some.api.google.com/jinframe/:passing',
       method: 'POST',
+      ...args,
     });
-
-    this.passing = args.passing;
-    this.username = args.username;
-    this.hero = args.hero;
   }
 }
 
