@@ -1,7 +1,7 @@
 import type { JinEitherFrame } from '@frames/JinEitherFrame';
 import type { IDebugInfo } from '@interfaces/IDebugInfo';
 import type { AxiosResponse } from 'axios';
-import { IFail } from 'my-only-either';
+import type { IFail } from 'my-only-either';
 
 export interface IFailJinEitherFrame<T> extends Pick<AxiosResponse, 'status' | 'statusText'> {
   /** exception class, $err representative message, stacktrace */

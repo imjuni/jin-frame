@@ -1,5 +1,3 @@
-/* eslint-disable import/no-extraneous-dependencies */
-
 import { AbstractJinFrame } from '@frames/AbstractJinFrame';
 import { JinFrameError } from '@frames/JinFrameError';
 import type { IDebugInfo } from '@interfaces/IDebugInfo';
@@ -8,8 +6,11 @@ import type { IJinFrameFunction } from '@interfaces/IJinFrameFunction';
 import type { IJinFrameRequestConfig } from '@interfaces/IJinFrameRequestConfig';
 import { isValidateStatusDefault } from '@tools/isValidateStatusDefault';
 import axios, { type AxiosResponse, type Method } from 'axios';
+/* eslint-disable-next-line import/no-extraneous-dependencies, import/no-duplicates */
 import formatISO from 'date-fns/formatISO';
+/* eslint-disable-next-line import/no-extraneous-dependencies, import/no-duplicates */
 import getUnixTime from 'date-fns/getUnixTime';
+/* eslint-disable-next-line import/no-extraneous-dependencies, import/no-duplicates */
 import intervalToDuration from 'date-fns/intervalToDuration';
 import 'reflect-metadata';
 

@@ -9,14 +9,14 @@ module.exports = {
     'airbnb-base',
     'airbnb-typescript/base',
     'plugin:prettier/recommended',
+    'prettier',
   ],
   parser: '@typescript-eslint/parser',
   parserOptions: {
     project: 'tsconfig.eslint.json',
   },
-  plugins: ['@typescript-eslint', 'prettier'],
+  plugins: ['@typescript-eslint', 'prettier', 'import'],
   rules: {
-    'prettier/prettier': 'error',
     'max-len': [
       'error',
       {
@@ -36,6 +36,15 @@ module.exports = {
       },
     ],
     'import/prefer-default-export': 'off',
+    'prettier/prettier': 'error',
+    'import/extensions': ['off'],
+    '@typescript-eslint/consistent-type-imports': ['error', { prefer: 'type-imports' }],
   },
-  settings: {},
+  settings: {
+    'import/resolver': {
+      typescript: {
+        alwaysTryTypes: true,
+      },
+    },
+  },
 };

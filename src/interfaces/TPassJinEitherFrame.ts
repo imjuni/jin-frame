@@ -1,7 +1,7 @@
 import type { JinEitherFrame } from '@frames/JinEitherFrame';
 import type { IDebugInfo } from '@interfaces/IDebugInfo';
 import type { AxiosResponse } from 'axios';
-import { IPass } from 'my-only-either';
+import type { IPass } from 'my-only-either';
 
 export type TPassJinEitherFrame<T> = AxiosResponse<T> & {
   $progress: 'pass';

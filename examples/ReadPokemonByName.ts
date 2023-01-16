@@ -1,5 +1,5 @@
 import { JinEitherFrame } from '../src/frames/JinEitherFrame';
-import { JinConstructorType } from '../src/tools/ConstructorType';
+import type { JinConstructorType } from '../src/tools/ConstructorType';
 
 export class PokemonFrame extends JinEitherFrame<any, any> {
   @JinEitherFrame.param()

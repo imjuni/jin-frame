@@ -3,7 +3,7 @@ import type { IObjectBodyFieldOption } from '@interfaces/body/IObjectBodyFieldOp
 import type { IHeaderFieldOption } from '@interfaces/IHeaderFieldOption';
 import type { IParamFieldOption } from '@interfaces/IParamFieldOption';
 import type { IQueryFieldOption } from '@interfaces/IQueryFieldOption';
-import { Except } from 'type-fest';
+import type { Except } from 'type-fest';
 
 export function getDefaultQueryFieldOption(
   option?: Partial<IQueryFieldOption> | Omit<Partial<IQueryFieldOption>, 'type'>,

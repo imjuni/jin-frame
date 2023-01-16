@@ -1,5 +1,3 @@
-/* eslint-disable import/no-extraneous-dependencies */
-
 import { AbstractJinFrame } from '@frames/AbstractJinFrame';
 import type { IDebugInfo } from '@interfaces/IDebugInfo';
 import type { IFailExceptionJinEitherFrame, IFailReplyJinEitherFrame } from '@interfaces/IFailJinEitherFrame';
@@ -9,11 +7,14 @@ import type { IJinFrameRequestConfig } from '@interfaces/IJinFrameRequestConfig'
 import type { TPassJinEitherFrame } from '@interfaces/TPassJinEitherFrame';
 import { isValidateStatusDefault } from '@tools/isValidateStatusDefault';
 import axios, { type AxiosResponse, type Method } from 'axios';
+/* eslint-disable-next-line import/no-extraneous-dependencies, import/no-duplicates */
 import formatISO from 'date-fns/formatISO';
+/* eslint-disable-next-line import/no-extraneous-dependencies, import/no-duplicates */
 import getUnixTime from 'date-fns/getUnixTime';
+/* eslint-disable-next-line import/no-extraneous-dependencies, import/no-duplicates */
 import intervalToDuration from 'date-fns/intervalToDuration';
 import httpStatusCodes, { getReasonPhrase } from 'http-status-codes';
-import { fail, pass, PassFailEither } from 'my-only-either';
+import { fail, pass, type PassFailEither } from 'my-only-either';
 import 'reflect-metadata';
 
 /**

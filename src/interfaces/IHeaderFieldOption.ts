@@ -1,5 +1,5 @@
 import type { ICommonFieldOption } from '@interfaces/ICommonFieldOption';
-import { IFormatter } from './IFormatter';
+import type { IFormatter } from '@interfaces/IFormatter';
 
 export interface IHeaderFieldOption extends ICommonFieldOption {
   /** field option discriminator */
