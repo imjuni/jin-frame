@@ -37,12 +37,12 @@ class PokemonPagingFrame extends JinEitherFrame<any, any> {
 }
 
 test('getPokemonInfoByName', async () => {
-  const reply = await getPokemonInfoByName({
+  await getPokemonInfoByName({
     limit: 10,
     offset: 0,
   });
 
-  console.log(reply);
+  // console.log(reply);
 });
 
 test('PokemonPagingFrame', async () => {
@@ -51,8 +51,7 @@ test('PokemonPagingFrame', async () => {
     offset: 0,
   });
 
-  const reply = await frame.execute();
+  await frame.execute();
 
-  // @ts-ignore
-  console.log(reply.pass.data);
+  // console.log(reply.pass.data);
 });

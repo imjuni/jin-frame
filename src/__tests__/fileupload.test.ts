@@ -1,12 +1,8 @@
 import { JinEitherFrame } from '@frames/JinEitherFrame';
 import { JinFile } from '@frames/JinFile';
-import debug from 'debug';
 import fs from 'fs';
-import { isPass } from 'my-only-either';
 import nock from 'nock';
 import path from 'path';
-
-const log = debug('jinframe:test');
 
 class TestGetFrame extends JinEitherFrame {
   @JinEitherFrame.body()
@@ -49,8 +45,5 @@ test('fileupload-test', async () => {
     ],
   });
 
-  const resp = await frame.execute();
-
-  log('AxiosRequestConfig: ', isPass(resp) ? resp.pass.$debug.req : resp.fail.$debug);
-  log('Resp: ', resp.type);
+  await frame.execute();
 });

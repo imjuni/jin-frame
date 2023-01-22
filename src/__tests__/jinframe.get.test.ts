@@ -2,11 +2,8 @@
 
 import { JinEitherFrame } from '@frames/JinEitherFrame';
 import axios from 'axios';
-import debug from 'debug';
 import { isPass } from 'my-only-either';
 import nock from 'nock';
-
-const log = debug('jinframe:test');
 
 class TestGetFrame extends JinEitherFrame {
   @JinEitherFrame.param()
@@ -56,9 +53,7 @@ describe('jinframe.test', () => {
       message: 'hello',
     });
 
-    const res = await axios.get('http://some.api.google.com/test');
-
-    log('test?', res.status, res.data);
+    await axios.get('http://some.api.google.com/test');
   });
 
   test('nock-get01-with-jinframe', async () => {
@@ -68,12 +63,6 @@ describe('jinframe.test', () => {
 
     const frame = new TestGetFrame();
     const resp = await frame.execute();
-
-    if (isPass(resp)) {
-      log('Pass', resp.pass.status, resp.pass.data);
-    } else {
-      log('Fail', resp.fail.$progress, resp.fail.$debug);
-    }
 
     expect(isPass(resp)).toEqual(true);
   });
@@ -85,13 +74,6 @@ describe('jinframe.test', () => {
 
     const frame = new TestGet2Frame('http://some.api.google.com');
     const resp = await frame.execute();
-
-    if (isPass(resp)) {
-      log('Pass', resp.pass.status, resp.pass.data);
-    } else {
-      log('message: ', resp.fail.$err.message);
-      log('Fail', resp.fail.$progress, resp.fail.$debug);
-    }
 
     expect(isPass(resp)).toEqual(true);
   });
@@ -105,17 +87,9 @@ describe('jinframe.test', () => {
     const req = frame.request();
     try {
       const resp = await axios.get(req.url ?? '', { ...req, validateStatus: () => true });
-      if (resp.status < 400) {
-        log('Pass', resp.status, resp.data);
-      } else {
-        log('message: ', resp.data);
-        log('Fail', resp.status);
-      }
 
       expect(resp.status < 400).toEqual(true);
     } catch (err) {
-      log((err as Error).message);
-      log((err as Error).stack);
       expect(err).toBeFalsy();
     }
   });

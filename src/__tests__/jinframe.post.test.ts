@@ -1,11 +1,8 @@
 /* eslint-disable max-classes-per-file */
 
 import { JinEitherFrame } from '@frames/JinEitherFrame';
-import debug from 'debug';
 import { isPass } from 'my-only-either';
 import nock from 'nock';
-
-const log = debug('jinframe:test');
 
 class TestPostFrame extends JinEitherFrame {
   @JinEitherFrame.param()
@@ -66,12 +63,6 @@ describe('jinframe.test', () => {
     const frame = new TestPostFrame();
     const resp = await frame.execute();
 
-    if (isPass(resp)) {
-      log('Pass', resp.pass.status, resp.pass.data);
-    } else {
-      log('Fail', resp.fail.$progress, resp.fail.$debug);
-    }
-
     expect(isPass(resp)).toEqual(true);
   });
 
@@ -83,12 +74,6 @@ describe('jinframe.test', () => {
     const frame = new TestPostFrame();
     const resp = await frame.execute();
 
-    if (isPass(resp)) {
-      log('Pass', resp.pass.status, resp.pass.data);
-    } else {
-      log('Fail', resp.fail.$progress, resp.fail.$debug);
-    }
-
     expect(isPass(resp)).toEqual(true);
   });
 
@@ -99,13 +84,6 @@ describe('jinframe.test', () => {
 
     const frame = new TestUrlencodedPostFrame();
     const resp = await frame.execute();
-
-    if (isPass(resp)) {
-      log('Pass', resp.pass.status, resp.pass.data);
-    } else {
-      log(resp.fail.$err.message, resp.fail.$err.stack);
-      log('Fail', resp.fail.$progress, resp.fail.$debug);
-    }
 
     expect(isPass(resp)).toEqual(true);
   });
