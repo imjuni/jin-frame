@@ -24,11 +24,6 @@ export function processBodyFormatters<T extends Record<string, any>>(
       (processing, formatter) => {
         try {
           const childValue = get<any>(processing, resultAccessKey);
-
-          if (typeAssert(strict, childValue) === false) {
-            return processing;
-          }
-
           const formatted = applyFormatters(childValue, formatter);
           return set({ ...processing }, resultAccessKey, formatted);
         } catch {
@@ -86,13 +81,13 @@ export function processBodyFormatters<T extends Record<string, any>>(
         try {
           const childValue = get<any>(value, formatter.findFrom);
           if (typeAssert(strict, childValue) === false) {
-            return {};
+            return value;
           }
 
           const formatted = applyFormatters(childValue, formatter);
           return set({}, formatter.findFrom, formatted);
         } catch {
-          return undefined;
+          return value;
         }
       })
       .filter((formatted) => formatted !== undefined && formatted !== null)
@@ -105,5 +100,5 @@ export function processBodyFormatters<T extends Record<string, any>>(
 
   typeAssert(strict, value);
 
-  return value;
+  return thisFrame;
 }

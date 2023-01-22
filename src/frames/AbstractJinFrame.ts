@@ -92,6 +92,8 @@ export abstract class AbstractJinFrame {
   /** transformRequest function of POST Request */
   public readonly transformRequest?: AxiosRequestConfig['transformRequest'];
 
+  protected startAt: Date;
+
   /**
    * @param __namedParameters.host - host of API Request endpoint
    * @param __namedParameters.path - pathname of API Request endpoint
@@ -113,8 +115,9 @@ export abstract class AbstractJinFrame {
 
     this.method = args.method;
     this.contentType = args.contentType ?? 'application/json';
+    this.startAt = new Date();
 
-    if (args.host === undefined && args.path === undefined) {
+    if (args.host == null && args.path == null) {
       throw new Error('Invalid host & path. Cannot set undefined both');
     }
   }
@@ -218,7 +221,7 @@ export abstract class AbstractJinFrame {
 
         return {
           ...box,
-          [fieldKey]: [...(box[fieldKey] ?? []), { key: keyWithSymbol.key, option: fieldOption }],
+          [fieldKey]: [...box[fieldKey], { key: keyWithSymbol.key, option: fieldOption }],
         };
       },
       { query: [], body: [], param: [], header: [] },
@@ -226,7 +229,7 @@ export abstract class AbstractJinFrame {
 
     // stage 02. each request parameter apply option
     const queries = getQueryParamInfo(this, fields.query); // create querystring information
-    const headers = fields.header.length <= 0 ? {} : getHeaderInfo(this, fields.header) ?? {}; // create header information
+    const headers = getHeaderInfo(this, fields.header); // create header information
     const paths = getQueryParamInfo(this, fields.param); // create param information
     const bodies = (() => {
       if (this.customBody != null) {
@@ -272,8 +275,8 @@ export abstract class AbstractJinFrame {
     // If set user-agent configuration using on browser environment, sometimes browser not sent request
     // because security configuration. So remove user-agent configuration. But user can set this option,
     // not work this code block.
-    if (option?.userAgent !== undefined) {
-      headers['User-Agent'] = option?.userAgent;
+    if (option?.userAgent != null) {
+      headers['User-Agent'] = option.userAgent;
     }
 
     headers['Content-Type'] = this.contentType;

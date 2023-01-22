@@ -1,9 +1,8 @@
 import type { IObjectBodyFieldOption, TMultipleObjectBodyFormatter } from '@interfaces/body/IObjectBodyFieldOption';
 import { applyFormatters } from '@tools/applyFormatters';
-import { typeAssert } from '@tools/typeAssert';
+import { isValidPrimitiveType, typeAssert } from '@tools/typeAssert';
 import { get, set } from 'dot-prop';
 import { recursive } from 'merge';
-import { first } from 'my-easy-fp';
 import type { SetRequired } from 'type-fest';
 
 export function processObjectBodyFormatters<T extends Record<string, any>>(
@@ -18,8 +17,21 @@ export function processObjectBodyFormatters<T extends Record<string, any>>(
     ? formatterArgs
     : [{ ...formatterArgs, findFrom: formatterArgs.findFrom }];
 
-  // case 01. array of primitive type & array of Date instance
-  if (typeof value === 'object' && Array.isArray(value) && typeAssert(strict, first(value))) {
+  // case 01.  primitive type & Date instance
+  if (isValidPrimitiveType(value)) {
+    const formattersApplied = formatters.reduce((processing, formatter) => {
+      try {
+        return applyFormatters(processing, formatter);
+      } catch {
+        return processing;
+      }
+    }, value);
+
+    return formattersApplied;
+  }
+
+  // case 02. array of primitive type & array of Date instance
+  if (typeof value === 'object' && Array.isArray(value) && value.every((element) => isValidPrimitiveType(element))) {
     const formattersApplied = formatters.reduce(
       (processing, formatter) => {
         try {
@@ -34,14 +46,15 @@ export function processObjectBodyFormatters<T extends Record<string, any>>(
     return formattersApplied;
   }
 
-  // case 02. array of user-defined type & array of Date instance
+  // case 03. array of user-defined type & array of Date instance
   if (typeof value === 'object' && Array.isArray(value)) {
     const formattersAppliedArray = value.map((eachValue) => {
       const formattersApplied = formatters.reduce((aggregation, formatter) => {
         try {
           const childValue = get<any>(aggregation, formatter.findFrom);
+
           if (typeAssert(strict, childValue) === false) {
-            return {};
+            return childValue;
           }
 
           const formatted = applyFormatters(childValue, formatter);
@@ -55,20 +68,6 @@ export function processObjectBodyFormatters<T extends Record<string, any>>(
     });
 
     return formattersAppliedArray;
-  }
-
-  // case 03. object of Date instance
-  if (typeof value === 'object' && value instanceof Date) {
-    const formattersApplied = formatters.reduce<Date | string>((aggregation, formatter) => {
-      try {
-        const formatted = applyFormatters(aggregation, formatter);
-        return formatted;
-      } catch {
-        return aggregation;
-      }
-    }, value);
-
-    return formattersApplied;
   }
 
   // case 04. object of complex type

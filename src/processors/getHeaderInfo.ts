@@ -1,62 +1,18 @@
-import type { IFormatter } from '@interfaces/IFormatter';
-import type { IHeaderFieldOption } from '@interfaces/IHeaderFieldOption';
-import { applyFormatters } from '@tools/applyFormatters';
+import type { IHeaderField } from '@interfaces/IHeaderField';
+import { processHeaderFormatters } from '@processors/processHeaderFormatters';
 import { encodes } from '@tools/encode';
 import { isValidArrayType, isValidPrimitiveType } from '@tools/typeAssert';
 import fastSafeStringify from 'fast-safe-stringify';
-import { isError } from 'my-easy-fp';
-
-interface IHeaderField {
-  key: string;
-  option: IHeaderFieldOption;
-}
-
-function processHeaderFormatters<T extends Record<string, any>>(
-  thisFrame: T,
-  field: IHeaderField,
-  formatters: IFormatter[],
-) {
-  const { key: thisFrameAccessKey, option } = field;
-  const value: any = thisFrame[thisFrameAccessKey];
-
-  const processed = formatters
-    .map<Record<string, any>>((formatter) => {
-      const resultAccessKey = option.replaceAt ?? thisFrameAccessKey;
-
-      // stage 01. apply formatter
-      const formatted: string | string[] = applyFormatters(value, formatter);
-
-      // stage 02-1. array processing - comma seperated string
-      if (Array.isArray(formatted) && (option.comma ?? false) === true) {
-        const encoded = encodes(option.encode, formatted.join(','));
-        return { [resultAccessKey]: encoded };
-      }
-
-      // stage 02-2. array processing - json serialization
-      if (Array.isArray(formatted) && (option.comma ?? false) === false) {
-        const encoded = encodes(option.encode, fastSafeStringify(formatted));
-        return { [resultAccessKey]: encoded };
-      }
-
-      // stage 03. general action
-      const encoded = encodes(option.encode, formatted);
-
-      return { [resultAccessKey]: encoded };
-    })
-    .reduce((merged, formatted) => ({ ...merged, ...formatted }), {});
-
-  return processed;
-}
 
 export function getHeaderInfo<T extends Record<string, any>>(thisFrame: T, fields: IHeaderField[], strict?: boolean) {
   return fields
     .map<Record<string, any> | undefined>((field) => {
-      try {
-        const { key: thisFrameAccessKey, option } = field;
-        const value: any = thisFrame[thisFrameAccessKey];
+      const { key: thisFrameAccessKey, option } = field;
+      const value: any = thisFrame[thisFrameAccessKey];
 
+      try {
         // stage 01. general action - undefined or null type
-        if (value === undefined || value === null) {
+        if (value == null) {
           return undefined;
         }
 
@@ -101,9 +57,8 @@ export function getHeaderInfo<T extends Record<string, any>>(thisFrame: T, field
 
         // unkonwn type
         return undefined;
-      } catch (catched) {
-        const err = isError(catched) ?? new Error('unknown error raised body');
-        throw err;
+      } catch {
+        return value;
       }
     })
     .filter((processed): processed is Record<string, any> => processed !== undefined && process !== null)

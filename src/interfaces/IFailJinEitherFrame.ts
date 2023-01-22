@@ -8,7 +8,7 @@ export interface IFailJinEitherFrame<T> extends Pick<AxiosResponse, 'status' | '
   $err: Error;
 
   /** debugging information */
-  $debug: IDebugInfo;
+  $debug: Omit<IDebugInfo, 'req'>;
 
   $frame: JinEitherFrame<any, T>;
 }
@@ -21,6 +21,9 @@ export interface IFailExceptionJinEitherFrame<T> extends IFailJinEitherFrame<T> 
 export interface IFailReplyJinEitherFrame<T> extends AxiosResponse<T>, IFailJinEitherFrame<T> {
   /** progress of jin-frame, fail representative success communication but result is fail */
   $progress: 'fail';
+
+  /** debugging information */
+  $debug: IDebugInfo;
 }
 
 export type TJinFail<T> = IFail<IFailExceptionJinEitherFrame<T> | IFailReplyJinEitherFrame<T>>;

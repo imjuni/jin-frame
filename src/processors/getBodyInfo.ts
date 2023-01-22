@@ -6,57 +6,54 @@ import { processObjectBodyFormatters } from '@processors/processObjectBodyFormat
 import { isValidArrayType, isValidPrimitiveType } from '@tools/typeAssert';
 import { set } from 'dot-prop';
 import { recursive } from 'merge';
-import { first, isError } from 'my-easy-fp';
+import { first } from 'my-easy-fp';
 
 export function getBodyInfo<T extends Record<string, any>>(thisFrame: T, fields: IBodyField[], strict?: boolean) {
   const objectBodyFields = fields.filter(
     (field): field is { key: string; option: IObjectBodyFieldOption } => field.option.type === 'object-body',
   );
 
-  const sortedObjectBodyFields = objectBodyFields.sort((l, r) => (l.option.order ?? 0) - (r.option.order ?? 0));
+  const sortedObjectBodyFields = [...objectBodyFields].sort(
+    (l, r) => (l.option.order ?? Number.MAX_SAFE_INTEGER) - (r.option.order ?? Number.MAX_SAFE_INTEGER),
+  );
 
   const objectBodyFieldsFormatted = sortedObjectBodyFields
     .map<Record<string, any> | undefined>((field) => {
-      try {
-        const { key: thisFrameAccessKey, option } = field;
-        const value: any = thisFrame[thisFrameAccessKey];
+      const { key: thisFrameAccessKey, option } = field;
+      const value: any = thisFrame[thisFrameAccessKey];
 
-        // stage 01. general action - undefined or null type
-        if (value === undefined || value === null) {
-          return undefined;
-        }
-
-        // stage 02. formatters apply
-        if ('formatters' in option && option.formatters !== undefined && option.formatters !== null) {
-          return processObjectBodyFormatters(strict ?? false, thisFrame, field, option.formatters);
-        }
-
-        // general action start
-        // stage 03. general action - primitive type
-        if (isValidPrimitiveType(value)) {
-          return value;
-        }
-
-        // stage 04. general action - array of primitive type
-        if (isValidArrayType(value)) {
-          return value;
-        }
-
-        // stage 05. general action - object of complexed type
-        if (typeof value === 'object') {
-          return value;
-        }
-
-        if (strict) {
-          throw new Error(`unknown type of value: ${typeof value} - ${value}`);
-        }
-
-        // unkonwn type
+      // stage 01. general action - undefined or null type
+      if (value == null) {
         return undefined;
-      } catch (catched) {
-        const err = isError(catched) ?? new Error('unknown error raised body');
-        throw err;
       }
+
+      // stage 02. formatters apply
+      if ('formatters' in option && option.formatters !== undefined && option.formatters !== null) {
+        return processObjectBodyFormatters(strict ?? false, thisFrame, field, option.formatters);
+      }
+
+      // general action start
+      // stage 03. general action - primitive type
+      if (isValidPrimitiveType(value)) {
+        return value;
+      }
+
+      // stage 04. general action - array of primitive type
+      if (isValidArrayType(value)) {
+        return value;
+      }
+
+      // stage 05. general action - object of complexed type
+      if (typeof value === 'object') {
+        return value;
+      }
+
+      if (strict) {
+        throw new Error(`unknown type of value: ${typeof value} - ${value}`);
+      }
+
+      // unkonwn type
+      return undefined;
     })
     .filter((processed): processed is Record<string, any> => processed !== undefined && processed !== null);
 
@@ -85,48 +82,43 @@ export function getBodyInfo<T extends Record<string, any>>(thisFrame: T, fields:
 
   const bodyFieldsProcessed = bodyFields
     .map<Record<string, any> | undefined>((field) => {
-      try {
-        const { key: thisFrameAccessKey, option } = field;
-        const value: any = thisFrame[thisFrameAccessKey];
+      const { key: thisFrameAccessKey, option } = field;
+      const value: any = thisFrame[thisFrameAccessKey];
 
-        // stage 01. general action - undefined or null type
-        if (value === undefined || value === null) {
-          return undefined;
-        }
-
-        // stage 02. formatters apply
-        if ('formatters' in option && option.formatters !== undefined && option.formatters !== null) {
-          return processBodyFormatters(strict ?? false, thisFrame, field, option.formatters);
-        }
-
-        const resultAccesssKey = option.replaceAt ?? thisFrameAccessKey;
-
-        // general action start
-        // stage 03. general action - primitive type
-        if (isValidPrimitiveType(value)) {
-          return set({}, resultAccesssKey, value);
-        }
-
-        // stage 04. general action - array of primitive type
-        if (isValidArrayType(value)) {
-          return set({}, resultAccesssKey, value);
-        }
-
-        // stage 05. general action - object of complexed type
-        if (typeof value === 'object') {
-          return set({}, resultAccesssKey, value);
-        }
-
-        if (strict) {
-          throw new Error(`unknown type of value: ${resultAccesssKey} - ${typeof value} - ${value}`);
-        }
-
-        // unkonwn type
+      // stage 01. general action - undefined or null type
+      if (value === undefined || value === null) {
         return undefined;
-      } catch (catched) {
-        const err = isError(catched) ?? new Error('unknown error raised body');
-        throw err;
       }
+
+      // stage 02. formatters apply
+      if ('formatters' in option && option.formatters !== undefined && option.formatters !== null) {
+        return processBodyFormatters(strict ?? false, thisFrame, field, option.formatters);
+      }
+
+      const resultAccesssKey = option.replaceAt ?? thisFrameAccessKey;
+
+      // general action start
+      // stage 03. general action - primitive type
+      if (isValidPrimitiveType(value)) {
+        return set({}, resultAccesssKey, value);
+      }
+
+      // stage 04. general action - array of primitive type
+      if (isValidArrayType(value)) {
+        return set({}, resultAccesssKey, value);
+      }
+
+      // stage 05. general action - object of complexed type
+      if (typeof value === 'object') {
+        return set({}, resultAccesssKey, value);
+      }
+
+      if (strict) {
+        throw new Error(`unknown type of value: ${resultAccesssKey} - ${typeof value} - ${value}`);
+      }
+
+      // unkonwn type
+      return undefined;
     })
     .filter((processed): processed is Record<string, any> => processed !== undefined && processed !== null)
     .reduce<Record<string, any>>((aggregation, processing) => recursive(aggregation, processing), {});
