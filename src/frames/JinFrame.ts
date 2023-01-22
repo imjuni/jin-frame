@@ -1,17 +1,19 @@
 import { AbstractJinFrame } from '@frames/AbstractJinFrame';
-import { JinFrameError } from '@frames/JinFrameError';
+import { JinCreateError } from '@frames/JinCreateError';
+import { JinRequestError } from '@frames/JinRequestError';
 import type { IDebugInfo } from '@interfaces/IDebugInfo';
 import type { IJinFrameCreateConfig } from '@interfaces/IJinFrameCreateConfig';
 import type { IJinFrameFunction } from '@interfaces/IJinFrameFunction';
 import type { IJinFrameRequestConfig } from '@interfaces/IJinFrameRequestConfig';
+import { getDuration } from '@tools/getDuration';
 import { isValidateStatusDefault } from '@tools/isValidateStatusDefault';
-import axios, { type AxiosResponse, type Method } from 'axios';
+import axios, { AxiosError, type AxiosRequestConfig, type AxiosResponse, type Method } from 'axios';
+import httpStatusCodes, { getReasonPhrase } from 'http-status-codes';
 /* eslint-disable-next-line import/no-extraneous-dependencies, import/no-duplicates */
 import formatISO from 'date-fns/formatISO';
 /* eslint-disable-next-line import/no-extraneous-dependencies, import/no-duplicates */
 import getUnixTime from 'date-fns/getUnixTime';
 /* eslint-disable-next-line import/no-extraneous-dependencies, import/no-duplicates */
-import intervalToDuration from 'date-fns/intervalToDuration';
 import 'reflect-metadata';
 
 /**
@@ -44,6 +46,28 @@ export class JinFrame<TPASS = unknown, TFAIL = TPASS>
     super({ ...args });
   }
 
+  public override request(
+    option?: (IJinFrameRequestConfig & IJinFrameCreateConfig) | undefined,
+  ): AxiosRequestConfig<any> {
+    try {
+      return super.request(option);
+    } catch (catched) {
+      const source = catched as Error;
+      const duration = getDuration(this.startAt, new Date());
+      const debug: Omit<IDebugInfo, 'req'> = {
+        ts: {
+          unix: `${getUnixTime(this.startAt)}.${this.startAt.getMilliseconds()}`,
+          iso: formatISO(this.startAt),
+        },
+        duration,
+      };
+      const err = new JinCreateError({ debug, frame: this, message: source.message });
+      err.stack = source.stack;
+
+      throw err;
+    }
+  }
+
   /**
    * Generate an AxiosRequestConfig value and use it to return a functions that invoke HTTP APIs
    *
@@ -54,14 +78,11 @@ export class JinFrame<TPASS = unknown, TFAIL = TPASS>
     const req = this.request({ ...option, validateStatus: () => true });
     const frame: JinFrame<TPASS, TFAIL> = this;
 
-    const isValidateStatus =
-      option?.validateStatus === undefined || option?.validateStatus === null
-        ? isValidateStatusDefault
-        : option.validateStatus;
+    const isValidateStatus = option?.validateStatus == null ? isValidateStatusDefault : option.validateStatus;
 
     return async () => {
       const startAt = new Date();
-      const debugInfo: Omit<IDebugInfo, 'duration'> = {
+      const debug: Omit<IDebugInfo, 'duration'> = {
         ts: {
           unix: `${getUnixTime(startAt)}.${startAt.getMilliseconds()}`,
           iso: formatISO(startAt),
@@ -70,17 +91,15 @@ export class JinFrame<TPASS = unknown, TFAIL = TPASS>
       };
 
       try {
-        const res = await axios.request<TPASS, AxiosResponse<TPASS>, TFAIL>(req);
-        const endAt = new Date();
+        const reply = await axios.request<TPASS, AxiosResponse<TPASS>, TFAIL>(req);
 
-        if (isValidateStatus(res.status) === false) {
-          const failRes = res as any as AxiosResponse<TFAIL>;
-          const durationSeconds = intervalToDuration({ start: startAt, end: endAt }).seconds;
-          const duration = durationSeconds != null ? durationSeconds * 1000 : -1;
+        if (isValidateStatus(reply.status) === false) {
+          const failReply = reply as any as AxiosResponse<TFAIL>;
+          const duration = getDuration(this.startAt, new Date());
 
-          const err = new JinFrameError<TPASS, TFAIL>({
-            resp: failRes,
-            debug: { ...debugInfo, duration },
+          const err = new JinRequestError<TPASS, TFAIL>({
+            resp: failReply,
+            debug: { ...debug, duration },
             frame,
             message: 'response error',
           });
@@ -88,26 +107,45 @@ export class JinFrame<TPASS = unknown, TFAIL = TPASS>
           throw err;
         }
 
-        const durationSeconds = intervalToDuration({ start: startAt, end: endAt }).seconds;
-        const duration = durationSeconds != null ? durationSeconds * 1000 : -1;
+        const duration = getDuration(this.startAt, new Date());
 
         return {
-          ...res,
-          $debug: { ...debugInfo, duration },
+          ...reply,
+          $debug: { ...debug, duration },
           $frame: frame,
         };
       } catch (catched) {
-        const err = catched instanceof Error ? catched : new Error('unkonwn error raised from jinframe');
-        const endAt = new Date();
+        if (catched instanceof JinRequestError) {
+          throw catched;
+        }
 
-        const durationSeconds = intervalToDuration({ start: startAt, end: endAt }).seconds;
-        const duration = durationSeconds != null ? durationSeconds * 1000 : -1;
+        if (catched instanceof AxiosError) {
+          const duration = getDuration(this.startAt, new Date());
 
-        const jinFrameError = new JinFrameError<TPASS, TFAIL>({
-          resp: undefined,
-          debug: { ...debugInfo, duration },
+          const jinFrameError = new JinRequestError<TPASS, TFAIL>({
+            resp:
+              catched.response ??
+              ({
+                status: httpStatusCodes.INTERNAL_SERVER_ERROR,
+                statusText: getReasonPhrase(httpStatusCodes.INTERNAL_SERVER_ERROR),
+              } as AxiosResponse<TFAIL>),
+            debug: { ...debug, duration },
+            frame,
+            message: catched.message,
+          });
+
+          throw jinFrameError;
+        }
+
+        const duration = getDuration(this.startAt, new Date());
+        const jinFrameError = new JinRequestError<TPASS, TFAIL>({
+          resp: {
+            status: httpStatusCodes.INTERNAL_SERVER_ERROR,
+            statusText: getReasonPhrase(httpStatusCodes.INTERNAL_SERVER_ERROR),
+          } as AxiosResponse<TFAIL>,
+          debug: { ...debug, duration },
           frame,
-          message: err.message,
+          message: 'unknown error raised',
         });
 
         throw jinFrameError;

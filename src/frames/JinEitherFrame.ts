@@ -1,18 +1,19 @@
 import { AbstractJinFrame } from '@frames/AbstractJinFrame';
+import { JinCreateError } from '@frames/JinCreateError';
 import type { IDebugInfo } from '@interfaces/IDebugInfo';
 import type { IFailExceptionJinEitherFrame, IFailReplyJinEitherFrame } from '@interfaces/IFailJinEitherFrame';
 import type { IJinFrameCreateConfig } from '@interfaces/IJinFrameCreateConfig';
 import type { IJinFrameFunction } from '@interfaces/IJinFrameFunction';
 import type { IJinFrameRequestConfig } from '@interfaces/IJinFrameRequestConfig';
 import type { TPassJinEitherFrame } from '@interfaces/TPassJinEitherFrame';
+import { getDuration } from '@tools/getDuration';
 import { isValidateStatusDefault } from '@tools/isValidateStatusDefault';
-import axios, { type AxiosResponse, type Method } from 'axios';
+import axios, { AxiosError, type AxiosRequestConfig, type AxiosResponse, type Method } from 'axios';
 /* eslint-disable-next-line import/no-extraneous-dependencies, import/no-duplicates */
 import formatISO from 'date-fns/formatISO';
 /* eslint-disable-next-line import/no-extraneous-dependencies, import/no-duplicates */
 import getUnixTime from 'date-fns/getUnixTime';
 /* eslint-disable-next-line import/no-extraneous-dependencies, import/no-duplicates */
-import intervalToDuration from 'date-fns/intervalToDuration';
 import httpStatusCodes, { getReasonPhrase } from 'http-status-codes';
 import { fail, pass, type PassFailEither } from 'my-only-either';
 import 'reflect-metadata';
@@ -26,9 +27,9 @@ import 'reflect-metadata';
  * @typeParam TFAIL AxiosResponse type argument case of invalid status.
  * eg. `AxiosResponse<TFAIL>`
  */
-export class JinEitherFrame<PASS = unknown, FAIL = PASS>
+export class JinEitherFrame<TPASS = unknown, TFAIL = TPASS>
   extends AbstractJinFrame
-  implements IJinFrameFunction<PASS, FAIL>
+  implements IJinFrameFunction<TPASS, TFAIL>
 {
   /**
    * @param __namedParameters.host - host of API Request endpoint
@@ -47,6 +48,33 @@ export class JinEitherFrame<PASS = unknown, FAIL = PASS>
     super({ ...args });
   }
 
+  public requestWrap(
+    option?: (IJinFrameRequestConfig & IJinFrameCreateConfig) | undefined,
+  ): PassFailEither<JinCreateError<JinEitherFrame<TPASS, TFAIL>, TPASS, TFAIL>, AxiosRequestConfig<any>> {
+    try {
+      const req = super.request(option);
+      return pass(req);
+    } catch (catched) {
+      const source = catched as Error;
+      const duration = getDuration(this.startAt, new Date());
+      const debug: Omit<IDebugInfo, 'req'> = {
+        ts: {
+          unix: `${getUnixTime(this.startAt)}.${this.startAt.getMilliseconds()}`,
+          iso: formatISO(this.startAt),
+        },
+        duration,
+      };
+      const err = new JinCreateError<JinEitherFrame<TPASS, TFAIL>, TPASS, TFAIL>({
+        debug,
+        frame: this,
+        message: source.message,
+      });
+      err.stack = source.stack;
+
+      return fail(err);
+    }
+  }
+
   /**
    * Generate an AxiosRequestConfig value and use it to return a functions that invoke HTTP APIs
    *
@@ -56,10 +84,24 @@ export class JinEitherFrame<PASS = unknown, FAIL = PASS>
   public create(
     option?: IJinFrameRequestConfig & IJinFrameCreateConfig,
   ): () => Promise<
-    PassFailEither<IFailReplyJinEitherFrame<FAIL> | IFailExceptionJinEitherFrame<FAIL>, TPassJinEitherFrame<PASS>>
+    PassFailEither<IFailReplyJinEitherFrame<TFAIL> | IFailExceptionJinEitherFrame<TFAIL>, TPassJinEitherFrame<TPASS>>
   > {
-    const req = this.request({ ...option, validateStatus: () => true });
-    const frame: JinEitherFrame<PASS, FAIL> = this;
+    const reqE = this.requestWrap({ ...option, validateStatus: () => true });
+
+    if (reqE.type === 'fail') {
+      return async () =>
+        fail({
+          $progress: 'error',
+          $debug: reqE.fail.debug,
+          $err: reqE.fail,
+          $frame: this,
+          status: httpStatusCodes.INTERNAL_SERVER_ERROR,
+          statusText: getReasonPhrase(httpStatusCodes.INTERNAL_SERVER_ERROR),
+        } satisfies IFailExceptionJinEitherFrame<TFAIL>);
+    }
+
+    const req = reqE.pass;
+    const frame: JinEitherFrame<TPASS, TFAIL> = this;
 
     const isValidateStatus =
       option?.validateStatus === undefined || option?.validateStatus === null
@@ -77,15 +119,14 @@ export class JinEitherFrame<PASS = unknown, FAIL = PASS>
       };
 
       try {
-        const res = await axios.request<PASS, AxiosResponse<PASS>, FAIL>(req);
+        const res = await axios.request<TPASS, AxiosResponse<TPASS>, TFAIL>(req);
         const endAt = new Date();
 
         if (isValidateStatus(res.status) === false) {
-          const failRes = res as any as AxiosResponse<FAIL>;
-          const durationSeconds = intervalToDuration({ start: startAt, end: endAt }).seconds;
-          const duration = durationSeconds != null ? durationSeconds * 1000 : -1;
+          const failRes = res as any as AxiosResponse<TFAIL>;
+          const duration = getDuration(startAt, endAt);
 
-          const failInfo: IFailReplyJinEitherFrame<FAIL> = {
+          const failInfo: IFailReplyJinEitherFrame<TFAIL> = {
             ...failRes,
             $progress: 'fail',
             $err: new Error('Error caused from API response'),
@@ -96,10 +137,9 @@ export class JinEitherFrame<PASS = unknown, FAIL = PASS>
           return fail(failInfo);
         }
 
-        const durationSeconds = intervalToDuration({ start: startAt, end: endAt }).seconds;
-        const duration = durationSeconds != null ? durationSeconds * 1000 : -1;
+        const duration = getDuration(startAt, endAt);
 
-        const passInfo: TPassJinEitherFrame<PASS> = {
+        const passInfo: TPassJinEitherFrame<TPASS> = {
           ...res,
           $progress: 'pass',
           $debug: { ...debugInfo, duration },
@@ -108,17 +148,16 @@ export class JinEitherFrame<PASS = unknown, FAIL = PASS>
 
         return pass(passInfo);
       } catch (catched) {
-        const err = catched instanceof Error ? catched : new Error('unkonwn error raised from jinframe');
+        const err = catched instanceof AxiosError ? catched : new AxiosError('unkonwn error raised from jinframe');
         const endAt = new Date();
-        const durationSeconds = intervalToDuration({ start: startAt, end: endAt }).seconds;
-        const duration = durationSeconds != null ? durationSeconds * 1000 : -1;
+        const duration = getDuration(startAt, endAt);
 
-        const failInfo: IFailExceptionJinEitherFrame<FAIL> = {
+        const failInfo: IFailExceptionJinEitherFrame<TFAIL> = {
           $progress: 'error',
           $err: err,
           $debug: { ...debugInfo, duration },
           $frame: frame,
-          status: httpStatusCodes.INTERNAL_SERVER_ERROR,
+          status: err.status ?? httpStatusCodes.INTERNAL_SERVER_ERROR,
           statusText: getReasonPhrase(httpStatusCodes.INTERNAL_SERVER_ERROR),
         };
 
@@ -136,7 +175,7 @@ export class JinEitherFrame<PASS = unknown, FAIL = PASS>
   public execute(
     option?: IJinFrameRequestConfig & IJinFrameCreateConfig,
   ): Promise<
-    PassFailEither<IFailReplyJinEitherFrame<FAIL> | IFailExceptionJinEitherFrame<FAIL>, TPassJinEitherFrame<PASS>>
+    PassFailEither<IFailReplyJinEitherFrame<TFAIL> | IFailExceptionJinEitherFrame<TFAIL>, TPassJinEitherFrame<TPASS>>
   > {
     const requester = this.create(option);
     return requester();

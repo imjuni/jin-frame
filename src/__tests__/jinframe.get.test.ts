@@ -72,7 +72,7 @@ describe('jinframe.test', () => {
     if (isPass(resp)) {
       log('Pass', resp.pass.status, resp.pass.data);
     } else {
-      log('Fail', resp.fail.$progress, resp.fail.$debug.req, resp.fail.$debug);
+      log('Fail', resp.fail.$progress, resp.fail.$debug);
     }
 
     expect(isPass(resp)).toEqual(true);
@@ -90,7 +90,7 @@ describe('jinframe.test', () => {
       log('Pass', resp.pass.status, resp.pass.data);
     } else {
       log('message: ', resp.fail.$err.message);
-      log('Fail', resp.fail.$progress, resp.fail.$debug.req, resp.fail.$debug.req);
+      log('Fail', resp.fail.$progress, resp.fail.$debug);
     }
 
     expect(isPass(resp)).toEqual(true);

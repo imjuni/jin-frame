@@ -13,12 +13,12 @@ class TestGetFrame extends JinEitherFrame {
   public readonly description!: string;
 
   @JinEitherFrame.body()
-  public readonly myFile!: JinFile;
+  public readonly myFile!: JinFile<Buffer>;
 
   @JinEitherFrame.body()
-  public readonly myFiles!: JinFile[];
+  public readonly myFiles!: JinFile<Buffer>[];
 
-  constructor(args: { description: string; file: JinFile; files: JinFile[] }) {
+  constructor(args: { description: string; file: JinFile<Buffer>; files: JinFile<Buffer>[] }) {
     super({
       host: 'http://some.api.google.com',
       path: '/fileupload-case04',
@@ -51,6 +51,6 @@ test('fileupload-test', async () => {
 
   const resp = await frame.execute();
 
-  log('AxiosRequestConfig: ', isPass(resp) ? resp.pass.$debug.req : resp.fail.$debug.req);
+  log('AxiosRequestConfig: ', isPass(resp) ? resp.pass.$debug.req : resp.fail.$debug);
   log('Resp: ', resp.type);
 });

@@ -38,7 +38,7 @@ export function getDefaultParamFieldOption(
 export function getDefaultBodyFieldOption(
   option?: Partial<IBodyFieldOption> | Except<Partial<IBodyFieldOption>, 'type'>,
 ): IBodyFieldOption {
-  if (option === undefined || option === null) {
+  if (option == null) {
     return {
       type: 'body',
       replaceAt: undefined,
@@ -65,11 +65,11 @@ export function getDefaultBodyFieldOption(
 export function getDefaultObjectBodyFieldOption(
   option?: Partial<IObjectBodyFieldOption> | Except<Partial<IObjectBodyFieldOption>, 'type'>,
 ): IObjectBodyFieldOption {
-  if (option === undefined || option === null) {
+  if (option == null) {
     return {
       type: 'object-body',
       encode: true,
-      order: 0,
+      order: Number.MAX_SAFE_INTEGER,
     };
   }
 
@@ -78,14 +78,14 @@ export function getDefaultObjectBodyFieldOption(
       type: 'object-body',
       formatters: option?.formatters ?? undefined,
       encode: option?.encode ?? true,
-      order: option?.order ?? 0,
+      order: option?.order ?? Number.MAX_SAFE_INTEGER,
     };
   }
 
   return {
     type: 'object-body',
     encode: option?.encode ?? true,
-    order: option?.order ?? 0,
+    order: option?.order ?? Number.MAX_SAFE_INTEGER,
   };
 }
 

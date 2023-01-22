@@ -1,13 +1,13 @@
 import type { ReadStream } from 'fs';
 
-export class JinFile {
+export class JinFile<T extends ReadStream | Buffer | File | Blob> {
   /** filename */
   #name: string;
 
   /** file content via stream or buffer */
-  #file: ReadStream | Buffer | File | Blob;
+  #file: T;
 
-  constructor(name: JinFile['name'], file: JinFile['file']) {
+  constructor(name: JinFile<T>['name'], file: JinFile<T>['file']) {
     this.#file = file;
     this.#name = name;
   }

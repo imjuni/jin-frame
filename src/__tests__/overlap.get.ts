@@ -37,6 +37,6 @@ test('overlap-param-query', async () => {
   const frame = new TestGetFrame({ id: 'pass', name: 'ironman', skills: ['beam', 'flying!'] });
   const resp = await frame.execute();
 
-  log('AxiosRequestConfig: ', isPass(resp) ? resp.pass.$debug.req : resp.fail.$debug.req);
+  log('AxiosRequestConfig: ', isPass(resp) ? resp.pass.$debug.req : resp.fail.$debug);
   log('Resp: ', resp.type);
 });
