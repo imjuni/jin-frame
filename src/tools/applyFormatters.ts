@@ -1,7 +1,6 @@
 /* eslint-disable import/no-extraneous-dependencies */
 
 import type { IFormatter } from '@interfaces/IFormatter';
-import formatISO from 'date-fns/formatISO';
 
 function applyFormatter(initialValue: string | boolean | number | Date, formatter: IFormatter) {
   const orders = formatter.order ?? ['number', 'string', 'dateTime'];
@@ -32,11 +31,6 @@ function applyFormatter(initialValue: string | boolean | number | Date, formatte
 
     return processing;
   }, initialValue);
-
-  // stage 03. force convert date instance to string
-  if (formatted != null && formatted instanceof Date) {
-    return formatISO(formatted);
-  }
 
   return formatted;
 }

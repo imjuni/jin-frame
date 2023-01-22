@@ -1,4 +1,4 @@
-/* eslint-disable max-classes-per-file, no-console */
+/* eslint-disable max-classes-per-file, no-console, import/no-extraneous-dependencies */
 import { applyFormatters } from '@tools/applyFormatters';
 import { format, parse } from 'date-fns';
 import 'jest';
@@ -38,30 +38,31 @@ describe('applyFormatters', () => {
   });
 
   test('datetime', () => {
-    const dtStrVal = applyFormatters('2023-01-20T11:22:33+09:00', {
+    const dtStrVal = applyFormatters('2023-01-20T11:22:33', {
       order: ['string', 'number', 'dateTime'],
-      string: (dt) => parse(dt, "yyyy-MM-dd'T'HH:mm:ssxxx", new Date()),
+      string: (dt) => parse(dt, "yyyy-MM-dd'T'HH:mm:ss", new Date()),
     });
 
-    const dtval = applyFormatters('2023-01-20T11:22:33+09:00', {
+    const dtval = applyFormatters('2023-01-20T11:22:33', {
       order: ['string', 'number', 'dateTime'],
-      string: (dt) => parse(dt, "yyyy-MM-dd'T'HH:mm:ssxxx", new Date()),
+      string: (dt) => parse(dt, "yyyy-MM-dd'T'HH:mm:ss", new Date()),
       dateTime: (dt) => format(dt, 'yyyy-MM-dd'),
     });
 
-    expect(dtStrVal).toEqual('2023-01-20T11:22:33+09:00');
+    expect(dtStrVal).toEqual(new Date(2023, 0, 20, 11, 22, 33));
     expect(dtval).toEqual('2023-01-20');
   });
 
   test('array', () => {
-    const dts = applyFormatters(
-      ['2023-01-18T11:22:33+09:00', '2023-01-19T09:11:22+09:00', '2023-01-20T11:22:33+09:00'],
-      {
-        order: ['string', 'number', 'dateTime'],
-        string: (dt) => parse(dt, "yyyy-MM-dd'T'HH:mm:ssxxx", new Date()),
-      },
-    );
+    const dts = applyFormatters(['2023-01-18T11:22:33', '2023-01-19T09:11:22', '2023-01-20T11:22:33'], {
+      order: ['string', 'number', 'dateTime'],
+      string: (dt) => parse(dt, "yyyy-MM-dd'T'HH:mm:ss", new Date()),
+    });
 
-    expect(dts).toEqual(['2023-01-18T11:22:33+09:00', '2023-01-19T09:11:22+09:00', '2023-01-20T11:22:33+09:00']);
+    expect(dts).toEqual([
+      new Date(2023, 0, 18, 11, 22, 33),
+      new Date(2023, 0, 19, 9, 11, 22),
+      new Date(2023, 0, 20, 11, 22, 33),
+    ]);
   });
 });
