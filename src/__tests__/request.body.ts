@@ -3,9 +3,6 @@
 import { JinEitherFrame } from '@frames/JinEitherFrame';
 import cloneDeep from 'clone-deep';
 import { format, parse } from 'date-fns';
-import debug from 'debug';
-
-const log = debug('jinframe:test');
 
 interface IFirstBody {
   name: string;
@@ -234,8 +231,6 @@ test('T0002-many-object-field-multiple-formattin', async () => {
       },
     },
   };
-
-  log(JSON.stringify(req.data ?? {}, undefined, 2));
 
   expect(req.data).toEqual(expectation);
 });

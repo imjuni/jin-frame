@@ -1,9 +1,5 @@
 import { JinEitherFrame } from '@frames/JinEitherFrame';
-import debug from 'debug';
-import { isPass } from 'my-only-either';
 import nock from 'nock';
-
-const log = debug('jinframe:test');
 
 class TestGetFrame extends JinEitherFrame {
   @JinEitherFrame.param()
@@ -35,8 +31,5 @@ test('overlap-param-query', async () => {
     });
 
   const frame = new TestGetFrame({ id: 'pass', name: 'ironman', skills: ['beam', 'flying!'] });
-  const resp = await frame.execute();
-
-  log('AxiosRequestConfig: ', isPass(resp) ? resp.pass.$debug.req : resp.fail.$debug);
-  log('Resp: ', resp.type);
+  await frame.execute();
 });
