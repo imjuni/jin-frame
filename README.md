@@ -1,8 +1,8 @@
 # jin-frame
 
-[![Download Status](https://img.shields.io/npm/dw/jin-frame.svg)](https://npmcharts.com/compare/jin-frame?minimal=true) [![Github Star](https://img.shields.io/github/stars/imjuni/jin-frame.svg?style=popout)](https://github.com/imjuni/jin-frame) [![Github Issues](https://img.shields.io/github/issues-raw/imjuni/jin-frame.svg)](https://github.com/imjuni/jin-frame/issues) [![NPM version](https://img.shields.io/npm/v/jin-frame.svg)](https://www.npmjs.com/package/jin-frame) [![License](https://img.shields.io/npm/l/jin-frame.svg)](https://github.com/imjuni/jin-frame/blob/master/LICENSE) [![cti](https://circleci.com/gh/imjuni/jin-frame.svg?style=shield)](https://app.circleci.com/pipelines/github/imjuni/jin-frame?branch=master)
+[![Download Status](https://img.shields.io/npm/dw/jin-frame.svg)](https://npmcharts.com/compare/jin-frame?minimal=true) [![Github Star](https://img.shields.io/github/stars/imjuni/jin-frame.svg?style=popout)](https://github.com/imjuni/jin-frame) [![Github Issues](https://img.shields.io/github/issues-raw/imjuni/jin-frame.svg)](https://github.com/imjuni/jin-frame/issues) [![NPM version](https://img.shields.io/npm/v/jin-frame.svg)](https://www.npmjs.com/package/jin-frame) [![License](https://img.shields.io/npm/l/jin-frame.svg)](https://github.com/imjuni/jin-frame/blob/master/LICENSE) [![cti](https://circleci.com/gh/imjuni/jin-frame.svg?style=shield)](https://app.circleci.com/pipelines/github/imjuni/jin-frame?branch=master) [![codecov](https://codecov.io/gh/imjuni/jin-frame/branch/master/graph/badge.svg?token=R7R2PdJcS9)](https://codecov.io/gh/imjuni/jin-frame)
 
-Reusable HTTP request definition library. Ok, Create `template` for Your HTTP Request!
+Reusable HTTP request definition library. Create `template` for Your HTTP Request!
 
 | Axios Usage                      | Jin-Frame                               |
 | -------------------------------- | --------------------------------------- |
@@ -10,26 +10,14 @@ Reusable HTTP request definition library. Ok, Create `template` for Your HTTP Re
 
 ## Why?
 
-When the system designed by MSA architecture, it invokes many APIs repeatedly. These repetitive API calls can be optimized for method extraction by refectoring, but are hardly reusabled and easily make to mistakes. Jin-frame defines the API as a class. Defining APIs in this class allows static type verification with the help of the TypeScript compiler and reduces the probability of errors by abstracting API calls. Jin-frame can use [Axios](https://github.com/axios/axios) to call APIs directly or automatically process up to run.
+RESTful API is still the most popular API implementation way with various protocols such as GraphQL, gRPC, and tRPC. It is easy to develop APIs that can be used on various platforms such as iOS, Android, and Web. However, as the number of RESTful APIs increases, writing code for using APIs is repetitive and boring. Furthermore, Making it reusable on multiple projects is not easy, and it is more difficult to use it on multiple projects as a separate package.
 
-1. TypeScript compiler can detect error at compile-time
-1. HTTP request definition
-1. Use Axios ecosystem
-1. Inheritance
-1. Support FileUpload
+jin-frame is a extendable RESTful API definition system developed with the aim fo defining these RESTful APIs concisely and clearly, separating them into separate packages, and resuing them in multiple projects.
 
-## Requirement
-
-1. TypeScript
-1. Decorator
-   - enable experimentalDecorators, emitDecoratorMetadata option in tsconfig.json
-
-## Axios version
-
-| jin-frame | axios     |
-| --------- | --------- |
-| 2.x       | <= 0.27.x |
-| 3.x       | >= 1.1.x  |
+1. Type check on API parameters
+1. Extending API definitions using OOP design
+1. Utilize the Axios ecosystem
+1. Build a separate package using ctix
 
 ## Install
 
@@ -50,13 +38,10 @@ class TestPostQuery extends JinFrame {
   @JinFrame.header({ replaceAt: 'test.hello.marvel.skill' })
   public readonly skill!: string;
 
-  @JinFrame.body({ replaceAt: 'test.hello.marvel.gender' })
-  public readonly gender!: string;
-
   // automatically initialize via base class, have to use same name of args and JinFrame class
   // execute `Object.keys(args).forEach(key => this[key] = args[key])`
   constructor(args: OmitConstructorType<TestPostQuery, 'host' | 'method' | 'contentType'>) {
-    super({ host: 'http://some.api.yanolja.com/jinframe/:id', method: 'POST', ...args });
+    super({ ...args, host: 'http://some.api.yanolja.com/jinframe/:id', method: 'POST' });
   }
 }
 ```
@@ -91,21 +76,18 @@ const res = await query.execute();
 const resp = await axios.request(query.request());
 ```
 
-Also you can use either,
+## Requirement
 
-```ts
-// change base calss JinFrame to JinEitherFrame
-class TestPostQuery extends JinEitherFrame {
-  // your definition ...
-}
+1. TypeScript
+1. Decorator
+   - enable experimentalDecorators, emitDecoratorMetadata option in `tsconfig.json`
 
-const query = new TestPostQuery('ironman', 'beam');
-const res = await query.execute();
+## Axios version
 
-if (isFail(res)) {
-  // failover action
-}
-```
+| jin-frame | axios     |
+| --------- | --------- |
+| 2.x       | <= 0.27.x |
+| 3.x       | >= 1.1.x  |
 
 ## Form
 
