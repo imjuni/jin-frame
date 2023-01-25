@@ -66,7 +66,7 @@ task('+rollup:prod', async () => {
 
 task('+build', async () => {
   const cmd = 'tsc';
-  const option = '--incremental --project tsconfig.json';
+  const option = '--incremental --project tsconfig.prod.json';
 
   logger.info('Build: ', cmd, option);
 
@@ -199,7 +199,7 @@ task('+docs-watch', async () => {
 
 task('docs', series('clean', 'ctix:single', '+docs', 'ctix:remove'));
 task('docs-watch', series('clean', 'ctix:single', '+docs-watch'));
-task('build', '+build');
+task('build', series('clean', '+build'));
 task('rollup:dev', series('clean', 'ctix:single', '+rollup:dev', 'ctix:remove'));
 task('rollup:prod', series('clean', 'ctix:single', '+rollup:prod', 'ctix:remove'));
 task('pub', series('rollup:prod', '+pub'));

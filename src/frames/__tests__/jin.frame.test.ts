@@ -1,10 +1,22 @@
 /* eslint-disable max-classes-per-file */
-import type { JinCreateError } from '@frames/JinCreateError';
+import { JinCreateError } from '@frames/JinCreateError';
 import { JinFrame } from '@frames/JinFrame';
 import type { JinRequestError } from '@frames/JinRequestError';
 import type { OmitConstructorType } from '@tools/ConstructorType';
 import 'jest';
 import nock from 'nock';
+
+class CustomError extends Error {
+  readonly discriminator = '__CustomError__';
+
+  readonly log: Record<string, string>;
+
+  constructor(message: string, log: Record<string, string>) {
+    super(message);
+
+    this.log = log;
+  }
+}
 
 class Test001PostFrame extends JinFrame<{ message: string }> {
   @JinFrame.param()
@@ -134,6 +146,76 @@ describe('JinFrame', () => {
       });
     } catch (catched) {
       expect((catched as JinRequestError<any, any>).resp?.status).toEqual(500);
+    }
+  });
+
+  test('exception - type01 404 - getError', async () => {
+    nock('http://some.api.google.com')
+      .post('/jinframe/pass', { username: 'ironman', password: 'marvel' })
+      .reply(404, 'not found');
+
+    const frame = new Test001PostFrame({ username: 'ironman', password: 'marvel', passing: 'pass' });
+
+    try {
+      await frame.execute({
+        getError: (err) => {
+          if (err instanceof JinCreateError) {
+            return new CustomError(err.message, { status: `${err.status}` });
+          }
+
+          return new CustomError(err.message, { status: `${err.status}` });
+        },
+      });
+    } catch (catched) {
+      expect((catched as CustomError).log).toMatchObject({ status: '404' });
+    }
+  });
+
+  test('exception - type03 404 - getError', async () => {
+    nock('http://some.api.google.com')
+      .post('/jinframe/pass', { username: 'ironman', password: 'marvel' })
+      .reply(200, { message: 'hello' });
+
+    const frame = new Test001PostFrame({ username: 'ironman', password: 'marvel', passing: 'fail' });
+
+    try {
+      await frame.execute({
+        getError: (err) => {
+          if (err instanceof JinCreateError) {
+            return new CustomError(err.message, { status: `${err.status}` });
+          }
+
+          return new CustomError(err.message, { status: `${err.status}` });
+        },
+      });
+    } catch (catched) {
+      expect((catched as CustomError).log).toMatchObject({ status: '500' });
+    }
+  });
+
+  test('exception - invalid exception - getError', async () => {
+    nock('http://some.api.google.com')
+      .post('/jinframe/pass', { username: 'ironman', password: 'marvel' })
+      .reply(200, { message: 'hello' });
+
+    const frame = new Test001PostFrame({ username: 'ironman', password: 'marvel', passing: 'pass' });
+
+    try {
+      await frame.execute({
+        validateStatus: () => {
+          // eslint-disable-next-line @typescript-eslint/no-throw-literal
+          throw 'invalid exception';
+        },
+        getError: (err) => {
+          if (err instanceof JinCreateError) {
+            return new CustomError(err.message, { status: `${err.status}` });
+          }
+
+          return new CustomError(err.message, { status: `${err.status}` });
+        },
+      });
+    } catch (catched) {
+      expect((catched as CustomError).log).toMatchObject({ status: '500' });
     }
   });
 });

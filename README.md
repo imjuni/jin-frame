@@ -4,10 +4,6 @@
 
 Reusable HTTP request definition library. Create `template` for Your HTTP Request!
 
-| Axios Usage                      | Jin-Frame                               |
-| -------------------------------- | --------------------------------------- |
-| ![axios](assets/axios-usage.png) | ![jin-frame](assets/jinframe-usage.png) |
-
 ## Why?
 
 RESTful API is still the most popular API implementation way with various protocols such as GraphQL, gRPC, and tRPC. It is easy to develop APIs that can be used on various platforms such as iOS, Android, and Web. However, as the number of RESTful APIs increases, writing code for using APIs is repetitive and boring. Furthermore, Making it reusable on multiple projects is not easy, and it is more difficult to use it on multiple projects as a separate package.
@@ -16,8 +12,18 @@ jin-frame is a extendable RESTful API definition system developed with the aim f
 
 1. Type check on API parameters
 1. Extending API definitions using OOP design
-1. Utilize the Axios ecosystem
-1. Build a separate package using ctix
+1. Use the Axios ecosystem
+1. Build a separate package
+
+## How to works?
+
+![jin-frame](assets/jin-frame-how-to-works.png)
+
+## Comparison of direct usage and jin-frame
+
+| Direct usage                     | Jin-Frame                               |
+| -------------------------------- | --------------------------------------- |
+| ![axios](assets/axios-usage.png) | ![jin-frame](assets/jinframe-usage.png) |
 
 ## Install
 
