@@ -74,7 +74,14 @@ export class JinFrame<TPASS = unknown, TFAIL = TPASS>
    * @param option same with AxiosRequestConfig, bug exclude some filed ignored
    * @returns Functions that invoke HTTP APIs
    */
-  public create(option?: IJinFrameRequestConfig & IJinFrameCreateConfig): () => Promise<AxiosResponse<TPASS>> {
+  public create(
+    option?: IJinFrameRequestConfig &
+      IJinFrameCreateConfig & {
+        getError?: <TFRAME extends JinFrame<TPASS, TFAIL>>(
+          err: JinCreateError<TFRAME, TPASS, TFAIL> | JinRequestError<TPASS, TFAIL>,
+        ) => Error;
+      },
+  ): () => Promise<AxiosResponse<TPASS>> {
     const req = this.request({ ...option, validateStatus: () => true });
     const frame: JinFrame<TPASS, TFAIL> = this;
 
@@ -116,7 +123,7 @@ export class JinFrame<TPASS = unknown, TFAIL = TPASS>
         };
       } catch (catched) {
         if (catched instanceof JinRequestError) {
-          throw catched;
+          throw option?.getError != null ? option.getError(catched) : catched;
         }
 
         if (catched instanceof AxiosError) {
@@ -134,7 +141,7 @@ export class JinFrame<TPASS = unknown, TFAIL = TPASS>
             message: catched.message,
           });
 
-          throw jinFrameError;
+          throw option?.getError != null ? option.getError(jinFrameError) : jinFrameError;
         }
 
         const duration = getDuration(this.startAt, new Date());
@@ -148,7 +155,7 @@ export class JinFrame<TPASS = unknown, TFAIL = TPASS>
           message: 'unknown error raised',
         });
 
-        throw jinFrameError;
+        throw option?.getError != null ? option.getError(jinFrameError) : jinFrameError;
       }
     };
   }
@@ -159,7 +166,14 @@ export class JinFrame<TPASS = unknown, TFAIL = TPASS>
    * @param option same with AxiosRequestConfig, bug exclude some filed ignored
    * @returns AxiosResponse With PassFailEither
    */
-  public execute(option?: IJinFrameRequestConfig & IJinFrameCreateConfig): Promise<AxiosResponse<TPASS>> {
+  public execute(
+    option?: IJinFrameRequestConfig &
+      IJinFrameCreateConfig & {
+        getError?: <TFRAME extends JinFrame<TPASS, TFAIL>>(
+          err: JinCreateError<TFRAME, TPASS, TFAIL> | JinRequestError<TPASS, TFAIL>,
+        ) => Error;
+      },
+  ): Promise<AxiosResponse<TPASS>> {
     const requester = this.create(option);
     return requester();
   }
