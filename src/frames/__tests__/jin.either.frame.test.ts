@@ -1,6 +1,6 @@
 /* eslint-disable max-classes-per-file */
 import { JinEitherFrame } from '@frames/JinEitherFrame';
-import type { OmitConstructorType } from '@tools/ConstructorType';
+import type { JinBuiltInMember, OmitConstructorType } from '@tools/ConstructorType';
 import 'jest';
 import nock from 'nock';
 
@@ -14,7 +14,7 @@ class Test001PostFrame extends JinEitherFrame {
   @JinEitherFrame.body()
   public readonly password!: string;
 
-  constructor(args: OmitConstructorType<Test001PostFrame, 'host' | 'method' | 'contentType'>) {
+  constructor(args: OmitConstructorType<Test001PostFrame, JinBuiltInMember>) {
     super({
       host: 'http://some.api.google.com/jinframe/:passing',
       method: 'post',
@@ -33,7 +33,7 @@ class Test002PostFrame extends JinEitherFrame {
   @JinEitherFrame.body()
   public readonly password!: string;
 
-  constructor(args: OmitConstructorType<Test002PostFrame, 'host' | 'method' | 'contentType'>) {
+  constructor(args: OmitConstructorType<Test002PostFrame, JinBuiltInMember>) {
     super({
       host: 'http://some.api.google.com/jinframe/:passing/:raiseerr',
       method: 'post',

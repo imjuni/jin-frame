@@ -12,7 +12,12 @@ class Test001PostFrame extends JinEitherFrame {
   @JinEitherFrame.body()
   public readonly password!: string;
 
-  constructor(args: OmitConstructorType<Test001PostFrame, 'host' | 'method' | 'contentType'>) {
+  constructor(
+    args: OmitConstructorType<
+      Test001PostFrame,
+      'host' | 'method' | 'contentType' | 'query' | 'body' | 'header' | 'param'
+    >,
+  ) {
     super({
       host: 'http://some.api.google.com/jinframe/:passing',
       method: 'POST',

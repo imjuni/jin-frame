@@ -28,6 +28,11 @@ import { compile } from 'path-to-regexp';
 import 'reflect-metadata';
 import type { Except } from 'type-fest';
 
+export interface AbstractJinFrame {
+  preHook?(this: void, req: AxiosRequestConfig): void | Promise<void>;
+  postHook?(this: void, req: AxiosRequestConfig, err?: Error): void | Promise<void>;
+}
+
 export abstract class AbstractJinFrame {
   public static ParamSymbolBox = Symbol('ParamSymbolBoxForAbstractJinFrame');
 
@@ -91,6 +96,30 @@ export abstract class AbstractJinFrame {
 
   /** transformRequest function of POST Request */
   public readonly transformRequest?: AxiosRequestConfig['transformRequest'];
+
+  #query?: Record<string, any>;
+
+  #header?: Record<string, any>;
+
+  #body?: Record<string, any>;
+
+  #param?: Record<string, any>;
+
+  public get query() {
+    return this.#query;
+  }
+
+  public get header() {
+    return this.#header;
+  }
+
+  public get body() {
+    return this.#body;
+  }
+
+  public get param() {
+    return this.#param;
+  }
 
   protected startAt: Date;
 
@@ -250,7 +279,13 @@ export abstract class AbstractJinFrame {
       { ...paths },
     );
 
-    // stage 04. url endpoint build
+    // stage 04. set debuggint variable
+    this.#query = queries;
+    this.#body = bodies;
+    this.#header = headers;
+    this.#param = safePaths;
+
+    // stage 05. url endpoint build
     const buildEndpoint = [this.host ?? 'http://localhost', this.path ?? '']
       .map((endpointPart) => endpointPart.trim())
       .map((endpointPart) => removeBothSlash(endpointPart))
@@ -258,12 +293,12 @@ export abstract class AbstractJinFrame {
 
     const url = new URL(buildEndpoint);
 
-    // stage 05. path parameter evaluation
+    // stage 06. path parameter evaluation
     const pathfunc = compile(url.pathname);
     const buildPath = pathfunc(safePaths);
     url.pathname = removeEndSlash(buildPath);
 
-    // stage 06. querystring post processing
+    // stage 07. querystring post processing
     Object.entries(queries).forEach(([key, value]) => {
       if (Array.isArray(value)) {
         value.forEach((val) => url.searchParams.append(key, typeof val !== 'string' ? `${val}` : val));

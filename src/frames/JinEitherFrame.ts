@@ -54,8 +54,8 @@ export class JinEitherFrame<TPASS = unknown, TFAIL = TPASS>
     try {
       const req = super.request(option);
       return pass(req);
-    } catch (catched) {
-      const source = catched as Error;
+    } catch (caught) {
+      const source = caught as Error;
       const duration = getDuration(this.startAt, new Date());
       const debug: Omit<IDebugInfo, 'req'> = {
         ts: {
@@ -119,25 +119,32 @@ export class JinEitherFrame<TPASS = unknown, TFAIL = TPASS>
       };
 
       try {
+        this.preHook?.(req);
+
         const res = await axios.request<TPASS, AxiosResponse<TPASS>, TFAIL>(req);
         const endAt = new Date();
 
         if (isValidateStatus(res.status) === false) {
           const failRes = res as any as AxiosResponse<TFAIL>;
           const duration = getDuration(startAt, endAt);
+          const err = new Error('Error caused from API response');
 
           const failInfo: IFailReplyJinEitherFrame<TFAIL> = {
             ...failRes,
             $progress: 'fail',
-            $err: new Error('Error caused from API response'),
+            $err: err,
             $debug: { ...debugInfo, duration },
             $frame: frame,
           };
+
+          this.postHook?.(req, err);
 
           return fail(failInfo);
         }
 
         const duration = getDuration(startAt, endAt);
+
+        this.postHook?.(req);
 
         const passInfo: TPassJinEitherFrame<TPASS> = {
           ...res,

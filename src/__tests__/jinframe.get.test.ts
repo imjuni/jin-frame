@@ -1,7 +1,8 @@
+/* eslint-disable no-console */
 /* eslint-disable max-classes-per-file */
 
 import { JinEitherFrame } from '@frames/JinEitherFrame';
-import axios from 'axios';
+import axios, { type AxiosRequestConfig } from 'axios';
 import { isPass } from 'my-only-either';
 import nock from 'nock';
 
@@ -21,6 +22,16 @@ class TestGetFrame extends JinEitherFrame {
     this.passing = 'pass';
     this.name = 'ironman';
     this.skill = ['beam', 'flying!'];
+  }
+
+  override preHook(req: AxiosRequestConfig<any>): void {
+    console.log(this);
+    console.log(req);
+  }
+
+  override postHook(req: AxiosRequestConfig<any>): void {
+    console.log(this);
+    console.log(req);
   }
 }
 
