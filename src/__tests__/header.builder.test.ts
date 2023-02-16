@@ -39,6 +39,17 @@ test('T001-primitive-type', async () => {
   expect(req).toEqual(excpetation);
 });
 
+test('T001-header', async () => {
+  const frame = new Test001PostFrame({ passing: 'hello', username: 'ironman', password: 'advengers' });
+  frame.request();
+
+  expect(frame.header).toMatchObject({
+    username: 'ironman',
+    password: 'advengers',
+    'Content-Type': 'application/json',
+  });
+});
+
 class Test002PostFrame extends JinEitherFrame {
   @JinEitherFrame.param()
   public readonly passing: string;

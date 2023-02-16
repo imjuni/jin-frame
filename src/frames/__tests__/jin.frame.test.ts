@@ -2,7 +2,7 @@
 import { JinCreateError } from '@frames/JinCreateError';
 import { JinFrame } from '@frames/JinFrame';
 import type { JinRequestError } from '@frames/JinRequestError';
-import type { OmitConstructorType } from '@tools/ConstructorType';
+import type { JinBuiltInMember, OmitConstructorType } from '@tools/ConstructorType';
 import 'jest';
 import nock from 'nock';
 
@@ -28,7 +28,7 @@ class Test001PostFrame extends JinFrame<{ message: string }> {
   @JinFrame.body()
   public readonly password!: string;
 
-  constructor(args: OmitConstructorType<Test001PostFrame, 'host' | 'method' | 'contentType'>) {
+  constructor(args: OmitConstructorType<Test001PostFrame, JinBuiltInMember>) {
     super({
       host: 'http://some.api.google.com/jinframe/:passing',
       method: 'post',
@@ -47,7 +47,7 @@ class Test002PostFrame extends JinFrame<{ message: string }> {
   @JinFrame.body()
   public readonly password!: string;
 
-  constructor(args: OmitConstructorType<Test001PostFrame, 'host' | 'method' | 'contentType'>) {
+  constructor(args: OmitConstructorType<Test001PostFrame, JinBuiltInMember>) {
     super({
       host: 'http://some.api.google.com/jinframe/:passing/:raiseerr',
       method: 'post',

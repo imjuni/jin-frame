@@ -98,6 +98,8 @@ export class JinFrame<TPASS = unknown, TFAIL = TPASS>
       };
 
       try {
+        this.preHook?.(req);
+
         const reply = await axios.request<TPASS, AxiosResponse<TPASS>, TFAIL>(req);
 
         if (isValidateStatus(reply.status) === false) {
@@ -111,10 +113,14 @@ export class JinFrame<TPASS = unknown, TFAIL = TPASS>
             message: 'response error',
           });
 
+          this.postHook?.(req, err);
+
           throw err;
         }
 
         const duration = getDuration(this.startAt, new Date());
+
+        this.postHook?.(req);
 
         return {
           ...reply,

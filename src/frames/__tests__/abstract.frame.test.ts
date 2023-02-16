@@ -1,7 +1,7 @@
 /* eslint-disable max-classes-per-file */
 import { JinFile } from '@frames/JinFile';
 import { JinFrame } from '@frames/JinFrame';
-import type { OmitConstructorType } from '@tools/ConstructorType';
+import type { JinBuiltInMember, JinConstructorType, OmitConstructorType } from '@tools/ConstructorType';
 import 'jest';
 import nock from 'nock';
 
@@ -15,7 +15,7 @@ class Test001PostFrame extends JinFrame<{ message: string }> {
   @JinFrame.body()
   public readonly password!: string;
 
-  constructor(args: OmitConstructorType<Test001PostFrame, 'host' | 'method' | 'contentType'>) {
+  constructor(args: JinConstructorType<Test001PostFrame>) {
     super({
       host: 'http://some.api.google.com/jinframe/:passing',
       contentType: 'multipart/form-data',
@@ -35,7 +35,7 @@ class Test002PostFrame extends JinFrame<{ message: string }> {
   @JinFrame.body()
   public readonly password!: string;
 
-  constructor(args: OmitConstructorType<Test001PostFrame, 'host' | 'method'>) {
+  constructor(args: OmitConstructorType<Test002PostFrame, Exclude<JinBuiltInMember, 'contentType' | 'customBody'>>) {
     super({
       host: 'http://some.api.google.com/jinframe/:passing',
       method: 'post',
@@ -54,7 +54,7 @@ class Test003PostFrame extends JinFrame<{ message: string }> {
   @JinFrame.body()
   public readonly password!: string;
 
-  constructor(args: OmitConstructorType<Test001PostFrame, 'method' | 'contentType'>) {
+  constructor(args: OmitConstructorType<Test003PostFrame, Exclude<JinBuiltInMember, 'customBody'>>) {
     super({
       method: 'post',
       ...args,
@@ -72,7 +72,7 @@ class Test004PostFrame extends JinFrame<{ message: string }> {
   @JinFrame.query()
   public readonly nums!: number[];
 
-  constructor(args: OmitConstructorType<Test004PostFrame, 'host' | 'method' | 'contentType'>) {
+  constructor(args: JinConstructorType<Test004PostFrame>) {
     super({
       method: 'post',
       host: 'http://some.api.google.com/jinframe/:passing',
@@ -104,6 +104,16 @@ describe('AbstractJinFrame', () => {
       maxDataSize: 2097152,
       pauseStreams: true,
     });
+  });
+
+  test('body, param', async () => {
+    const frame = new Test001PostFrame({ username: 'ironman', password: 'avengers', passing: 'pass' });
+
+    frame.request();
+
+    expect(frame.body).toMatchObject({ username: 'ironman', password: 'avengers' });
+
+    expect(frame.param).toMatchObject({ passing: 'pass' });
   });
 
   test('form-data exception', async () => {
@@ -179,6 +189,14 @@ describe('AbstractJinFrame', () => {
 
     const t = frame.getTransformRequest();
     expect(t).toBe(tr);
+  });
+
+  test('param, query', async () => {
+    const frame = new Test004PostFrame({ name: ['ironman', 'captain'], passing: ['pass', 'fail'], nums: [1, 2, 3] });
+    frame.request();
+
+    expect(frame.query).toMatchObject({ name: ['ironman', 'captain'], nums: [1, 2, 3] });
+    expect(frame.param).toMatchObject({ passing: '["pass","fail"]' });
   });
 
   test('array paths, queries', async () => {

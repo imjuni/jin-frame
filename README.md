@@ -34,7 +34,7 @@ npm i jin-frame --save
 ## Useage
 
 ```ts
-class TestPostQuery extends JinFrame {
+class TestPostFrame extends JinFrame {
   @JinFrame.param()
   public readonly id!: number;
 
@@ -46,17 +46,17 @@ class TestPostQuery extends JinFrame {
 
   // automatically initialize via base class, have to use same name of args and JinFrame class
   // execute `Object.keys(args).forEach(key => this[key] = args[key])`
-  constructor(args: OmitConstructorType<TestPostQuery, 'host' | 'method' | 'contentType'>) {
+  constructor(args: OmitConstructorType<TestPostFrame, JinBuiltInMember>) {
     super({ ...args, host: 'http://some.api.yanolja.com/jinframe/:id', method: 'POST' });
   }
 }
 ```
 
-TestPostQuery class create AxiosRequestConfig object below.
+TestPostFrame class create AxiosRequestConfig object below.
 
 ```ts
-const query = new TestPostQuery('ironman', 'beam');
-console.log(query.request());
+const frame = new TestPostFrame({ id: 1, name: 'ironman', skill: 'beam' });
+console.log(frame.request());
 
 // console.log show below,
 {
@@ -72,14 +72,14 @@ console.log(query.request());
 
 You can change name or skill parameter at run-time. Even if you can change host address. Every change don't make fail and create well-formed AxiosRequestConfig object. Also you can change request time and transformRequest, validateStatus parameter. _x-www-form-urlencoded_ transformRequest already include. You only set content-type params. See _x-www-form-urlencoded_ [testcase](https://github.com/imjuni/jin-frame/blob/master/src/__tests__/jinframe.post.test.ts).
 
-Execution is simple. Create curried function after execute that function. jin-frame using axios library so using on browser.
+You can direct execute jin-frame. Curried request function create after execute it. jin-frame using axios library so using on browser.
 
 ```ts
-const query = new TestPostQuery('ironman', 'beam');
-const res = await query.execute();
+const frame = new TestPostFrame({ id: 1, name: 'ironman', skill: 'beam' });
+const res = await frame.execute();
 
 // or
-const resp = await axios.request(query.request());
+const resp = await axios.request(frame.request());
 ```
 
 ## Requirement
@@ -94,18 +94,6 @@ const resp = await axios.request(query.request());
 | --------- | --------- |
 | 2.x       | <= 0.27.x |
 | 3.x       | >= 1.1.x  |
-
-## Form
-
-The form data is `multipart/form-data` and `application/x-www-form-urlencoded`. Use to upload files or submit form fields data.
-
-### application/x-www-form-urlencoded
-
-`application/x-www-form-urlencoded` converts from data using the `trasformRequest` function in [axios](https://github.com/axios/axios). For jin-frame, if you set the `application/x-www-form-urlencoded` to content-type, use the built-in transformRequest function or pass transformRequest function to constructor.
-
-### multipart/form-data
-
-jin-frame uses the [form-data](https://github.com/form-data/form-data) package for form-data processing. If you set the `multipart/form-data` content-type, use the form-data package to generate the AxiosRequestConfig data field value. Alternatively, upload the file by passing the customBody constructor parameter.
 
 ## Mocking
 
@@ -128,6 +116,71 @@ const frame = new UserFrame({ params: { searchText: 'John' } });
 const reply = await frame.execute();
 
 console.log(response.data);
+```
+
+## Form
+
+The form data is `multipart/form-data` and `application/x-www-form-urlencoded`. Use to upload files or submit form fields data.
+
+### application/x-www-form-urlencoded
+
+`application/x-www-form-urlencoded` converts from data using the `trasformRequest` function in [axios](https://github.com/axios/axios). For jin-frame, if you set the `application/x-www-form-urlencoded` to content-type, use the built-in transformRequest function or pass transformRequest function to constructor.
+
+### multipart/form-data
+
+jin-frame uses the [form-data](https://github.com/form-data/form-data) package for form-data processing. If you set the `multipart/form-data` content-type, use the form-data package to generate the AxiosRequestConfig data field value. Alternatively, upload the file by passing the customBody constructor parameter.
+
+## Hook
+
+JinFrame support pre, post hook side of each request.
+
+```ts
+class TestPostFrame extends JinFrame {
+  @JinFrame.param()
+  public readonly id!: number;
+
+  @JinFrame.body({ replaceAt: 'test.hello.marvel.name' })
+  public readonly name!: string;
+
+  @JinFrame.header({ replaceAt: 'test.hello.marvel.skill' })
+  public readonly skill!: string;
+
+  override preHook(req: AxiosRequestConfig<unknown>): void {
+    console.log('pre hook executed');
+  }
+
+  override postHook(req: AxiosRequestConfig<unknown>): void {
+    console.log('post hook executed');
+  }
+
+  // automatically initialize via base class, have to use same name of args and JinFrame class
+  // execute `Object.keys(args).forEach(key => this[key] = args[key])`
+  constructor(args: OmitConstructorType<TestPostFrame, JinBuiltInMember>) {
+    super({ ...args, host: 'http://some.api.yanolja.com/jinframe/:id', method: 'POST' });
+  }
+}
+
+const frame = new TestPostFrame({ id: 1, name: 'ironman', skill: 'beam' });
+
+// 'pre hook executed' display console
+const res = await frame.execute();
+// 'post hook executed' display console
+```
+
+### Field for logging, debugging
+
+query, header, param, body getter function have each request parameter.
+
+```ts
+const frame = new TestPostFrame({ id: 1, name: 'ironman', skill: 'beam' });
+// jin-frame build body, header, query, param variable
+const res = await frame.execute();
+
+// You can verify body, header, query parameter
+console.log(frame.body);
+console.log(frame.header);
+console.log(frame.query);
+console.log(frame.param);
 ```
 
 ## Example

@@ -20,12 +20,24 @@ export type ConstructorType<T> = OmitType<T, Function>;
 
 export type OmitConstructorType<T, M extends keyof ConstructorType<T>> = Omit<ConstructorType<T>, M>;
 
-export type JinConstructorType<T extends AbstractJinFrame> = Omit<
-  ConstructorType<T>,
-  'host' | 'path' | 'method' | 'contentType' | 'customBody'
+export type JinBuiltInMember = Extract<
+  keyof AbstractJinFrame,
+  | 'host'
+  | 'path'
+  | 'method'
+  | 'contentType'
+  | 'customBody'
+  | 'preHook'
+  | 'postHook'
+  | 'query'
+  | 'header'
+  | 'param'
+  | 'body'
 >;
+
+export type JinConstructorType<T extends AbstractJinFrame> = Omit<ConstructorType<T>, JinBuiltInMember>;
 
 export type JinOmitConstructorType<T extends AbstractJinFrame, M extends keyof ConstructorType<T>> = Omit<
   ConstructorType<T>,
-  'host' | 'path' | 'method' | 'contentType' | 'customBody' | M
+  JinBuiltInMember | M
 >;
