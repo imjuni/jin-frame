@@ -1,10 +1,10 @@
 # jin-frame
 
-![ts](https://flat.badgen.net/badge/Built%20With/TypeScript/blue) [![Download Status](https://img.shields.io/npm/dw/jin-frame.svg?style=flat-square)](https://npmcharts.com/compare/jin-frame?minimal=true) [![Github Star](https://img.shields.io/github/stars/imjuni/jin-frame.svg?style=flat-square)](https://github.com/imjuni/jin-frame) [![Github Issues](https://img.shields.io/github/issues-raw/imjuni/jin-frame.svg?style=flat-square)](https://github.com/imjuni/jin-frame/issues) [![NPM version](https://img.shields.io/npm/v/jin-frame.svg?style=flat-square)](https://www.npmjs.com/package/jin-frame) [![License](https://img.shields.io/npm/l/jin-frame.svg?style=flat-square)](https://github.com/imjuni/jin-frame/blob/master/LICENSE) [![jin-frame](https://circleci.com/gh/imjuni/jin-frame.svg??style=flat-square)](https://app.circleci.com/pipelines/github/imjuni/jin-frame?branch=master) [![codecov](https://codecov.io/gh/imjuni/jin-frame/branch/master/graph/badge.svg?style=flat-square&token=R7R2PdJcS9)](https://codecov.io/gh/imjuni/jin-frame) [![code style: prettier](https://img.shields.io/badge/code_style-prettier-ff69b4.svg?style=flat-square)](https://github.com/prettier/prettier)
+![ts](https://flat.badgen.net/badge/Built%20With/TypeScript/blue) [![Download Status](https://img.shields.io/npm/dw/jin-frame.svg?style=flat-square)](https://npmcharts.com/compare/jin-frame?minimal=true) [![Github Star](https://img.shields.io/github/stars/imjuni/jin-frame.svg?style=flat-square)](https://github.com/imjuni/jin-frame) [![Github Issues](https://img.shields.io/github/issues-raw/imjuni/jin-frame.svg?style=flat-square)](https://github.com/imjuni/jin-frame/issues) [![NPM version](https://img.shields.io/npm/v/jin-frame.svg?style=flat-square)](https://www.npmjs.com/package/jin-frame) [![License](https://img.shields.io/npm/l/jin-frame.svg?style=flat-square)](https://github.com/imjuni/jin-frame/blob/master/LICENSE) [![ci](https://github.com/imjuni/jin-frame/actions/workflows/ci.yml/badge.svg?style=flat-square)](https://github.com/imjuni/jin-frame/actions/workflows/ci.yml) [![codecov](https://codecov.io/gh/imjuni/jin-frame/branch/master/graph/badge.svg?style=flat-square&token=R7R2PdJcS9)](https://codecov.io/gh/imjuni/jin-frame) [![code style: prettier](https://img.shields.io/badge/code_style-prettier-ff69b4.svg?style=flat-square)](https://github.com/prettier/prettier)
 
 Reusable HTTP request definition library. Create `template` for Your HTTP Request!
 
-## Why?
+Why `jin-frame`?
 
 RESTful API is still the most popular API implementation way with various protocols such as GraphQL, gRPC, and tRPC. It is easy to develop APIs that can be used on various platforms such as iOS, Android, and Web. However, as the number of RESTful APIs increases, writing code for using APIs is repetitive and boring. Furthermore, Making it reusable on multiple projects is not easy, and it is more difficult to use it on multiple projects as a separate package.
 
@@ -14,6 +14,23 @@ jin-frame is a extendable RESTful API definition system developed with the aim f
 1. Extending API definitions using OOP design
 1. Use the Axios ecosystem
 1. Build a separate package
+
+## Table of Contents <!-- omit in toc -->
+
+- [How to works?](#how-to-works)
+- [Comparison of direct usage and jin-frame](#comparison-of-direct-usage-and-jin-frame)
+- [Install](#install)
+- [Useage](#useage)
+- [Requirement](#requirement)
+- [Axios version](#axios-version)
+- [Mocking](#mocking)
+- [Form](#form)
+  - [application/x-www-form-urlencoded](#applicationx-www-form-urlencoded)
+  - [multipart/form-data](#multipartform-data)
+- [Hook](#hook)
+  - [Field for logging, debugging](#field-for-logging-debugging)
+- [Example](#example)
+- [License](#license)
 
 ## How to works?
 
@@ -186,3 +203,7 @@ console.log(frame.param);
 ## Example
 
 You can find more examples in [examples directory](https://github.com/imjuni/jin-frame/tree/master/examples).
+
+## License
+
+This software is licensed under the [MIT](LICENSE).
