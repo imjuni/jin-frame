@@ -98,9 +98,19 @@ export class JinFrame<TPASS = unknown, TFAIL = TPASS>
       };
 
       try {
-        this.preHook?.(req);
+        let newReq: typeof req;
 
-        const reply = await axios.request<TPASS, AxiosResponse<TPASS>, TFAIL>(req);
+        if (this.preHook != null && this.preHook.constructor.name === 'AsyncFunction') {
+          const hookApplied = await this.preHook?.(req);
+          newReq = hookApplied != null ? hookApplied : req;
+        } else {
+          const hookApplied = (this.preHook as (this: void, req: AxiosRequestConfig) => void | AxiosRequestConfig)?.(
+            req,
+          );
+          newReq = hookApplied != null ? hookApplied : req;
+        }
+
+        const reply = await axios.request<TPASS, AxiosResponse<TPASS>, TFAIL>(newReq);
 
         if (isValidateStatus(reply.status) === false) {
           const failReply = reply as any as AxiosResponse<TFAIL>;

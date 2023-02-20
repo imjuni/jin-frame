@@ -119,9 +119,19 @@ export class JinEitherFrame<TPASS = unknown, TFAIL = TPASS>
       };
 
       try {
-        this.preHook?.(req);
+        let newReq: typeof req;
 
-        const res = await axios.request<TPASS, AxiosResponse<TPASS>, TFAIL>(req);
+        if (this.preHook != null && this.preHook.constructor.name === 'AsyncFunction') {
+          const hookApplied = await this.preHook?.(req);
+          newReq = hookApplied != null ? hookApplied : req;
+        } else {
+          const hookApplied = (this.preHook as (this: void, req: AxiosRequestConfig) => void | AxiosRequestConfig)?.(
+            req,
+          );
+          newReq = hookApplied != null ? hookApplied : req;
+        }
+
+        const res = await axios.request<TPASS, AxiosResponse<TPASS>, TFAIL>(newReq);
         const endAt = new Date();
 
         if (isValidateStatus(res.status) === false) {
