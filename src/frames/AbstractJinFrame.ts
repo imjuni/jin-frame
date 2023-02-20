@@ -29,7 +29,7 @@ import 'reflect-metadata';
 import type { Except } from 'type-fest';
 
 export interface AbstractJinFrame {
-  preHook?(this: void, req: AxiosRequestConfig): void | Promise<void>;
+  preHook?(this: void, req: AxiosRequestConfig): void | AxiosRequestConfig | Promise<void | AxiosRequestConfig>;
   postHook?(this: void, req: AxiosRequestConfig, err?: Error): void | Promise<void>;
 }
 
