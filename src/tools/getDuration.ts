@@ -3,7 +3,7 @@ import intervalToDuration from 'date-fns/intervalToDuration';
 
 export function getDuration(start: Date, end: Date) {
   try {
-    const durationSeconds = intervalToDuration({ start, end }).seconds as number;
+    const durationSeconds = intervalToDuration({ start, end }).seconds!;
     const duration = durationSeconds * 1000;
 
     return duration;

@@ -3,10 +3,10 @@ import { lightFormat } from 'date-fns';
 import { JinEitherFrame } from '../frames/JinEitherFrame';
 
 class Test001PostFrame extends JinEitherFrame {
-  @JinEitherFrame.param()
+  @JinEitherFrame.P()
   public readonly passing: string;
 
-  @JinEitherFrame.body({
+  @JinEitherFrame.B({
     formatters: [{ string: (value) => `${value}+111` }, { string: (value) => `${value}+222` }],
   })
   public readonly username: string[];

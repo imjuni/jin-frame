@@ -7,16 +7,16 @@ class Test001PostFrame extends JinEitherFrame {
   public readonly passing!: string;
 
   @JinEitherFrame.objectBody()
-  public readonly ability!: Array<{
+  public readonly ability!: {
     name: string;
     skill: string;
     count: number;
     category: { name: string };
-  }>;
+  }[];
 
   constructor(args: {
     passing: string;
-    ability: Array<{ name: string; skill: string; count: number; category: { name: string } }>;
+    ability: { name: string; skill: string; count: number; category: { name: string } }[];
   }) {
     super({
       host: 'http://some.api.google.com/jinframe/:passing',
@@ -84,16 +84,16 @@ class Test002PostFrame extends JinEitherFrame {
       dateTime: (value) => lightFormat(value, 'yyyy-MM-dd HH:mm:ss'),
     },
   })
-  public readonly ability!: Array<{
+  public readonly ability!: {
     name: string;
     skill: string;
     count: number;
     category: { name: string; developAt: Date };
-  }>;
+  }[];
 
   constructor(args: {
     passing: string;
-    ability: Array<{ name: string; skill: string; count: number; category: { name: string; developAt: Date } }>;
+    ability: { name: string; skill: string; count: number; category: { name: string; developAt: Date } }[];
   }) {
     super({
       host: 'http://some.api.google.com/jinframe/:passing',
@@ -351,12 +351,12 @@ class Test007PostFrame extends JinEitherFrame {
       dateTime: (value) => lightFormat(value, 'yyyy-MM-dd HH:mm:ss'),
     },
   })
-  public readonly ability!: Array<{
+  public readonly ability!: {
     name: string;
     skill: string;
     count: number;
     category: { name: string; developAt: Date };
-  }>;
+  }[];
 
   @JinEitherFrame.objectBody({
     order: 1,
@@ -369,12 +369,12 @@ class Test007PostFrame extends JinEitherFrame {
 
   constructor(args: {
     passing: string;
-    ability: Array<{
+    ability: {
       name: string;
       skill: string;
       count: number;
       category: { name: string; developAt: Date };
-    }>;
+    }[];
     birthAt: Date[];
   }) {
     super({

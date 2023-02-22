@@ -12,7 +12,7 @@ class Test001PostFrame extends JinEitherFrame {
   @JinEitherFrame.body()
   public readonly password: string;
 
-  @JinEitherFrame.objectBody()
+  @JinEitherFrame.O()
   public readonly hero: { name: string; age: number; bio: { birth: string } };
 
   constructor(args: {

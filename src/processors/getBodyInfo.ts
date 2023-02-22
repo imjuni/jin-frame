@@ -28,7 +28,7 @@ export function getBodyInfo<T extends Record<string, any>>(thisFrame: T, fields:
       }
 
       // stage 02. formatters apply
-      if ('formatters' in option && option.formatters !== undefined && option.formatters !== null) {
+      if ('formatters' in option && option.formatters != null) {
         return processObjectBodyFormatters(strict ?? false, thisFrame, field, option.formatters);
       }
 

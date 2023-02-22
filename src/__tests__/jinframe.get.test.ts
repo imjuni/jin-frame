@@ -2,12 +2,13 @@
 
 import { JinEitherFrame } from '@frames/JinEitherFrame';
 import { JinFrame } from '@frames/JinFrame';
+import type { TJinEitherFramePostHookReply, TJinFramePostHookReply } from '@interfaces/THookReply';
 import axios, { type AxiosRequestConfig } from 'axios';
 import { isFail, isPass } from 'my-only-either';
 import nock from 'nock';
 
 class TestGetFrame extends JinEitherFrame {
-  @JinEitherFrame.param()
+  @JinEitherFrame.P()
   public readonly passing: string;
 
   @JinEitherFrame.query()
@@ -24,14 +25,14 @@ class TestGetFrame extends JinEitherFrame {
     this.skill = ['beam', 'flying!'];
   }
 
-  override preHook(req: AxiosRequestConfig<any>): AxiosRequestConfig<any> {
+  preHook(req: AxiosRequestConfig): AxiosRequestConfig {
     console.log('pre hook trigger: ', req);
     return req;
   }
 
-  override postHook(req: AxiosRequestConfig<any>, err?: Error): void {
+  postHook(req: AxiosRequestConfig, reply: TJinEitherFramePostHookReply<any>): void {
     console.log('post hook trigger: ', req);
-    console.log(err);
+    console.log(reply);
   }
 }
 
@@ -45,12 +46,12 @@ class TestGet2Frame extends JinEitherFrame {
   @JinEitherFrame.header()
   public readonly ttt: string;
 
-  override async preHook(req: AxiosRequestConfig<any>): Promise<AxiosRequestConfig<any>> {
+  override async preHook(req: AxiosRequestConfig): Promise<AxiosRequestConfig> {
     return req;
   }
 
-  override async postHook(_req: AxiosRequestConfig<any>, err?: Error): Promise<void> {
-    console.log(err);
+  override async postHook(_req: AxiosRequestConfig, reply: TJinEitherFramePostHookReply<any>): Promise<void> {
+    console.log(reply);
   }
 
   constructor(host: string) {
@@ -66,10 +67,10 @@ class TestGet3Frame extends JinFrame {
   @JinEitherFrame.param()
   public readonly passing: string;
 
-  @JinEitherFrame.query()
+  @JinEitherFrame.Q()
   public readonly name: string;
 
-  @JinEitherFrame.query({ encode: true })
+  @JinEitherFrame.Q({ encode: true })
   public readonly skill: string[];
 
   constructor() {
@@ -80,14 +81,14 @@ class TestGet3Frame extends JinFrame {
     this.skill = ['beam', 'flying!'];
   }
 
-  override preHook(req: AxiosRequestConfig<any>): AxiosRequestConfig<any> {
+  override preHook(req: AxiosRequestConfig): AxiosRequestConfig {
     console.log('pre hook trigger: ', req);
     return req;
   }
 
-  override postHook(req: AxiosRequestConfig<any>, err?: Error): void {
+  override postHook(req: AxiosRequestConfig, reply: TJinFramePostHookReply<any>): void {
     console.log('post hook trigger: ', req);
-    console.log(err);
+    console.log(reply);
   }
 }
 
@@ -109,14 +110,14 @@ class TestGet4Frame extends JinFrame {
     this.skill = ['beam', 'flying!'];
   }
 
-  override async preHook(req: AxiosRequestConfig<any>): Promise<AxiosRequestConfig<any>> {
+  override async preHook(req: AxiosRequestConfig): Promise<AxiosRequestConfig> {
     console.log('pre hook trigger: ', req);
     return req;
   }
 
-  override async postHook(req: AxiosRequestConfig<any>, err?: Error): Promise<void> {
+  override async postHook(req: AxiosRequestConfig, reply: TJinFramePostHookReply<any>): Promise<void> {
     console.log('post hook trigger: ', req);
-    console.log(err);
+    console.log(reply);
   }
 }
 
@@ -138,7 +139,7 @@ class TestGet5Frame extends JinFrame {
     this.skill = ['beam', 'flying!'];
   }
 
-  override preHook(req: AxiosRequestConfig<any>): void {
+  override preHook(req: AxiosRequestConfig): void {
     console.log('pre hook trigger: ', req);
   }
 }
@@ -161,7 +162,7 @@ class TestGet6Frame extends JinFrame {
     this.skill = ['beam', 'flying!'];
   }
 
-  override async preHook(req: AxiosRequestConfig<any>): Promise<void> {
+  override async preHook(req: AxiosRequestConfig): Promise<void> {
     console.log('pre hook trigger: ', req);
   }
 }
@@ -184,7 +185,7 @@ class TestGet7Frame extends JinEitherFrame {
     this.skill = ['beam', 'flying!'];
   }
 
-  override preHook(req: AxiosRequestConfig<any>): void {
+  override preHook(req: AxiosRequestConfig): void {
     console.log(req);
   }
 }
@@ -207,7 +208,7 @@ class TestGet8Frame extends JinEitherFrame {
     this.skill = ['beam', 'flying!'];
   }
 
-  override async preHook(req: AxiosRequestConfig<any>): Promise<void> {
+  override async preHook(req: AxiosRequestConfig): Promise<void> {
     console.log(req);
   }
 }

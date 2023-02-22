@@ -1,6 +1,6 @@
 import type { ReadStream } from 'fs';
 
-export class JinFile<T extends ReadStream | Buffer | File | Blob> {
+export class JinFile<T extends ReadStream | Buffer | File | Blob = File> {
   /** filename */
   #name: string;
 
