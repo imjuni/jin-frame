@@ -18,7 +18,7 @@ function applyFormatter(initialValue: string | boolean | number | Date, formatte
       (typeof processing === 'string' || typeof processing === 'boolean' || typeof processing === 'number')
     ) {
       if (typeof processing === 'number' || typeof processing === 'boolean') {
-        return formatter.string(`${processing}`);
+        return formatter.string(`${processing.toString()}`);
       }
 
       return formatter.string(processing);
@@ -32,7 +32,7 @@ function applyFormatter(initialValue: string | boolean | number | Date, formatte
     return processing;
   }, initialValue);
 
-  return formatted;
+  return formatted as string;
 }
 
 export function applyFormatters(initialValue: string | Date | number | boolean, formatter: IFormatter): string;

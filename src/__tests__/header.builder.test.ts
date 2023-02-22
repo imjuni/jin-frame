@@ -5,10 +5,10 @@ class Test001PostFrame extends JinEitherFrame {
   @JinEitherFrame.param()
   public readonly passing: string;
 
-  @JinEitherFrame.header()
+  @JinEitherFrame.H()
   public readonly username: string;
 
-  @JinEitherFrame.header()
+  @JinEitherFrame.H()
   public readonly password: string;
 
   constructor(args: { passing: string; username: string; password: string }) {

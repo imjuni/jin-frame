@@ -28,11 +28,6 @@ import { compile } from 'path-to-regexp';
 import 'reflect-metadata';
 import type { Except } from 'type-fest';
 
-export interface AbstractJinFrame {
-  preHook?(this: void, req: AxiosRequestConfig): void | AxiosRequestConfig | Promise<void | AxiosRequestConfig>;
-  postHook?(this: void, req: AxiosRequestConfig, err?: Error): void | Promise<void>;
-}
-
 export abstract class AbstractJinFrame {
   public static ParamSymbolBox = Symbol('ParamSymbolBoxForAbstractJinFrame');
 
@@ -52,10 +47,24 @@ export abstract class AbstractJinFrame {
     Reflect.metadata(AbstractJinFrame.ParamSymbolBox, ['PARAM', getDefaultParamFieldOption(option)]);
 
   /**
+   * decorator to set class variable to HTTP API path parameter
+   * @param option path parameter option
+   */
+  public static P = (option?: Partial<Omit<IParamFieldOption, 'type'>>) =>
+    Reflect.metadata(AbstractJinFrame.ParamSymbolBox, ['PARAM', getDefaultParamFieldOption(option)]);
+
+  /**
    * decorator to set class variable to HTTP API query parameter
    * @param option query parameter option
    */
   public static query = (option?: Partial<Omit<IQueryFieldOption, 'type'>>) =>
+    Reflect.metadata(AbstractJinFrame.QuerySymbolBox, ['QUERY', getDefaultQueryFieldOption(option)]);
+
+  /**
+   * decorator to set class variable to HTTP API query parameter
+   * @param option query parameter option
+   */
+  public static Q = (option?: Partial<Omit<IQueryFieldOption, 'type'>>) =>
     Reflect.metadata(AbstractJinFrame.QuerySymbolBox, ['QUERY', getDefaultQueryFieldOption(option)]);
 
   /**
@@ -69,7 +78,21 @@ export abstract class AbstractJinFrame {
    * decorator to set class variable to HTTP API body parameter
    * @param option body parameter option
    */
+  public static B = (option?: Partial<Except<IBodyFieldOption, 'type'>>) =>
+    Reflect.metadata(AbstractJinFrame.BodySymbolBox, ['BODY', getDefaultBodyFieldOption(option)]);
+
+  /**
+   * decorator to set class variable to HTTP API body parameter
+   * @param option body parameter option
+   */
   public static objectBody = (option?: Partial<Except<IObjectBodyFieldOption, 'type'>>) =>
+    Reflect.metadata(AbstractJinFrame.ObjectBodySymbolBox, ['OBJECTBODY', getDefaultObjectBodyFieldOption(option)]);
+
+  /**
+   * decorator to set class variable to HTTP API body parameter
+   * @param option body parameter option
+   */
+  public static O = (option?: Partial<Except<IObjectBodyFieldOption, 'type'>>) =>
     Reflect.metadata(AbstractJinFrame.ObjectBodySymbolBox, ['OBJECTBODY', getDefaultObjectBodyFieldOption(option)]);
 
   /**
@@ -77,6 +100,13 @@ export abstract class AbstractJinFrame {
    * @param option header parameter option
    */
   public static header = (option?: Partial<Except<IHeaderFieldOption, 'type'>>) =>
+    Reflect.metadata(AbstractJinFrame.HeaderSymbolBox, ['HEADER', getDefaultHeaderFieldOption(option)]);
+
+  /**
+   * decorator to set class variable to HTTP API header parameter
+   * @param option header parameter option
+   */
+  public static H = (option?: Partial<Except<IHeaderFieldOption, 'type'>>) =>
     Reflect.metadata(AbstractJinFrame.HeaderSymbolBox, ['HEADER', getDefaultHeaderFieldOption(option)]);
 
   /** host of API Request endpoint */
@@ -92,7 +122,7 @@ export abstract class AbstractJinFrame {
   public readonly contentType: string;
 
   /** custom object of POST Request body data */
-  public readonly customBody?: { [key: string]: any };
+  public readonly customBody?: Record<string, unknown>;
 
   /** transformRequest function of POST Request */
   public readonly transformRequest?: AxiosRequestConfig['transformRequest'];
@@ -135,10 +165,10 @@ export abstract class AbstractJinFrame {
     path?: string;
     method: Method;
     contentType?: string;
-    customBody?: { [key: string]: any };
+    customBody?: Record<string, unknown>;
     transformRequest?: AxiosRequestConfig['transformRequest'];
   }) {
-    (Object.keys(args) as Array<keyof typeof args>).forEach((key) => {
+    (Object.keys(args) as (keyof typeof args)[]).forEach((key) => {
       (this[key] as any) = args[key];
     });
 
@@ -161,8 +191,9 @@ export abstract class AbstractJinFrame {
     }
 
     return (formData: any) =>
-      Object.entries<string>(formData)
-        .filter(([_key, value]) => value !== undefined && value !== null)
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+      Object.entries<string | undefined>(formData)
+        .filter((entry): entry is [string, string] => entry[1] != null)
         .map(([key, value]) => {
           return `${encodeURIComponent(key)}=${encodeURIComponent(value)}`;
         })
@@ -179,10 +210,10 @@ export abstract class AbstractJinFrame {
       const keys = Object.keys(bodies);
 
       keys.forEach((key) => {
-        const formElement = bodies[key];
+        const formElement = bodies[key] as unknown;
 
         if (Array.isArray(formElement) && first(formElement) instanceof JinFile) {
-          formElement.forEach((jinFile) => formData.append(key, jinFile.file, jinFile.name));
+          formElement.forEach((jinFile: JinFile) => formData.append(key, jinFile.file, jinFile.name));
         } else if (formElement instanceof JinFile) {
           formData.append(key, formElement.file, formElement.name);
         } else if (typeof formElement === 'string') {
@@ -190,11 +221,12 @@ export abstract class AbstractJinFrame {
         } else if (typeof formElement === 'number') {
           formData.append(key, `${formElement}`);
         } else if (typeof formElement === 'boolean') {
-          formData.append(key, `${formElement}`);
+          formData.append(key, `${formElement.toString()}`);
         } else if (typeof formElement === 'object') {
           formData.append(key, fastSafeStringify(formElement));
         } else {
           throw new Error(
+            // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
             `Invalid data type: ${typeof formElement}/ ${formElement}, only support JinFile, string, number, boolean, object type`,
           );
         }

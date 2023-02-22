@@ -1,4 +1,3 @@
-/* eslint-disable no-console */
 import { JinEitherFrame } from '@frames/JinEitherFrame';
 import axios, { type AxiosRequestConfig } from 'axios';
 import type { JinConstructorType } from '../tools/ConstructorType';

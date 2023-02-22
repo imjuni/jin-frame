@@ -5,6 +5,7 @@ import type { IDebugInfo } from '@interfaces/IDebugInfo';
 import type { IJinFrameCreateConfig } from '@interfaces/IJinFrameCreateConfig';
 import type { IJinFrameFunction } from '@interfaces/IJinFrameFunction';
 import type { IJinFrameRequestConfig } from '@interfaces/IJinFrameRequestConfig';
+import type { TJinFramePostHookReply } from '@interfaces/THookReply';
 import { getDuration } from '@tools/getDuration';
 import { isValidateStatusDefault } from '@tools/isValidateStatusDefault';
 import axios, { AxiosError, type AxiosRequestConfig, type AxiosResponse, type Method } from 'axios';
@@ -13,8 +14,29 @@ import httpStatusCodes, { getReasonPhrase } from 'http-status-codes';
 import formatISO from 'date-fns/formatISO';
 /* eslint-disable-next-line import/no-extraneous-dependencies, import/no-duplicates */
 import getUnixTime from 'date-fns/getUnixTime';
-/* eslint-disable-next-line import/no-extraneous-dependencies, import/no-duplicates */
 import 'reflect-metadata';
+
+/**
+ * HTTP Request Hook
+ */
+export interface JinFrame<TPASS = unknown> {
+  /**
+   * Execute before request. If you can change request object that is affected request.
+   *
+   * @param this this instance
+   * @param req request object
+   * */
+  preHook?(this: void, req: AxiosRequestConfig): void | AxiosRequestConfig | Promise<void | AxiosRequestConfig>;
+
+  /**
+   * Execute after request.
+   *
+   * @param this this instance
+   * @param req request object
+   * @param result [discriminated union](https://www.typescriptlang.org/docs/handbook/typescript-in-5-minutes-func.html#discriminated-unions) pass or fail
+   */
+  postHook?(this: void, req: AxiosRequestConfig, result: TJinFramePostHookReply<TPASS>): void | Promise<void>;
+}
 
 /**
  * Definition HTTP Request
@@ -123,18 +145,19 @@ export class JinFrame<TPASS = unknown, TFAIL = TPASS>
             message: 'response error',
           });
 
-          this.postHook?.(req, err);
+          this.postHook?.(req, { kind: 'fail', err, debug: err.debug });
 
           throw err;
         }
 
         const duration = getDuration(this.startAt, new Date());
+        const debugWithDuration = { ...debug, duration };
 
-        this.postHook?.(req);
+        this.postHook?.(req, { kind: 'pass', reply, debug: debugWithDuration });
 
         return {
           ...reply,
-          $debug: { ...debug, duration },
+          $debug: debugWithDuration,
           $frame: frame,
         };
       } catch (catched) {

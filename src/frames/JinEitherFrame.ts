@@ -5,6 +5,7 @@ import type { IFailExceptionJinEitherFrame, IFailReplyJinEitherFrame } from '@in
 import type { IJinFrameCreateConfig } from '@interfaces/IJinFrameCreateConfig';
 import type { IJinFrameFunction } from '@interfaces/IJinFrameFunction';
 import type { IJinFrameRequestConfig } from '@interfaces/IJinFrameRequestConfig';
+import type { TJinEitherFramePostHookReply } from '@interfaces/THookReply';
 import type { TPassJinEitherFrame } from '@interfaces/TPassJinEitherFrame';
 import { getDuration } from '@tools/getDuration';
 import { isValidateStatusDefault } from '@tools/isValidateStatusDefault';
@@ -17,6 +18,28 @@ import getUnixTime from 'date-fns/getUnixTime';
 import httpStatusCodes, { getReasonPhrase } from 'http-status-codes';
 import { fail, pass, type PassFailEither } from 'my-only-either';
 import 'reflect-metadata';
+
+/**
+ * HTTP Request Hook
+ */
+export interface JinEitherFrame<TPASS = unknown> {
+  /**
+   * Execute before request. If you can change request object that is affected request.
+   *
+   * @param this this instance
+   * @param req request object
+   * */
+  preHook?(req: AxiosRequestConfig): void | AxiosRequestConfig | Promise<void | AxiosRequestConfig>;
+
+  /**
+   * Execute after request.
+   *
+   * @param this this instance
+   * @param req request object
+   * @param result [discriminated union](https://www.typescriptlang.org/docs/handbook/typescript-in-5-minutes-func.html#discriminated-unions) pass or fail
+   */
+  postHook?(req: AxiosRequestConfig, result: TJinEitherFramePostHookReply<TPASS>): void | Promise<void>;
+}
 
 /**
  * Definition HTTP Request
@@ -147,14 +170,13 @@ export class JinEitherFrame<TPASS = unknown, TFAIL = TPASS>
             $frame: frame,
           };
 
-          this.postHook?.(req, err);
+          this.postHook?.(req, { kind: 'fail', err, debug: { ...debugInfo, duration } });
 
           return fail(failInfo);
         }
 
         const duration = getDuration(startAt, endAt);
-
-        this.postHook?.(req);
+        const debugWithDuration = { ...debugInfo, duration };
 
         const passInfo: TPassJinEitherFrame<TPASS> = {
           ...res,
@@ -162,6 +184,8 @@ export class JinEitherFrame<TPASS = unknown, TFAIL = TPASS>
           $debug: { ...debugInfo, duration },
           $frame: frame,
         };
+
+        this.postHook?.(req, { kind: 'pass', reply: passInfo, debug: debugWithDuration });
 
         return pass(passInfo);
       } catch (catched) {
