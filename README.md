@@ -2,18 +2,16 @@
 
 ![ts](https://flat.badgen.net/badge/Built%20With/TypeScript/blue) [![Download Status](https://img.shields.io/npm/dw/jin-frame.svg?style=flat-square)](https://npmcharts.com/compare/jin-frame?minimal=true) [![Github Star](https://img.shields.io/github/stars/imjuni/jin-frame.svg?style=flat-square)](https://github.com/imjuni/jin-frame) [![Github Issues](https://img.shields.io/github/issues-raw/imjuni/jin-frame.svg?style=flat-square)](https://github.com/imjuni/jin-frame/issues) [![NPM version](https://img.shields.io/npm/v/jin-frame.svg?style=flat-square)](https://www.npmjs.com/package/jin-frame) [![License](https://img.shields.io/npm/l/jin-frame.svg?style=flat-square)](https://github.com/imjuni/jin-frame/blob/master/LICENSE) [![ci](https://github.com/imjuni/jin-frame/actions/workflows/ci.yml/badge.svg?style=flat-square)](https://github.com/imjuni/jin-frame/actions/workflows/ci.yml) [![codecov](https://codecov.io/gh/imjuni/jin-frame/branch/master/graph/badge.svg?style=flat-square&token=R7R2PdJcS9)](https://codecov.io/gh/imjuni/jin-frame) [![code style: prettier](https://img.shields.io/badge/code_style-prettier-ff69b4.svg?style=flat-square)](https://github.com/prettier/prettier)
 
-Reusable HTTP request definition library. Create `template` for Your HTTP Request!
+**HTTP Reqest** = **TypeScript Class**
+
+`jin-frame` help to make HTTP Request `template` using by TypeScript class, decorator.
 
 Why `jin-frame`?
 
-RESTful API is still the most popular API implementation way with various protocols such as GraphQL, gRPC, and tRPC. It is easy to develop APIs that can be used on various platforms such as iOS, Android, and Web. However, as the number of RESTful APIs increases, writing code for using APIs is repetitive and boring. Furthermore, Making it reusable on multiple projects is not easy, and it is more difficult to use it on multiple projects as a separate package.
-
-jin-frame is a extendable RESTful API definition system developed with the aim fo defining these RESTful APIs concisely and clearly, separating them into separate packages, and resuing them in multiple projects.
-
-1. Type check on API parameters
-1. Extending API definitions using OOP design
-1. Use the Axios ecosystem
-1. Build a separate package
+1. decorator: decorator function make HTTP request parameter
+2. Static Type Checking: **Compile-Time** static type checking on request parameter
+3. HTTP Request can extends inheritance, OOP design
+4. Use Axios EcoSystem
 
 ## Table of Contents <!-- omit in toc -->
 
@@ -21,7 +19,7 @@ jin-frame is a extendable RESTful API definition system developed with the aim f
 - [Comparison of direct usage and jin-frame](#comparison-of-direct-usage-and-jin-frame)
 - [Install](#install)
 - [Useage](#useage)
-- [Requirement](#requirement)
+- [Requirements](#requirements)
 - [Axios version](#axios-version)
 - [Mocking](#mocking)
 - [Form](#form)
@@ -49,6 +47,50 @@ npm i jin-frame --save
 ```
 
 ## Useage
+
+Querystring made by `query`, `Q` decorator.
+
+```ts
+class IamReqest extends JinFrame {
+  @JinFrame.Q()
+  public readonly name!: string;
+}
+```
+
+Path parameter made by `param`, `P` decorator and URI.
+
+```ts
+class IamReqest extends JinFrame {
+  // decorator
+  @JinFrame.P()
+  public readonly id!: string;
+
+  constructor(args: OmitConstructorType<IamReqest, JinBuiltInMember>) {
+    // `:` character make path parameter on URI
+    super({ ...args, host: 'http://some.api.google.com/jinframe/:id', method: 'post' });
+  }
+}
+```
+
+Header parameter made by `header`, `H` decorator and URI.
+
+```ts
+class IamReqest extends JinFrame {
+  @JinFrame.H({ replaceAt: 'api-key' })
+  public readonly apiKey!: string;
+}
+```
+
+Body parameter made by `body`, `B` decorator and URI.
+
+```ts
+class IamReqest extends JinFrame {
+  @JinFrame.B({ replaceAt: 'api-key' })
+  public readonly gene!: string;
+}
+```
+
+This is example of union param, body, header parameter.
 
 ```ts
 class TestPostFrame extends JinFrame {
@@ -87,8 +129,6 @@ console.log(frame.request());
 }
 ```
 
-You can change name or skill parameter at run-time. Even if you can change host address. Every change don't make fail and create well-formed AxiosRequestConfig object. Also you can change request time and transformRequest, validateStatus parameter. _x-www-form-urlencoded_ transformRequest already include. You only set content-type params. See _x-www-form-urlencoded_ [testcase](https://github.com/imjuni/jin-frame/blob/master/src/__tests__/jinframe.post.test.ts).
-
 You can direct execute jin-frame. Curried request function create after execute it. jin-frame using axios library so using on browser.
 
 ```ts
@@ -99,7 +139,7 @@ const res = await frame.execute();
 const resp = await axios.request(frame.request());
 ```
 
-## Requirement
+## Requirements
 
 1. TypeScript
 1. Decorator
@@ -173,7 +213,7 @@ class TestPostFrame extends JinFrame {
   // automatically initialize via base class, have to use same name of args and JinFrame class
   // execute `Object.keys(args).forEach(key => this[key] = args[key])`
   constructor(args: OmitConstructorType<TestPostFrame, JinBuiltInMember>) {
-    super({ ...args, host: 'http://some.api.yanolja.com/jinframe/:id', method: 'POST' });
+    super({ ...args, host: 'http://some.api.google.com/jinframe/:id', method: 'POST' });
   }
 }
 
