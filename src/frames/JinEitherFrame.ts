@@ -22,7 +22,7 @@ import 'reflect-metadata';
 /**
  * HTTP Request Hook
  */
-export interface JinEitherFrame<TPASS = unknown> {
+export interface JinEitherFrame<TPASS = unknown, TFAIL = TPASS> {
   /**
    * Execute before request. If you can change request object that is affected request.
    *
@@ -38,7 +38,7 @@ export interface JinEitherFrame<TPASS = unknown> {
    * @param req request object
    * @param result [discriminated union](https://www.typescriptlang.org/docs/handbook/typescript-in-5-minutes-func.html#discriminated-unions) pass or fail
    */
-  postHook?(req: AxiosRequestConfig, result: TJinEitherFramePostHookReply<TPASS>): void | Promise<void>;
+  postHook?(req: AxiosRequestConfig, result: TJinEitherFramePostHookReply<TPASS, TFAIL>): void | Promise<void>;
 }
 
 /**
@@ -154,38 +154,37 @@ export class JinEitherFrame<TPASS = unknown, TFAIL = TPASS>
           newReq = hookApplied != null ? hookApplied : req;
         }
 
-        const res = await axios.request<TPASS, AxiosResponse<TPASS>, TFAIL>(newReq);
+        const reply = await axios.request<TPASS, AxiosResponse<TPASS>, TFAIL>(newReq);
         const endAt = new Date();
 
-        if (isValidateStatus(res.status) === false) {
-          const failRes = res as any as AxiosResponse<TFAIL>;
+        if (isValidateStatus(reply.status) === false) {
+          const failReply = reply as any as AxiosResponse<TFAIL>;
           const duration = getDuration(startAt, endAt);
           const err = new Error('Error caused from API response');
 
           const failInfo: IFailReplyJinEitherFrame<TFAIL> = {
-            ...failRes,
+            ...failReply,
             $progress: 'fail',
             $err: err,
             $debug: { ...debugInfo, duration },
             $frame: frame,
           };
 
-          this.postHook?.(req, { kind: 'fail', err, debug: { ...debugInfo, duration } });
+          this.postHook?.(req, { kind: 'fail', reply: failInfo, err });
 
           return fail(failInfo);
         }
 
         const duration = getDuration(startAt, endAt);
-        const debugWithDuration = { ...debugInfo, duration };
 
         const passInfo: TPassJinEitherFrame<TPASS> = {
-          ...res,
+          ...reply,
           $progress: 'pass',
           $debug: { ...debugInfo, duration },
           $frame: frame,
         };
 
-        this.postHook?.(req, { kind: 'pass', reply: passInfo, debug: debugWithDuration });
+        this.postHook?.(req, { kind: 'pass', reply: passInfo });
 
         return pass(passInfo);
       } catch (catched) {

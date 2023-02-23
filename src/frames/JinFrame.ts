@@ -19,7 +19,7 @@ import 'reflect-metadata';
 /**
  * HTTP Request Hook
  */
-export interface JinFrame<TPASS = unknown> {
+export interface JinFrame<TPASS = unknown, TFAIL = TPASS> {
   /**
    * Execute before request. If you can change request object that is affected request.
    *
@@ -35,7 +35,7 @@ export interface JinFrame<TPASS = unknown> {
    * @param req request object
    * @param result [discriminated union](https://www.typescriptlang.org/docs/handbook/typescript-in-5-minutes-func.html#discriminated-unions) pass or fail
    */
-  postHook?(this: void, req: AxiosRequestConfig, result: TJinFramePostHookReply<TPASS>): void | Promise<void>;
+  postHook?(this: void, req: AxiosRequestConfig, result: TJinFramePostHookReply<TPASS, TFAIL>): void | Promise<void>;
 }
 
 /**
@@ -145,7 +145,7 @@ export class JinFrame<TPASS = unknown, TFAIL = TPASS>
             message: 'response error',
           });
 
-          this.postHook?.(req, { kind: 'fail', err, debug: err.debug });
+          this.postHook?.(req, { kind: 'fail', reply: failReply, err, debug: err.debug });
 
           throw err;
         }
