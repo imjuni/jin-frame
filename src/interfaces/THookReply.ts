@@ -1,11 +1,12 @@
 import type { IDebugInfo } from '@interfaces/IDebugInfo';
+import type { IFailReplyJinEitherFrame } from '@interfaces/IFailJinEitherFrame';
 import type { TPassJinEitherFrame } from '@interfaces/TPassJinEitherFrame';
 import type { AxiosResponse } from 'axios';
 
-export type TJinFramePostHookReply<TPASS> =
+export type TJinFramePostHookReply<TPASS, TFAIL> =
   | { kind: 'pass'; reply: AxiosResponse<TPASS>; debug: IDebugInfo }
-  | { kind: 'fail'; err: Error; debug: IDebugInfo };
+  | { kind: 'fail'; reply: AxiosResponse<TFAIL>; err: Error; debug: IDebugInfo };
 
-export type TJinEitherFramePostHookReply<TPASS> =
-  | { kind: 'pass'; reply: TPassJinEitherFrame<TPASS>; debug: IDebugInfo }
-  | { kind: 'fail'; err: Error; debug: IDebugInfo };
+export type TJinEitherFramePostHookReply<TPASS, TFAIL> =
+  | { kind: 'pass'; reply: TPassJinEitherFrame<TPASS> }
+  | { kind: 'fail'; reply: IFailReplyJinEitherFrame<TFAIL>; err: Error };

@@ -30,7 +30,7 @@ class TestGetFrame extends JinEitherFrame {
     return req;
   }
 
-  postHook(req: AxiosRequestConfig, reply: TJinEitherFramePostHookReply<any>): void {
+  postHook(req: AxiosRequestConfig, reply: TJinEitherFramePostHookReply<any, any>): void {
     console.log('post hook trigger: ', req);
     console.log(reply);
   }
@@ -50,7 +50,7 @@ class TestGet2Frame extends JinEitherFrame {
     return req;
   }
 
-  override async postHook(_req: AxiosRequestConfig, reply: TJinEitherFramePostHookReply<any>): Promise<void> {
+  override async postHook(_req: AxiosRequestConfig, reply: TJinEitherFramePostHookReply<any, any>): Promise<void> {
     console.log(reply);
   }
 
@@ -86,7 +86,7 @@ class TestGet3Frame extends JinFrame {
     return req;
   }
 
-  override postHook(req: AxiosRequestConfig, reply: TJinFramePostHookReply<any>): void {
+  override postHook(req: AxiosRequestConfig, reply: TJinFramePostHookReply<any, any>): void {
     console.log('post hook trigger: ', req);
     console.log(reply);
   }
@@ -115,7 +115,7 @@ class TestGet4Frame extends JinFrame {
     return req;
   }
 
-  override async postHook(req: AxiosRequestConfig, reply: TJinFramePostHookReply<any>): Promise<void> {
+  override async postHook(req: AxiosRequestConfig, reply: TJinFramePostHookReply<any, any>): Promise<void> {
     console.log('post hook trigger: ', req);
     console.log(reply);
   }
