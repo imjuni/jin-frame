@@ -1,6 +1,6 @@
 {
   "name": "jin-frame",
-  "version": "3.7.0",
+  "version": "3.7.1",
   "description": "Reusable HTTP API request definition library",
   "scripts": {
     "debug": "node --inspect-brk -r ts-node/register ./node_modules/jest/bin/jest --no-cache --runInBand --detectOpenHandles",
@@ -15,7 +15,7 @@
     "lint": "just --config ./.configs/just.config.ts lint",
     "lint-staged": "lint-staged",
     "test:only": "jest --detectOpenHandles --runInBand",
-    "test": "cross-env DEBUG=jinframe:* jest --coverage --config jest.config.js",
+    "test": "cross-env DEBUG=jinframe:* node --trace-warnings --no-compilation-cache node_modules/.bin/jest --coverage --config jest.config.js",
     "just": "just --config ./.configs/just.config.ts",
     "ctix": "just --config ./.configs/just.config.ts ctix:single",
     "ctix:remove": "just --config ./.configs/just.config.ts ctix:remove",
