@@ -127,6 +127,15 @@ describe('getDuration', () => {
     expect(d).toEqual(10000);
   });
 
+  test('duration - milliseconds', () => {
+    const s = new Date(2023, 0, 10, 0, 0, 0, 0);
+    const e = new Date(2023, 0, 10, 0, 0, 0, 200);
+
+    const d = getDuration(s, e);
+
+    expect(d).toEqual(200);
+  });
+
   test('exception - start', () => {
     const s = new Date(2023, 0, 10, 0, 0, 0, 0);
     const e = new Date(NaN);
