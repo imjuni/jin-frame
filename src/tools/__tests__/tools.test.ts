@@ -136,6 +136,33 @@ describe('getDuration', () => {
     expect(d).toEqual(200);
   });
 
+  test('duration - second + milliseconds', () => {
+    const s = new Date(2023, 0, 10, 0, 0, 0, 0);
+    const e = new Date(2023, 0, 10, 0, 0, 1, 200);
+
+    const d = getDuration(s, e);
+
+    expect(d).toEqual(1200);
+  });
+
+  test('duration - second + milliseconds', () => {
+    const s = new Date(2023, 0, 10, 0, 0, 0, 0);
+    const e = new Date(2023, 0, 10, 0, 1, 1, 312);
+
+    const d = getDuration(s, e);
+
+    expect(d).toEqual(61312);
+  });
+
+  test('duration - minutes + second + milliseconds', () => {
+    const s = new Date(2023, 0, 10, 0, 0, 0, 0);
+    const e = new Date(2023, 0, 10, 2, 1, 1, 312);
+
+    const d = getDuration(s, e);
+
+    expect(d).toEqual(7261312);
+  });
+
   test('exception - start', () => {
     const s = new Date(2023, 0, 10, 0, 0, 0, 0);
     const e = new Date(NaN);
