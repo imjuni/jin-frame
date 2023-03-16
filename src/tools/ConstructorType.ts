@@ -29,10 +29,10 @@ export type JinBuiltInMember = Extract<
   | 'customBody'
   | 'preHook'
   | 'postHook'
-  | 'query'
-  | 'header'
-  | 'param'
-  | 'body'
+  | '$$query'
+  | '$$header'
+  | '$$param'
+  | '$$body'
 >;
 
 export type JinConstructorType<T extends AbstractJinFrame> = Omit<ConstructorType<T>, JinBuiltInMember>;

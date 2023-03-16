@@ -75,11 +75,11 @@ export class JinFrame<TPASS = unknown, TFAIL = TPASS>
       return super.request(option);
     } catch (catched) {
       const source = catched as Error;
-      const duration = getDuration(this.startAt, new Date());
+      const duration = getDuration(this.$$startAt, new Date());
       const debug: Omit<IDebugInfo, 'req'> = {
         ts: {
-          unix: `${getUnixTime(this.startAt)}.${this.startAt.getMilliseconds()}`,
-          iso: formatISO(this.startAt),
+          unix: `${getUnixTime(this.$$startAt)}.${this.$$startAt.getMilliseconds()}`,
+          iso: formatISO(this.$$startAt),
         },
         duration,
       };
@@ -136,7 +136,7 @@ export class JinFrame<TPASS = unknown, TFAIL = TPASS>
 
         if (isValidateStatus(reply.status) === false) {
           const failReply = reply as any as AxiosResponse<TFAIL>;
-          const duration = getDuration(this.startAt, new Date());
+          const duration = getDuration(this.$$startAt, new Date());
 
           const err = new JinRequestError<TPASS, TFAIL>({
             resp: failReply,
@@ -150,7 +150,7 @@ export class JinFrame<TPASS = unknown, TFAIL = TPASS>
           throw err;
         }
 
-        const duration = getDuration(this.startAt, new Date());
+        const duration = getDuration(this.$$startAt, new Date());
         const debugWithDuration = { ...debug, duration };
 
         this.postHook?.(req, { kind: 'pass', reply, debug: debugWithDuration });
@@ -166,7 +166,7 @@ export class JinFrame<TPASS = unknown, TFAIL = TPASS>
         }
 
         if (catched instanceof AxiosError) {
-          const duration = getDuration(this.startAt, new Date());
+          const duration = getDuration(this.$$startAt, new Date());
 
           const jinFrameError = new JinRequestError<TPASS, TFAIL>({
             resp:
@@ -183,7 +183,7 @@ export class JinFrame<TPASS = unknown, TFAIL = TPASS>
           throw option?.getError != null ? option.getError(jinFrameError) : jinFrameError;
         }
 
-        const duration = getDuration(this.startAt, new Date());
+        const duration = getDuration(this.$$startAt, new Date());
         const jinFrameError = new JinRequestError<TPASS, TFAIL>({
           resp: {
             status: httpStatusCodes.INTERNAL_SERVER_ERROR,
