@@ -1,4 +1,4 @@
-import { getHeaderInfo } from '@processors/getHeaderInfo';
+import { getHeaderInfo } from '#processors/getHeaderInfo';
 import { format, parse } from 'date-fns';
 import 'jest';
 

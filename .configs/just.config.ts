@@ -24,11 +24,11 @@ task('clean', async () => {
 
 task('lint', async () => {
   const cmd = 'eslint';
-  const option = '--cache --ext ts,tsx .';
+  const option = '--cache .';
 
-  logger.info('lint: ', cmd, option);
+  logger.info('lint: ', cmd, splitArgs(option).concat(process.argv.slice(5)).join(' '));
 
-  await execa(cmd, splitArgs(option), {
+  await execa(cmd, splitArgs(option).concat(process.argv.slice(5)), {
     stderr: process.stderr,
     stdout: process.stdout,
   });

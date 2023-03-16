@@ -1,7 +1,7 @@
-import { JinCreateError } from '@frames/JinCreateError';
-import { JinFile } from '@frames/JinFile';
-import { JinRequestError } from '@frames/JinRequestError';
-import { getDuration } from '@tools/getDuration';
+import { JinCreateError } from '#frames/JinCreateError';
+import { JinFile } from '#frames/JinFile';
+import { JinRequestError } from '#frames/JinRequestError';
+import { getDuration } from '#tools/getDuration';
 import { getReasonPhrase } from 'http-status-codes';
 import 'jest';
 

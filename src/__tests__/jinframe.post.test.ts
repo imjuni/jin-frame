@@ -1,6 +1,6 @@
 /* eslint-disable max-classes-per-file */
 
-import { JinEitherFrame } from '@frames/JinEitherFrame';
+import { JinEitherFrame } from '#frames/JinEitherFrame';
 import { isPass } from 'my-only-either';
 import nock from 'nock';
 

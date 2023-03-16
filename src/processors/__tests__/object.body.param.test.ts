@@ -1,4 +1,4 @@
-import { getBodyInfo } from '@processors/getBodyInfo';
+import { getBodyInfo } from '#processors/getBodyInfo';
 import { format, parse } from 'date-fns';
 import 'jest';
 

@@ -1,14 +1,14 @@
-import { AbstractJinFrame } from '@frames/AbstractJinFrame';
-import { JinCreateError } from '@frames/JinCreateError';
-import type { IDebugInfo } from '@interfaces/IDebugInfo';
-import type { IFailExceptionJinEitherFrame, IFailReplyJinEitherFrame } from '@interfaces/IFailJinEitherFrame';
-import type { IJinFrameCreateConfig } from '@interfaces/IJinFrameCreateConfig';
-import type { IJinFrameFunction } from '@interfaces/IJinFrameFunction';
-import type { IJinFrameRequestConfig } from '@interfaces/IJinFrameRequestConfig';
-import type { TJinEitherFramePostHookReply } from '@interfaces/THookReply';
-import type { TPassJinEitherFrame } from '@interfaces/TPassJinEitherFrame';
-import { getDuration } from '@tools/getDuration';
-import { isValidateStatusDefault } from '@tools/isValidateStatusDefault';
+import { AbstractJinFrame } from '#frames/AbstractJinFrame';
+import { JinCreateError } from '#frames/JinCreateError';
+import type { IDebugInfo } from '#interfaces/IDebugInfo';
+import type { IFailExceptionJinEitherFrame, IFailReplyJinEitherFrame } from '#interfaces/IFailJinEitherFrame';
+import type { IJinFrameCreateConfig } from '#interfaces/IJinFrameCreateConfig';
+import type { IJinFrameFunction } from '#interfaces/IJinFrameFunction';
+import type { IJinFrameRequestConfig } from '#interfaces/IJinFrameRequestConfig';
+import type { TJinEitherFramePostHookReply } from '#interfaces/THookReply';
+import type { TPassJinEitherFrame } from '#interfaces/TPassJinEitherFrame';
+import { getDuration } from '#tools/getDuration';
+import { isValidateStatusDefault } from '#tools/isValidateStatusDefault';
 import axios, { AxiosError, type AxiosRequestConfig, type AxiosResponse, type Method } from 'axios';
 /* eslint-disable-next-line import/no-extraneous-dependencies, import/no-duplicates */
 import formatISO from 'date-fns/formatISO';
@@ -29,7 +29,8 @@ export interface JinEitherFrame<TPASS = unknown, TFAIL = TPASS> {
    * @param this this instance
    * @param req request object
    * */
-  preHook?(req: AxiosRequestConfig): void | AxiosRequestConfig | Promise<void | AxiosRequestConfig>;
+  // eslint-disable-next-line @typescript-eslint/no-invalid-void-type
+  preHook?(req: AxiosRequestConfig): void | AxiosRequestConfig | Promise<void> | Promise<AxiosRequestConfig>;
 
   /**
    * Execute after request.
@@ -148,6 +149,7 @@ export class JinEitherFrame<TPASS = unknown, TFAIL = TPASS>
           const hookApplied = await this.preHook?.(req);
           newReq = hookApplied != null ? hookApplied : req;
         } else {
+          // eslint-disable-next-line @typescript-eslint/no-invalid-void-type
           const hookApplied = (this.preHook as (this: void, req: AxiosRequestConfig) => void | AxiosRequestConfig)?.(
             req,
           );

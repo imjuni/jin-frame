@@ -1,5 +1,5 @@
-import { JinEitherFrame } from '@frames/JinEitherFrame';
-import { JinFile } from '@frames/JinFile';
+import { JinEitherFrame } from '#frames/JinEitherFrame';
+import { JinFile } from '#frames/JinFile';
 import fs from 'fs';
 import nock from 'nock';
 import path from 'path';

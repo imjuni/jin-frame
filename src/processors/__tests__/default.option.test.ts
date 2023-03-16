@@ -1,13 +1,13 @@
 /* eslint-disable max-classes-per-file, no-console */
-import type { TSingleObjectBodyFormatter } from '@interfaces/body/IObjectBodyFieldOption';
-import type { IFormatter } from '@interfaces/IFormatter';
+import type { TSingleObjectBodyFormatter } from '#interfaces/body/IObjectBodyFieldOption';
+import type { IFormatter } from '#interfaces/IFormatter';
 import {
   getDefaultBodyFieldOption,
   getDefaultHeaderFieldOption,
   getDefaultObjectBodyFieldOption,
   getDefaultParamFieldOption,
   getDefaultQueryFieldOption,
-} from '@processors/getDefaultOption';
+} from '#processors/getDefaultOption';
 import 'jest';
 
 describe('getDefaultQueryFieldOption', () => {

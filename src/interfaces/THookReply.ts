@@ -1,6 +1,6 @@
-import type { IDebugInfo } from '@interfaces/IDebugInfo';
-import type { IFailReplyJinEitherFrame } from '@interfaces/IFailJinEitherFrame';
-import type { TPassJinEitherFrame } from '@interfaces/TPassJinEitherFrame';
+import type { IDebugInfo } from '#interfaces/IDebugInfo';
+import type { IFailReplyJinEitherFrame } from '#interfaces/IFailJinEitherFrame';
+import type { TPassJinEitherFrame } from '#interfaces/TPassJinEitherFrame';
 import type { AxiosResponse } from 'axios';
 
 export type TJinFramePostHookReply<TPASS, TFAIL> =

@@ -1,8 +1,8 @@
 /* eslint-disable max-classes-per-file */
-import { JinCreateError } from '@frames/JinCreateError';
-import { JinFrame } from '@frames/JinFrame';
-import type { JinRequestError } from '@frames/JinRequestError';
-import type { JinBuiltInMember, OmitConstructorType } from '@tools/ConstructorType';
+import { JinCreateError } from '#frames/JinCreateError';
+import { JinFrame } from '#frames/JinFrame';
+import type { JinRequestError } from '#frames/JinRequestError';
+import type { JinBuiltInMember, OmitConstructorType } from '#tools/ConstructorType';
 import 'jest';
 import nock from 'nock';
 

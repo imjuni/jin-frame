@@ -1,5 +1,5 @@
 /* eslint-disable max-classes-per-file, no-console */
-import type { OmitConstructorType } from '@tools/ConstructorType';
+import type { OmitConstructorType } from '#tools/ConstructorType';
 import { JinEitherFrame } from '../frames/JinEitherFrame';
 
 class Test001PostFrame extends JinEitherFrame {

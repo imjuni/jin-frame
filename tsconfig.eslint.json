@@ -4,16 +4,13 @@
     "allowJs": true
   },
   "include": [
-    "prepublish.cjs",
-    "**/*.ts",
-    ".eslintrc.js",
-    "just.config.ts",
-    "**/__test__",
-    "**/__tests__",
-    "tsconfig.**.json"
+    "src/**/*.ts",
+    "scripts/uuid.js",
+    "examples/**/*.ts",
+    ".eslintrc.cjs",
+    "jest.config.cjs",
+    "jest.config.js",
+    "prepublish.js"
   ],
-  "exclude": [
-    "dist/**/*",
-    "**/dist/**/*"
-  ]
+  "exclude": ["**/node_modules/**", "**/dist/**/*", "**/.configs/**", "**/docs/**"]
 }

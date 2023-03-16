@@ -1,5 +1,5 @@
-import type { ICommonFieldOption } from '@interfaces/ICommonFieldOption';
-import type { IFormatter } from '@interfaces/IFormatter';
+import type { ICommonFieldOption } from '#interfaces/ICommonFieldOption';
+import type { IFormatter } from '#interfaces/IFormatter';
 
 export type TSingleObjectBodyFormatter = {
   /** use `dot notation`(eg. data.more.birthday) to specify where the results will be stored */

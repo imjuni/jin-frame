@@ -20,6 +20,7 @@ module.exports = {
     project: ['tsconfig.eslint.json'],
     tsconfigRootDir: __dirname,
   },
+  ignorePatterns: ['coverage/**', 'examples/**', 'dist/**', '__test__/**', '__tests__/**'],
   plugins: ['@typescript-eslint', 'prettier', 'import'],
   rules: {
     'max-len': [
@@ -38,19 +39,30 @@ module.exports = {
       {
         varsIgnorePattern: '^_.+$',
         argsIgnorePattern: '^_.+$',
+        ignoreRestSiblings: true,
       },
     ],
-    'import/prefer-default-export': 'off',
-    'prettier/prettier': 'error',
     'import/extensions': ['off'],
+    'import/prefer-default-export': 'off',
+    'import/no-default-export': 'error',
     '@typescript-eslint/consistent-type-imports': ['error', { prefer: 'type-imports' }],
+    // static function use this: void
+    '@typescript-eslint/no-invalid-void-type': ['error', { allowAsThisParameter: true }],
+    '@typescript-eslint/no-unnecessary-boolean-literal-compare': ['off'],
   },
   overrides: [
     {
-      files: ['**/__tests__/*.ts'],
+      files: ['**/scripts/*.js'],
+      rules: {
+        'no-console': ['off'],
+      },
+    },
+    {
+      files: ['**/__tests__/*.ts', 'jest.config.cjs'],
       rules: {
         '@typescript-eslint/no-unsafe-assignment': ['off'],
-        '@typescript-eslint/no-unsafe-return': ['off'],
+        '@typescript-eslint/no-unsafe-argument': ['off'],
+        '@typescript-eslint/no-unsafe-member-access': ['off'],
         'no-console': ['off'],
       },
     },

@@ -1,4 +1,4 @@
-import { JinEitherFrame } from '@frames/JinEitherFrame';
+import { JinEitherFrame } from '#frames/JinEitherFrame';
 
 class TestGet2Frame extends JinEitherFrame {
   @JinEitherFrame.param()

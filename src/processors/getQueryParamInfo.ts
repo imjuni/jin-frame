@@ -1,9 +1,9 @@
-import type { IParamFieldOption } from '@interfaces/IParamFieldOption';
-import type { IQueryFieldOption } from '@interfaces/IQueryFieldOption';
-import { applyFormatters } from '@tools/applyFormatters';
-import { bitwised } from '@tools/bitwised';
-import { encode } from '@tools/encode';
-import { isValidArrayType } from '@tools/typeAssert';
+import type { IParamFieldOption } from '#interfaces/IParamFieldOption';
+import type { IQueryFieldOption } from '#interfaces/IQueryFieldOption';
+import { applyFormatters } from '#tools/applyFormatters';
+import { bitwised } from '#tools/bitwised';
+import { encode } from '#tools/encode';
+import { isValidArrayType } from '#tools/typeAssert';
 
 export function getQueryParamInfo<T extends Record<string, any>>(
   origin: T,

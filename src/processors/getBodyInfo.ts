@@ -1,9 +1,9 @@
-import type { IBodyField } from '@interfaces/body/IBodyField';
-import type { IBodyFieldOption } from '@interfaces/body/IBodyFieldOption';
-import type { IObjectBodyFieldOption } from '@interfaces/body/IObjectBodyFieldOption';
-import { processBodyFormatters } from '@processors/processBodyFormatters';
-import { processObjectBodyFormatters } from '@processors/processObjectBodyFormatters';
-import { isValidArrayType, isValidPrimitiveType } from '@tools/typeAssert';
+import type { IBodyField } from '#interfaces/body/IBodyField';
+import type { IBodyFieldOption } from '#interfaces/body/IBodyFieldOption';
+import type { IObjectBodyFieldOption } from '#interfaces/body/IObjectBodyFieldOption';
+import { processBodyFormatters } from '#processors/processBodyFormatters';
+import { processObjectBodyFormatters } from '#processors/processObjectBodyFormatters';
+import { isValidArrayType, isValidPrimitiveType } from '#tools/typeAssert';
 import { set } from 'dot-prop';
 import { recursive } from 'merge';
 import { first } from 'my-easy-fp';

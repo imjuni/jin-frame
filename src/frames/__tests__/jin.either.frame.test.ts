@@ -1,6 +1,6 @@
 /* eslint-disable max-classes-per-file */
-import { JinEitherFrame } from '@frames/JinEitherFrame';
-import type { JinBuiltInMember, OmitConstructorType } from '@tools/ConstructorType';
+import { JinEitherFrame } from '#frames/JinEitherFrame';
+import type { JinBuiltInMember, OmitConstructorType } from '#tools/ConstructorType';
 import 'jest';
 import nock from 'nock';
 
