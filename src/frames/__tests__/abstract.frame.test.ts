@@ -111,9 +111,9 @@ describe('AbstractJinFrame', () => {
 
     frame.request();
 
-    expect(frame.body).toMatchObject({ username: 'ironman', password: 'avengers' });
+    expect(frame.$$body).toMatchObject({ username: 'ironman', password: 'avengers' });
 
-    expect(frame.param).toMatchObject({ passing: 'pass' });
+    expect(frame.$$param).toMatchObject({ passing: 'pass' });
   });
 
   test('form-data exception', async () => {
@@ -195,8 +195,8 @@ describe('AbstractJinFrame', () => {
     const frame = new Test004PostFrame({ name: ['ironman', 'captain'], passing: ['pass', 'fail'], nums: [1, 2, 3] });
     frame.request();
 
-    expect(frame.query).toMatchObject({ name: ['ironman', 'captain'], nums: [1, 2, 3] });
-    expect(frame.param).toMatchObject({ passing: '["pass","fail"]' });
+    expect(frame.$$query).toMatchObject({ name: ['ironman', 'captain'], nums: [1, 2, 3] });
+    expect(frame.$$param).toMatchObject({ passing: '["pass","fail"]' });
   });
 
   test('array paths, queries', async () => {

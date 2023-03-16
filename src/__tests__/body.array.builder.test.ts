@@ -15,7 +15,7 @@ class Test001PostFrame extends JinEitherFrame {
   constructor(
     args: OmitConstructorType<
       Test001PostFrame,
-      'host' | 'method' | 'contentType' | 'query' | 'body' | 'header' | 'param'
+      'host' | 'method' | 'contentType' | '$$query' | '$$body' | '$$header' | '$$param'
     >,
   ) {
     super({

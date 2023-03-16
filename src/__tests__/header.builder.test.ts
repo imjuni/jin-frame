@@ -43,7 +43,7 @@ test('T001-header', async () => {
   const frame = new Test001PostFrame({ passing: 'hello', username: 'ironman', password: 'advengers' });
   frame.request();
 
-  expect(frame.header).toMatchObject({
+  expect(frame.$$header).toMatchObject({
     username: 'ironman',
     password: 'advengers',
     'Content-Type': 'application/json',

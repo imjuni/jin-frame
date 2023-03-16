@@ -79,11 +79,11 @@ export class JinEitherFrame<TPASS = unknown, TFAIL = TPASS>
       return pass(req);
     } catch (caught) {
       const source = caught as Error;
-      const duration = getDuration(this.startAt, new Date());
+      const duration = getDuration(this.$$startAt, new Date());
       const debug: Omit<IDebugInfo, 'req'> = {
         ts: {
-          unix: `${getUnixTime(this.startAt)}.${this.startAt.getMilliseconds()}`,
-          iso: formatISO(this.startAt),
+          unix: `${getUnixTime(this.$$startAt)}.${this.$$startAt.getMilliseconds()}`,
+          iso: formatISO(this.$$startAt),
         },
         duration,
       };

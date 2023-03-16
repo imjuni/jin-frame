@@ -16,7 +16,7 @@ module.exports = {
   },
   testMatch: ['**/__tests__/*.(ts|tsx)', '**/__test__/*.(ts|tsx)'],
   testPathIgnorePatterns: ['/node_modules/', 'example/', 'dist/', 'erdia_eg/'],
-  setupFilesAfterEnv: ['<rootDir>/.configs/jest.setup.js'],
+  setupFilesAfterEnv: ['<rootDir>/.configs/jest.setup.cjs'],
   // testSequencer: '<rootDir>/.configs/test.spec.js',
 
   moduleNameMapper: pathsToModuleNameMapper(tsconfig.compilerOptions.paths, {

@@ -135,23 +135,23 @@ export abstract class AbstractJinFrame {
 
   #param?: Record<string, any>;
 
-  public get query() {
+  public get $$query() {
     return this.#query;
   }
 
-  public get header() {
+  public get $$header() {
     return this.#header;
   }
 
-  public get body() {
+  public get $$body() {
     return this.#body;
   }
 
-  public get param() {
+  public get $$param() {
     return this.#param;
   }
 
-  protected startAt: Date;
+  protected $$startAt: Date;
 
   /**
    * @param __namedParameters.host - host of API Request endpoint
@@ -174,7 +174,7 @@ export abstract class AbstractJinFrame {
 
     this.method = args.method;
     this.contentType = args.contentType ?? 'application/json';
-    this.startAt = new Date();
+    this.$$startAt = new Date();
 
     if (args.host == null && args.path == null) {
       throw new Error('Invalid host & path. Cannot set undefined both');
