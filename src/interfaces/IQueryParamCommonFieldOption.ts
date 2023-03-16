@@ -1,5 +1,5 @@
-import type { ICommonFieldOption } from '@interfaces/ICommonFieldOption';
-import type { IFormatter } from '@interfaces/IFormatter';
+import type { ICommonFieldOption } from '#interfaces/ICommonFieldOption';
+import type { IFormatter } from '#interfaces/IFormatter';
 
 export interface IQueryParamCommonFieldOption extends ICommonFieldOption {
   formatter?: IFormatter;

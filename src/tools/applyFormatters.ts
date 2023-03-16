@@ -1,6 +1,6 @@
 /* eslint-disable import/no-extraneous-dependencies */
 
-import type { IFormatter } from '@interfaces/IFormatter';
+import type { IFormatter } from '#interfaces/IFormatter';
 
 function applyFormatter(initialValue: string | boolean | number | Date, formatter: IFormatter) {
   const orders = formatter.order ?? ['number', 'string', 'dateTime'];

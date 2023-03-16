@@ -1,4 +1,4 @@
-import { JinEitherFrame } from '@frames/JinEitherFrame';
+import { JinEitherFrame } from '#frames/JinEitherFrame';
 import nock from 'nock';
 
 class TestGetFrame extends JinEitherFrame {

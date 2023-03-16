@@ -1,7 +1,7 @@
-import type { IFailExceptionJinEitherFrame, IFailReplyJinEitherFrame } from '@interfaces/IFailJinEitherFrame';
-import type { IJinFrameCreateConfig } from '@interfaces/IJinFrameCreateConfig';
-import type { IJinFrameRequestConfig } from '@interfaces/IJinFrameRequestConfig';
-import type { TPassJinEitherFrame } from '@interfaces/TPassJinEitherFrame';
+import type { IFailExceptionJinEitherFrame, IFailReplyJinEitherFrame } from '#interfaces/IFailJinEitherFrame';
+import type { IJinFrameCreateConfig } from '#interfaces/IJinFrameCreateConfig';
+import type { IJinFrameRequestConfig } from '#interfaces/IJinFrameRequestConfig';
+import type { TPassJinEitherFrame } from '#interfaces/TPassJinEitherFrame';
 import type { AxiosResponse } from 'axios';
 import type { PassFailEither } from 'my-only-either';
 

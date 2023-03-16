@@ -1,7 +1,7 @@
-import type { IHeaderField } from '@interfaces/IHeaderField';
-import { processHeaderFormatters } from '@processors/processHeaderFormatters';
-import { encodes } from '@tools/encode';
-import { isValidArrayType, isValidPrimitiveType } from '@tools/typeAssert';
+import type { IHeaderField } from '#interfaces/IHeaderField';
+import { processHeaderFormatters } from '#processors/processHeaderFormatters';
+import { encodes } from '#tools/encode';
+import { isValidArrayType, isValidPrimitiveType } from '#tools/typeAssert';
 import fastSafeStringify from 'fast-safe-stringify';
 
 export function getHeaderInfo<T extends Record<string, any>>(thisFrame: T, fields: IHeaderField[], strict?: boolean) {

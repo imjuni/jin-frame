@@ -1,8 +1,8 @@
 /* eslint-disable class-methods-use-this, no-console, max-classes-per-file */
 
-import { JinEitherFrame } from '@frames/JinEitherFrame';
-import { JinFrame } from '@frames/JinFrame';
-import type { TJinEitherFramePostHookReply, TJinFramePostHookReply } from '@interfaces/THookReply';
+import { JinEitherFrame } from '#frames/JinEitherFrame';
+import { JinFrame } from '#frames/JinFrame';
+import type { TJinEitherFramePostHookReply, TJinFramePostHookReply } from '#interfaces/THookReply';
 import axios, { type AxiosRequestConfig } from 'axios';
 import { isFail, isPass } from 'my-only-either';
 import nock from 'nock';
@@ -30,7 +30,7 @@ class TestGetFrame extends JinEitherFrame {
     return req;
   }
 
-  postHook(req: AxiosRequestConfig, reply: TJinEitherFramePostHookReply<any, any>): void {
+  postHook(req: AxiosRequestConfig, reply: TJinEitherFramePostHookReply<any, any>) {
     console.log('post hook trigger: ', req);
     console.log(reply);
   }

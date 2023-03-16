@@ -1,5 +1,5 @@
 /* eslint-disable max-classes-per-file, no-console */
-import { processBodyFormatters } from '@processors/processBodyFormatters';
+import { processBodyFormatters } from '#processors/processBodyFormatters';
 import 'jest';
 
 describe('processBodyFormatters', () => {

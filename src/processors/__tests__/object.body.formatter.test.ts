@@ -1,5 +1,5 @@
 /* eslint-disable max-classes-per-file, no-console */
-import { processObjectBodyFormatters } from '@processors/processObjectBodyFormatters';
+import { processObjectBodyFormatters } from '#processors/processObjectBodyFormatters';
 import { format } from 'date-fns';
 import 'jest';
 

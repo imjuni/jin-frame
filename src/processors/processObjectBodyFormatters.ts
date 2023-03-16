@@ -1,6 +1,6 @@
-import type { IObjectBodyFieldOption, TMultipleObjectBodyFormatter } from '@interfaces/body/IObjectBodyFieldOption';
-import { applyFormatters } from '@tools/applyFormatters';
-import { isValidPrimitiveType, typeAssert } from '@tools/typeAssert';
+import type { IObjectBodyFieldOption, TMultipleObjectBodyFormatter } from '#interfaces/body/IObjectBodyFieldOption';
+import { applyFormatters } from '#tools/applyFormatters';
+import { isValidPrimitiveType, typeAssert } from '#tools/typeAssert';
 import { get, set } from 'dot-prop';
 import { recursive } from 'merge';
 import type { SetRequired } from 'type-fest';

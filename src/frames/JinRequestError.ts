@@ -1,5 +1,5 @@
-import type { JinFrame } from '@frames/JinFrame';
-import type { IDebugInfo } from '@interfaces/IDebugInfo';
+import type { JinFrame } from '#frames/JinFrame';
+import type { IDebugInfo } from '#interfaces/IDebugInfo';
 import type { AxiosError, AxiosResponse } from 'axios';
 
 export class JinRequestError<TPASS, TFAIL = any> extends Error {

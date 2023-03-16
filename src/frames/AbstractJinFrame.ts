@@ -1,25 +1,25 @@
-import { defaultJinFrameTimeout } from '@frames/defaultJinFrameTimeout';
-import { JinFile } from '@frames/JinFile';
-import type { IBodyFieldOption } from '@interfaces/body/IBodyFieldOption';
-import type { IObjectBodyFieldOption } from '@interfaces/body/IObjectBodyFieldOption';
-import type { IHeaderFieldOption } from '@interfaces/IHeaderFieldOption';
-import type { IJinFrameCreateConfig } from '@interfaces/IJinFrameCreateConfig';
-import type { IJinFrameRequestConfig } from '@interfaces/IJinFrameRequestConfig';
-import type { IParamFieldOption } from '@interfaces/IParamFieldOption';
-import type { IQueryFieldOption } from '@interfaces/IQueryFieldOption';
-import type { TFieldRecords } from '@interfaces/TFieldRecords';
-import type { TRequestPart } from '@interfaces/TRequestPart';
-import { getBodyInfo } from '@processors/getBodyInfo';
+import { defaultJinFrameTimeout } from '#frames/defaultJinFrameTimeout';
+import { JinFile } from '#frames/JinFile';
+import type { IBodyFieldOption } from '#interfaces/body/IBodyFieldOption';
+import type { IObjectBodyFieldOption } from '#interfaces/body/IObjectBodyFieldOption';
+import type { IHeaderFieldOption } from '#interfaces/IHeaderFieldOption';
+import type { IJinFrameCreateConfig } from '#interfaces/IJinFrameCreateConfig';
+import type { IJinFrameRequestConfig } from '#interfaces/IJinFrameRequestConfig';
+import type { IParamFieldOption } from '#interfaces/IParamFieldOption';
+import type { IQueryFieldOption } from '#interfaces/IQueryFieldOption';
+import type { TFieldRecords } from '#interfaces/TFieldRecords';
+import type { TRequestPart } from '#interfaces/TRequestPart';
+import { getBodyInfo } from '#processors/getBodyInfo';
 import {
   getDefaultBodyFieldOption,
   getDefaultHeaderFieldOption,
   getDefaultObjectBodyFieldOption,
   getDefaultParamFieldOption,
   getDefaultQueryFieldOption,
-} from '@processors/getDefaultOption';
-import { getHeaderInfo } from '@processors/getHeaderInfo';
-import { getQueryParamInfo } from '@processors/getQueryParamInfo';
-import { removeBothSlash, removeEndSlash, startWithSlash } from '@tools/slashUtils';
+} from '#processors/getDefaultOption';
+import { getHeaderInfo } from '#processors/getHeaderInfo';
+import { getQueryParamInfo } from '#processors/getQueryParamInfo';
+import { removeBothSlash, removeEndSlash, startWithSlash } from '#tools/slashUtils';
 import { type AxiosRequestConfig, type Method } from 'axios';
 import fastSafeStringify from 'fast-safe-stringify';
 import FormData from 'form-data';

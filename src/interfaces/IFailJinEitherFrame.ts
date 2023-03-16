@@ -1,5 +1,5 @@
-import type { JinEitherFrame } from '@frames/JinEitherFrame';
-import type { IDebugInfo } from '@interfaces/IDebugInfo';
+import type { JinEitherFrame } from '#frames/JinEitherFrame';
+import type { IDebugInfo } from '#interfaces/IDebugInfo';
 import type { AxiosResponse } from 'axios';
 import type { IFail } from 'my-only-either';
 

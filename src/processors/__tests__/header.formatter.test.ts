@@ -1,5 +1,5 @@
 /* eslint-disable max-classes-per-file, no-console */
-import { processHeaderFormatters } from '@processors/processHeaderFormatters';
+import { processHeaderFormatters } from '#processors/processHeaderFormatters';
 import 'jest';
 
 describe('processHeaderFormatters', () => {

@@ -1,7 +1,7 @@
-import type { IFormatter } from '@interfaces/IFormatter';
-import type { IHeaderField } from '@interfaces/IHeaderField';
-import { applyFormatters } from '@tools/applyFormatters';
-import { encodes } from '@tools/encode';
+import type { IFormatter } from '#interfaces/IFormatter';
+import type { IHeaderField } from '#interfaces/IHeaderField';
+import { applyFormatters } from '#tools/applyFormatters';
+import { encodes } from '#tools/encode';
 import fastSafeStringify from 'fast-safe-stringify';
 
 export function processHeaderFormatters<T extends Record<string, any>>(

@@ -1,4 +1,4 @@
-import { getQueryParamInfo } from '@processors/getQueryParamInfo';
+import { getQueryParamInfo } from '#processors/getQueryParamInfo';
 import { format, parse } from 'date-fns';
 import 'jest';
 

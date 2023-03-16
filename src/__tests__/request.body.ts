@@ -1,6 +1,6 @@
 /* eslint-disable max-classes-per-file */
 
-import { JinEitherFrame } from '@frames/JinEitherFrame';
+import { JinEitherFrame } from '#frames/JinEitherFrame';
 import cloneDeep from 'clone-deep';
 import { format, parse } from 'date-fns';
 
