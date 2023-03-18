@@ -19,7 +19,9 @@ import {
 } from '#processors/getDefaultOption';
 import { getHeaderInfo } from '#processors/getHeaderInfo';
 import { getQueryParamInfo } from '#processors/getQueryParamInfo';
-import { removeBothSlash, removeEndSlash, startWithSlash } from '#tools/slashUtils';
+import removeBothSlash from '#tools/slash-utils/removeBothSlash';
+import removeEndSlash from '#tools/slash-utils/removeEndSlash';
+import startWithSlash from '#tools/slash-utils/startWithSlash';
 import { type AxiosRequestConfig, type Method } from 'axios';
 import fastSafeStringify from 'fast-safe-stringify';
 import FormData from 'form-data';
@@ -28,7 +30,7 @@ import { compile } from 'path-to-regexp';
 import 'reflect-metadata';
 import type { Except } from 'type-fest';
 
-export abstract class AbstractJinFrame {
+abstract class AbstractJinFrame {
   public static ParamSymbolBox = Symbol('ParamSymbolBoxForAbstractJinFrame');
 
   public static QuerySymbolBox = Symbol('QuerySymbolBoxForAbstractJinFrame');
@@ -122,18 +124,18 @@ export abstract class AbstractJinFrame {
   public readonly contentType: string;
 
   /** custom object of POST Request body data */
-  public readonly customBody?: Record<string, unknown>;
+  public readonly customBody?: unknown;
 
   /** transformRequest function of POST Request */
   public readonly transformRequest?: AxiosRequestConfig['transformRequest'];
 
-  #query?: Record<string, any>;
+  #query?: Record<string, unknown>;
 
-  #header?: Record<string, any>;
+  #header?: Record<string, unknown>;
 
-  #body?: Record<string, any>;
+  #body?: Record<string, unknown> | unknown;
 
-  #param?: Record<string, any>;
+  #param?: Record<string, unknown>;
 
   public get $$query() {
     return this.#query;
@@ -165,7 +167,7 @@ export abstract class AbstractJinFrame {
     path?: string;
     method: Method;
     contentType?: string;
-    customBody?: Record<string, unknown>;
+    customBody?: unknown;
     transformRequest?: AxiosRequestConfig['transformRequest'];
   }) {
     (Object.keys(args) as (keyof typeof args)[]).forEach((key) => {
@@ -200,34 +202,32 @@ export abstract class AbstractJinFrame {
         .join('&');
   }
 
-  getFormData(bodies: Record<string, any>): FormData | Record<string, any> {
+  getFormData(bodies: Record<string, unknown> | unknown): FormData | Record<string, unknown> | unknown {
     if (this.method !== 'post' && this.method !== 'POST') {
       return bodies;
     }
 
-    if (this.contentType === 'multipart/form-data') {
+    if (this.contentType === 'multipart/form-data' && typeof bodies === 'object' && bodies != null) {
       const formData = new FormData();
-      const keys = Object.keys(bodies);
 
-      keys.forEach((key) => {
-        const formElement = bodies[key] as unknown;
-
-        if (Array.isArray(formElement) && first(formElement) instanceof JinFile) {
-          formElement.forEach((jinFile: JinFile) => formData.append(key, jinFile.file, jinFile.name));
-        } else if (formElement instanceof JinFile) {
-          formData.append(key, formElement.file, formElement.name);
-        } else if (typeof formElement === 'string') {
-          formData.append(key, formElement);
-        } else if (typeof formElement === 'number') {
-          formData.append(key, `${formElement}`);
-        } else if (typeof formElement === 'boolean') {
-          formData.append(key, `${formElement.toString()}`);
-        } else if (typeof formElement === 'object') {
-          formData.append(key, fastSafeStringify(formElement));
+      Object.entries(bodies).forEach(([key, value]) => {
+        if (Array.isArray(value) && first(value) instanceof JinFile) {
+          value.forEach((jinFile: JinFile) => formData.append(key, jinFile.file, jinFile.name));
+        } else if (value instanceof JinFile) {
+          formData.append(key, value.file, value.name);
+        } else if (typeof value === 'string') {
+          formData.append(key, value);
+        } else if (typeof value === 'number') {
+          formData.append(key, `${value}`);
+        } else if (typeof value === 'boolean') {
+          formData.append(key, `${value.toString()}`);
+        } else if (typeof value === 'object') {
+          formData.append(key, fastSafeStringify(value));
         } else {
           throw new Error(
-            // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
-            `Invalid data type: ${typeof formElement}/ ${formElement}, only support JinFile, string, number, boolean, object type`,
+            `Invalid data type: ${typeof value}/ ${fastSafeStringify(
+              value,
+            )}, only support JinFile, string, number, boolean, object type`,
           );
         }
       });
@@ -289,10 +289,10 @@ export abstract class AbstractJinFrame {
     );
 
     // stage 02. each request parameter apply option
-    const queries = getQueryParamInfo(this, fields.query); // create querystring information
-    const headers = getHeaderInfo(this, fields.header); // create header information
-    const paths = getQueryParamInfo(this, fields.param); // create param information
-    const bodies = (() => {
+    const queries = getQueryParamInfo(this as Record<string, unknown>, fields.query); // create querystring information
+    const headers = getHeaderInfo(this as Record<string, unknown>, fields.header); // create header information
+    const paths = getQueryParamInfo(this as Record<string, unknown>, fields.param); // create param information
+    const bodies: unknown = (() => {
       if (this.customBody != null) {
         return this.customBody;
       }
@@ -301,7 +301,7 @@ export abstract class AbstractJinFrame {
         return undefined;
       }
 
-      return getBodyInfo(this, fields.body);
+      return getBodyInfo(this as Record<string, unknown>, fields.body);
     })();
 
     // stage 03. path parameter array value stringify
@@ -333,9 +333,11 @@ export abstract class AbstractJinFrame {
     // stage 07. querystring post processing
     Object.entries(queries).forEach(([key, value]) => {
       if (Array.isArray(value)) {
-        value.forEach((val) => url.searchParams.append(key, typeof val !== 'string' ? `${val}` : val));
+        value.forEach((val) =>
+          url.searchParams.append(key, typeof val !== 'string' ? `${fastSafeStringify(val)}` : val),
+        );
       } else {
-        url.searchParams.set(key, typeof value !== 'string' ? `${value}` : value);
+        url.searchParams.set(key, typeof value !== 'string' ? `${fastSafeStringify(value)}` : value);
       }
     });
 
@@ -368,3 +370,5 @@ export abstract class AbstractJinFrame {
     return req;
   }
 }
+
+export default AbstractJinFrame;

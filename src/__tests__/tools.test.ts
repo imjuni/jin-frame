@@ -1,7 +1,7 @@
 /* eslint-disable max-classes-per-file, no-console */
 
-import { bitwised } from '#tools/bitwised';
-import { encodes } from '#tools/encode';
+import bitwised from '#tools/bitwised';
+import encodes from '#tools/encodes/encodes';
 
 test('encodes.ts', () => {
   const encoded = encodes(true, ['a', 'b', 'c', '😄']);

@@ -106,6 +106,7 @@ dist
 
 # dist directory
 dist/
+.DS_Store
 
 # lint logging
 tslint-to-eslint-config.log
@@ -119,3 +120,6 @@ docs/api
 docs/classes
 docs/interfaces
 docs/media
+
+# swc
+.swc/

@@ -1,5 +1,6 @@
 /* eslint-disable max-classes-per-file, no-console, import/no-extraneous-dependencies */
-import { applyFormatters } from '#tools/applyFormatters';
+
+import applyFormatters from '#tools/formatters/applyFormatters';
 import { format, parse } from 'date-fns';
 import 'jest';
 

@@ -51,4 +51,11 @@ describe('processHeaderFormatters', () => {
     expect(r02).toEqual({ name: '%5B%22avengers%3Aironman%22%2C%22avengers%3Acaptain%22%5D' });
     expect(r03).toEqual({ name: '%5B%22avengers%3Aironman%22%2C%22avengers%3Acaptain%22%5D' });
   });
+
+  test('invalid value', () => {
+    const sym = Symbol('Symbol');
+    const dts = processHeaderFormatters({ name: sym }, { key: 'name', option: { type: 'header' } }, []);
+
+    expect(dts).toBeUndefined();
+  });
 });

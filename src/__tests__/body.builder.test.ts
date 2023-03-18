@@ -1,5 +1,4 @@
-/* eslint-disable max-classes-per-file, no-console */
-import { JinEitherFrame } from '../frames/JinEitherFrame';
+import { JinEitherFrame } from '#frames/JinEitherFrame';
 
 class Test001PostFrame extends JinEitherFrame {
   @JinEitherFrame.param()

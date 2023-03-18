@@ -1,26 +1,29 @@
 import type { IParamFieldOption } from '#interfaces/IParamFieldOption';
 import type { IQueryFieldOption } from '#interfaces/IQueryFieldOption';
-import { applyFormatters } from '#tools/applyFormatters';
-import { bitwised } from '#tools/bitwised';
-import { encode } from '#tools/encode';
-import { isValidArrayType } from '#tools/typeAssert';
+import bitwised from '#tools/bitwised';
+import encode from '#tools/encodes/encode';
+import encodes from '#tools/encodes/encodes';
+import applyFormatters from '#tools/formatters/applyFormatters';
+import isValidArrayType from '#tools/type-narrowing/isValidArrayType';
+import { isValidNumberArray } from '#tools/type-narrowing/isValidNumberArray';
+import isValidPrimitiveType from '#tools/type-narrowing/isValidPrimitiveType';
+import { get } from 'dot-prop';
 
-export function getQueryParamInfo<T extends Record<string, any>>(
-  origin: T,
-  fields: Array<{ key: string; option: IQueryFieldOption | IParamFieldOption }>,
+export function getQueryParamInfo<T extends Record<string, unknown>>(
+  thisFrame: T,
+  fields: { key: string; option: IQueryFieldOption | IParamFieldOption }[],
 ) {
-  return fields.reduce<Record<string, any>>((resultObj, field) => {
+  return fields.reduce<Record<string, unknown>>((resultObj, field) => {
     try {
-      const { key: fieldKey, option } = field;
-      const value = origin[fieldKey];
+      const { key: thisFrameAccessKey, option } = field;
+      const value: unknown = get<unknown>(thisFrame, thisFrameAccessKey);
+
+      if (!isValidPrimitiveType(value) && !isValidArrayType(value)) {
+        return { ...resultObj, thisFrameAccessKey: value };
+      }
 
       // stage 01. bit-wised operator processing
-      if (
-        option.bit != null &&
-        option.bit.enable &&
-        Array.isArray(value) &&
-        value.every((num) => typeof num === 'number')
-      ) {
+      if (option.bit.enable && Array.isArray(value) && isValidNumberArray(value)) {
         const bitwisedValue = bitwised(value);
 
         // include zero value in bit value
@@ -29,7 +32,7 @@ export function getQueryParamInfo<T extends Record<string, any>>(
         }
 
         // exclude zero value in bit value
-        return { ...resultObj, [fieldKey]: encode(option.encode, bitwisedValue) };
+        return { ...resultObj, [thisFrameAccessKey]: encode(option.encode, bitwisedValue) };
       }
 
       const { formatter } = option;
@@ -37,21 +40,18 @@ export function getQueryParamInfo<T extends Record<string, any>>(
       // stage 02. apply formatter
       if (formatter != null) {
         const formatted: string | string[] = applyFormatters(value, formatter);
-        const commaApplied = isValidArrayType(formatted) && option.comma ? formatted.join(',') : formatted;
-        return { ...resultObj, [fieldKey]: encode(option.encode, commaApplied) };
+        const commaApplied = Array.isArray(formatted) && option.comma ? formatted.join(',') : formatted;
+        return {
+          ...resultObj,
+          [thisFrameAccessKey]: Array.isArray(commaApplied)
+            ? encodes(option.encode, commaApplied)
+            : encode(option.encode, commaApplied),
+        };
       }
 
       // stage 03. comma seperation processing
-      if (Array.isArray(value)) {
-        const commaApplied = option.comma ? encode(option.encode, value.join(',')) : value;
-        return { ...resultObj, [fieldKey]: commaApplied };
-      }
-
-      if (value != null) {
-        return { ...resultObj, [fieldKey]: origin[fieldKey] };
-      }
-
-      return resultObj;
+      const commaApplied = Array.isArray(value) && option.comma ? encode(option.encode, value.join(',')) : value;
+      return { ...resultObj, [thisFrameAccessKey]: commaApplied };
     } catch {
       return resultObj;
     }

@@ -49,16 +49,16 @@ export function getDefaultBodyFieldOption(
   if ('formatters' in option) {
     return {
       type: 'body',
-      formatters: option?.formatters ?? undefined,
-      replaceAt: option?.replaceAt ?? undefined,
-      encode: option?.encode ?? true,
+      formatters: option.formatters ?? undefined,
+      replaceAt: option.replaceAt ?? undefined,
+      encode: option.encode ?? true,
     };
   }
 
   return {
     type: 'body',
-    replaceAt: option?.replaceAt ?? undefined,
-    encode: option?.encode ?? true,
+    replaceAt: option.replaceAt ?? undefined,
+    encode: option.encode ?? true,
   };
 }
 
@@ -76,23 +76,23 @@ export function getDefaultObjectBodyFieldOption(
   if ('formatters' in option) {
     return {
       type: 'object-body',
-      formatters: option?.formatters ?? undefined,
-      encode: option?.encode ?? true,
-      order: option?.order ?? Number.MAX_SAFE_INTEGER,
+      formatters: option.formatters ?? undefined,
+      encode: option.encode ?? true,
+      order: option.order ?? Number.MAX_SAFE_INTEGER,
     };
   }
 
   return {
     type: 'object-body',
-    encode: option?.encode ?? true,
-    order: option?.order ?? Number.MAX_SAFE_INTEGER,
+    encode: option.encode ?? true,
+    order: option.order ?? Number.MAX_SAFE_INTEGER,
   };
 }
 
 export function getDefaultHeaderFieldOption(
   option?: Partial<IHeaderFieldOption> | Omit<Partial<IHeaderFieldOption>, 'type'>,
 ): IHeaderFieldOption {
-  if (option === undefined || option === null) {
+  if (option == null) {
     return {
       type: 'header',
       encode: true,
@@ -103,17 +103,17 @@ export function getDefaultHeaderFieldOption(
   if ('formatters' in option) {
     return {
       type: 'header',
-      formatters: option?.formatters ?? undefined,
-      replaceAt: option?.replaceAt ?? undefined,
+      formatters: option.formatters ?? undefined,
+      replaceAt: option.replaceAt ?? undefined,
       comma: option.comma ?? false,
-      encode: option?.encode ?? true,
+      encode: option.encode ?? true,
     };
   }
 
   return {
     type: 'header',
-    replaceAt: option?.replaceAt ?? undefined,
+    replaceAt: option.replaceAt ?? undefined,
     comma: option.comma ?? false,
-    encode: option?.encode ?? true,
+    encode: option.encode ?? true,
   };
 }

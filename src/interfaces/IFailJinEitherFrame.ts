@@ -13,7 +13,7 @@ export interface IFailJinEitherFrame<T> extends Pick<AxiosResponse, 'status' | '
   $frame: JinEitherFrame<any, T>;
 }
 
-export interface IFailExceptionJinEitherFrame<T> extends IFailJinEitherFrame<T> {
+export interface IFailCreateJinEitherFrame<T> extends IFailJinEitherFrame<T> {
   /** progress of jin-frame, error representative mostly raise exception from axios.request */
   $progress: 'error';
 }
@@ -26,4 +26,4 @@ export interface IFailReplyJinEitherFrame<T> extends AxiosResponse<T>, IFailJinE
   $debug: IDebugInfo;
 }
 
-export type TJinFail<T> = IFail<IFailExceptionJinEitherFrame<T> | IFailReplyJinEitherFrame<T>>;
+export type TJinFail<T> = IFail<IFailCreateJinEitherFrame<T> | IFailReplyJinEitherFrame<T>>;

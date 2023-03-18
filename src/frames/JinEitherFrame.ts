@@ -1,20 +1,16 @@
-import { AbstractJinFrame } from '#frames/AbstractJinFrame';
-import { JinCreateError } from '#frames/JinCreateError';
+import AbstractJinFrame from '#frames/AbstractJinFrame';
+import JinCreateError from '#frames/JinCreateError';
 import type { IDebugInfo } from '#interfaces/IDebugInfo';
-import type { IFailExceptionJinEitherFrame, IFailReplyJinEitherFrame } from '#interfaces/IFailJinEitherFrame';
+import type { IFailCreateJinEitherFrame, IFailReplyJinEitherFrame } from '#interfaces/IFailJinEitherFrame';
 import type { IJinFrameCreateConfig } from '#interfaces/IJinFrameCreateConfig';
 import type { IJinFrameFunction } from '#interfaces/IJinFrameFunction';
 import type { IJinFrameRequestConfig } from '#interfaces/IJinFrameRequestConfig';
-import type { TJinEitherFramePostHookReply } from '#interfaces/THookReply';
 import type { TPassJinEitherFrame } from '#interfaces/TPassJinEitherFrame';
-import { getDuration } from '#tools/getDuration';
-import { isValidateStatusDefault } from '#tools/isValidateStatusDefault';
+import getDuration from '#tools/getDuration';
+import isValidateStatusDefault from '#tools/isValidateStatusDefault';
 import axios, { AxiosError, type AxiosRequestConfig, type AxiosResponse, type Method } from 'axios';
-/* eslint-disable-next-line import/no-extraneous-dependencies, import/no-duplicates */
 import formatISO from 'date-fns/formatISO';
-/* eslint-disable-next-line import/no-extraneous-dependencies, import/no-duplicates */
 import getUnixTime from 'date-fns/getUnixTime';
-/* eslint-disable-next-line import/no-extraneous-dependencies, import/no-duplicates */
 import httpStatusCodes, { getReasonPhrase } from 'http-status-codes';
 import { fail, pass, type PassFailEither } from 'my-only-either';
 import 'reflect-metadata';
@@ -29,8 +25,7 @@ export interface JinEitherFrame<TPASS = unknown, TFAIL = TPASS> {
    * @param this this instance
    * @param req request object
    * */
-  // eslint-disable-next-line @typescript-eslint/no-invalid-void-type
-  preHook?(req: AxiosRequestConfig): void | AxiosRequestConfig | Promise<void> | Promise<AxiosRequestConfig>;
+  $$preHook?(req: AxiosRequestConfig): void | Promise<void>;
 
   /**
    * Execute after request.
@@ -39,7 +34,10 @@ export interface JinEitherFrame<TPASS = unknown, TFAIL = TPASS> {
    * @param req request object
    * @param result [discriminated union](https://www.typescriptlang.org/docs/handbook/typescript-in-5-minutes-func.html#discriminated-unions) pass or fail
    */
-  postHook?(req: AxiosRequestConfig, result: TJinEitherFramePostHookReply<TPASS, TFAIL>): void | Promise<void>;
+  $$postHook?(
+    req: AxiosRequestConfig,
+    reply: IFailReplyJinEitherFrame<TFAIL> | TPassJinEitherFrame<TPASS>,
+  ): void | Promise<void>;
 }
 
 /**
@@ -62,19 +60,13 @@ export class JinEitherFrame<TPASS = unknown, TFAIL = TPASS>
    * @param __namedParameters.contentType - content-type of API Request endpoint
    * @param __namedParameters.customBody - custom object of POST Request body data
    */
-  constructor(args: {
-    host?: string;
-    path?: string;
-    method: Method;
-    contentType?: string;
-    customBody?: { [key: string]: any };
-  }) {
+  constructor(args: { host?: string; path?: string; method: Method; contentType?: string; customBody?: unknown }) {
     super({ ...args });
   }
 
   public requestWrap(
     option?: (IJinFrameRequestConfig & IJinFrameCreateConfig) | undefined,
-  ): PassFailEither<JinCreateError<JinEitherFrame<TPASS, TFAIL>, TPASS, TFAIL>, AxiosRequestConfig<any>> {
+  ): PassFailEither<JinCreateError<JinEitherFrame<TPASS, TFAIL>, TPASS, TFAIL>, AxiosRequestConfig<unknown>> {
     try {
       const req = super.request(option);
       return pass(req);
@@ -108,7 +100,7 @@ export class JinEitherFrame<TPASS = unknown, TFAIL = TPASS>
   public create(
     option?: IJinFrameRequestConfig & IJinFrameCreateConfig,
   ): () => Promise<
-    PassFailEither<IFailReplyJinEitherFrame<TFAIL> | IFailExceptionJinEitherFrame<TFAIL>, TPassJinEitherFrame<TPASS>>
+    PassFailEither<IFailReplyJinEitherFrame<TFAIL> | IFailCreateJinEitherFrame<TFAIL>, TPassJinEitherFrame<TPASS>>
   > {
     const reqE = this.requestWrap({ ...option, validateStatus: () => true });
 
@@ -121,16 +113,13 @@ export class JinEitherFrame<TPASS = unknown, TFAIL = TPASS>
           $frame: this,
           status: httpStatusCodes.INTERNAL_SERVER_ERROR,
           statusText: getReasonPhrase(httpStatusCodes.INTERNAL_SERVER_ERROR),
-        } satisfies IFailExceptionJinEitherFrame<TFAIL>);
+        } satisfies IFailCreateJinEitherFrame<TFAIL>);
     }
 
     const req = reqE.pass;
     const frame: JinEitherFrame<TPASS, TFAIL> = this;
 
-    const isValidateStatus =
-      option?.validateStatus === undefined || option?.validateStatus === null
-        ? isValidateStatusDefault
-        : option.validateStatus;
+    const isValidateStatus = option?.validateStatus == null ? isValidateStatusDefault : option.validateStatus;
 
     return async () => {
       const startAt = new Date();
@@ -143,20 +132,22 @@ export class JinEitherFrame<TPASS = unknown, TFAIL = TPASS>
       };
 
       try {
-        let newReq: typeof req;
+        const applyPreHookHandler = async (): Promise<typeof req> => {
+          if (this.$$preHook == null) {
+            return req;
+          }
 
-        if (this.preHook != null && this.preHook.constructor.name === 'AsyncFunction') {
-          const hookApplied = await this.preHook?.(req);
-          newReq = hookApplied != null ? hookApplied : req;
-        } else {
-          // eslint-disable-next-line @typescript-eslint/no-invalid-void-type
-          const hookApplied = (this.preHook as (this: void, req: AxiosRequestConfig) => void | AxiosRequestConfig)?.(
-            req,
-          );
-          newReq = hookApplied != null ? hookApplied : req;
-        }
+          if (this.$$preHook.constructor.name === 'AsyncFunction') {
+            await this.$$preHook(req);
+            return req;
+          }
 
-        const reply = await axios.request<TPASS, AxiosResponse<TPASS>, TFAIL>(newReq);
+          (this.$$preHook as (req: AxiosRequestConfig) => void | AxiosRequestConfig)(req);
+          return req;
+        };
+
+        const newReq = await applyPreHookHandler();
+        const reply = await axios.request<TPASS, AxiosResponse<TPASS>, unknown>(newReq);
         const endAt = new Date();
 
         if (isValidateStatus(reply.status) === false) {
@@ -172,8 +163,20 @@ export class JinEitherFrame<TPASS = unknown, TFAIL = TPASS>
             $frame: frame,
           };
 
-          this.postHook?.(req, { kind: 'fail', reply: failInfo, err });
+          const applyPostHookHandler = async () => {
+            if (this.$$postHook != null && this.$$postHook.constructor.name === 'AsyncFunction') {
+              await this.$$postHook(req, failInfo);
+            }
 
+            if (this.$$postHook != null) {
+              (this.$$postHook as (req: AxiosRequestConfig, result: IFailReplyJinEitherFrame<TFAIL>) => void)(
+                req,
+                failInfo,
+              );
+            }
+          };
+
+          await applyPostHookHandler();
           return fail(failInfo);
         }
 
@@ -186,15 +189,24 @@ export class JinEitherFrame<TPASS = unknown, TFAIL = TPASS>
           $frame: frame,
         };
 
-        this.postHook?.(req, { kind: 'pass', reply: passInfo });
+        const applyPostHookHandler = async () => {
+          if (this.$$postHook != null && this.$$postHook.constructor.name === 'AsyncFunction') {
+            await this.$$postHook(req, passInfo);
+          }
 
+          if (this.$$postHook != null) {
+            (this.$$postHook as (req: AxiosRequestConfig, result: TPassJinEitherFrame<TPASS>) => void)(req, passInfo);
+          }
+        };
+
+        await applyPostHookHandler();
         return pass(passInfo);
       } catch (catched) {
         const err = catched instanceof AxiosError ? catched : new AxiosError('unkonwn error raised from jinframe');
         const endAt = new Date();
         const duration = getDuration(startAt, endAt);
 
-        const failInfo: IFailExceptionJinEitherFrame<TFAIL> = {
+        const failInfo: IFailCreateJinEitherFrame<TFAIL> = {
           $progress: 'error',
           $err: err,
           $debug: { ...debugInfo, duration },
@@ -217,7 +229,7 @@ export class JinEitherFrame<TPASS = unknown, TFAIL = TPASS>
   public execute(
     option?: IJinFrameRequestConfig & IJinFrameCreateConfig,
   ): Promise<
-    PassFailEither<IFailReplyJinEitherFrame<TFAIL> | IFailExceptionJinEitherFrame<TFAIL>, TPassJinEitherFrame<TPASS>>
+    PassFailEither<IFailReplyJinEitherFrame<TFAIL> | IFailCreateJinEitherFrame<TFAIL>, TPassJinEitherFrame<TPASS>>
   > {
     const requester = this.create(option);
     return requester();

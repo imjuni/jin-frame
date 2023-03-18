@@ -3,12 +3,16 @@ import type { IBodyFieldOption } from '#interfaces/body/IBodyFieldOption';
 import type { IObjectBodyFieldOption } from '#interfaces/body/IObjectBodyFieldOption';
 import { processBodyFormatters } from '#processors/processBodyFormatters';
 import { processObjectBodyFormatters } from '#processors/processObjectBodyFormatters';
-import { isValidArrayType, isValidPrimitiveType } from '#tools/typeAssert';
-import { set } from 'dot-prop';
+import isValidArrayType from '#tools/type-narrowing/isValidArrayType';
+import isValidPrimitiveType from '#tools/type-narrowing/isValidPrimitiveType';
+import type TSupportArrayType from '#tools/type-utilities/TSupportArrayType';
+import type TSupportPrimitiveType from '#tools/type-utilities/TSupportPrimitiveType';
+import { get, set } from 'dot-prop';
+import fastSafeStringify from 'fast-safe-stringify';
 import { recursive } from 'merge';
-import { first } from 'my-easy-fp';
+import { atOrThrow } from 'my-easy-fp';
 
-export function getBodyInfo<T extends Record<string, any>>(thisFrame: T, fields: IBodyField[], strict?: boolean) {
+export function getBodyInfo<T extends Record<string, unknown>>(thisFrame: T, fields: IBodyField[], strict?: boolean) {
   const objectBodyFields = fields.filter(
     (field): field is { key: string; option: IObjectBodyFieldOption } => field.option.type === 'object-body',
   );
@@ -18,9 +22,9 @@ export function getBodyInfo<T extends Record<string, any>>(thisFrame: T, fields:
   );
 
   const objectBodyFieldsFormatted = sortedObjectBodyFields
-    .map<Record<string, any> | undefined>((field) => {
+    .map<unknown | undefined>((field) => {
       const { key: thisFrameAccessKey, option } = field;
-      const value: any = thisFrame[thisFrameAccessKey];
+      const value: unknown = get<unknown>(thisFrame, thisFrameAccessKey);
 
       // stage 01. general action - undefined or null type
       if (value == null) {
@@ -29,7 +33,8 @@ export function getBodyInfo<T extends Record<string, any>>(thisFrame: T, fields:
 
       // stage 02. formatters apply
       if ('formatters' in option && option.formatters != null) {
-        return processObjectBodyFormatters(strict ?? false, thisFrame, field, option.formatters);
+        const formatted = processObjectBodyFormatters(strict ?? false, thisFrame, field, option.formatters);
+        return formatted;
       }
 
       // general action start
@@ -49,30 +54,40 @@ export function getBodyInfo<T extends Record<string, any>>(thisFrame: T, fields:
       }
 
       if (strict) {
-        throw new Error(`unknown type of value: ${typeof value} - ${value}`);
+        throw new Error(`unknown type of value: ${typeof value} - ${fastSafeStringify(value)}`);
       }
 
       // unkonwn type
       return undefined;
     })
-    .filter((processed): processed is Record<string, any> => processed !== undefined && processed !== null);
+    .filter((item): item is TSupportPrimitiveType | TSupportArrayType | object => item != null);
 
-  if (
-    objectBodyFieldsFormatted.length > 0 &&
-    objectBodyFieldsFormatted.every((element) => isValidPrimitiveType(element))
-  ) {
-    return first(objectBodyFieldsFormatted);
+  const primitiveTypeHandler = () => {
+    // 기본 자료형
+    const primitiveTypes = objectBodyFieldsFormatted.filter((item): item is TSupportArrayType =>
+      isValidPrimitiveType(item),
+    );
+    if (primitiveTypes.length > 0) {
+      return atOrThrow(primitiveTypes, 0);
+    }
+
+    // ObjectBody에서 배열은 하나만 처리할 수 있다. 그래서 ObjectBody 인데 배열이 있는 경우, 배열을 전부 합쳐서 반환한다
+    // 반면 Body는 이름으로 배열을 분리하기 때문에 여러개를 처리할 수 있다
+    const customArrayTypes = objectBodyFieldsFormatted.filter((item): item is unknown[] => Array.isArray(item));
+    if (customArrayTypes.length > 0) {
+      return customArrayTypes.reduce<unknown[]>((merged, item) => [...merged, ...item], []);
+    }
+    return undefined;
+  };
+
+  const primitiveTypeValue = primitiveTypeHandler();
+
+  if (primitiveTypeValue != null) {
+    return primitiveTypeValue;
   }
 
-  if (objectBodyFieldsFormatted.length > 0 && objectBodyFieldsFormatted.some((element) => Array.isArray(element))) {
-    const objectBodyArrayFields: any[] = objectBodyFieldsFormatted.filter((element) => Array.isArray(element));
-    return objectBodyArrayFields.reduce<any[]>((aggregation, objectBodyArrayField) => {
-      return [...aggregation, ...objectBodyArrayField];
-    }, []);
-  }
-
-  const objectBodyFieldsProcessed = objectBodyFieldsFormatted.reduce<Record<string, any>>(
-    (aggregation, processing) => recursive(aggregation, processing),
+  const objectBodyFieldsProcessed = objectBodyFieldsFormatted.reduce<Record<string, unknown>>(
+    (aggregation, item) => ({ ...aggregation, ...(item as object) }),
     {},
   );
 
@@ -81,47 +96,51 @@ export function getBodyInfo<T extends Record<string, any>>(thisFrame: T, fields:
   );
 
   const bodyFieldsProcessed = bodyFields
-    .map<Record<string, any> | undefined>((field) => {
+    .map<Record<string, unknown> | undefined>((field) => {
       const { key: thisFrameAccessKey, option } = field;
-      const value: any = thisFrame[thisFrameAccessKey];
+      const value: unknown = get<unknown>(thisFrame, thisFrameAccessKey);
 
       // stage 01. general action - undefined or null type
-      if (value === undefined || value === null) {
+      if (value == null) {
         return undefined;
-      }
-
-      // stage 02. formatters apply
-      if ('formatters' in option && option.formatters !== undefined && option.formatters !== null) {
-        return processBodyFormatters(strict ?? false, thisFrame, field, option.formatters);
       }
 
       const resultAccesssKey = option.replaceAt ?? thisFrameAccessKey;
 
+      // stage 02. formatters apply
+      if ('formatters' in option && option.formatters != null) {
+        const formatted = processBodyFormatters(strict ?? false, thisFrame, field, option.formatters);
+        return formatted as Record<string, unknown>;
+      }
+
       // general action start
       // stage 03. general action - primitive type
       if (isValidPrimitiveType(value)) {
-        return set({}, resultAccesssKey, value);
+        return set<Record<string, unknown>>({}, resultAccesssKey, value);
       }
 
       // stage 04. general action - array of primitive type
       if (isValidArrayType(value)) {
-        return set({}, resultAccesssKey, value);
+        return set<Record<string, unknown>>({}, resultAccesssKey, value);
       }
 
       // stage 05. general action - object of complexed type
       if (typeof value === 'object') {
-        return set({}, resultAccesssKey, value);
+        return set<Record<string, unknown>>({}, resultAccesssKey, value);
       }
 
       if (strict) {
-        throw new Error(`unknown type of value: ${resultAccesssKey} - ${typeof value} - ${value}`);
+        throw new Error(`unknown type of value: ${resultAccesssKey} - ${typeof value} - ${fastSafeStringify(value)}`);
       }
 
       // unkonwn type
       return undefined;
     })
-    .filter((processed): processed is Record<string, any> => processed !== undefined && processed !== null)
-    .reduce<Record<string, any>>((aggregation, processing) => recursive(aggregation, processing), {});
+    .filter((item): item is Record<string, TSupportPrimitiveType | TSupportArrayType | object> => item != null)
+    .reduce<Record<string, TSupportPrimitiveType | TSupportArrayType | object>>(
+      (aggregation, item) => ({ ...aggregation, ...item }),
+      {},
+    );
 
-  return recursive(objectBodyFieldsProcessed, bodyFieldsProcessed);
+  return recursive(objectBodyFieldsProcessed, bodyFieldsProcessed) as Record<string, unknown>;
 }

@@ -2,8 +2,9 @@
 
 import { JinEitherFrame } from '#frames/JinEitherFrame';
 import { JinFrame } from '#frames/JinFrame';
-import type { TJinEitherFramePostHookReply, TJinFramePostHookReply } from '#interfaces/THookReply';
-import axios, { type AxiosRequestConfig } from 'axios';
+import type { IFailReplyJinEitherFrame } from '#interfaces/IFailJinEitherFrame';
+import type { TPassJinEitherFrame } from '#interfaces/TPassJinEitherFrame';
+import axios, { type AxiosRequestConfig, type AxiosResponse } from 'axios';
 import { isFail, isPass } from 'my-only-either';
 import nock from 'nock';
 
@@ -25,12 +26,11 @@ class TestGetFrame extends JinEitherFrame {
     this.skill = ['beam', 'flying!'];
   }
 
-  preHook(req: AxiosRequestConfig): AxiosRequestConfig {
+  $$preHook(req: AxiosRequestConfig): void {
     console.log('pre hook trigger: ', req);
-    return req;
   }
 
-  postHook(req: AxiosRequestConfig, reply: TJinEitherFramePostHookReply<any, any>) {
+  $$postHook(req: AxiosRequestConfig, reply: IFailReplyJinEitherFrame<unknown> | TPassJinEitherFrame<unknown>): void {
     console.log('post hook trigger: ', req);
     console.log(reply);
   }
@@ -46,11 +46,14 @@ class TestGet2Frame extends JinEitherFrame {
   @JinEitherFrame.header()
   public readonly ttt: string;
 
-  override async preHook(req: AxiosRequestConfig): Promise<AxiosRequestConfig> {
-    return req;
+  override async $$preHook(req: AxiosRequestConfig): Promise<void> {
+    console.log(req);
   }
 
-  override async postHook(_req: AxiosRequestConfig, reply: TJinEitherFramePostHookReply<any, any>): Promise<void> {
+  override async $$postHook(
+    _req: AxiosRequestConfig,
+    reply: IFailReplyJinEitherFrame<unknown> | TPassJinEitherFrame<unknown>,
+  ): Promise<void> {
     console.log(reply);
   }
 
@@ -81,12 +84,14 @@ class TestGet3Frame extends JinFrame {
     this.skill = ['beam', 'flying!'];
   }
 
-  override preHook(req: AxiosRequestConfig): AxiosRequestConfig {
+  override $$preHook(req: AxiosRequestConfig): void {
     console.log('pre hook trigger: ', req);
-    return req;
   }
 
-  override postHook(req: AxiosRequestConfig, reply: TJinFramePostHookReply<any, any>): void {
+  override $$postHook(
+    req: AxiosRequestConfig,
+    reply: IFailReplyJinEitherFrame<unknown> | TPassJinEitherFrame<unknown>,
+  ): void {
     console.log('post hook trigger: ', req);
     console.log(reply);
   }
@@ -110,12 +115,11 @@ class TestGet4Frame extends JinFrame {
     this.skill = ['beam', 'flying!'];
   }
 
-  override async preHook(req: AxiosRequestConfig): Promise<AxiosRequestConfig> {
+  override async $$preHook(req: AxiosRequestConfig): Promise<void> {
     console.log('pre hook trigger: ', req);
-    return req;
   }
 
-  override async postHook(req: AxiosRequestConfig, reply: TJinFramePostHookReply<any, any>): Promise<void> {
+  override async $$postHook(req: AxiosRequestConfig, reply: AxiosResponse): Promise<void> {
     console.log('post hook trigger: ', req);
     console.log(reply);
   }
@@ -139,7 +143,7 @@ class TestGet5Frame extends JinFrame {
     this.skill = ['beam', 'flying!'];
   }
 
-  override preHook(req: AxiosRequestConfig): void {
+  override $$preHook(req: AxiosRequestConfig): void {
     console.log('pre hook trigger: ', req);
   }
 }
@@ -162,7 +166,7 @@ class TestGet6Frame extends JinFrame {
     this.skill = ['beam', 'flying!'];
   }
 
-  override async preHook(req: AxiosRequestConfig): Promise<void> {
+  override async $$preHook(req: AxiosRequestConfig): Promise<void> {
     console.log('pre hook trigger: ', req);
   }
 }
@@ -185,7 +189,7 @@ class TestGet7Frame extends JinEitherFrame {
     this.skill = ['beam', 'flying!'];
   }
 
-  override preHook(req: AxiosRequestConfig): void {
+  override $$preHook(req: AxiosRequestConfig): void {
     console.log(req);
   }
 }
@@ -208,7 +212,7 @@ class TestGet8Frame extends JinEitherFrame {
     this.skill = ['beam', 'flying!'];
   }
 
-  override async preHook(req: AxiosRequestConfig): Promise<void> {
+  override async $$preHook(req: AxiosRequestConfig): Promise<void> {
     console.log(req);
   }
 }
@@ -349,6 +353,17 @@ describe('jinframe.test', () => {
     const resp = await frame.execute();
 
     expect(isPass(resp)).toEqual(true);
+  });
+
+  test('nock-get02-with-jinframe-fail', async () => {
+    nock('http://some.api.google.com').get('/jinframe/hello/test?name=ironman').reply(500, {
+      message: 'hello',
+    });
+
+    const frame = new TestGet2Frame('http://some.api.google.com');
+    const resp = await frame.execute();
+
+    expect(isFail(resp)).toEqual(true);
   });
 
   test('nock-get03-axios-request', async () => {
