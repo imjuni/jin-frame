@@ -1,8 +1,9 @@
 /* eslint-disable max-classes-per-file */
-import { JinCreateError } from '#frames/JinCreateError';
+import JinCreateError from '#frames/JinCreateError';
 import { JinFrame } from '#frames/JinFrame';
-import type { JinRequestError } from '#frames/JinRequestError';
-import type { JinBuiltInMember, OmitConstructorType } from '#tools/ConstructorType';
+import type JinRequestError from '#frames/JinRequestError';
+import type JinBuiltInMember from '#tools/type-utilities/JinBuiltInMember';
+import type OmitConstructorType from '#tools/type-utilities/OmitConstructorType';
 import 'jest';
 import nock from 'nock';
 
@@ -160,10 +161,10 @@ describe('JinFrame', () => {
       await frame.execute({
         getError: (err) => {
           if (err instanceof JinCreateError) {
-            return new CustomError(err.message, { status: `${err.status}` });
+            return new CustomError(err.message, { status: `${err.status ?? 500}` });
           }
 
-          return new CustomError(err.message, { status: `${err.status}` });
+          return new CustomError(err.message, { status: `${err.status ?? 500}` });
         },
       });
     } catch (catched) {
@@ -182,10 +183,10 @@ describe('JinFrame', () => {
       await frame.execute({
         getError: (err) => {
           if (err instanceof JinCreateError) {
-            return new CustomError(err.message, { status: `${err.status}` });
+            return new CustomError(err.message, { status: `${err.status ?? 500}` });
           }
 
-          return new CustomError(err.message, { status: `${err.status}` });
+          return new CustomError(err.message, { status: `${err.status ?? 500}` });
         },
       });
     } catch (catched) {
@@ -208,10 +209,10 @@ describe('JinFrame', () => {
         },
         getError: (err) => {
           if (err instanceof JinCreateError) {
-            return new CustomError(err.message, { status: `${err.status}` });
+            return new CustomError(err.message, { status: `${err.status ?? 500}` });
           }
 
-          return new CustomError(err.message, { status: `${err.status}` });
+          return new CustomError(err.message, { status: `${err.status ?? 500}` });
         },
       });
     } catch (catched) {

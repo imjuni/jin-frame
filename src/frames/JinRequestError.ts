@@ -2,7 +2,7 @@ import type { JinFrame } from '#frames/JinFrame';
 import type { IDebugInfo } from '#interfaces/IDebugInfo';
 import type { AxiosError, AxiosResponse } from 'axios';
 
-export class JinRequestError<TPASS, TFAIL = any> extends Error {
+export default class JinRequestError<TPASS, TFAIL = unknown> extends Error {
   __discriminator = 'JinRequestError';
 
   #debug: IDebugInfo;
@@ -43,7 +43,7 @@ export class JinRequestError<TPASS, TFAIL = any> extends Error {
     return this.#frame;
   }
 
-  get resp(): AxiosResponse<any> | undefined {
+  get resp(): AxiosResponse<TFAIL> | undefined {
     return this.#resp;
   }
 

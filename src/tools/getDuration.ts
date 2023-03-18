@@ -4,7 +4,7 @@ import intervalToDuration from 'date-fns/intervalToDuration';
 /**
  * getDuration only calculate milliseconds ~ days
  */
-export function getDuration(start: Date, end: Date) {
+export default function getDuration(start: Date, end: Date) {
   try {
     const ms = end.getMilliseconds() - start.getMilliseconds();
     const seconds = intervalToDuration({ start, end }).seconds!;

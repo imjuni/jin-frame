@@ -1,14 +1,20 @@
 import type { IHeaderField } from '#interfaces/IHeaderField';
 import { processHeaderFormatters } from '#processors/processHeaderFormatters';
-import { encodes } from '#tools/encode';
-import { isValidArrayType, isValidPrimitiveType } from '#tools/typeAssert';
+import encodes from '#tools/encodes/encodes';
+import isValidArrayType from '#tools/type-narrowing/isValidArrayType';
+import isValidPrimitiveType from '#tools/type-narrowing/isValidPrimitiveType';
+import { get } from 'dot-prop';
 import fastSafeStringify from 'fast-safe-stringify';
 
-export function getHeaderInfo<T extends Record<string, any>>(thisFrame: T, fields: IHeaderField[], strict?: boolean) {
+export function getHeaderInfo<T extends Record<string, unknown>>(
+  thisFrame: T,
+  fields: IHeaderField[],
+  strict?: boolean,
+) {
   return fields
     .map<Record<string, unknown> | undefined>((field) => {
       const { key: thisFrameAccessKey, option } = field;
-      const value: unknown = thisFrame[thisFrameAccessKey];
+      const value: unknown = get<unknown>(thisFrame, thisFrameAccessKey);
 
       try {
         // stage 01. general action - undefined or null type
@@ -19,7 +25,7 @@ export function getHeaderInfo<T extends Record<string, any>>(thisFrame: T, field
         // stage 02. formatters apply
         if ('formatters' in option && option.formatters != null) {
           const formatters = Array.isArray(option.formatters) ? option.formatters : [option.formatters];
-          return processHeaderFormatters(thisFrame, field, formatters) satisfies Record<string, unknown>;
+          return processHeaderFormatters(thisFrame, field, formatters);
         }
 
         const resultAccessKey = option.replaceAt ?? thisFrameAccessKey;

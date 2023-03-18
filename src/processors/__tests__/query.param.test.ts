@@ -88,6 +88,24 @@ describe('getQueryParamInfo', () => {
     expect(r01).toMatchObject({ heroes: 'ironman,captain' });
   });
 
+  test('array - formatted', () => {
+    const r01 = getQueryParamInfo({ heroes: ['ironman', 'captain'] }, [
+      {
+        key: 'heroes',
+        option: {
+          type: 'query',
+          bit: { enable: false, withZero: false },
+          comma: false,
+          formatter: {
+            string: (value) => `marvel-${value}`,
+          },
+        },
+      },
+    ]);
+
+    expect(r01).toMatchObject({ heroes: ['marvel-ironman', 'marvel-captain'] });
+  });
+
   test('array', () => {
     const r01 = getQueryParamInfo({ heroes: ['ironman', 'captain'] }, [
       {

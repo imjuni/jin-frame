@@ -7,7 +7,7 @@ export interface IFormatter {
    *
    * @default ['number', 'string', 'dateTime']
    *  */
-  order?: Array<'string' | 'number' | 'dateTime'>;
+  order?: ('string' | 'number' | 'dateTime')[];
 
   /** function is number type convert to another number, string, Date */
   number?: (value: number) => number | Date | string;

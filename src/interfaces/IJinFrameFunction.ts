@@ -1,4 +1,4 @@
-import type { IFailExceptionJinEitherFrame, IFailReplyJinEitherFrame } from '#interfaces/IFailJinEitherFrame';
+import type { IFailCreateJinEitherFrame, IFailReplyJinEitherFrame } from '#interfaces/IFailJinEitherFrame';
 import type { IJinFrameCreateConfig } from '#interfaces/IJinFrameCreateConfig';
 import type { IJinFrameRequestConfig } from '#interfaces/IJinFrameRequestConfig';
 import type { TPassJinEitherFrame } from '#interfaces/TPassJinEitherFrame';
@@ -11,10 +11,7 @@ export interface IJinFrameFunction<TPASS = unknown, TFAIL = TPASS> {
   ):
     | (() => Promise<AxiosResponse<TPASS>>)
     | (() => Promise<
-        PassFailEither<
-          IFailReplyJinEitherFrame<TFAIL> | IFailExceptionJinEitherFrame<TFAIL>,
-          TPassJinEitherFrame<TPASS>
-        >
+        PassFailEither<IFailReplyJinEitherFrame<TFAIL> | IFailCreateJinEitherFrame<TFAIL>, TPassJinEitherFrame<TPASS>>
       >);
 
   execute(
@@ -22,9 +19,6 @@ export interface IJinFrameFunction<TPASS = unknown, TFAIL = TPASS> {
   ):
     | Promise<AxiosResponse<TPASS>>
     | Promise<
-        PassFailEither<
-          IFailReplyJinEitherFrame<TFAIL> | IFailExceptionJinEitherFrame<TFAIL>,
-          TPassJinEitherFrame<TPASS>
-        >
+        PassFailEither<IFailReplyJinEitherFrame<TFAIL> | IFailCreateJinEitherFrame<TFAIL>, TPassJinEitherFrame<TPASS>>
       >;
 }

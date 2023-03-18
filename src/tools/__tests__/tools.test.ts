@@ -1,9 +1,13 @@
-/* eslint-disable max-classes-per-file, no-console */
-import { bitwised } from '#tools/bitwised';
-import { encodes } from '#tools/encode';
-import { getDuration } from '#tools/getDuration';
-import { removeBothSlash, removeEndSlash, removeStartSlash, startWithSlash } from '#tools/slashUtils';
-import { isValidArrayType, isValidPrimitiveType, typeAssert } from '#tools/typeAssert';
+import bitwised from '#tools/bitwised';
+import encodes from '#tools/encodes/encodes';
+import getDuration from '#tools/getDuration';
+import removeBothSlash from '#tools/slash-utils/removeBothSlash';
+import removeEndSlash from '#tools/slash-utils/removeEndSlash';
+import removeStartSlash from '#tools/slash-utils/removeStartSlash';
+import startWithSlash from '#tools/slash-utils/startWithSlash';
+import isValidArrayType from '#tools/type-narrowing/isValidArrayType';
+import isValidPrimitiveType from '#tools/type-narrowing/isValidPrimitiveType';
+import typeAssert from '#tools/type-narrowing/typeAssert';
 import 'jest';
 
 describe('isValidPrimitiveType', () => {

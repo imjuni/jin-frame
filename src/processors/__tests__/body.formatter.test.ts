@@ -47,12 +47,10 @@ describe('processBodyFormatters', () => {
 
   test('array - exception', () => {
     const sym = Symbol('ironman');
-    const r01 = processBodyFormatters(
-      true,
-      { names: [sym, 'captain', 'hulk'] },
-      { key: 'names', option: { type: 'body' } },
-      [{ string: (val) => `avengers:${val}` }],
-    );
+    const r01 = () =>
+      processBodyFormatters(true, { names: [sym, 'captain', 'hulk'] }, { key: 'names', option: { type: 'body' } }, [
+        { string: (val) => `avengers:${val}` },
+      ]);
 
     const r02 = processBodyFormatters(
       false,
@@ -61,7 +59,7 @@ describe('processBodyFormatters', () => {
       [{ string: (val) => `avengers:${val}` }],
     );
 
-    expect(r01).toEqual({ names: [sym, 'captain', 'hulk'] });
+    expect(r01).toThrow();
     expect(r02).toEqual({ names: [sym, 'captain', 'hulk'] });
   });
 

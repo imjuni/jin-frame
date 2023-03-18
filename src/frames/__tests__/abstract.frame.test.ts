@@ -1,7 +1,9 @@
 /* eslint-disable max-classes-per-file */
 import { JinFile } from '#frames/JinFile';
 import { JinFrame } from '#frames/JinFrame';
-import type { JinBuiltInMember, JinConstructorType, OmitConstructorType } from '#tools/ConstructorType';
+import type JinBuiltInMember from '#tools/type-utilities/JinBuiltInMember';
+import type { JinConstructorType } from '#tools/type-utilities/JinConstructorType';
+import type OmitConstructorType from '#tools/type-utilities/OmitConstructorType';
 import 'jest';
 import nock from 'nock';
 
@@ -37,9 +39,9 @@ class Test002PostFrame extends JinFrame<{ message: string }> {
 
   constructor(args: OmitConstructorType<Test002PostFrame, Exclude<JinBuiltInMember, 'contentType' | 'customBody'>>) {
     super({
+      ...args,
       host: 'http://some.api.google.com/jinframe/:passing',
       method: 'post',
-      ...args,
     });
   }
 }
@@ -178,6 +180,7 @@ describe('AbstractJinFrame', () => {
   });
 
   test('getTransformRequest', async () => {
+    // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
     const tr = (v: any) => `tr:${v}`;
     const frame = new Test002PostFrame({
       username: 'ironman',

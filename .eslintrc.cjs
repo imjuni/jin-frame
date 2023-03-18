@@ -6,8 +6,8 @@ module.exports = {
   },
   extends: [
     'plugin:@typescript-eslint/eslint-recommended',
-    // 'plugin:@typescript-eslint/recommended-requiring-type-checking',
-    // 'plugin:@typescript-eslint/strict',
+    'plugin:@typescript-eslint/recommended-requiring-type-checking',
+    'plugin:@typescript-eslint/strict',
     'airbnb-base',
     'airbnb-typescript/base',
     'plugin:prettier/recommended',
@@ -44,7 +44,7 @@ module.exports = {
     ],
     'import/extensions': ['off'],
     'import/prefer-default-export': 'off',
-    'import/no-default-export': 'error',
+    // 'import/no-default-export': 'error',
     '@typescript-eslint/consistent-type-imports': ['error', { prefer: 'type-imports' }],
     // static function use this: void
     '@typescript-eslint/no-invalid-void-type': ['error', { allowAsThisParameter: true }],
@@ -58,12 +58,29 @@ module.exports = {
       },
     },
     {
+      files: ['src/frames/JinFrame.ts', 'src/frames/JinEitherFrame.ts'],
+      rules: {
+        '@typescript-eslint/no-invalid-void-type': ['off'],
+        '@typescript-eslint/no-unsafe-declaration-merging': ['off'],
+        'import/no-extraneous-dependencies': ['off'],
+        'import/no-duplicates': ['off'],
+      },
+    },
+    {
       files: ['**/__tests__/*.ts', 'jest.config.cjs'],
       rules: {
+        'max-classes-per-file': ['off'],
+        '@typescript-eslint/no-unsafe-return': ['off'],
         '@typescript-eslint/no-unsafe-assignment': ['off'],
         '@typescript-eslint/no-unsafe-argument': ['off'],
         '@typescript-eslint/no-unsafe-member-access': ['off'],
         'no-console': ['off'],
+      },
+    },
+    {
+      files: ['jest.config.cjs'],
+      rules: {
+        'import/no-extraneous-dependencies': ['off'],
       },
     },
   ],

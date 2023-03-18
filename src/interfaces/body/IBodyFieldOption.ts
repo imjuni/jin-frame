@@ -6,12 +6,10 @@ export type TSingleBodyFormatter = {
   findFrom?: string;
 } & IFormatter;
 
-export type TMultipleBodyFormatter = Array<
-  {
-    /** use `dot notation`(eg. data.more.birthday) to specify where the results will be stored */
-    findFrom?: string;
-  } & IFormatter
->;
+export type TMultipleBodyFormatter = ({
+  /** use `dot notation`(eg. data.more.birthday) to specify where the results will be stored */
+  findFrom?: string;
+} & IFormatter)[];
 
 export interface IBodyFieldOption extends ICommonFieldOption {
   type: 'body';
