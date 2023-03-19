@@ -1,6 +1,6 @@
 import { JinFile } from '#frames/JinFile';
 import { JinFrame } from '#frames/JinFrame';
-import type { JinConstructorType } from '#tools/type-utilities/JinConstructorType';
+import type JinConstructorType from '#tools/type-utilities/JinConstructorType';
 import 'jest';
 import nock from 'nock';
 

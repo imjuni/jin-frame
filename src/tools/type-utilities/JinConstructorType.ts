@@ -8,7 +8,7 @@ import type ConstructorType from '#tools/type-utilities/ConstructorType';
 import type JinBuiltInMember from '#tools/type-utilities/JinBuiltInMember';
 import type { AxiosRequestConfig, Method } from 'axios';
 
-export type JinConstructorType<T extends AbstractJinFrame> = Omit<ConstructorType<T>, JinBuiltInMember> & {
+type JinConstructorType<T extends AbstractJinFrame> = Omit<ConstructorType<T>, JinBuiltInMember> & {
   $$host?: string;
   $$path?: string;
   $$method?: Method;
@@ -16,3 +16,5 @@ export type JinConstructorType<T extends AbstractJinFrame> = Omit<ConstructorTyp
   $$customBody?: unknown;
   $$transformRequest?: AxiosRequestConfig['transformRequest'];
 };
+
+export default JinConstructorType;

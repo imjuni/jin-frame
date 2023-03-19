@@ -1,5 +1,5 @@
 import { JinEitherFrame } from '#frames/JinEitherFrame';
-import type { JinConstructorType } from '#tools/type-utilities/JinConstructorType';
+import type JinConstructorType from '#tools/type-utilities/JinConstructorType';
 import axios, { type AxiosRequestConfig } from 'axios';
 
 interface IReqGetPokemonInfoByName {

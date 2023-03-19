@@ -92,7 +92,7 @@ export default class BodyOrderedMergeFrame extends JinEitherFrame {
     secondBody: ISecondBody;
     thirdBody: IThirdBody;
   }) {
-    super({ host: 'http://some.api.google.com', path: '/jinframe/:passing', method: 'GET' });
+    super({ $$host: 'http://some.api.google.com', $$path: '/jinframe/:passing', $$method: 'GET' });
 
     this.passing = 'pass';
     this.name = 'ironman';

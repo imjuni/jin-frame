@@ -7,7 +7,7 @@ import type AbstractJinFrame from '#frames/AbstractJinFrame';
 import type ConstructorType from '#tools/type-utilities/ConstructorType';
 import type { AxiosRequestConfig, Method } from 'axios';
 
-export type JinOmitConstructorType<T extends AbstractJinFrame, M extends keyof ConstructorType<T>> = Omit<
+type JinOmitConstructorType<T extends AbstractJinFrame, M extends keyof ConstructorType<T>> = Omit<
   ConstructorType<T> & {
     $$host?: string;
     $$path?: string;
@@ -18,3 +18,5 @@ export type JinOmitConstructorType<T extends AbstractJinFrame, M extends keyof C
   },
   M
 >;
+
+export default JinOmitConstructorType;

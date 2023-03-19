@@ -49,7 +49,7 @@ export default class ComplexFormatGetFrame extends JinEitherFrame {
   public readonly body: IFirstBody;
 
   constructor({ body }: { body: IFirstBody }) {
-    super({ host: 'http://some.api.google.com', path: '/jinframe/:passing', method: 'GET' });
+    super({ $$host: 'http://some.api.google.com', $$path: '/jinframe/:passing', $$method: 'GET' });
 
     this.passing = 'pass';
     this.name = 'ironman';

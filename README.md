@@ -114,12 +114,12 @@ class TestPostFrame extends JinFrame {
   // automatically initialize via base class, have to use same name of args and JinFrame class
   // execute `Object.keys(args).forEach(key => this[key] = args[key])`
   constructor(args: OmitConstructorType<TestPostFrame, JinBuiltInMember>) {
-    super({ ...args, host: 'http://some.api.yanolja.com/jinframe/:id', method: 'POST' });
+    super({ ...args, $$host: 'http://some.api.yanolja.com/jinframe/:id', $$method: 'POST' });
   }
 }
 ```
 
-TestPostFrame class create AxiosRequestConfig object below.
+TestPostFrame class create AxiosRequestConfig object below. `$$` character is show that is built-in variable.
 
 ```ts
 const frame = new TestPostFrame({ id: 1, name: 'ironman', skill: 'beam' });

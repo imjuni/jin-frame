@@ -18,7 +18,7 @@ export default class CommaSeperatedGetFrame extends JinEitherFrame {
   public readonly skill: string[];
 
   constructor() {
-    super({ path: '/jinframe/:passing', method: 'GET' });
+    super({ $$path: '/jinframe/:passing', $$method: 'GET' });
 
     this.passing = 'pass';
     this.name = 'ironman';

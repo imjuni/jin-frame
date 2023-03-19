@@ -1,5 +1,3 @@
-/* eslint-disable import/no-extraneous-dependencies */
-
 import { format, parse } from 'date-fns';
 import { JinEitherFrame } from '../src/frames/JinEitherFrame';
 
@@ -88,7 +86,7 @@ export default class ComplexFormattingWithBodyMergeFrame extends JinEitherFrame 
     secondBody: ISecondBody;
     thirdBody: IThirdBody;
   }) {
-    super({ host: 'http://some.api.google.com', path: '/jinframe/:passing', method: 'GET' });
+    super({ $$host: 'http://some.api.google.com', $$path: '/jinframe/:passing', $$method: 'GET' });
 
     this.passing = 'pass';
     this.name = 'ironman';
