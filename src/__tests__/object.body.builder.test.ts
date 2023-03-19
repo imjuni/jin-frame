@@ -21,8 +21,8 @@ class Test001PostFrame extends JinEitherFrame {
     hero: { name: string; age: number; bio: { birth: string } };
   }) {
     super({
-      host: 'http://some.api.google.com/jinframe/:passing',
-      method: 'POST',
+      $$host: 'http://some.api.google.com/jinframe/:passing',
+      $$method: 'POST',
     });
 
     this.passing = args.passing;
@@ -84,8 +84,8 @@ class Test002PostFrame extends JinEitherFrame {
     ability: { skill: string; count: number; category: { name: string } };
   }) {
     super({
-      host: 'http://some.api.google.com/jinframe/:passing',
-      method: 'POST',
+      $$host: 'http://some.api.google.com/jinframe/:passing',
+      $$method: 'POST',
     });
 
     this.passing = args.passing;
@@ -159,8 +159,8 @@ class Test003PostFrame extends JinEitherFrame {
     ability: { skill: string; count: number; category: { name: string; developAt: Date } };
   }) {
     super({
-      host: 'http://some.api.google.com/jinframe/:passing',
-      method: 'POST',
+      $$host: 'http://some.api.google.com/jinframe/:passing',
+      $$method: 'POST',
     });
 
     this.passing = args.passing;
@@ -240,8 +240,8 @@ class Test004PostFrame extends JinEitherFrame {
     ability: { name: string; skill: string; count: number; category: { name: string; developAt: Date } };
   }) {
     super({
-      host: 'http://some.api.google.com/jinframe/:passing',
-      method: 'POST',
+      $$host: 'http://some.api.google.com/jinframe/:passing',
+      $$method: 'POST',
     });
 
     this.passing = args.passing;

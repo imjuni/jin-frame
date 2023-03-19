@@ -2,23 +2,20 @@ import { JinEitherFrame } from '#frames/JinEitherFrame';
 
 class Test001PostFrame extends JinEitherFrame {
   @JinEitherFrame.param()
-  public readonly passing: string;
+  public readonly passing!: string;
 
   @JinEitherFrame.H()
-  public readonly username: string;
+  public readonly username!: string;
 
   @JinEitherFrame.H()
-  public readonly password: string;
+  public readonly password!: string;
 
   constructor(args: { passing: string; username: string; password: string }) {
     super({
-      host: 'http://some.api.google.com/jinframe/:passing',
-      method: 'POST',
+      ...args,
+      $$host: 'http://some.api.google.com/jinframe/:passing',
+      $$method: 'POST',
     });
-
-    this.passing = args.passing;
-    this.username = args.username;
-    this.password = args.password;
   }
 }
 
@@ -51,23 +48,20 @@ test('T001-header', async () => {
 
 class Test002PostFrame extends JinEitherFrame {
   @JinEitherFrame.param()
-  public readonly passing: string;
+  public readonly passing!: string;
 
   @JinEitherFrame.header({ replaceAt: 'uuu' })
-  public readonly username: string;
+  public readonly username!: string;
 
   @JinEitherFrame.header({ replaceAt: 'ppp' })
-  public readonly password: string;
+  public readonly password!: string;
 
   constructor(args: { passing: string; username: string; password: string }) {
     super({
-      host: 'http://some.api.google.com/jinframe/:passing',
-      method: 'POST',
+      ...args,
+      $$host: 'http://some.api.google.com/jinframe/:passing',
+      $$method: 'POST',
     });
-
-    this.passing = args.passing;
-    this.username = args.username;
-    this.password = args.password;
   }
 }
 
@@ -89,23 +83,20 @@ test('T002-primitive-type-key-replace', async () => {
 
 class Test003PostFrame extends JinEitherFrame {
   @JinEitherFrame.param()
-  public readonly passing: string;
+  public readonly passing!: string;
 
   @JinEitherFrame.header({ replaceAt: 'uuu.username' })
-  public readonly username: string;
+  public readonly username!: string;
 
   @JinEitherFrame.header({ replaceAt: 'ppp.password' })
-  public readonly password: string;
+  public readonly password!: string;
 
   constructor(args: { passing: string; username: string; password: string }) {
     super({
-      host: 'http://some.api.google.com/jinframe/:passing',
-      method: 'POST',
+      ...args,
+      $$host: 'http://some.api.google.com/jinframe/:passing',
+      $$method: 'POST',
     });
-
-    this.passing = args.passing;
-    this.username = args.username;
-    this.password = args.password;
   }
 }
 
@@ -129,13 +120,13 @@ test('T003-primitive-type-key-replace-at-not-support-dot-props', async () => {
 
 class Test004PostFrame extends JinEitherFrame {
   @JinEitherFrame.param()
-  public readonly passing: string;
+  public readonly passing!: string;
 
   @JinEitherFrame.header()
-  public readonly username: string;
+  public readonly username!: string;
 
   @JinEitherFrame.header()
-  public readonly hero: {
+  public readonly hero!: {
     name: string;
     ability: string;
     age: number;
@@ -151,13 +142,10 @@ class Test004PostFrame extends JinEitherFrame {
     };
   }) {
     super({
-      host: 'http://some.api.google.com/jinframe/:passing',
-      method: 'POST',
+      ...args,
+      $$host: 'http://some.api.google.com/jinframe/:passing',
+      $$method: 'POST',
     });
-
-    this.passing = args.passing;
-    this.username = args.username;
-    this.hero = args.hero;
   }
 }
 
@@ -190,23 +178,20 @@ test('T004-plain-object-type-json-serialization', async () => {
 
 class Test005PostFrame extends JinEitherFrame {
   @JinEitherFrame.param()
-  public readonly passing: string;
+  public readonly passing!: string;
 
   @JinEitherFrame.header()
-  public readonly username: string;
+  public readonly username!: string;
 
   @JinEitherFrame.header({ comma: true, encode: false })
-  public readonly hero: string[];
+  public readonly hero!: string[];
 
   constructor(args: { passing: string; username: string; hero: string[] }) {
     super({
-      host: 'http://some.api.google.com/jinframe/:passing',
-      method: 'POST',
+      ...args,
+      $$host: 'http://some.api.google.com/jinframe/:passing',
+      $$method: 'POST',
     });
-
-    this.passing = args.passing;
-    this.username = args.username;
-    this.hero = args.hero;
   }
 }
 

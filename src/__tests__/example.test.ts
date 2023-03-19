@@ -26,8 +26,8 @@ class PokemonPagingFrame extends JinEitherFrame<any, any> {
 
   constructor(args: JinConstructorType<PokemonPagingFrame>) {
     super({
-      host: 'https://pokeapi.co/api/v2/pokemon',
-      method: 'GET',
+      $$host: 'https://pokeapi.co/api/v2/pokemon',
+      $$method: 'GET',
     });
 
     this.limit = args.limit;

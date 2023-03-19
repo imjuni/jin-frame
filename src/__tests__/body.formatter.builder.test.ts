@@ -17,8 +17,8 @@ class Test001PostFrame extends JinEitherFrame {
 
   constructor(args: { passing: string; username: string[]; password: string }) {
     super({
-      host: 'http://some.api.google.com/jinframe/:passing',
-      method: 'POST',
+      $$host: 'http://some.api.google.com/jinframe/:passing',
+      $$method: 'POST',
     });
 
     this.passing = args.passing;
@@ -66,8 +66,8 @@ class Test002PostFrame extends JinEitherFrame {
 
   constructor(args: { passing: string; username: string[]; password: string }) {
     super({
-      host: 'http://some.api.google.com/jinframe/:passing',
-      method: 'POST',
+      $$host: 'http://some.api.google.com/jinframe/:passing',
+      $$method: 'POST',
     });
 
     this.passing = args.passing;
@@ -122,8 +122,8 @@ class Test003PostFrame extends JinEitherFrame {
 
   constructor(args: { passing: string; username: string[]; password: string; today: Date }) {
     super({
-      host: 'http://some.api.google.com/jinframe/:passing',
-      method: 'POST',
+      $$host: 'http://some.api.google.com/jinframe/:passing',
+      $$method: 'POST',
     });
 
     this.passing = args.passing;
@@ -188,8 +188,8 @@ class Test004PostFrame extends JinEitherFrame {
 
   constructor(args: { passing: string; username: string[]; password: string; today: Date }) {
     super({
-      host: 'http://some.api.google.com/jinframe/:passing',
-      method: 'POST',
+      $$host: 'http://some.api.google.com/jinframe/:passing',
+      $$method: 'POST',
     });
 
     this.passing = args.passing;
@@ -255,8 +255,8 @@ class Test005PostFrame extends JinEitherFrame {
 
   constructor(args: { passing: string; username: string[]; password: string; today: string }) {
     super({
-      host: 'http://some.api.google.com/jinframe/:passing',
-      method: 'POST',
+      $$host: 'http://some.api.google.com/jinframe/:passing',
+      $$method: 'POST',
     });
 
     this.passing = args.passing;
@@ -324,8 +324,8 @@ class Test006PostFrame extends JinEitherFrame {
 
   constructor(args: { passing: string; username: string[]; password: string; today: string }) {
     super({
-      host: 'http://some.api.google.com/jinframe/:passing',
-      method: 'POST',
+      $$host: 'http://some.api.google.com/jinframe/:passing',
+      $$method: 'POST',
     });
 
     this.passing = args.passing;

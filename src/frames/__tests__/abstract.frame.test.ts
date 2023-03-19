@@ -1,9 +1,6 @@
-/* eslint-disable max-classes-per-file */
 import { JinFile } from '#frames/JinFile';
 import { JinFrame } from '#frames/JinFrame';
-import type JinBuiltInMember from '#tools/type-utilities/JinBuiltInMember';
 import type { JinConstructorType } from '#tools/type-utilities/JinConstructorType';
-import type OmitConstructorType from '#tools/type-utilities/OmitConstructorType';
 import 'jest';
 import nock from 'nock';
 
@@ -19,10 +16,10 @@ class Test001PostFrame extends JinFrame<{ message: string }> {
 
   constructor(args: JinConstructorType<Test001PostFrame>) {
     super({
-      host: 'http://some.api.google.com/jinframe/:passing',
-      contentType: 'multipart/form-data',
-      method: 'post',
       ...args,
+      $$host: 'http://some.api.google.com/jinframe/:passing',
+      $$contentType: 'multipart/form-data',
+      $$method: 'post',
     });
   }
 }
@@ -37,11 +34,12 @@ class Test002PostFrame extends JinFrame<{ message: string }> {
   @JinFrame.body()
   public readonly password!: string;
 
-  constructor(args: OmitConstructorType<Test002PostFrame, Exclude<JinBuiltInMember, 'contentType' | 'customBody'>>) {
+  constructor(args: JinConstructorType<Test002PostFrame>) {
     super({
       ...args,
-      host: 'http://some.api.google.com/jinframe/:passing',
-      method: 'post',
+      $$host: 'http://some.api.google.com',
+      $$path: '/jinframe/:passing',
+      $$method: 'post',
     });
   }
 }
@@ -56,9 +54,9 @@ class Test003PostFrame extends JinFrame<{ message: string }> {
   @JinFrame.body()
   public readonly password!: string;
 
-  constructor(args: OmitConstructorType<Test003PostFrame, Exclude<JinBuiltInMember, 'customBody'>>) {
+  constructor(args: JinConstructorType<Test003PostFrame>) {
     super({
-      method: 'post',
+      $$method: 'post',
       ...args,
     });
   }
@@ -76,9 +74,9 @@ class Test004PostFrame extends JinFrame<{ message: string }> {
 
   constructor(args: JinConstructorType<Test004PostFrame>) {
     super({
-      method: 'post',
-      host: 'http://some.api.google.com/jinframe/:passing',
       ...args,
+      $$method: 'post',
+      $$host: 'http://some.api.google.com/jinframe/:passing',
     });
   }
 }
@@ -114,7 +112,6 @@ describe('AbstractJinFrame', () => {
     frame.request();
 
     expect(frame.$$body).toMatchObject({ username: 'ironman', password: 'avengers' });
-
     expect(frame.$$param).toMatchObject({ passing: 'pass' });
   });
 
@@ -153,12 +150,17 @@ describe('AbstractJinFrame', () => {
       username: 'ironman',
       password: 'avengers',
       passing: 'pass',
-      contentType: 'application/json',
-      customBody: { sample: 'sample' },
+      $$contentType: 'application/json',
+      $$customBody: { sample: 'sample' },
     });
 
     const r = frame.request();
 
+    expect(frame.$$host).toEqual('http://some.api.google.com');
+    expect(frame.$$path).toEqual('/jinframe/:passing');
+    expect(frame.$$method).toEqual('post');
+    expect(frame.$$customBody).toMatchObject({ sample: 'sample' });
+    expect(frame.$$contentType).toEqual('application/json');
     expect(r.data).toMatchObject({
       sample: 'sample',
     });
@@ -170,7 +172,7 @@ describe('AbstractJinFrame', () => {
         username: 'ironman',
         password: 'avengers',
         passing: 'pass',
-        customBody: { sample: 'sample' },
+        $$customBody: { sample: 'sample' },
       });
 
       frame.request();
@@ -186,11 +188,12 @@ describe('AbstractJinFrame', () => {
       username: 'ironman',
       password: 'avengers',
       passing: 'pass',
-      contentType: 'application/x-www-form-urlencoded',
-      transformRequest: tr,
+      $$contentType: 'application/x-www-form-urlencoded',
+      $$transformRequest: tr,
     });
 
     const t = frame.getTransformRequest();
+    expect(frame.$$transformRequest).toBeTruthy();
     expect(t).toBe(tr);
   });
 

@@ -1,4 +1,5 @@
 import { JinEitherFrame } from '#frames/JinEitherFrame';
+import type JinBuiltInMember from '#tools/type-utilities/JinBuiltInMember';
 import type OmitConstructorType from '#tools/type-utilities/OmitConstructorType';
 
 class Test001PostFrame extends JinEitherFrame {
@@ -11,16 +12,11 @@ class Test001PostFrame extends JinEitherFrame {
   @JinEitherFrame.body()
   public readonly password!: string;
 
-  constructor(
-    args: OmitConstructorType<
-      Test001PostFrame,
-      'host' | 'method' | 'contentType' | '$$query' | '$$body' | '$$header' | '$$param'
-    >,
-  ) {
+  constructor(args: OmitConstructorType<Test001PostFrame, JinBuiltInMember>) {
     super({
-      host: 'http://some.api.google.com/jinframe/:passing',
-      method: 'POST',
       ...args,
+      $$host: 'http://some.api.google.com/jinframe/:passing',
+      $$method: 'POST',
     });
   }
 }
@@ -65,9 +61,9 @@ class Test002PostFrame extends JinEitherFrame {
 
   constructor(args: { passing: string; username: string[]; username2: string[]; password: string }) {
     super({
-      host: 'http://some.api.google.com/jinframe/:passing',
-      method: 'POST',
       ...args,
+      $$host: 'http://some.api.google.com/jinframe/:passing',
+      $$method: 'POST',
     });
   }
 }

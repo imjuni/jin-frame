@@ -19,7 +19,7 @@ class TestGetFrame extends JinEitherFrame {
   public readonly skill: string[];
 
   constructor() {
-    super({ host: 'http://some.api.google.com', path: '/jinframe/:passing', method: 'get' });
+    super({ $$host: 'http://some.api.google.com', $$path: '/jinframe/:passing', $$method: 'get' });
 
     this.passing = 'pass';
     this.name = 'ironman';
@@ -58,7 +58,7 @@ class TestGet2Frame extends JinEitherFrame {
   }
 
   constructor(host: string) {
-    super({ host, path: '/jinframe/:passing/test', method: 'get' });
+    super({ $$host: host, $$path: '/jinframe/:passing/test', $$method: 'get' });
 
     this.passing = 'hello';
     this.name = 'ironman';
@@ -77,7 +77,7 @@ class TestGet3Frame extends JinFrame {
   public readonly skill: string[];
 
   constructor() {
-    super({ host: 'http://some.api.google.com', path: '/jinframe/:passing', method: 'get' });
+    super({ $$host: 'http://some.api.google.com', $$path: '/jinframe/:passing', $$method: 'get' });
 
     this.passing = 'pass';
     this.name = 'ironman';
@@ -108,7 +108,7 @@ class TestGet4Frame extends JinFrame {
   public readonly skill: string[];
 
   constructor() {
-    super({ host: 'http://some.api.google.com', path: '/jinframe/:passing', method: 'get' });
+    super({ $$host: 'http://some.api.google.com', $$path: '/jinframe/:passing', $$method: 'get' });
 
     this.passing = 'pass';
     this.name = 'ironman';
@@ -136,7 +136,7 @@ class TestGet5Frame extends JinFrame {
   public readonly skill: string[];
 
   constructor() {
-    super({ host: 'http://some.api.google.com', path: '/jinframe/:passing', method: 'get' });
+    super({ $$host: 'http://some.api.google.com', $$path: '/jinframe/:passing', $$method: 'get' });
 
     this.passing = 'pass';
     this.name = 'ironman';
@@ -159,7 +159,7 @@ class TestGet6Frame extends JinFrame {
   public readonly skill: string[];
 
   constructor() {
-    super({ host: 'http://some.api.google.com', path: '/jinframe/:passing', method: 'get' });
+    super({ $$host: 'http://some.api.google.com', $$path: '/jinframe/:passing', $$method: 'get' });
 
     this.passing = 'pass';
     this.name = 'ironman';
@@ -182,7 +182,7 @@ class TestGet7Frame extends JinEitherFrame {
   public readonly skill: string[];
 
   constructor() {
-    super({ host: 'http://some.api.google.com', path: '/jinframe/:passing', method: 'get' });
+    super({ $$host: 'http://some.api.google.com', $$path: '/jinframe/:passing', $$method: 'get' });
 
     this.passing = 'pass';
     this.name = 'ironman';
@@ -205,7 +205,7 @@ class TestGet8Frame extends JinEitherFrame {
   public readonly skill: string[];
 
   constructor() {
-    super({ host: 'http://some.api.google.com', path: '/jinframe/:passing', method: 'get' });
+    super({ $$host: 'http://some.api.google.com', $$path: '/jinframe/:passing', $$method: 'get' });
 
     this.passing = 'pass';
     this.name = 'ironman';

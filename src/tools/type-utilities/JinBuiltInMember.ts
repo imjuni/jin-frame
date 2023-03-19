@@ -5,19 +5,21 @@
  */
 import type AbstractJinFrame from '#frames/AbstractJinFrame';
 
-type JinBuiltInMember = Extract<
-  keyof AbstractJinFrame,
-  | 'host'
-  | 'path'
-  | 'method'
-  | 'contentType'
-  | 'customBody'
-  | 'preHook'
-  | 'postHook'
-  | '$$query'
-  | '$$header'
-  | '$$param'
-  | '$$body'
->;
+type JinBuiltInMember =
+  | Extract<
+      keyof AbstractJinFrame,
+      | '$$query'
+      | '$$header'
+      | '$$param'
+      | '$$body'
+      | '$$host'
+      | '$$path'
+      | '$$method'
+      | '$$contentType'
+      | '$$customBody'
+      | '$$transformRequest'
+    >
+  | '$$preHook'
+  | '$$postHook';
 
 export default JinBuiltInMember;

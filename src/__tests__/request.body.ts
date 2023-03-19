@@ -93,7 +93,7 @@ class Test001PostFrame extends JinEitherFrame {
   public readonly multipleFormatting: IFirstBody;
 
   constructor({ multipleFormatting }: { multipleFormatting: IFirstBody }) {
-    super({ host: 'http://some.api.google.com', path: '/jinframe/:passing', method: 'POST' });
+    super({ $$host: 'http://some.api.google.com', $$path: '/jinframe/:passing', $$method: 'POST' });
 
     this.passing = 'pass';
     this.name = 'ironman';
@@ -179,7 +179,7 @@ class Test002PostFrame extends JinEitherFrame {
     secondBody: ISecondBody;
     thirdBody: IThirdBody;
   }) {
-    super({ host: 'http://some.api.google.com', path: '/jinframe/:passing', method: 'POST' });
+    super({ $$host: 'http://some.api.google.com', $$path: '/jinframe/:passing', $$method: 'POST' });
 
     this.passing = 'pass';
     this.name = 'ironman';

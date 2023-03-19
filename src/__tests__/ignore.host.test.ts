@@ -11,7 +11,7 @@ class TestGet2Frame extends JinEitherFrame {
   public readonly ttt: string;
 
   constructor() {
-    super({ path: '/jinframe/:passing/test', method: 'get' });
+    super({ $$path: '/jinframe/:passing/test', $$method: 'get' });
 
     this.passing = 'hello';
     this.name = 'ironman';

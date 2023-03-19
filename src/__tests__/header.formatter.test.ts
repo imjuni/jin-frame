@@ -19,9 +19,9 @@ class Test001PostFrame extends JinEitherFrame {
 
   constructor(args: { passing: string; username: string; sendAt: Date }) {
     super({
-      host: 'http://some.api.google.com/jinframe/:passing',
-      method: 'POST',
       ...args,
+      $$host: 'http://some.api.google.com/jinframe/:passing',
+      $$method: 'POST',
     });
   }
 }
@@ -67,8 +67,8 @@ class Test002PostFrame extends JinEitherFrame {
 
   constructor(args: { passing: string; username: string; sendAt: Date[] }) {
     super({
-      host: 'http://some.api.google.com/jinframe/:passing',
-      method: 'POST',
+      $$host: 'http://some.api.google.com/jinframe/:passing',
+      $$method: 'POST',
     });
 
     this.passing = args.passing;
@@ -121,8 +121,8 @@ class Test003PostFrame extends JinEitherFrame {
 
   constructor(args: { passing: string; username: string; sendAt: string[] }) {
     super({
-      host: 'http://some.api.google.com/jinframe/:passing',
-      method: 'POST',
+      $$host: 'http://some.api.google.com/jinframe/:passing',
+      $$method: 'POST',
     });
 
     this.passing = args.passing;
@@ -180,8 +180,8 @@ class Test004PostFrame extends JinEitherFrame {
 
   constructor(args: { passing: string; username: string; sendAt: number[] }) {
     super({
-      host: 'http://some.api.google.com/jinframe/:passing',
-      method: 'POST',
+      $$host: 'http://some.api.google.com/jinframe/:passing',
+      $$method: 'POST',
     });
 
     this.passing = args.passing;
