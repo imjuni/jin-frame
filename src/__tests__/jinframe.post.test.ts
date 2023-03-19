@@ -16,7 +16,7 @@ class TestPostFrame extends JinEitherFrame {
   public readonly gender: string;
 
   constructor() {
-    super({ host: 'http://some.api.google.com/jinframe/:passing', method: 'POST' });
+    super({ $$host: 'http://some.api.google.com/jinframe/:passing', $$method: 'POST' });
 
     this.passing = 'pass';
     this.name = 'ironman';
@@ -37,9 +37,9 @@ class TestUrlencodedPostFrame extends JinEitherFrame {
 
   constructor() {
     super({
-      host: 'http://some.api.google.com/jinframe/:passing',
-      contentType: 'application/x-www-form-urlencoded',
-      method: 'POST',
+      $$host: 'http://some.api.google.com/jinframe/:passing',
+      $$contentType: 'application/x-www-form-urlencoded',
+      $$method: 'POST',
     });
 
     this.passing = 'pass';

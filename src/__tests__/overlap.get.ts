@@ -15,7 +15,7 @@ class TestGetFrame extends JinEitherFrame {
   public readonly skills!: string[];
 
   constructor(args: { id: string; name: string; skills: string[] }) {
-    super({ host: 'http://some.api.google.com', path: '/jinframe/:id', method: 'post', ...args });
+    super({ ...args, $$host: 'http://some.api.google.com', $$path: '/jinframe/:id', $$method: 'post' });
   }
 }
 

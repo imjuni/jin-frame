@@ -16,11 +16,11 @@ class TestGetFrame extends JinEitherFrame {
 
   constructor(args: { description: string; file: JinFile<Buffer>; files: JinFile<Buffer>[] }) {
     super({
-      host: 'http://some.api.google.com',
-      path: '/fileupload-case04',
-      method: 'post',
-      contentType: 'multipart/form-data',
       ...args,
+      $$host: 'http://some.api.google.com',
+      $$path: '/fileupload-case04',
+      $$method: 'post',
+      $$contentType: 'multipart/form-data',
     });
   }
 }

@@ -12,9 +12,9 @@ class Test001PostFrame extends JinEitherFrame {
 
   constructor(args: { passing: string; username: string; password: string }) {
     super({
-      host: 'http://some.api.google.com/jinframe/:passing',
-      method: 'POST',
       ...args,
+      $$host: 'http://some.api.google.com/jinframe/:passing',
+      $$method: 'POST',
     });
   }
 }
@@ -48,9 +48,9 @@ class Test002PostFrame extends JinEitherFrame {
 
   constructor(args: { passing: string; username: string; password: string }) {
     super({
-      host: 'http://some.api.google.com/jinframe/:passing',
-      method: 'POST',
       ...args,
+      $$host: 'http://some.api.google.com/jinframe/:passing',
+      $$method: 'POST',
     });
   }
 }
@@ -84,9 +84,9 @@ class Test003PostFrame extends JinEitherFrame {
 
   constructor(args: { passing: string; username: string; password: string }) {
     super({
-      host: 'http://some.api.google.com/jinframe/:passing',
-      method: 'POST',
       ...args,
+      $$host: 'http://some.api.google.com/jinframe/:passing',
+      $$method: 'POST',
     });
   }
 }
@@ -134,9 +134,9 @@ class Test004ZeroDepthPostFrame extends JinEitherFrame {
     };
   }) {
     super({
-      host: 'http://some.api.google.com/jinframe/:passing',
-      method: 'POST',
       ...args,
+      $$host: 'http://some.api.google.com/jinframe/:passing',
+      $$method: 'POST',
     });
   }
 }

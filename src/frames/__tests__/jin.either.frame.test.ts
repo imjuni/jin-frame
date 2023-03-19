@@ -17,9 +17,9 @@ class Test001PostFrame extends JinEitherFrame {
 
   constructor(args: OmitConstructorType<Test001PostFrame, JinBuiltInMember>) {
     super({
-      host: 'http://some.api.google.com/jinframe/:passing',
-      method: 'post',
       ...args,
+      $$host: 'http://some.api.google.com/jinframe/:passing',
+      $$method: 'post',
     });
   }
 }
@@ -36,9 +36,9 @@ class Test002PostFrame extends JinEitherFrame {
 
   constructor(args: OmitConstructorType<Test002PostFrame, JinBuiltInMember>) {
     super({
-      host: 'http://some.api.google.com/jinframe/:passing/:raiseerr',
-      method: 'post',
       ...args,
+      $$host: 'http://some.api.google.com/jinframe/:passing/:raiseerr',
+      $$method: 'post',
     });
   }
 }

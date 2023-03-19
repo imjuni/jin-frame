@@ -112,22 +112,22 @@ abstract class AbstractJinFrame {
     Reflect.metadata(AbstractJinFrame.HeaderSymbolBox, ['HEADER', getDefaultHeaderFieldOption(option)]);
 
   /** host of API Request endpoint */
-  public readonly host?: string;
+  #host?: string;
 
   /** pathname of API Request endpoint */
-  public readonly path?: string;
+  #path?: string;
 
   /** method of API Request endpoint */
-  public readonly method: Method;
+  #method: Method;
 
   /** content-type of API Request endpoint */
-  public readonly contentType: string;
+  #contentType: string;
 
   /** custom object of POST Request body data */
-  public readonly customBody?: unknown;
+  #customBody?: unknown;
 
   /** transformRequest function of POST Request */
-  public readonly transformRequest?: AxiosRequestConfig['transformRequest'];
+  #transformRequest?: AxiosRequestConfig['transformRequest'];
 
   #query?: Record<string, unknown>;
 
@@ -153,6 +153,36 @@ abstract class AbstractJinFrame {
     return this.#param;
   }
 
+  /** host of API Request endpoint */
+  public get $$host() {
+    return this.#host;
+  }
+
+  /** pathname of API Request endpoint */
+  public get $$path() {
+    return this.#path;
+  }
+
+  /** method of API Request endpoint */
+  public get $$method() {
+    return this.#method;
+  }
+
+  /** content-type of API Request endpoint */
+  public get $$contentType() {
+    return this.#contentType;
+  }
+
+  /** custom object of POST Request body data */
+  public get $$customBody() {
+    return this.#customBody;
+  }
+
+  /** transformRequest function of POST Request */
+  public get $$transformRequest() {
+    return this.#transformRequest;
+  }
+
   protected $$startAt: Date;
 
   /**
@@ -163,33 +193,49 @@ abstract class AbstractJinFrame {
    * @param __namedParameters.customBody - custom object of POST Request body data
    */
   constructor(args: {
-    host?: string;
-    path?: string;
-    method: Method;
-    contentType?: string;
-    customBody?: unknown;
-    transformRequest?: AxiosRequestConfig['transformRequest'];
+    $$host?: string;
+    $$path?: string;
+    $$method: Method;
+    $$contentType?: string;
+    $$customBody?: unknown;
+    $$transformRequest?: AxiosRequestConfig['transformRequest'];
   }) {
-    (Object.keys(args) as (keyof typeof args)[]).forEach((key) => {
-      (this[key] as any) = args[key];
-    });
+    Object.keys(args)
+      .filter(
+        (key) =>
+          key !== '$$host' &&
+          key !== '$$path' &&
+          key !== '$$method' &&
+          key !== '$$contentType' &&
+          key !== '$$customBody' &&
+          key !== '$$transformRequest',
+      )
+      .forEach((key: any) => {
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
+        (this as any)[key] = (args as any)[key];
+      });
 
-    this.method = args.method;
-    this.contentType = args.contentType ?? 'application/json';
+    this.#method = args.$$method;
+    this.#contentType = args.$$contentType ?? 'application/json';
+    this.#customBody = args.$$customBody;
+    this.#transformRequest = args.$$transformRequest;
     this.$$startAt = new Date();
 
-    if (args.host == null && args.path == null) {
+    if (args.$$host == null && args.$$path == null) {
       throw new Error('Invalid host & path. Cannot set undefined both');
     }
+
+    this.#host = args.$$host;
+    this.#path = args.$$path;
   }
 
   public getTransformRequest() {
-    if (this.contentType !== 'application/x-www-form-urlencoded') {
+    if (this.#contentType !== 'application/x-www-form-urlencoded') {
       return undefined;
     }
 
-    if (this.transformRequest != null) {
-      return this.transformRequest;
+    if (this.#transformRequest != null) {
+      return this.#transformRequest;
     }
 
     return (formData: any) =>
@@ -203,11 +249,11 @@ abstract class AbstractJinFrame {
   }
 
   getFormData(bodies: Record<string, unknown> | unknown): FormData | Record<string, unknown> | unknown {
-    if (this.method !== 'post' && this.method !== 'POST') {
+    if (this.#method !== 'post' && this.#method !== 'POST') {
       return bodies;
     }
 
-    if (this.contentType === 'multipart/form-data' && typeof bodies === 'object' && bodies != null) {
+    if (this.#contentType === 'multipart/form-data' && typeof bodies === 'object' && bodies != null) {
       const formData = new FormData();
 
       Object.entries(bodies).forEach(([key, value]) => {
@@ -293,8 +339,8 @@ abstract class AbstractJinFrame {
     const headers = getHeaderInfo(this as Record<string, unknown>, fields.header); // create header information
     const paths = getQueryParamInfo(this as Record<string, unknown>, fields.param); // create param information
     const bodies: unknown = (() => {
-      if (this.customBody != null) {
-        return this.customBody;
+      if (this.#customBody != null) {
+        return this.#customBody;
       }
 
       if (fields.body.length <= 0) {
@@ -318,7 +364,7 @@ abstract class AbstractJinFrame {
     this.#param = safePaths;
 
     // stage 05. url endpoint build
-    const buildEndpoint = [this.host ?? 'http://localhost', this.path ?? '']
+    const buildEndpoint = [this.#host ?? 'http://localhost', this.#path ?? '']
       .map((endpointPart) => endpointPart.trim())
       .map((endpointPart) => removeBothSlash(endpointPart))
       .join('/');
@@ -348,18 +394,18 @@ abstract class AbstractJinFrame {
       headers['User-Agent'] = option.userAgent;
     }
 
-    headers['Content-Type'] = this.contentType;
+    headers['Content-Type'] = this.#contentType;
 
     const transformRequest = this.getTransformRequest();
     const data = this.getFormData(bodies);
 
-    const targetUrl = this.host != null ? url.href : `${startWithSlash(url.pathname)}${url.search}`;
+    const targetUrl = this.#host != null ? url.href : `${startWithSlash(url.pathname)}${url.search}`;
     const req: AxiosRequestConfig = {
       ...option,
       ...{
         timeout: option?.timeout ?? defaultJinFrameTimeout,
         headers,
-        method: this.method,
+        method: this.#method,
         data,
         transformRequest: option?.transformRequest ?? transformRequest,
         url: targetUrl,

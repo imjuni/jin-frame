@@ -18,9 +18,9 @@ class Test001PostFrame extends JinEitherFrame {
     ability: { name: string; skill: string; count: number; category: { name: string } }[];
   }) {
     super({
-      host: 'http://some.api.google.com/jinframe/:passing',
-      method: 'POST',
       ...args,
+      $$host: 'http://some.api.google.com/jinframe/:passing',
+      $$method: 'POST',
     });
   }
 }
@@ -95,9 +95,9 @@ class Test002PostFrame extends JinEitherFrame {
     ability: { name: string; skill: string; count: number; category: { name: string; developAt: Date } }[];
   }) {
     super({
-      host: 'http://some.api.google.com/jinframe/:passing',
-      method: 'POST',
       ...args,
+      $$host: 'http://some.api.google.com/jinframe/:passing',
+      $$method: 'POST',
     });
   }
 }
@@ -159,9 +159,9 @@ class Test003PostFrame extends JinEitherFrame {
 
   constructor(args: { passing: string; ability: string[] }) {
     super({
-      host: 'http://some.api.google.com/jinframe/:passing',
-      method: 'POST',
       ...args,
+      $$host: 'http://some.api.google.com/jinframe/:passing',
+      $$method: 'POST',
     });
   }
 }
@@ -203,9 +203,9 @@ class Test004PostFrame extends JinEitherFrame {
 
   constructor(args: { passing: string; ability: Date[] }) {
     super({
-      host: 'http://some.api.google.com/jinframe/:passing',
-      method: 'POST',
       ...args,
+      $$host: 'http://some.api.google.com/jinframe/:passing',
+      $$method: 'POST',
     });
   }
 }
@@ -257,9 +257,9 @@ class Test005PostFrame extends JinEitherFrame {
 
   constructor(args: { passing: string; ability: Date[]; birthAt: Date[] }) {
     super({
-      host: 'http://some.api.google.com/jinframe/:passing',
-      method: 'POST',
       ...args,
+      $$host: 'http://some.api.google.com/jinframe/:passing',
+      $$method: 'POST',
     });
   }
 }
@@ -308,9 +308,9 @@ class Test006PostFrame extends JinEitherFrame {
 
   constructor(args: { passing: string; ability: string[]; birthAt: Date[] }) {
     super({
-      host: 'http://some.api.google.com/jinframe/:passing',
-      method: 'POST',
       ...args,
+      $$host: 'http://some.api.google.com/jinframe/:passing',
+      $$method: 'POST',
     });
   }
 }
@@ -377,9 +377,9 @@ class Test007PostFrame extends JinEitherFrame {
     birthAt: Date[];
   }) {
     super({
-      host: 'http://some.api.google.com/jinframe/:passing',
-      method: 'POST',
       ...args,
+      $$host: 'http://some.api.google.com/jinframe/:passing',
+      $$method: 'POST',
     });
   }
 }
