@@ -17,7 +17,7 @@ export default class OverlapDecoratorGetFrame extends JinEitherFrame {
   public readonly skills: string[];
 
   constructor({ id, name, skills }: { id: string; name: string; skills: string[] }) {
-    super({ host: 'http://some.api.google.com', path: '/jinframe/:id', method: 'post' });
+    super({ $$host: 'http://some.api.google.com', $$path: '/jinframe/:id', $$method: 'post' });
 
     this.id = id;
     this.name = name;
