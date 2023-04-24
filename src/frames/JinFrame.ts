@@ -5,6 +5,7 @@ import type { IDebugInfo } from '#interfaces/IDebugInfo';
 import type { IJinFrameCreateConfig } from '#interfaces/IJinFrameCreateConfig';
 import type { IJinFrameFunction } from '#interfaces/IJinFrameFunction';
 import type { IJinFrameRequestConfig } from '#interfaces/IJinFrameRequestConfig';
+import type { TJinFrameResponse } from '#interfaces/TJinFrameResponse';
 import getDuration from '#tools/getDuration';
 import isValidateStatusDefault from '#tools/isValidateStatusDefault';
 import axios, { AxiosError, type AxiosRequestConfig, type AxiosResponse, type Method } from 'axios';
@@ -35,7 +36,7 @@ export interface JinFrame<TPASS = unknown, TFAIL = TPASS> {
   $$postHook?(
     this: void,
     req: AxiosRequestConfig,
-    result: AxiosResponse<TPASS> | AxiosResponse<TFAIL>,
+    result: TJinFrameResponse<TPASS, TFAIL>,
     debugInfo: IDebugInfo,
   ): void | Promise<void>;
 }
