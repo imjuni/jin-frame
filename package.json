@@ -1,6 +1,6 @@
 {
   "name": "jin-frame",
-  "version": "3.9.3",
+  "version": "3.9.4",
   "description": "Reusable HTTP API request definition library",
   "scripts": {
     "debug": "node --inspect-brk -r ts-node/register ./node_modules/jest/bin/jest --no-cache --runInBand --detectOpenHandles",
