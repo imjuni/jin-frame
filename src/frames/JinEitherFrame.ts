@@ -5,6 +5,7 @@ import type { IFailCreateJinEitherFrame, IFailReplyJinEitherFrame } from '#inter
 import type { IJinFrameCreateConfig } from '#interfaces/IJinFrameCreateConfig';
 import type { IJinFrameFunction } from '#interfaces/IJinFrameFunction';
 import type { IJinFrameRequestConfig } from '#interfaces/IJinFrameRequestConfig';
+import type { TJinRequestConfig } from '#interfaces/TJinFrameResponse';
 import type { TPassJinEitherFrame } from '#interfaces/TPassJinEitherFrame';
 import getDuration from '#tools/getDuration';
 import isValidateStatusDefault from '#tools/isValidateStatusDefault';
@@ -25,7 +26,7 @@ export interface JinEitherFrame<TPASS = unknown, TFAIL = TPASS> {
    * @param this this instance
    * @param req request object
    * */
-  $$preHook?(req: AxiosRequestConfig): void | Promise<void>;
+  $$preHook?(req: TJinRequestConfig): void | Promise<void>;
 
   /**
    * Execute after request.
@@ -35,7 +36,7 @@ export interface JinEitherFrame<TPASS = unknown, TFAIL = TPASS> {
    * @param result [discriminated union](https://www.typescriptlang.org/docs/handbook/typescript-in-5-minutes-func.html#discriminated-unions) pass or fail
    */
   $$postHook?(
-    req: AxiosRequestConfig,
+    req: TJinRequestConfig,
     reply: IFailReplyJinEitherFrame<TFAIL> | TPassJinEitherFrame<TPASS>,
   ): void | Promise<void>;
 }
