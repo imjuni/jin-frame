@@ -7,6 +7,7 @@ import type { IJinFrameFunction } from '#interfaces/IJinFrameFunction';
 import type { IJinFrameRequestConfig } from '#interfaces/IJinFrameRequestConfig';
 import type { TJinRequestConfig } from '#interfaces/TJinFrameResponse';
 import type { TPassJinEitherFrame } from '#interfaces/TPassJinEitherFrame';
+import { CE_HOOK_APPLY } from '#tools/CE_HOOK_APPLY';
 import getDuration from '#tools/getDuration';
 import isValidateStatusDefault from '#tools/isValidateStatusDefault';
 import axios, { AxiosError, type AxiosRequestConfig, type AxiosResponse, type Method } from 'axios';
@@ -139,22 +140,22 @@ export class JinEitherFrame<TPASS = unknown, TFAIL = TPASS>
       };
 
       try {
-        const applyPreHookHandler = async (): Promise<typeof req> => {
-          if (this.$$preHook == null) {
-            return req;
-          }
-
-          if (this.$$preHook.constructor.name === 'AsyncFunction') {
+        const applyPreHookHandler = async (): Promise<number> => {
+          if (this.$$preHook != null && this.$$preHook.constructor.name === 'AsyncFunction') {
             await this.$$preHook(req);
-            return req;
+            return CE_HOOK_APPLY.ASYNC_HOOK_APPLIED;
           }
 
-          (this.$$preHook as (req: AxiosRequestConfig) => void | AxiosRequestConfig)(req);
-          return req;
+          if (this.$$preHook != null) {
+            (this.$$preHook as (req: AxiosRequestConfig) => void | AxiosRequestConfig)(req);
+            return CE_HOOK_APPLY.SYNC_HOOK_APPLIED;
+          }
+
+          return CE_HOOK_APPLY.HOOK_UNDEFINED;
         };
 
-        const newReq = await applyPreHookHandler();
-        const reply = await axios.request<TPASS, AxiosResponse<TPASS>, unknown>(newReq);
+        await applyPreHookHandler();
+        const reply = await axios.request<TPASS, AxiosResponse<TPASS>, unknown>(req);
         const endAt = new Date();
 
         if (isValidateStatus(reply.status) === false) {
@@ -170,9 +171,10 @@ export class JinEitherFrame<TPASS = unknown, TFAIL = TPASS>
             $frame: frame,
           };
 
-          const applyPostHookHandler = async () => {
+          const applyPostHookHandler = async (): Promise<number> => {
             if (this.$$postHook != null && this.$$postHook.constructor.name === 'AsyncFunction') {
               await this.$$postHook(req, failInfo);
+              return CE_HOOK_APPLY.ASYNC_HOOK_APPLIED;
             }
 
             if (this.$$postHook != null) {
@@ -180,7 +182,10 @@ export class JinEitherFrame<TPASS = unknown, TFAIL = TPASS>
                 req,
                 failInfo,
               );
+              return CE_HOOK_APPLY.SYNC_HOOK_APPLIED;
             }
+
+            return CE_HOOK_APPLY.HOOK_UNDEFINED;
           };
 
           await applyPostHookHandler();

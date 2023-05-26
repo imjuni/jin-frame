@@ -6,6 +6,7 @@ import type { IJinFrameCreateConfig } from '#interfaces/IJinFrameCreateConfig';
 import type { IJinFrameFunction } from '#interfaces/IJinFrameFunction';
 import type { IJinFrameRequestConfig } from '#interfaces/IJinFrameRequestConfig';
 import type { TJinFrameResponse, TJinRequestConfig } from '#interfaces/TJinFrameResponse';
+import { CE_HOOK_APPLY } from '#tools/CE_HOOK_APPLY';
 import getDuration from '#tools/getDuration';
 import isValidateStatusDefault from '#tools/isValidateStatusDefault';
 import axios, { AxiosError, type AxiosRequestConfig, type AxiosResponse, type Method } from 'axios';
@@ -123,14 +124,18 @@ export class JinFrame<TPASS = unknown, TFAIL = TPASS>
       };
 
       try {
-        const applyPreHookHandler = async () => {
+        const applyPreHookHandler = async (): Promise<number> => {
           if (this.$$preHook != null && this.$$preHook.constructor.name === 'AsyncFunction') {
             await this.$$preHook(req);
+            return CE_HOOK_APPLY.ASYNC_HOOK_APPLIED;
           }
 
           if (this.$$preHook != null) {
             (this.$$preHook as (this: void, req: AxiosRequestConfig) => void)(req);
+            return CE_HOOK_APPLY.SYNC_HOOK_APPLIED;
           }
+
+          return CE_HOOK_APPLY.HOOK_UNDEFINED;
         };
 
         await applyPreHookHandler();
@@ -148,9 +153,10 @@ export class JinFrame<TPASS = unknown, TFAIL = TPASS>
             message: 'response error',
           });
 
-          const applyPostHookHandler = async () => {
+          const applyPostHookHandler = async (): Promise<number> => {
             if (this.$$postHook != null && this.$$postHook.constructor.name === 'AsyncFunction') {
               await this.$$postHook(req, failReply, debugInfo);
+              return CE_HOOK_APPLY.ASYNC_HOOK_APPLIED;
             }
 
             if (this.$$postHook != null) {
@@ -161,7 +167,10 @@ export class JinFrame<TPASS = unknown, TFAIL = TPASS>
                   debugInfo: IDebugInfo,
                 ) => void
               )(req, failReply, debugInfo);
+              return CE_HOOK_APPLY.SYNC_HOOK_APPLIED;
             }
+
+            return CE_HOOK_APPLY.HOOK_UNDEFINED;
           };
 
           await applyPostHookHandler();
