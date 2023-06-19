@@ -204,11 +204,15 @@ export class JinEitherFrame<TPASS = unknown, TFAIL = TPASS>
         const applyPostHookHandler = async () => {
           if (this.$$postHook != null && this.$$postHook.constructor.name === 'AsyncFunction') {
             await this.$$postHook(req, passInfo);
+            return CE_HOOK_APPLY.ASYNC_HOOK_APPLIED;
           }
 
           if (this.$$postHook != null) {
             (this.$$postHook as (req: AxiosRequestConfig, result: TPassJinEitherFrame<TPASS>) => void)(req, passInfo);
+            return CE_HOOK_APPLY.SYNC_HOOK_APPLIED;
           }
+
+          return CE_HOOK_APPLY.HOOK_UNDEFINED;
         };
 
         await applyPostHookHandler();
