@@ -1,0 +1,10 @@
+{
+  "entryPoints": [
+    "../src"
+  ],
+  "tsconfig": "../tsconfig.json",
+  "entryPointStrategy": "expand",
+  "exclude": [
+    "**/__tests__/*"
+  ]
+}

@@ -70,6 +70,7 @@ module.exports = {
       files: ['**/__tests__/*.ts', 'jest.config.cjs'],
       rules: {
         'max-classes-per-file': ['off'],
+        '@typescript-eslint/no-explicit-any': ['off'],
         '@typescript-eslint/no-unsafe-return': ['off'],
         '@typescript-eslint/no-unsafe-assignment': ['off'],
         '@typescript-eslint/no-unsafe-argument': ['off'],
@@ -80,7 +81,31 @@ module.exports = {
     {
       files: ['jest.config.cjs'],
       rules: {
+        '@typescript-eslint/no-var-requires': ['off'],
         'import/no-extraneous-dependencies': ['off'],
+      },
+    },
+    {
+      files: [
+        'src/frames/AbstractJinFrame.ts',
+        'src/processors/getHeaderInfo.ts',
+        'src/processors/processBodyFormatters.ts',
+        'src/frames/JinEitherFrame.ts',
+        'src/interfaces/TPassJinEitherFrame.ts',
+        'src/interfaces/IFailJinEitherFrame.ts',
+        'src/interfaces/TJinFrameResponse.ts',
+        'src/frames/JinFrame.ts',
+        'src/tools/formatters/applyFormatter.ts',
+        'src/processors/getBodyInfo.ts',
+      ],
+      rules: {
+        '@typescript-eslint/no-explicit-any': ['off'],
+      },
+    },
+    {
+      files: ['src/frames/JinFrame.ts', 'src/processors/processBodyFormatters.ts'],
+      rules: {
+        '@typescript-eslint/no-non-null-assertion': ['off'],
       },
     },
   ],

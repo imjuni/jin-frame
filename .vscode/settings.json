@@ -38,5 +38,7 @@
   },
   "jest.nodeEnv": {
     "DEBUG": "jinframe:*"
-  }
+  },
+  "prettier.prettierPath": "./node_modules/prettier/index.cjs",
+  "markdown.extension.toc.levels": "2..6"
 }
