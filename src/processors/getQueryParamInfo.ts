@@ -7,7 +7,7 @@ import applyFormatters from '#tools/formatters/applyFormatters';
 import isValidArrayType from '#tools/type-narrowing/isValidArrayType';
 import { isValidNumberArray } from '#tools/type-narrowing/isValidNumberArray';
 import isValidPrimitiveType from '#tools/type-narrowing/isValidPrimitiveType';
-import { get } from 'dot-prop';
+import * as dotProp from 'dot-prop';
 
 export function getQueryParamInfo<T extends Record<string, unknown>>(
   thisFrame: T,
@@ -16,7 +16,7 @@ export function getQueryParamInfo<T extends Record<string, unknown>>(
   return fields.reduce<Record<string, unknown>>((resultObj, field) => {
     try {
       const { key: thisFrameAccessKey, option } = field;
-      const value: unknown = get<unknown>(thisFrame, thisFrameAccessKey);
+      const value: unknown = dotProp.get<unknown>(thisFrame, thisFrameAccessKey);
 
       if (!isValidPrimitiveType(value) && !isValidArrayType(value)) {
         return { ...resultObj, thisFrameAccessKey: value };

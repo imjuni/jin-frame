@@ -1,5 +1,5 @@
 {
-  "extends": "@tsconfig/node14/tsconfig.json",
+  "extends": "@tsconfig/node16/tsconfig.json",
   "ts-node": {
     "transpileOnly": true,
     "files": true,
@@ -10,10 +10,10 @@
       "es2017",
       "DOM"
     ],
-    "declaration": true, 
-    // "declarationDir": "dist/typings", 
+    // "declaration": true, 
     // "declarationMap": true,                
-    "sourceMap": true,                     
+    // "declarationDir": "dist/typings", 
+    // "sourceMap": true,
     "removeComments": false, 
     "importHelpers": false,                 
     "isolatedModules": true,               
@@ -33,9 +33,9 @@
     "noImplicitReturns": true /* Report error when not all code paths in function return a value. */,
     "noFallthroughCasesInSwitch": true /* Report errors for fallthrough cases in switch statement. */,
     "noUncheckedIndexedAccess": true,
+    "allowSyntheticDefaultImports": true,
     
     /* Module Resolution Options */
-    "moduleResolution": "node", 
     "esModuleInterop": true, 
     "experimentalDecorators": true, 
     "emitDecoratorMetadata": true, 
@@ -48,6 +48,6 @@
       "#interfaces/*": ["src/interfaces/*"]
     }
   },
-  "include": ["src/**/*.ts"],
-  "exclude": ["dist/**", "**/.configs/**", "**/docs/**/*"]
+  "include": ["src/**/*.ts", ".configs/rollup.config.dev.ts", ".configs/rollup.config.prod.ts"],
+  "exclude": ["dist/**", ".configs/just.config.ts", "**/docs/**/*"]
 }

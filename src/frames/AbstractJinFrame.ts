@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unsafe-argument */
 import { defaultJinFrameTimeout } from '#frames/defaultJinFrameTimeout';
 import { JinFile } from '#frames/JinFile';
 import type { IBodyFieldOption } from '#interfaces/body/IBodyFieldOption';
@@ -133,7 +134,7 @@ abstract class AbstractJinFrame {
 
   #header?: Record<string, unknown>;
 
-  #body?: Record<string, unknown> | unknown;
+  #body?: unknown;
 
   #param?: Record<string, unknown>;
 
@@ -210,8 +211,9 @@ abstract class AbstractJinFrame {
           key !== '$$customBody' &&
           key !== '$$transformRequest',
       )
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       .forEach((key: any) => {
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-explicit-any
         (this as any)[key] = (args as any)[key];
       });
 
@@ -239,7 +241,6 @@ abstract class AbstractJinFrame {
     }
 
     return (formData: any) =>
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
       Object.entries<string | undefined>(formData)
         .filter((entry): entry is [string, string] => entry[1] != null)
         .map(([key, value]) => {
@@ -248,7 +249,7 @@ abstract class AbstractJinFrame {
         .join('&');
   }
 
-  getFormData(bodies: Record<string, unknown> | unknown): FormData | Record<string, unknown> | unknown {
+  getFormData(bodies: unknown): unknown {
     if (this.#method !== 'post' && this.#method !== 'POST') {
       return bodies;
     }

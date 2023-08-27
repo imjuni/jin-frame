@@ -14,6 +14,7 @@ type AllowedNames<Base, Type> = FlagExcludedType<Base, Type>[keyof Base];
 type OmitType<Base, Type> = Pick<Base, AllowedNames<Base, Type>>;
 
 // 4 Exclude the Function type to only get properties
+// eslint-disable-next-line @typescript-eslint/ban-types
 type ConstructorType<T> = OmitType<T, Function>;
 
 export default ConstructorType;

@@ -125,7 +125,8 @@ export class JinEitherFrame<TPASS = unknown, TFAIL = TPASS>
     }
 
     const req = reqE.pass;
-    const frame: JinEitherFrame<TPASS, TFAIL> = this;
+    // eslint-disable-next-line @typescript-eslint/no-this-alias
+    const frame: typeof this = this;
 
     const isValidateStatus = option?.validateStatus == null ? isValidateStatusDefault : option.validateStatus;
 
@@ -172,13 +173,13 @@ export class JinEitherFrame<TPASS = unknown, TFAIL = TPASS>
           };
 
           const applyPostHookHandler = async (): Promise<number> => {
-            if (this.$$postHook != null && this.$$postHook.constructor.name === 'AsyncFunction') {
-              await this.$$postHook(req, failInfo);
+            if (frame.$$postHook != null && frame.$$postHook.constructor.name === 'AsyncFunction') {
+              await frame.$$postHook(req, failInfo);
               return CE_HOOK_APPLY.ASYNC_HOOK_APPLIED;
             }
 
-            if (this.$$postHook != null) {
-              (this.$$postHook as (req: AxiosRequestConfig, result: IFailReplyJinEitherFrame<TFAIL>) => void)(
+            if (frame.$$postHook != null) {
+              (frame.$$postHook as (req: AxiosRequestConfig, result: IFailReplyJinEitherFrame<TFAIL>) => void)(
                 req,
                 failInfo,
               );
@@ -202,13 +203,13 @@ export class JinEitherFrame<TPASS = unknown, TFAIL = TPASS>
         };
 
         const applyPostHookHandler = async () => {
-          if (this.$$postHook != null && this.$$postHook.constructor.name === 'AsyncFunction') {
-            await this.$$postHook(req, passInfo);
+          if (frame.$$postHook != null && frame.$$postHook.constructor.name === 'AsyncFunction') {
+            await frame.$$postHook(req, passInfo);
             return CE_HOOK_APPLY.ASYNC_HOOK_APPLIED;
           }
 
-          if (this.$$postHook != null) {
-            (this.$$postHook as (req: AxiosRequestConfig, result: TPassJinEitherFrame<TPASS>) => void)(req, passInfo);
+          if (frame.$$postHook != null) {
+            (frame.$$postHook as (req: AxiosRequestConfig, result: TPassJinEitherFrame<TPASS>) => void)(req, passInfo);
             return CE_HOOK_APPLY.SYNC_HOOK_APPLIED;
           }
 

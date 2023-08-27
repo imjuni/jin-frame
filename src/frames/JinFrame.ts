@@ -109,7 +109,8 @@ export class JinFrame<TPASS = unknown, TFAIL = TPASS>
       },
   ): () => Promise<AxiosResponse<TPASS>> {
     const req = this.request({ ...option, validateStatus: () => true });
-    const frame: JinFrame<TPASS, TFAIL> = this;
+    // eslint-disable-next-line @typescript-eslint/no-this-alias
+    const frame: typeof this = this;
 
     const isValidateStatus = option?.validateStatus == null ? isValidateStatusDefault : option.validateStatus;
 
@@ -125,13 +126,13 @@ export class JinFrame<TPASS = unknown, TFAIL = TPASS>
 
       try {
         const applyPreHookHandler = async (): Promise<number> => {
-          if (this.$$preHook != null && this.$$preHook.constructor.name === 'AsyncFunction') {
-            await this.$$preHook(req);
+          if (frame.$$preHook != null && frame.$$preHook.constructor.name === 'AsyncFunction') {
+            await frame.$$preHook(req);
             return CE_HOOK_APPLY.ASYNC_HOOK_APPLIED;
           }
 
-          if (this.$$preHook != null) {
-            (this.$$preHook as (this: void, req: AxiosRequestConfig) => void)(req);
+          if (frame.$$preHook != null) {
+            (frame.$$preHook as (this: void, req: AxiosRequestConfig) => void)(req);
             return CE_HOOK_APPLY.SYNC_HOOK_APPLIED;
           }
 
@@ -154,14 +155,14 @@ export class JinFrame<TPASS = unknown, TFAIL = TPASS>
           });
 
           const applyPostHookHandler = async (): Promise<number> => {
-            if (this.$$postHook != null && this.$$postHook.constructor.name === 'AsyncFunction') {
-              await this.$$postHook(req, failReply, debugInfo);
+            if (frame.$$postHook != null && frame.$$postHook.constructor.name === 'AsyncFunction') {
+              await frame.$$postHook(req, failReply, debugInfo);
               return CE_HOOK_APPLY.ASYNC_HOOK_APPLIED;
             }
 
-            if (this.$$postHook != null) {
+            if (frame.$$postHook != null) {
               (
-                this.$$postHook as (
+                frame.$$postHook as (
                   req: AxiosRequestConfig,
                   result: AxiosResponse<TFAIL>,
                   debugInfo: IDebugInfo,
@@ -177,21 +178,19 @@ export class JinFrame<TPASS = unknown, TFAIL = TPASS>
           throw err;
         }
 
-        const duration = getDuration(this.$$startAt, new Date());
+        const duration = getDuration(frame.$$startAt, new Date());
         const debugInfo = { ...debug, duration };
 
         const applyPostHookHandler = async () => {
-          if (this.$$postHook != null && this.$$postHook.constructor.name === 'AsyncFunction') {
-            await this.$$postHook(req, reply, debugInfo);
+          if (frame.$$postHook != null && frame.$$postHook.constructor.name === 'AsyncFunction') {
+            await frame.$$postHook(req, reply, debugInfo);
             return CE_HOOK_APPLY.ASYNC_HOOK_APPLIED;
           }
 
-          if (this.$$postHook != null) {
-            (this.$$postHook as (req: AxiosRequestConfig, result: AxiosResponse<TPASS>, debugInfo: IDebugInfo) => void)(
-              req,
-              reply,
-              debugInfo,
-            );
+          if (frame.$$postHook != null) {
+            (
+              frame.$$postHook as (req: AxiosRequestConfig, result: AxiosResponse<TPASS>, debugInfo: IDebugInfo) => void
+            )(req, reply, debugInfo);
             return CE_HOOK_APPLY.SYNC_HOOK_APPLIED;
           }
 
@@ -210,7 +209,7 @@ export class JinFrame<TPASS = unknown, TFAIL = TPASS>
           throw option?.getError != null ? option.getError(caught) : caught;
         }
 
-        if (caught instanceof AxiosError<TPASS, TFAIL>) {
+        if (caught instanceof AxiosError) {
           const duration = getDuration(this.$$startAt, new Date());
           const reply = caught.response as AxiosResponse<TFAIL> | undefined;
 

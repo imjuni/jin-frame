@@ -4,7 +4,7 @@ import isValidArrayType from '#tools/type-narrowing/isValidArrayType';
 import isValidPrimitiveType from '#tools/type-narrowing/isValidPrimitiveType';
 import typeAssert from '#tools/type-narrowing/typeAssert';
 import type TSupportArrayType from '#tools/type-utilities/TSupportArrayType';
-import { get, set } from 'dot-prop';
+import * as dotProp from 'dot-prop';
 import { recursive } from 'merge';
 import type { SetRequired } from 'type-fest';
 
@@ -51,14 +51,14 @@ export function processObjectBodyFormatters<T extends Record<string, unknown>>(
     const formattersAppliedArray = value.map((eachValue: object) => {
       const formattersApplied = formatters.reduce<object>((aggregation, formatter) => {
         try {
-          const childValue = get<unknown>(aggregation, formatter.findFrom);
+          const childValue = dotProp.get<unknown>(aggregation, formatter.findFrom);
 
           if (!typeAssert(strict, childValue)) {
             return aggregation;
           }
 
           const formatted = applyFormatters(childValue, formatter);
-          return set<object>(aggregation, formatter.findFrom, formatted);
+          return dotProp.set<object>(aggregation, formatter.findFrom, formatted);
         } catch {
           return aggregation;
         }
@@ -75,14 +75,14 @@ export function processObjectBodyFormatters<T extends Record<string, unknown>>(
     const formattersApplied = formatters
       .map((formatter) => {
         try {
-          const childValue = get<unknown>(value, formatter.findFrom);
+          const childValue = dotProp.get<unknown>(value, formatter.findFrom);
 
           if (!typeAssert(strict, childValue)) {
             return {};
           }
 
           const formatted = applyFormatters(childValue, formatter);
-          return set({}, formatter.findFrom, formatted);
+          return dotProp.set({}, formatter.findFrom, formatted);
         } catch {
           return undefined;
         }

@@ -5,7 +5,7 @@ import isValidPrimitiveType from '#tools/type-narrowing/isValidPrimitiveType';
 import typeAssert from '#tools/type-narrowing/typeAssert';
 import type TSupportArrayType from '#tools/type-utilities/TSupportArrayType';
 import type TSupportPrimitiveType from '#tools/type-utilities/TSupportPrimitiveType';
-import { get, set } from 'dot-prop';
+import * as dotProp from 'dot-prop';
 import { recursive } from 'merge';
 import type { SetOptional, SetRequired } from 'type-fest';
 
@@ -27,9 +27,9 @@ export function processBodyFormatters<T extends Record<string, unknown>>(
     const formattersApplied = formatters.reduce<Record<string, TSupportPrimitiveType>>(
       (processing, formatter) => {
         try {
-          const childValue = get<string | boolean | number | Date>(processing, resultAccessKey)!;
+          const childValue = dotProp.get<string | boolean | number | Date>(processing, resultAccessKey)!;
           const formatted = applyFormatters(childValue, formatter);
-          return set({ ...processing }, resultAccessKey, formatted);
+          return dotProp.set({ ...processing }, resultAccessKey, formatted);
         } catch {
           return processing;
         }
@@ -45,9 +45,9 @@ export function processBodyFormatters<T extends Record<string, unknown>>(
     const resultAccessKey = option.replaceAt ?? thisFrameAccessKey;
     const formattersApplied = formatters.reduce<Record<string, TSupportArrayType>>(
       (processing, formatter) => {
-        const childValue = get<TSupportArrayType>(processing, resultAccessKey)!;
+        const childValue = dotProp.get<TSupportArrayType>(processing, resultAccessKey)!;
         const formatted = applyFormatters(childValue, formatter);
-        return set({ ...processing }, resultAccessKey, formatted);
+        return dotProp.set({ ...processing }, resultAccessKey, formatted);
       },
       { [resultAccessKey]: value },
     );
@@ -74,13 +74,13 @@ export function processBodyFormatters<T extends Record<string, unknown>>(
     const formattersApplied = validFormatters
       .map((formatter) => {
         try {
-          const childValue = get<unknown>(value, formatter.findFrom);
+          const childValue = dotProp.get<unknown>(value, formatter.findFrom);
           if (!typeAssert(strict, childValue)) {
             return value;
           }
 
           const formatted = applyFormatters(childValue, formatter);
-          return set({}, formatter.findFrom, formatted) as object;
+          return dotProp.set({}, formatter.findFrom, formatted) as object;
         } catch {
           return value;
         }

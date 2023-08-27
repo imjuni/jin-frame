@@ -1,5 +1,10 @@
 {
   "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "declaration": true, 
+    "declarationMap": true,                
+    "declarationDir": "dist/typings", 
+  },
   "exclude": [
     "src/testenv/*",
     "**/node_modules/**",

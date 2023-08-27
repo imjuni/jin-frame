@@ -7,7 +7,7 @@ import isValidArrayType from '#tools/type-narrowing/isValidArrayType';
 import isValidPrimitiveType from '#tools/type-narrowing/isValidPrimitiveType';
 import type TSupportArrayType from '#tools/type-utilities/TSupportArrayType';
 import type TSupportPrimitiveType from '#tools/type-utilities/TSupportPrimitiveType';
-import { get, set } from 'dot-prop';
+import * as dotProp from 'dot-prop';
 import fastSafeStringify from 'fast-safe-stringify';
 import { recursive } from 'merge';
 import { atOrThrow } from 'my-easy-fp';
@@ -22,9 +22,10 @@ export function getBodyInfo<T extends Record<string, unknown>>(thisFrame: T, fie
   );
 
   const objectBodyFieldsFormatted = sortedObjectBodyFields
-    .map<unknown | undefined>((field) => {
+    // eslint-disable-next-line @typescript-eslint/no-redundant-type-constituents
+    .map<any | undefined>((field) => {
       const { key: thisFrameAccessKey, option } = field;
-      const value: unknown = get<unknown>(thisFrame, thisFrameAccessKey);
+      const value: unknown = dotProp.get<unknown>(thisFrame, thisFrameAccessKey);
 
       // stage 01. general action - undefined or null type
       if (value == null) {
@@ -98,7 +99,7 @@ export function getBodyInfo<T extends Record<string, unknown>>(thisFrame: T, fie
   const bodyFieldsProcessed = bodyFields
     .map<Record<string, unknown> | undefined>((field) => {
       const { key: thisFrameAccessKey, option } = field;
-      const value: unknown = get<unknown>(thisFrame, thisFrameAccessKey);
+      const value: unknown = dotProp.get<unknown>(thisFrame, thisFrameAccessKey);
 
       // stage 01. general action - undefined or null type
       if (value == null) {
@@ -116,17 +117,17 @@ export function getBodyInfo<T extends Record<string, unknown>>(thisFrame: T, fie
       // general action start
       // stage 03. general action - primitive type
       if (isValidPrimitiveType(value)) {
-        return set<Record<string, unknown>>({}, resultAccesssKey, value);
+        return dotProp.set<Record<string, unknown>>({}, resultAccesssKey, value);
       }
 
       // stage 04. general action - array of primitive type
       if (isValidArrayType(value)) {
-        return set<Record<string, unknown>>({}, resultAccesssKey, value);
+        return dotProp.set<Record<string, unknown>>({}, resultAccesssKey, value);
       }
 
       // stage 05. general action - object of complexed type
       if (typeof value === 'object') {
-        return set<Record<string, unknown>>({}, resultAccesssKey, value);
+        return dotProp.set<Record<string, unknown>>({}, resultAccesssKey, value);
       }
 
       if (strict) {
