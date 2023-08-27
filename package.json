@@ -19,7 +19,7 @@
     "pub": "RELEASE_MODE=true npm publish --registry http://localhost:8901",
     "unpub": "npm unpublish jin-frame@latest --registry http://localhost:8901 --force",
     "prepub:prod": "npm run bundle",
-    "pub:prod": "RELEASE_MODE=true npm run publish",
+    "pub:prod": "RELEASE_MODE=true npm publish",
     "clean": "rimraf dist docs",
     "lint": "eslint --cache .",
     "lint-staged": "lint-staged",
