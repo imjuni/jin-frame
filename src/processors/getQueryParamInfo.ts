@@ -17,9 +17,10 @@ export function getQueryParamInfo<T extends Record<string, unknown>>(
     try {
       const { key: thisFrameAccessKey, option } = field;
       const value: unknown = dotProp.get<unknown>(thisFrame, thisFrameAccessKey);
+      const fieldKey = option.replaceAt ?? thisFrameAccessKey;
 
       if (!isValidPrimitiveType(value) && !isValidArrayType(value)) {
-        return { ...resultObj, thisFrameAccessKey: value };
+        return { ...resultObj, [fieldKey]: value };
       }
 
       // stage 01. bit-wised operator processing
@@ -32,7 +33,7 @@ export function getQueryParamInfo<T extends Record<string, unknown>>(
         }
 
         // exclude zero value in bit value
-        return { ...resultObj, [thisFrameAccessKey]: encode(option.encode, bitwisedValue) };
+        return { ...resultObj, [fieldKey]: encode(option.encode, bitwisedValue) };
       }
 
       const { formatter } = option;
@@ -43,7 +44,7 @@ export function getQueryParamInfo<T extends Record<string, unknown>>(
         const commaApplied = Array.isArray(formatted) && option.comma ? formatted.join(',') : formatted;
         return {
           ...resultObj,
-          [thisFrameAccessKey]: Array.isArray(commaApplied)
+          [fieldKey]: Array.isArray(commaApplied)
             ? encodes(option.encode, commaApplied)
             : encode(option.encode, commaApplied),
         };
@@ -51,7 +52,7 @@ export function getQueryParamInfo<T extends Record<string, unknown>>(
 
       // stage 03. comma seperation processing
       const commaApplied = Array.isArray(value) && option.comma ? encode(option.encode, value.join(',')) : value;
-      return { ...resultObj, [thisFrameAccessKey]: commaApplied };
+      return { ...resultObj, [fieldKey]: commaApplied };
     } catch {
       return resultObj;
     }

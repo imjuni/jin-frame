@@ -12,7 +12,7 @@ class TestGetFrame extends JinEitherFrame {
   @JinEitherFrame.P()
   public readonly passing: string;
 
-  @JinEitherFrame.query()
+  @JinEitherFrame.Q({ replaceAt: 'myname' })
   public readonly name: string;
 
   @JinEitherFrame.query({ encode: true })
@@ -231,7 +231,7 @@ describe('jinframe.test', () => {
   });
 
   test('jin-either-frame', async () => {
-    nock('http://some.api.google.com').get('/jinframe/pass?name=ironman&skill=beam&skill=flying!').reply(200, {
+    nock('http://some.api.google.com').get('/jinframe/pass?myname=ironman&skill=beam&skill=flying!').reply(200, {
       message: 'hello',
     });
 
@@ -264,7 +264,7 @@ describe('jinframe.test', () => {
   });
 
   test('jin-either-frame post hook fail case', async () => {
-    nock('http://some.api.google.com').get('/jinframe/pass?name=ironman&skill=beam&skill=flying!').reply(400, {
+    nock('http://some.api.google.com').get('/jinframe/pass?myname=ironman&skill=beam&skill=flying!').reply(400, {
       message: 'hello',
     });
 

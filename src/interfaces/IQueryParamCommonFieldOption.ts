@@ -1,8 +1,16 @@
-import type { ICommonFieldOption } from '#interfaces/ICommonFieldOption';
 import type { IFormatter } from '#interfaces/IFormatter';
 
-export interface IQueryParamCommonFieldOption extends ICommonFieldOption {
+export interface IQueryParamCommonFieldOption {
   formatter?: IFormatter;
+
+  /**
+   * If you want to create depth or rename on field of body
+   * set this option dot seperated string. See below,
+   *
+   * @example
+   * `data.test.ironman` convert to `{ "data.test.ironman": "value here" }`
+   */
+  replaceAt?: string;
 
   /**
    * "comma" option only working querystring. If you want to process array parameter of querystring
