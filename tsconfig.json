@@ -41,6 +41,7 @@
     "emitDecoratorMetadata": true, 
     "outDir": "dist",
     "baseUrl": ".",
+    "rootDir": ".",
     "paths": {
       "#tools/*": ["src/tools/*"],
       "#processors/*": ["src/processors/*"],

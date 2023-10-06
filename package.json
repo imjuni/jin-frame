@@ -6,15 +6,16 @@
     "debug": "node --inspect-brk -r ts-node/register ./node_modules/jest/bin/jest --no-cache --runInBand --detectOpenHandles",
     "prebuild": "npm run clean",
     "build": "tsc --incremental --project tsconfig.prod.json",
-    "dts": "tsc --project tsconfig.prod.json --declaration --emitDeclarationOnly --declarationDir dist/typings",
-    "dts-alias": "tsc-alias -p ./tsconfig.prod.json --verbose --silent false",
+    "dts": "tsc --project tsconfig.prod.json --declaration --emitDeclarationOnly --declarationDir dist/types/origin",
+    "dts-gen": "rollup --config .configs/rollup.config.mjs",
+    "dts-clean": "rimraf dist/types/origin",
     "esbuild-cjs": "FORMAT=cjs node .configs/esbuild.mjs",
     "esbuild-esm": "FORMAT=esm node .configs/esbuild.mjs",
     "prebundle-pack": "npm run ctix",
     "bundle-pack": "run-p esbuild-cjs esbuild-esm dts",
-    "postbundle-pack": "npm run ctix:remove",
+    "postbundle-pack": "run-p ctix-remove dts-gen",
     "prebundle": "npm run clean",
-    "bundle": "run-s bundle-pack dts-alias",
+    "bundle": "run-s bundle-pack dts-clean",
     "prepub": "npm run bundle",
     "pub": "RELEASE_MODE=true npm publish --registry http://localhost:8901",
     "unpub": "npm unpublish jin-frame@latest --registry http://localhost:8901 --force",
@@ -28,7 +29,7 @@
     "test": "cross-env DEBUG=jinframe:* node --trace-warnings --no-compilation-cache node_modules/.bin/jest --coverage",
     "docs": "typedoc --options .configs/typedoc.json",
     "ctix": "ctix single -p ./tsconfig.prod.json --config ./.configs/.ctirc",
-    "ctix:remove": "ctix remove -p ./tsconfig.json --config ./.configs/.ctirc",
+    "ctix-remove": "rimraf src/index.ts",
     "dd": "deps-diff md -d dev -d prod -d peer --title-list-type '*' --deps-list-type '*' --content-list-type '*'",
     "httpd": "http-server ./docs -p 19983",
     "prepublishOnly": "node prepublish.cjs",
@@ -53,14 +54,19 @@
   "bugs": {
     "url": "https://github.com/imjuni/jin-frame/issues"
   },
-  "main": "./dist/cjs/index.cjs",
-  "module": "./dist/esm/index.mjs",
-  "typings": "./dist/typings/index.d.ts",
+  "main": "dist/cjs/index.cjs",
+  "module": "dist/esm/index.mjs",
+  "types": "dist/types/index.d.ts",
   "exports": {
     ".": {
-      "require": "./dist/cjs/index.cjs",
-      "import": "./dist/esm/index.mjs",
-      "types": "./dist/typings/index.d.ts"
+      "require": {
+        "default": "./dist/cjs/index.cjs",
+        "types": "./dist/types/index.d.ts"
+      },
+      "import": {
+        "default": "./dist/esm/index.mjs",
+        "types": "./dist/types/index.d.ts"
+      }
     }
   },
   "files": [
@@ -123,9 +129,10 @@
     "prettier-plugin-organize-imports": "^3.2.3",
     "read-pkg": "^5.2.0",
     "rimraf": "^5.0.1",
+    "rollup": "^3.29.4",
+    "rollup-plugin-dts": "^6.0.2",
     "ts-jest": "^29.1.1",
     "ts-node": "^10.9.1",
-    "tsc-alias": "^1.8.7",
     "tsconfig-paths": "^4.2.0",
     "tslib": "^2.6.2",
     "typedoc": "^0.25.0",
