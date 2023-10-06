@@ -1,4 +1,4 @@
-import AbstractJinFrame from '#frames/AbstractJinFrame';
+import { AbstractJinFrame } from '#frames/AbstractJinFrame';
 import JinCreateError from '#frames/JinCreateError';
 import type { IDebugInfo } from '#interfaces/IDebugInfo';
 import type { IFailCreateJinEitherFrame, IFailReplyJinEitherFrame } from '#interfaces/IFailJinEitherFrame';

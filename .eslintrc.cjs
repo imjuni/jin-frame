@@ -58,6 +58,13 @@ module.exports = {
       },
     },
     {
+      files: ['src/frames/AbstractJinFrame.ts'],
+      rules: {
+        '@typescript-eslint/no-floating-promises': ['off'],
+        '@typescript-eslint/no-unsafe-declaration-merging': ['off'],
+      },
+    },
+    {
       files: ['src/frames/JinFrame.ts', 'src/frames/JinEitherFrame.ts'],
       rules: {
         '@typescript-eslint/no-invalid-void-type': ['off'],

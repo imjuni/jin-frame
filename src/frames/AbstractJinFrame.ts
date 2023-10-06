@@ -8,6 +8,7 @@ import type { IJinFrameRequestConfig } from '#interfaces/IJinFrameRequestConfig'
 import type { IParamFieldOption } from '#interfaces/IParamFieldOption';
 import type { IQueryFieldOption } from '#interfaces/IQueryFieldOption';
 import type { TFieldRecords } from '#interfaces/TFieldRecords';
+import type { TJinRequestConfig } from '#interfaces/TJinFrameResponse';
 import type { TRequestPart } from '#interfaces/TRequestPart';
 import type { IBodyFieldOption } from '#interfaces/body/IBodyFieldOption';
 import type { IObjectBodyFieldOption } from '#interfaces/body/IObjectBodyFieldOption';
@@ -32,7 +33,20 @@ import { compile } from 'path-to-regexp';
 import 'reflect-metadata';
 import type { Except } from 'type-fest';
 
-abstract class AbstractJinFrame {
+/**
+ * HTTP Request Hook
+ */
+export interface AbstractJinFrame {
+  /**
+   * Execute before request. If you can change request object that is affected request.
+   *
+   * @param this this instance
+   * @param req request object
+   * */
+  $$retryFailHook?<TDATA>(req: TJinRequestConfig, res: AxiosResponse<TDATA>): void | Promise<void>;
+}
+
+export abstract class AbstractJinFrame {
   public static ParamSymbolBox = Symbol('ParamSymbolBoxForAbstractJinFrame');
 
   public static QuerySymbolBox = Symbol('QuerySymbolBoxForAbstractJinFrame');
@@ -139,7 +153,7 @@ abstract class AbstractJinFrame {
 
   #param?: Record<string, unknown>;
 
-  #retry?: IFrameRetry;
+  #retry?: IFrameRetry & { try: number };
 
   public get $$query() {
     return this.#query;
@@ -234,7 +248,7 @@ abstract class AbstractJinFrame {
     this.#contentType = args.$$contentType ?? 'application/json';
     this.#customBody = args.$$customBody;
     this.#transformRequest = args.$$transformRequest;
-    this.#retry = args.$$retry;
+    this.#retry = args.$$retry != null ? { ...args.$$retry, try: 0 } : undefined;
     this.$$startAt = new Date();
 
     if (args.$$host == null && args.$$path == null) {
@@ -433,52 +447,43 @@ abstract class AbstractJinFrame {
 
   async retry<TPASS>(req: AxiosRequestConfig, isValidateStatus: (status: number) => boolean) {
     const response = await axios.request<TPASS, AxiosResponse<TPASS>>(req);
+    const retry = this.#retry;
 
-    if (isValidateStatus(response.status) || this.#retry == null) {
+    if (isValidateStatus(response.status) || retry == null) {
       return response;
     }
-
-    const interval = this.#retry.interval ?? 10;
 
     let prevResponse = response;
-    let max = this.#retry.max - 1;
+    const hook = this.$$retryFailHook != null ? this.$$retryFailHook.bind(this) : () => {};
+    retry.interval = retry.interval != null ? retry.interval : 10;
 
-    if (max <= 0) {
-      return response;
-    }
-
-    const retried = await new Promise<AxiosResponse<TPASS>>((resolve, reject) => {
-      /* istanbul ignore next */
+    const retried = await new Promise<AxiosResponse<TPASS>>((resolve) => {
       const attempt = () => {
         axios
           .request<TPASS, AxiosResponse<TPASS>>(req)
           .then((retryResponse) => {
-            max -= 1;
-
             prevResponse = retryResponse;
 
-            if (isValidateStatus(retryResponse.status)) {
+            if (isValidateStatus(retryResponse.status) || retry.max <= retry.try) {
               resolve(retryResponse);
-              return;
+            } else {
+              retry.try += 1;
+              hook(req, prevResponse);
+              setTimeout(() => attempt(), retry.interval);
             }
-
-            if (max <= 0) {
-              resolve(retryResponse);
-              return;
-            }
-
-            setTimeout(() => attempt(), interval);
           })
-          .catch(() => {
-            max -= 1;
-
-            if (max <= 0) {
-              reject(prevResponse);
-              return;
-            }
-
-            setTimeout(() => attempt(), interval);
-          });
+          .catch(
+            /* istanbul ignore next */
+            () => {
+              if (retry.max <= retry.try) {
+                resolve(prevResponse);
+              } else {
+                retry.try += 1;
+                hook(req, prevResponse);
+                setTimeout(() => attempt(), retry.interval);
+              }
+            },
+          );
       };
 
       attempt();
@@ -487,5 +492,3 @@ abstract class AbstractJinFrame {
     return retried;
   }
 }
-
-export default AbstractJinFrame;

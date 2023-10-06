@@ -1,4 +1,4 @@
-import AbstractJinFrame from '#frames/AbstractJinFrame';
+import { AbstractJinFrame } from '#frames/AbstractJinFrame';
 import JinCreateError from '#frames/JinCreateError';
 import JinRequestError from '#frames/JinRequestError';
 import type { IDebugInfo } from '#interfaces/IDebugInfo';
@@ -26,7 +26,7 @@ export interface JinFrame<TPASS = unknown, TFAIL = TPASS> {
    * @param this this instance
    * @param req request object
    * */
-  $$preHook?(this: void, req: TJinRequestConfig): void | Promise<void>;
+  $$preHook?(req: TJinRequestConfig): void | Promise<void>;
 
   /**
    * Execute after request.
@@ -36,7 +36,6 @@ export interface JinFrame<TPASS = unknown, TFAIL = TPASS> {
    * @param result [discriminated union](https://www.typescriptlang.org/docs/handbook/typescript-in-5-minutes-func.html#discriminated-unions) pass or fail
    */
   $$postHook?(
-    this: void,
     req: TJinRequestConfig,
     result: TJinFrameResponse<TPASS, TFAIL>,
     debugInfo: IDebugInfo,
