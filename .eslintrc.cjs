@@ -70,6 +70,7 @@ module.exports = {
       files: ['**/__tests__/*.ts', 'jest.config.cjs'],
       rules: {
         'max-classes-per-file': ['off'],
+        'class-methods-use-this': ['off'],
         '@typescript-eslint/no-explicit-any': ['off'],
         '@typescript-eslint/no-unsafe-return': ['off'],
         '@typescript-eslint/no-unsafe-assignment': ['off'],

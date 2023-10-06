@@ -18,6 +18,7 @@ type JinBuiltInMember =
       | '$$contentType'
       | '$$customBody'
       | '$$transformRequest'
+      | '$$retry'
     >
   | '$$preHook'
   | '$$postHook';

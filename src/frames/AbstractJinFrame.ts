@@ -1,8 +1,7 @@
 /* eslint-disable @typescript-eslint/no-unsafe-argument */
-import { defaultJinFrameTimeout } from '#frames/defaultJinFrameTimeout';
 import { JinFile } from '#frames/JinFile';
-import type { IBodyFieldOption } from '#interfaces/body/IBodyFieldOption';
-import type { IObjectBodyFieldOption } from '#interfaces/body/IObjectBodyFieldOption';
+import { defaultJinFrameTimeout } from '#frames/defaultJinFrameTimeout';
+import type { IFrameRetry } from '#interfaces/IFrameRetry';
 import type { IHeaderFieldOption } from '#interfaces/IHeaderFieldOption';
 import type { IJinFrameCreateConfig } from '#interfaces/IJinFrameCreateConfig';
 import type { IJinFrameRequestConfig } from '#interfaces/IJinFrameRequestConfig';
@@ -10,6 +9,8 @@ import type { IParamFieldOption } from '#interfaces/IParamFieldOption';
 import type { IQueryFieldOption } from '#interfaces/IQueryFieldOption';
 import type { TFieldRecords } from '#interfaces/TFieldRecords';
 import type { TRequestPart } from '#interfaces/TRequestPart';
+import type { IBodyFieldOption } from '#interfaces/body/IBodyFieldOption';
+import type { IObjectBodyFieldOption } from '#interfaces/body/IObjectBodyFieldOption';
 import { getBodyInfo } from '#processors/getBodyInfo';
 import {
   getDefaultBodyFieldOption,
@@ -23,7 +24,7 @@ import { getQueryParamInfo } from '#processors/getQueryParamInfo';
 import removeBothSlash from '#tools/slash-utils/removeBothSlash';
 import removeEndSlash from '#tools/slash-utils/removeEndSlash';
 import startWithSlash from '#tools/slash-utils/startWithSlash';
-import { type AxiosRequestConfig, type Method } from 'axios';
+import axios, { type AxiosRequestConfig, type AxiosResponse, type Method } from 'axios';
 import fastSafeStringify from 'fast-safe-stringify';
 import FormData from 'form-data';
 import { first } from 'my-easy-fp';
@@ -138,6 +139,8 @@ abstract class AbstractJinFrame {
 
   #param?: Record<string, unknown>;
 
+  #retry?: IFrameRetry;
+
   public get $$query() {
     return this.#query;
   }
@@ -184,6 +187,14 @@ abstract class AbstractJinFrame {
     return this.#transformRequest;
   }
 
+  public get $$retry() {
+    return this.#retry;
+  }
+
+  public set $$retry(value) {
+    this.#retry = value;
+  }
+
   protected $$startAt: Date;
 
   /**
@@ -200,6 +211,7 @@ abstract class AbstractJinFrame {
     $$contentType?: string;
     $$customBody?: unknown;
     $$transformRequest?: AxiosRequestConfig['transformRequest'];
+    $$retry?: IFrameRetry;
   }) {
     Object.keys(args)
       .filter(
@@ -209,7 +221,8 @@ abstract class AbstractJinFrame {
           key !== '$$method' &&
           key !== '$$contentType' &&
           key !== '$$customBody' &&
-          key !== '$$transformRequest',
+          key !== '$$transformRequest' &&
+          key !== '$$retry',
       )
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       .forEach((key: any) => {
@@ -221,6 +234,7 @@ abstract class AbstractJinFrame {
     this.#contentType = args.$$contentType ?? 'application/json';
     this.#customBody = args.$$customBody;
     this.#transformRequest = args.$$transformRequest;
+    this.#retry = args.$$retry;
     this.$$startAt = new Date();
 
     if (args.$$host == null && args.$$path == null) {
@@ -415,6 +429,62 @@ abstract class AbstractJinFrame {
     };
 
     return req;
+  }
+
+  async retry<TPASS>(req: AxiosRequestConfig, isValidateStatus: (status: number) => boolean) {
+    const response = await axios.request<TPASS, AxiosResponse<TPASS>>(req);
+
+    if (isValidateStatus(response.status) || this.#retry == null) {
+      return response;
+    }
+
+    const interval = this.#retry.interval ?? 10;
+
+    let prevResponse = response;
+    let max = this.#retry.max - 1;
+
+    if (max <= 0) {
+      return response;
+    }
+
+    const retried = await new Promise<AxiosResponse<TPASS>>((resolve, reject) => {
+      /* istanbul ignore next */
+      const attempt = () => {
+        axios
+          .request<TPASS, AxiosResponse<TPASS>>(req)
+          .then((retryResponse) => {
+            max -= 1;
+
+            prevResponse = retryResponse;
+
+            if (isValidateStatus(retryResponse.status)) {
+              resolve(retryResponse);
+              return;
+            }
+
+            if (max <= 0) {
+              resolve(retryResponse);
+              return;
+            }
+
+            setTimeout(() => attempt(), interval);
+          })
+          .catch(() => {
+            max -= 1;
+
+            if (max <= 0) {
+              reject(prevResponse);
+              return;
+            }
+
+            setTimeout(() => attempt(), interval);
+          });
+      };
+
+      attempt();
+    });
+
+    return retried;
   }
 }
 
