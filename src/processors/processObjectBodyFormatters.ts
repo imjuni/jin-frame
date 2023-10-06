@@ -5,7 +5,6 @@ import isValidPrimitiveType from '#tools/type-narrowing/isValidPrimitiveType';
 import typeAssert from '#tools/type-narrowing/typeAssert';
 import type TSupportArrayType from '#tools/type-utilities/TSupportArrayType';
 import * as dotProp from 'dot-prop';
-import { recursive } from 'merge';
 import type { SetRequired } from 'type-fest';
 
 export function processObjectBodyFormatters<T extends Record<string, unknown>>(
@@ -72,23 +71,25 @@ export function processObjectBodyFormatters<T extends Record<string, unknown>>(
 
   // case 04. object of complex type
   if (typeof value === 'object' && value != null) {
-    const formattersApplied = formatters
-      .map((formatter) => {
+    const formattersApplied = formatters.reduce<object>(
+      (aggregation, formatter) => {
         try {
           const childValue = dotProp.get<unknown>(value, formatter.findFrom);
 
           if (!typeAssert(strict, childValue)) {
-            return {};
+            return aggregation;
           }
 
           const formatted = applyFormatters(childValue, formatter);
-          return dotProp.set({}, formatter.findFrom, formatted);
+          dotProp.set(aggregation, formatter.findFrom, formatted);
+
+          return aggregation;
         } catch {
-          return undefined;
+          return aggregation;
         }
-      })
-      .filter((formatted) => formatted != null)
-      .reduce<object>((aggregation, formatted) => recursive(aggregation, formatted) as object, { ...value });
+      },
+      { ...value },
+    );
 
     return formattersApplied;
   }
