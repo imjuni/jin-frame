@@ -2,6 +2,7 @@ import AbstractJinFrame from '#frames/AbstractJinFrame';
 import JinCreateError from '#frames/JinCreateError';
 import JinRequestError from '#frames/JinRequestError';
 import type { IDebugInfo } from '#interfaces/IDebugInfo';
+import type { IFrameRetry } from '#interfaces/IFrameRetry';
 import type { IJinFrameCreateConfig } from '#interfaces/IJinFrameCreateConfig';
 import type { IJinFrameFunction } from '#interfaces/IJinFrameFunction';
 import type { IJinFrameRequestConfig } from '#interfaces/IJinFrameRequestConfig';
@@ -9,7 +10,7 @@ import type { TJinFrameResponse, TJinRequestConfig } from '#interfaces/TJinFrame
 import { CE_HOOK_APPLY } from '#tools/CE_HOOK_APPLY';
 import getDuration from '#tools/getDuration';
 import isValidateStatusDefault from '#tools/isValidateStatusDefault';
-import axios, { AxiosError, type AxiosRequestConfig, type AxiosResponse, type Method } from 'axios';
+import { AxiosError, type AxiosRequestConfig, type AxiosResponse, type Method } from 'axios';
 import formatISO from 'date-fns/formatISO';
 import getUnixTime from 'date-fns/getUnixTime';
 import httpStatusCodes, { getReasonPhrase } from 'http-status-codes';
@@ -68,6 +69,7 @@ export class JinFrame<TPASS = unknown, TFAIL = TPASS>
     $$method: Method;
     $$contentType?: string;
     $$customBody?: unknown;
+    $$retry?: IFrameRetry;
   }) {
     super({ ...args });
   }
@@ -140,10 +142,11 @@ export class JinFrame<TPASS = unknown, TFAIL = TPASS>
         };
 
         await applyPreHookHandler();
-        const reply = await axios.request<TPASS, AxiosResponse<TPASS>, unknown>(req);
+
+        const reply = await this.retry<TPASS>(req, isValidateStatus);
 
         if (isValidateStatus(reply.status) === false) {
-          const failReply = reply as any as AxiosResponse<TFAIL>;
+          const failReply = reply as unknown as AxiosResponse<TFAIL>;
           const duration = getDuration(this.$$startAt, new Date());
 
           const debugInfo = { ...debug, duration };
