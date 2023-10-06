@@ -1,4 +1,6 @@
 import { JinFrame } from '#frames/JinFrame';
+import type { TJinRequestConfig } from '#interfaces/TJinFrameResponse';
+import type { AxiosResponse } from 'axios';
 import nock from 'nock';
 
 class RetryTestGet01Frame extends JinFrame {
@@ -35,14 +37,28 @@ class RetryTestGet02Frame extends JinFrame {
   @JinFrame.Q({ encode: true })
   public readonly skill: string[];
 
+  #retryFail: string;
+
+  get retryFail() {
+    return this.#retryFail;
+  }
+
+  $$retryFailHook<TDATA>(req: TJinRequestConfig, res: AxiosResponse<TDATA, any>): void | Promise<void> {
+    this.#retryFail = res.data as string;
+
+    console.log(req.url);
+    console.log(res.data);
+  }
+
   constructor() {
     super({
       $$host: 'http://some.api.google.com',
       $$path: '/jinframe/:passing',
       $$method: 'get',
-      $$retry: { max: 1 },
+      $$retry: { max: 2 },
     });
 
+    this.#retryFail = '';
     this.passing = 'pass';
     this.name = 'ironman';
     this.skill = ['beam', 'flying!'];
@@ -62,12 +78,13 @@ describe('TestGet9Frame', () => {
 
   test('retry - setter', () => {
     const frame = new RetryTestGet01Frame();
-    frame.$$retry = { max: 10, interval: 100 };
+    frame.$$retry = { max: 10, interval: 100, try: 1 };
     expect(frame.$$retry?.max).toEqual(10);
+    expect(frame.$$retry?.try).toEqual(1);
     expect(frame.$$retry?.interval).toEqual(100);
   });
 
-  test('nock-get09-retry-request', async () => {
+  test('under retry count', async () => {
     nock('http://some.api.google.com')
       .get('/jinframe/pass?name=ironman&skill=beam&skill=flying%21')
       .times(2)
@@ -79,43 +96,49 @@ describe('TestGet9Frame', () => {
 
     const frame = new RetryTestGet01Frame();
 
-    try {
-      const resp = await frame.execute();
-      expect(resp.status < 400).toEqual(true);
-    } catch (err) {
-      expect(err).toBeFalsy();
-    }
+    const resp = await frame.execute();
+    expect(resp.status < 400).toEqual(true);
+    expect(frame.$$retry?.try).toEqual(1);
   });
 
-  test('nock-get09-retry-request over retry count', async () => {
+  test('over retry count', async () => {
     nock('http://some.api.google.com')
       .get('/jinframe/pass?name=ironman&skill=beam&skill=flying%21')
-      .times(3)
+      .times(5)
       .reply(500, 'Internal Server Error')
       .get('/jinframe/pass?name=ironman&skill=beam&skill=flying%21')
       .reply(200, {
         message: 'hello',
       });
 
+    const frame = new RetryTestGet01Frame();
+
     await expect(async () => {
-      const frame = new RetryTestGet01Frame();
       await frame.execute();
     }).rejects.toThrowError();
+
+    console.log(frame.$$retry);
   });
 
-  test('nock-get09-retry-request over retry count', async () => {
+  test('retry with hook', async () => {
+    const errorMessage = 'Internal Server Error';
     nock('http://some.api.google.com')
       .get('/jinframe/pass?name=ironman&skill=beam&skill=flying%21')
-      .times(3)
-      .reply(500, 'Internal Server Error')
+      .times(4)
+      .reply(500, errorMessage)
       .get('/jinframe/pass?name=ironman&skill=beam&skill=flying%21')
       .reply(200, {
         message: 'hello',
       });
 
+    const frame = new RetryTestGet02Frame();
+
     await expect(async () => {
-      const frame = new RetryTestGet02Frame();
       await frame.execute();
     }).rejects.toThrowError();
+
+    console.log('A: ', frame.$$retry, frame.retryFail);
+
+    expect(frame.retryFail).toEqual(errorMessage);
   });
 });
