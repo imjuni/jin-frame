@@ -16,6 +16,7 @@ export function getDefaultQueryFieldOption(
       enable: option?.bit?.enable ?? false,
       withZero: option?.bit?.withZero ?? false,
     },
+    replaceAt: option?.replaceAt,
     encode: option?.encode ?? true,
   };
 }
@@ -31,6 +32,7 @@ export function getDefaultParamFieldOption(
       enable: option?.bit?.enable ?? false,
       withZero: option?.bit?.withZero ?? false,
     },
+    replaceAt: option?.replaceAt,
     encode: option?.encode ?? true,
   };
 }
