@@ -6,7 +6,6 @@ import typeAssert from '#tools/type-narrowing/typeAssert';
 import type TSupportArrayType from '#tools/type-utilities/TSupportArrayType';
 import type TSupportPrimitiveType from '#tools/type-utilities/TSupportPrimitiveType';
 import * as dotProp from 'dot-prop';
-import { recursive } from 'merge';
 import type { SetOptional, SetRequired } from 'type-fest';
 
 export function processBodyFormatters<T extends Record<string, unknown>>(
@@ -71,26 +70,28 @@ export function processBodyFormatters<T extends Record<string, unknown>>(
       throw new Error(`object type formatters need findFrom: ${thisFrameAccessKey}/${invalidFormatters.length}`);
     }
 
-    const formattersApplied = validFormatters
-      .map((formatter) => {
+    const formattersApplied = validFormatters.reduce(
+      (aggregation, formatter) => {
         try {
-          const childValue = dotProp.get<unknown>(value, formatter.findFrom);
+          const next = aggregation[resultAccessKey]!;
+          const childValue = dotProp.get<unknown>(next, formatter.findFrom);
+
           if (!typeAssert(strict, childValue)) {
-            return value;
+            return aggregation;
           }
 
           const formatted = applyFormatters(childValue, formatter);
-          return dotProp.set({}, formatter.findFrom, formatted) as object;
+          dotProp.set(next, formatter.findFrom, formatted);
+
+          return { ...aggregation, [resultAccessKey]: next };
         } catch {
-          return value;
+          return aggregation;
         }
-      })
-      .reduce(
-        (aggregation, formatted) => recursive(aggregation, { [resultAccessKey]: formatted }) as Record<string, unknown>,
-        {
-          [resultAccessKey]: value,
-        },
-      );
+      },
+      {
+        [resultAccessKey]: value,
+      },
+    );
 
     return formattersApplied;
   }
