@@ -3,8 +3,7 @@
   "version": "3.12.1",
   "description": "Reusable HTTP API request definition library",
   "scripts": {
-    "debug": "node --inspect-brk -r ts-node/register ./node_modules/jest/bin/jest --no-cache --runInBand --detectOpenHandles",
-    "build": "npm run clean && tsc --incremental --project tsconfig.prod.json",
+    "build": "pnpm run clean && tsc --incremental --project tsconfig.prod.json",
     "dts": "tsc -p tsconfig.dts.json",
     "dts-alias": "tsc-alias -p tsconfig.dts.json",
     "dts-gen": "rollup --config .configs/rollup.config.mjs",
