@@ -1,12 +1,9 @@
-import isValidPrimitiveType from '#tools/type-narrowing/isValidPrimitiveType';
-import type TSupportArrayType from '#tools/type-utilities/TSupportArrayType';
-import type TSupportPrimitiveType from '#tools/type-utilities/TSupportPrimitiveType';
+import { isValidPrimitiveType } from '#tools/type-narrowing/isValidPrimitiveType';
+import type { TSupportArrayType } from '#tools/type-utilities/TSupportArrayType';
+import type { TSupportPrimitiveType } from '#tools/type-utilities/TSupportPrimitiveType';
 import { first } from 'my-easy-fp';
 
-export default function typeAssert(
-  strict: boolean,
-  value: unknown,
-): value is TSupportArrayType | TSupportPrimitiveType {
+export function typeAssert(strict: boolean, value: unknown): value is TSupportArrayType | TSupportPrimitiveType {
   if (isValidPrimitiveType(value)) {
     return true;
   }

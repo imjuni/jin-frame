@@ -1,9 +1,9 @@
 import { getHeaderInfo } from '#processors/getHeaderInfo';
 import { format, parse } from 'date-fns';
-import 'jest';
+import { describe, expect, it } from 'vitest';
 
 describe('getHeaderInfo', () => {
-  test('formatter', () => {
+  it('formatter', () => {
     const r01 = getHeaderInfo({ fm: '2023-01-20' }, [
       {
         key: 'fm',
@@ -21,7 +21,7 @@ describe('getHeaderInfo', () => {
     expect(r01).toMatchObject({ fm: '20/Jan/2023' });
   });
 
-  test('formatter - array', () => {
+  it('formatter - array', () => {
     const r01 = getHeaderInfo({ fm: ['2023-01-19', '2023-01-20'] }, [
       {
         key: 'fm',
@@ -41,7 +41,7 @@ describe('getHeaderInfo', () => {
     expect(r01).toMatchObject({ fm: '19/Jan/2023,20/Jan/2023' });
   });
 
-  test('formatter - exception', () => {
+  it('formatter - exception', () => {
     const r01 = getHeaderInfo({ fm: '2023-01-20' }, [
       {
         key: 'fm',
@@ -60,7 +60,7 @@ describe('getHeaderInfo', () => {
     expect(r01).toMatchObject({});
   });
 
-  test('array - comma', () => {
+  it('array - comma', () => {
     const r01 = getHeaderInfo({ heroes: ['ironman', 'captain'] }, [
       {
         key: 'heroes',
@@ -74,7 +74,7 @@ describe('getHeaderInfo', () => {
     expect(r01).toMatchObject({ heroes: 'ironman,captain' });
   });
 
-  test('array', () => {
+  it('array', () => {
     const r01 = getHeaderInfo({ heroes: ['ironman', 'captain'] }, [
       {
         key: 'heroes',
@@ -87,7 +87,7 @@ describe('getHeaderInfo', () => {
     expect(r01).toMatchObject({ heroes: '["ironman","captain"]' });
   });
 
-  test('plain value', () => {
+  it('plain value', () => {
     const r01 = getHeaderInfo({ hero: 'ironman' }, [
       {
         key: 'hero',
@@ -101,7 +101,7 @@ describe('getHeaderInfo', () => {
     expect(r01).toMatchObject({ hero: 'ironman' });
   });
 
-  test('null value', () => {
+  it('null value', () => {
     const r01 = getHeaderInfo({ hero: null }, [
       {
         key: 'hero',
@@ -115,7 +115,7 @@ describe('getHeaderInfo', () => {
     expect(r01).toMatchObject({});
   });
 
-  test('object value', () => {
+  it('object value', () => {
     const r01 = getHeaderInfo({ hero: { name: 'ironman' } }, [
       {
         key: 'hero',
@@ -126,7 +126,7 @@ describe('getHeaderInfo', () => {
     expect(r01).toMatchObject({ hero: '{"name":"ironman"}' });
   });
 
-  test('exception value', () => {
+  it('exception value', () => {
     try {
       const sym = Symbol('ironman');
       getHeaderInfo(
@@ -144,7 +144,7 @@ describe('getHeaderInfo', () => {
     }
   });
 
-  test('invalid value', () => {
+  it('invalid value', () => {
     const sym = Symbol('ironman');
     const r01 = getHeaderInfo({ hero: sym }, [
       {

@@ -1,9 +1,8 @@
-/* eslint-disable max-classes-per-file, no-console */
 import { processBodyFormatters } from '#processors/processBodyFormatters';
-import 'jest';
+import { describe, expect, it } from 'vitest';
 
 describe('processBodyFormatters', () => {
-  test('replaceAt', () => {
+  it('replaceAt', () => {
     const dts = processBodyFormatters(
       true,
       { name: 'ironman' },
@@ -14,7 +13,7 @@ describe('processBodyFormatters', () => {
     expect(dts).toEqual({ hero: 'ironman' });
   });
 
-  test('primitive - formatter', () => {
+  it('primitive - formatter', () => {
     const r01 = processBodyFormatters(true, { name: 'ironman' }, { key: 'name', option: { type: 'body' } }, [
       { string: (val) => `avengers:${val}` },
     ]);
@@ -22,7 +21,7 @@ describe('processBodyFormatters', () => {
     expect(r01).toEqual({ name: 'avengers:ironman' });
   });
 
-  test('primitive - exception', () => {
+  it('primitive - exception', () => {
     const r01 = processBodyFormatters(false, { name: 'ironman' }, { key: 'name', option: { type: 'body' } }, [
       {
         string: () => {
@@ -34,7 +33,7 @@ describe('processBodyFormatters', () => {
     expect(r01).toMatchObject({ name: 'ironman' });
   });
 
-  test('array - formatter', () => {
+  it('array - formatter', () => {
     const r01 = processBodyFormatters(
       true,
       { names: ['ironman', 'captain', 'hulk'] },
@@ -45,7 +44,7 @@ describe('processBodyFormatters', () => {
     expect(r01).toEqual({ names: ['avengers:ironman', 'avengers:captain', 'avengers:hulk'] });
   });
 
-  test('array - exception', () => {
+  it('array - exception', () => {
     const sym = Symbol('ironman');
     const r01 = () =>
       processBodyFormatters(true, { names: [sym, 'captain', 'hulk'] }, { key: 'names', option: { type: 'body' } }, [
@@ -63,7 +62,7 @@ describe('processBodyFormatters', () => {
     expect(r02).toEqual({ names: [sym, 'captain', 'hulk'] });
   });
 
-  test('object - formatter', () => {
+  it('object - formatter', () => {
     const r01 = processBodyFormatters(
       true,
       { hero: { name: 'ironman', real: 'Tony Stark' } },
@@ -74,7 +73,7 @@ describe('processBodyFormatters', () => {
     expect(r01).toEqual({ hero: { name: 'avengers:ironman', real: 'Tony Stark' } });
   });
 
-  test('object - invalid formatter', () => {
+  it('object - invalid formatter', () => {
     try {
       processBodyFormatters(
         true,
@@ -87,7 +86,7 @@ describe('processBodyFormatters', () => {
     }
   });
 
-  test('object - invalid field', () => {
+  it('object - invalid field', () => {
     const sym = Symbol('RDJ');
     const r01 = processBodyFormatters(
       false,
@@ -99,7 +98,7 @@ describe('processBodyFormatters', () => {
     expect(r01).toMatchObject({ hero: { name: 'ironman', real: 'Tony Stark', sym } });
   });
 
-  test('object - formatter exception', () => {
+  it('object - formatter exception', () => {
     const r01 = processBodyFormatters(
       false,
       { hero: { name: 'ironman', real: 'Tony Stark' } },
@@ -117,7 +116,7 @@ describe('processBodyFormatters', () => {
     expect(r01).toMatchObject({ hero: { name: 'ironman', real: 'Tony Stark' } });
   });
 
-  test('object - formatter exception', () => {
+  it('object - formatter exception', () => {
     const sym = Symbol('ironman');
     const r01 = processBodyFormatters(false, { hero: sym }, { key: 'hero', option: { type: 'body' } }, []);
 

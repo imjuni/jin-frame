@@ -2,6 +2,7 @@ import { JinFrame } from '#frames/JinFrame';
 import type { TJinRequestConfig } from '#interfaces/TJinFrameResponse';
 import type { AxiosResponse } from 'axios';
 import nock from 'nock';
+import { afterEach, describe, expect, it } from 'vitest';
 
 class RetryTestGet01Frame extends JinFrame {
   @JinFrame.P()
@@ -70,13 +71,13 @@ describe('TestGet9Frame', () => {
     nock.cleanAll();
   });
 
-  test('retry - getter', () => {
+  it('retry - getter', () => {
     const frame = new RetryTestGet01Frame();
     expect(frame.$$retry?.max).toEqual(3);
     expect(frame.$$retry?.interval).toEqual(20);
   });
 
-  test('retry - setter', () => {
+  it('retry - setter', () => {
     const frame = new RetryTestGet01Frame();
     frame.$$retry = { max: 10, interval: 100, try: 1 };
     expect(frame.$$retry?.max).toEqual(10);
@@ -84,7 +85,7 @@ describe('TestGet9Frame', () => {
     expect(frame.$$retry?.interval).toEqual(100);
   });
 
-  test('under retry count', async () => {
+  it('under retry count', async () => {
     nock('http://some.api.google.com')
       .get('/jinframe/pass?name=ironman&skill=beam&skill=flying%21')
       .times(2)
@@ -101,7 +102,7 @@ describe('TestGet9Frame', () => {
     expect(frame.$$retry?.try).toEqual(1);
   });
 
-  test('over retry count', async () => {
+  it('over retry count', async () => {
     nock('http://some.api.google.com')
       .get('/jinframe/pass?name=ironman&skill=beam&skill=flying%21')
       .times(5)
@@ -120,7 +121,7 @@ describe('TestGet9Frame', () => {
     console.log(frame.$$retry);
   });
 
-  test('retry with hook', async () => {
+  it('retry with hook', async () => {
     const errorMessage = 'Internal Server Error';
     nock('http://some.api.google.com')
       .get('/jinframe/pass?name=ironman&skill=beam&skill=flying%21')

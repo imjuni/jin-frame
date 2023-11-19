@@ -1,13 +1,16 @@
 import type { IFormatter } from '#interfaces/IFormatter';
-import applyFormatter from '#tools/formatters/applyFormatter';
+import { applyFormatter } from '#tools/formatters/applyFormatter';
 
-function applyFormatters(initialValue: string | Date | number | boolean, formatter: IFormatter): string;
-function applyFormatters(initialValue: string[] | Date[] | number[] | boolean[], formatter: IFormatter): string[];
-function applyFormatters(
+export function applyFormatters(initialValue: string | Date | number | boolean, formatter: IFormatter): string;
+export function applyFormatters(
+  initialValue: string[] | Date[] | number[] | boolean[],
+  formatter: IFormatter,
+): string[];
+export function applyFormatters(
   initialValue: string | Date | number | boolean | string[] | Date[] | number[] | boolean[],
   formatter: IFormatter,
 ): string | string[];
-function applyFormatters(
+export function applyFormatters(
   initialValue: string | Date | number | boolean | string[] | Date[] | number[] | boolean[],
   formatter: IFormatter,
 ) {
@@ -17,5 +20,3 @@ function applyFormatters(
 
   return applyFormatter(initialValue, formatter);
 }
-
-export default applyFormatters;

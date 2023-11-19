@@ -5,7 +5,7 @@
  */
 import type { AbstractJinFrame } from '#frames/AbstractJinFrame';
 
-type JinBuiltInMember =
+export type JinBuiltInMember =
   | Extract<
       keyof AbstractJinFrame,
       | '$$query'
@@ -22,5 +22,3 @@ type JinBuiltInMember =
     >
   | '$$preHook'
   | '$$postHook';
-
-export default JinBuiltInMember;

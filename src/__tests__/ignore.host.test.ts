@@ -1,4 +1,5 @@
 import { JinEitherFrame } from '#frames/JinEitherFrame';
+import { expect, it } from 'vitest';
 
 class TestGet2Frame extends JinEitherFrame {
   @JinEitherFrame.param()
@@ -19,7 +20,7 @@ class TestGet2Frame extends JinEitherFrame {
   }
 }
 
-test('ignore-hostname-axios-request', async () => {
+it('ignore-hostname-axios-request', async () => {
   const frame = new TestGet2Frame();
   const req = frame.request();
   expect(req.url).toEqual('/jinframe/hello/test?name=ironman');

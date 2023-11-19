@@ -4,7 +4,7 @@ import type { IDebugInfo } from '#interfaces/IDebugInfo';
 import type { AxiosError } from 'axios';
 import httpStatusCodes, { getReasonPhrase } from 'http-status-codes';
 
-export default class JinCreateError<
+export class JinCreateError<
   T extends JinFrame<TPASS, TFAIL> | JinEitherFrame<TPASS, TFAIL>,
   TPASS,
   TFAIL = TPASS,

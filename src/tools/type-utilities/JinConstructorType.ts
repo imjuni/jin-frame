@@ -5,11 +5,11 @@
  */
 import type { AbstractJinFrame } from '#frames/AbstractJinFrame';
 import type { IFrameRetry } from '#interfaces/IFrameRetry';
-import type ConstructorType from '#tools/type-utilities/ConstructorType';
-import type JinBuiltInMember from '#tools/type-utilities/JinBuiltInMember';
+import type { ConstructorType } from '#tools/type-utilities/ConstructorType';
+import type { JinBuiltInMember } from '#tools/type-utilities/JinBuiltInMember';
 import type { AxiosRequestConfig, Method } from 'axios';
 
-type JinConstructorType<T extends AbstractJinFrame> = Omit<ConstructorType<T>, JinBuiltInMember> & {
+export type JinConstructorType<T extends AbstractJinFrame> = Omit<ConstructorType<T>, JinBuiltInMember> & {
   $$host?: string;
   $$path?: string;
   $$method?: Method;
@@ -18,5 +18,3 @@ type JinConstructorType<T extends AbstractJinFrame> = Omit<ConstructorType<T>, J
   $$transformRequest?: AxiosRequestConfig['transformRequest'];
   $$retry?: IFrameRetry;
 };
-
-export default JinConstructorType;

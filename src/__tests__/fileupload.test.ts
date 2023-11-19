@@ -3,6 +3,7 @@ import { JinFile } from '#frames/JinFile';
 import fs from 'fs';
 import nock from 'nock';
 import path from 'path';
+import { afterEach, it } from 'vitest';
 
 class TestGetFrame extends JinEitherFrame {
   @JinEitherFrame.body()
@@ -29,7 +30,7 @@ afterEach(() => {
   nock.cleanAll();
 });
 
-test('fileupload-test', async () => {
+it('fileupload-test', async () => {
   nock('http://some.api.google.com').post('/fileupload-case04').reply(200, {
     message: 'hello',
   });

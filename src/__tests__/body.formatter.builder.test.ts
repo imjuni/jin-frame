@@ -1,5 +1,6 @@
 import { JinEitherFrame } from '#frames/JinEitherFrame';
 import { lightFormat, parse } from 'date-fns';
+import { expect, it } from 'vitest';
 
 class Test001PostFrame extends JinEitherFrame {
   @JinEitherFrame.param()
@@ -27,7 +28,7 @@ class Test001PostFrame extends JinEitherFrame {
   }
 }
 
-test('T001-array-type-formatter', async () => {
+it('T001-array-type-formatter', async () => {
   const frame = new Test001PostFrame({
     passing: 'hello',
     username: ['ironman', 'thor'],
@@ -76,7 +77,7 @@ class Test002PostFrame extends JinEitherFrame {
   }
 }
 
-test('T002-string-type-formatter', async () => {
+it('T002-string-type-formatter', async () => {
   const frame = new Test002PostFrame({
     passing: 'hello',
     username: ['ironman', 'thor'],
@@ -133,7 +134,7 @@ class Test003PostFrame extends JinEitherFrame {
   }
 }
 
-test('T003-string-array-and-string-formatter', async () => {
+it('T003-string-array-and-string-formatter', async () => {
   const frame = new Test003PostFrame({
     passing: 'hello',
     username: ['ironman', 'thor'],
@@ -199,7 +200,7 @@ class Test004PostFrame extends JinEitherFrame {
   }
 }
 
-test('T004-plain-date-formatter', async () => {
+it('T004-plain-date-formatter', async () => {
   const frame = new Test004PostFrame({
     passing: 'hello',
     username: ['ironman', 'thor'],
@@ -266,7 +267,7 @@ class Test005PostFrame extends JinEitherFrame {
   }
 }
 
-test('T005-string-datetime-formatter-sequential', async () => {
+it('T005-string-datetime-formatter-sequential', async () => {
   const frame = new Test005PostFrame({
     passing: 'hello',
     username: ['ironman', 'thor'],
@@ -335,7 +336,7 @@ class Test006PostFrame extends JinEitherFrame {
   }
 }
 
-test('T006-date-type-key-replace', async () => {
+it('T006-date-type-key-replace', async () => {
   const frame = new Test006PostFrame({
     passing: 'hello',
     username: ['ironman', 'thor'],

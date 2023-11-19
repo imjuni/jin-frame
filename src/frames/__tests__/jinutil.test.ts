@@ -1,12 +1,12 @@
-import JinCreateError from '#frames/JinCreateError';
+import { JinCreateError } from '#frames/JinCreateError';
 import { JinFile } from '#frames/JinFile';
-import JinRequestError from '#frames/JinRequestError';
-import getDuration from '#tools/getDuration';
+import { JinRequestError } from '#frames/JinRequestError';
+import { getDuration } from '#tools/getDuration';
 import { getReasonPhrase } from 'http-status-codes';
-import 'jest';
+import { describe, expect, it } from 'vitest';
 
 describe('JinFile', () => {
-  test('formatter', () => {
+  it('formatter', () => {
     const jf = new JinFile('test', Buffer.from('ironman'));
     expect(jf.file.toString()).toEqual('ironman');
     expect(jf.name).toEqual('test');
@@ -14,7 +14,7 @@ describe('JinFile', () => {
 });
 
 describe('JinCreateError', () => {
-  test('gettter/setter', () => {
+  it('gettter/setter', () => {
     const jf = new JinCreateError({
       debug: {
         ts: {
@@ -43,7 +43,7 @@ describe('JinCreateError', () => {
 });
 
 describe('JinRequestError', () => {
-  test('gettter/setter', () => {
+  it('gettter/setter', () => {
     const jf = new JinRequestError({
       debug: {
         ts: {

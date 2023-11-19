@@ -1,7 +1,7 @@
-import type TSupportArrayType from '#tools/type-utilities/TSupportArrayType';
+import type { TSupportArrayType } from '#tools/type-utilities/TSupportArrayType';
 import { first } from 'my-easy-fp';
 
-export default function isValidArrayType(value: unknown): value is TSupportArrayType {
+export function isValidArrayType(value: unknown): value is TSupportArrayType {
   if (typeof value === 'object' && Array.isArray(value)) {
     if (
       typeof first(value) === 'string' ||

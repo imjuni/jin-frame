@@ -1,17 +1,17 @@
-import bitwised from '#tools/bitwised';
-import encodes from '#tools/encodes/encodes';
-import getDuration from '#tools/getDuration';
-import removeBothSlash from '#tools/slash-utils/removeBothSlash';
-import removeEndSlash from '#tools/slash-utils/removeEndSlash';
-import removeStartSlash from '#tools/slash-utils/removeStartSlash';
-import startWithSlash from '#tools/slash-utils/startWithSlash';
-import isValidArrayType from '#tools/type-narrowing/isValidArrayType';
-import isValidPrimitiveType from '#tools/type-narrowing/isValidPrimitiveType';
-import typeAssert from '#tools/type-narrowing/typeAssert';
-import 'jest';
+import { bitwised } from '#tools/bitwised';
+import { encodes } from '#tools/encodes/encodes';
+import { getDuration } from '#tools/getDuration';
+import { removeBothSlash } from '#tools/slash-utils/removeBothSlash';
+import { removeEndSlash } from '#tools/slash-utils/removeEndSlash';
+import { removeStartSlash } from '#tools/slash-utils/removeStartSlash';
+import { startWithSlash } from '#tools/slash-utils/startWithSlash';
+import { isValidArrayType } from '#tools/type-narrowing/isValidArrayType';
+import { isValidPrimitiveType } from '#tools/type-narrowing/isValidPrimitiveType';
+import { typeAssert } from '#tools/type-narrowing/typeAssert';
+import { describe, expect, it } from 'vitest';
 
 describe('isValidPrimitiveType', () => {
-  test('all', () => {
+  it('all', () => {
     const r01 = isValidPrimitiveType('a');
     const r02 = isValidPrimitiveType(1);
     const r03 = isValidPrimitiveType(true);
@@ -27,7 +27,7 @@ describe('isValidPrimitiveType', () => {
 });
 
 describe('isValidArrayType', () => {
-  test('all', () => {
+  it('all', () => {
     const r01 = isValidArrayType(['a']);
     const r02 = isValidArrayType([1]);
     const r03 = isValidArrayType([true]);
@@ -45,7 +45,7 @@ describe('isValidArrayType', () => {
 });
 
 describe('typeAssert', () => {
-  test('raise exception -1', () => {
+  it('raise exception -1', () => {
     try {
       typeAssert(true, Symbol('Symbol'));
     } catch (catched) {
@@ -53,14 +53,14 @@ describe('typeAssert', () => {
     }
   });
 
-  test('primitive', () => {
+  it('primitive', () => {
     const r01 = typeAssert(true, 1);
     const r02 = typeAssert(false, Symbol('S'));
     expect(r01).toBeTruthy();
     expect(r02).toBeFalsy();
   });
 
-  test('array', () => {
+  it('array', () => {
     const str = typeAssert(true, ['a', 'b', 'c']);
     const num = typeAssert(true, [1, 2, 3]);
     const bool = typeAssert(true, [true, true, false]);
@@ -74,7 +74,7 @@ describe('typeAssert', () => {
 });
 
 describe('slashUtils', () => {
-  test('removeEndSlash', () => {
+  it('removeEndSlash', () => {
     const removed = removeEndSlash('test/');
     const orgin = removeEndSlash('test');
 
@@ -82,7 +82,7 @@ describe('slashUtils', () => {
     expect(orgin).toEqual('test');
   });
 
-  test('removeStartSlash', () => {
+  it('removeStartSlash', () => {
     const removed = removeStartSlash('/test');
     const orgin = removeStartSlash('test');
 
@@ -90,7 +90,7 @@ describe('slashUtils', () => {
     expect(orgin).toEqual('test');
   });
 
-  test('removeBothSlash', () => {
+  it('removeBothSlash', () => {
     const removed = removeBothSlash('/test/');
     const orgin = removeBothSlash('test');
 
@@ -98,7 +98,7 @@ describe('slashUtils', () => {
     expect(orgin).toEqual('test');
   });
 
-  test('startWithSlash', () => {
+  it('startWithSlash', () => {
     const removed = startWithSlash('/test');
     const orgin = startWithSlash('test');
 
@@ -106,11 +106,11 @@ describe('slashUtils', () => {
     expect(orgin).toEqual('/test');
   });
 
-  test('bitwised', () => {
+  it('bitwised', () => {
     expect(bitwised([0b1, 0b10, 0b100])).toEqual(7);
   });
 
-  test('encodes', () => {
+  it('encodes', () => {
     const r01 = encodes(true, '<');
     const r02 = encodes(false, '<');
     const r03 = encodes(true, ['<', '>']);
@@ -122,7 +122,7 @@ describe('slashUtils', () => {
 });
 
 describe('getDuration', () => {
-  test('duration', () => {
+  it('duration', () => {
     const s = new Date(2023, 0, 10, 0, 0, 0, 0);
     const e = new Date(2023, 0, 10, 0, 0, 10, 0);
 
@@ -131,7 +131,7 @@ describe('getDuration', () => {
     expect(d).toEqual(10000);
   });
 
-  test('duration - milliseconds', () => {
+  it('duration - milliseconds', () => {
     const s = new Date(2023, 0, 10, 0, 0, 0, 0);
     const e = new Date(2023, 0, 10, 0, 0, 0, 200);
 
@@ -140,7 +140,7 @@ describe('getDuration', () => {
     expect(d).toEqual(200);
   });
 
-  test('duration - second + milliseconds', () => {
+  it('duration - second + milliseconds', () => {
     const s = new Date(2023, 0, 10, 0, 0, 0, 0);
     const e = new Date(2023, 0, 10, 0, 0, 1, 200);
 
@@ -149,7 +149,7 @@ describe('getDuration', () => {
     expect(d).toEqual(1200);
   });
 
-  test('duration - second + milliseconds', () => {
+  it('duration - second + milliseconds', () => {
     const s = new Date(2023, 0, 10, 0, 0, 0, 0);
     const e = new Date(2023, 0, 10, 0, 1, 1, 312);
 
@@ -158,7 +158,7 @@ describe('getDuration', () => {
     expect(d).toEqual(61312);
   });
 
-  test('duration - minutes + second + milliseconds', () => {
+  it('duration - minutes + second + milliseconds', () => {
     const s = new Date(2023, 0, 10, 0, 0, 0, 0);
     const e = new Date(2023, 0, 10, 2, 1, 1, 312);
 
@@ -167,7 +167,7 @@ describe('getDuration', () => {
     expect(d).toEqual(7261312);
   });
 
-  test('exception - start', () => {
+  it('exception - start', () => {
     const s = new Date(2023, 0, 10, 0, 0, 0, 0);
     const e = new Date(NaN);
 
@@ -176,7 +176,7 @@ describe('getDuration', () => {
     expect(d).toEqual(-1);
   });
 
-  test('exception - end', () => {
+  it('exception - end', () => {
     const s = new Date(NaN);
     const e = new Date(2023, 0, 1, 0, 0, 0, 0);
 

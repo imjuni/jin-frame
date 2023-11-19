@@ -1,9 +1,8 @@
-/* eslint-disable max-classes-per-file */
 import { JinEitherFrame } from '#frames/JinEitherFrame';
-import type JinBuiltInMember from '#tools/type-utilities/JinBuiltInMember';
-import type OmitConstructorType from '#tools/type-utilities/OmitConstructorType';
-import 'jest';
+import type { JinBuiltInMember } from '#tools/type-utilities/JinBuiltInMember';
+import type { OmitConstructorType } from '#tools/type-utilities/OmitConstructorType';
 import nock from 'nock';
+import { afterEach, describe, expect, it } from 'vitest';
 
 class Test001PostFrame extends JinEitherFrame {
   @JinEitherFrame.param()
@@ -48,7 +47,7 @@ afterEach(() => {
 });
 
 describe('JinEitherFrame', () => {
-  test('request build fail', async () => {
+  it('request build fail', async () => {
     const frame = new Test002PostFrame({ username: 'ironman', password: 'marvel', passing: 'pass' });
     const requester = frame.create();
     const req = await requester();
@@ -63,7 +62,7 @@ describe('JinEitherFrame', () => {
     });
   });
 
-  test('validateStatus false', async () => {
+  it('validateStatus false', async () => {
     nock('http://some.api.google.com').post('/jinframe/pass', { username: 'ironman', password: 'marvel' }).reply(400, {
       message: 'hello',
     });
@@ -78,7 +77,7 @@ describe('JinEitherFrame', () => {
     }
   });
 
-  test('validateStatus true', async () => {
+  it('validateStatus true', async () => {
     nock('http://some.api.google.com').post('/jinframe/pass', { username: 'ironman', password: 'marvel' }).reply(200, {
       message: 'hello',
     });
@@ -93,7 +92,7 @@ describe('JinEitherFrame', () => {
     }
   });
 
-  test('exception - case01', async () => {
+  it('exception - case01', async () => {
     nock('http://some.api.google.com').post('/jinframe/pass', { username: 'ironman', password: 'marvel' }).reply(200, {
       message: 'hello',
     });
@@ -108,7 +107,7 @@ describe('JinEitherFrame', () => {
     }
   });
 
-  test('exception - case02', async () => {
+  it('exception - case02', async () => {
     nock('http://some.api.google.com').post('/jinframe/pass', { username: 'ironman', password: 'marvel' }).reply(200, {
       message: 'hello',
     });

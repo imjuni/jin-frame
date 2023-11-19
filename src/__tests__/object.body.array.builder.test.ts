@@ -1,5 +1,6 @@
 import { JinEitherFrame } from '#frames/JinEitherFrame';
 import { lightFormat } from 'date-fns';
+import { expect, it } from 'vitest';
 
 class Test001PostFrame extends JinEitherFrame {
   @JinEitherFrame.param()
@@ -25,7 +26,7 @@ class Test001PostFrame extends JinEitherFrame {
   }
 }
 
-test('T001-plain-array-body', async () => {
+it('T001-plain-array-body', async () => {
   const frame = new Test001PostFrame({
     passing: 'hello',
     ability: [
@@ -102,7 +103,7 @@ class Test002PostFrame extends JinEitherFrame {
   }
 }
 
-test('T002-plain-array-with-formatters', async () => {
+it('T002-plain-array-with-formatters', async () => {
   const frame = new Test002PostFrame({
     passing: 'hello',
     ability: [
@@ -166,7 +167,7 @@ class Test003PostFrame extends JinEitherFrame {
   }
 }
 
-test('T003-primitive-array', async () => {
+it('T003-primitive-array', async () => {
   const frame = new Test003PostFrame({
     passing: 'hello',
     ability: ['Energy repulsor', 'Regeneration'],
@@ -210,7 +211,7 @@ class Test004PostFrame extends JinEitherFrame {
   }
 }
 
-test('T004-primitive-date-array', async () => {
+it('T004-primitive-date-array', async () => {
   const frame = new Test004PostFrame({
     passing: 'hello',
     ability: [new Date(1980, 2, 11, 1, 33, 0), new Date(2020, 9, 11, 11, 22, 10)],
@@ -264,7 +265,7 @@ class Test005PostFrame extends JinEitherFrame {
   }
 }
 
-test('T005-primitive-date-array-ordered-merge', async () => {
+it('T005-primitive-date-array-ordered-merge', async () => {
   const frame = new Test005PostFrame({
     passing: 'hello',
     ability: [new Date(1980, 2, 11, 1, 33, 0), new Date(2010, 9, 11, 11, 22, 10)],
@@ -315,7 +316,7 @@ class Test006PostFrame extends JinEitherFrame {
   }
 }
 
-test('T006-primitive-date-complex-type-merge', async () => {
+it('T006-primitive-date-complex-type-merge', async () => {
   const frame = new Test006PostFrame({
     passing: 'hello',
     ability: ['Energy repulsor', 'Regeneration'],
@@ -384,7 +385,7 @@ class Test007PostFrame extends JinEitherFrame {
   }
 }
 
-test('T007-primitive-date-complex-type-merge', async () => {
+it('T007-primitive-date-complex-type-merge', async () => {
   const frame = new Test007PostFrame({
     passing: 'hello',
     ability: [

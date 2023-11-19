@@ -1,6 +1,7 @@
 import { JinEitherFrame } from '#frames/JinEitherFrame';
 import { lightFormat, parse } from 'date-fns';
 import { format } from 'date-fns-tz';
+import { expect, it } from 'vitest';
 
 class Test001PostFrame extends JinEitherFrame {
   @JinEitherFrame.param()
@@ -26,7 +27,7 @@ class Test001PostFrame extends JinEitherFrame {
   }
 }
 
-test('T001-datetime-formatter', async () => {
+it('T001-datetime-formatter', async () => {
   const frame = new Test001PostFrame({
     passing: 'hello',
     username: 'ironman',
@@ -77,7 +78,7 @@ class Test002PostFrame extends JinEitherFrame {
   }
 }
 
-test('T002-datetime-array-formatter', async () => {
+it('T002-datetime-array-formatter', async () => {
   const frame = new Test002PostFrame({
     passing: 'hello',
     username: 'ironman',
@@ -131,7 +132,7 @@ class Test003PostFrame extends JinEitherFrame {
   }
 }
 
-test('T003-primitive-type-key-replace-at-not-support-dot-props', async () => {
+it('T003-primitive-type-key-replace-at-not-support-dot-props', async () => {
   const frame = new Test003PostFrame({
     passing: 'hello',
     username: 'ironman',
@@ -190,7 +191,7 @@ class Test004PostFrame extends JinEitherFrame {
   }
 }
 
-test('T005-plain-object-type-json-serialization', async () => {
+it('T005-plain-object-type-json-serialization', async () => {
   const frame = new Test004PostFrame({
     passing: 'hello',
     username: 'ironman',

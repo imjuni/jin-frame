@@ -8,10 +8,10 @@ import {
   getDefaultParamFieldOption,
   getDefaultQueryFieldOption,
 } from '#processors/getDefaultOption';
-import 'jest';
+import { describe, expect, it } from 'vitest';
 
 describe('getDefaultQueryFieldOption', () => {
-  test('default', () => {
+  it('default', () => {
     const option = getDefaultQueryFieldOption();
 
     expect(option).toEqual({
@@ -26,7 +26,7 @@ describe('getDefaultQueryFieldOption', () => {
     });
   });
 
-  test('formatter', () => {
+  it('formatter', () => {
     const f: IFormatter = { string: (s) => `f:${s}` };
     const option = getDefaultQueryFieldOption({ formatter: f });
 
@@ -42,7 +42,7 @@ describe('getDefaultQueryFieldOption', () => {
     });
   });
 
-  test('comma', () => {
+  it('comma', () => {
     const r01 = getDefaultQueryFieldOption({ comma: true });
     expect(r01).toMatchObject({
       type: 'query',
@@ -56,7 +56,7 @@ describe('getDefaultQueryFieldOption', () => {
     });
   });
 
-  test('comma', () => {
+  it('comma', () => {
     const r01 = getDefaultQueryFieldOption({ encode: false });
     expect(r01).toMatchObject({
       type: 'query',
@@ -70,7 +70,7 @@ describe('getDefaultQueryFieldOption', () => {
     });
   });
 
-  test('bit', () => {
+  it('bit', () => {
     const r01 = getDefaultQueryFieldOption({ bit: { enable: true, withZero: false } });
     expect(r01).toMatchObject({
       type: 'query',
@@ -98,7 +98,7 @@ describe('getDefaultQueryFieldOption', () => {
 });
 
 describe('getDefaultParamFieldOption', () => {
-  test('default', () => {
+  it('default', () => {
     const option = getDefaultParamFieldOption();
 
     expect(option).toEqual({
@@ -113,7 +113,7 @@ describe('getDefaultParamFieldOption', () => {
     });
   });
 
-  test('formatter', () => {
+  it('formatter', () => {
     const f: IFormatter = { string: (s) => `f:${s}` };
     const option = getDefaultParamFieldOption({ formatter: f });
 
@@ -129,7 +129,7 @@ describe('getDefaultParamFieldOption', () => {
     });
   });
 
-  test('comma', () => {
+  it('comma', () => {
     const r01 = getDefaultParamFieldOption({ comma: true });
     expect(r01).toMatchObject({
       type: 'param',
@@ -143,7 +143,7 @@ describe('getDefaultParamFieldOption', () => {
     });
   });
 
-  test('comma', () => {
+  it('comma', () => {
     const r01 = getDefaultParamFieldOption({ encode: false });
     expect(r01).toMatchObject({
       type: 'param',
@@ -157,7 +157,7 @@ describe('getDefaultParamFieldOption', () => {
     });
   });
 
-  test('bit', () => {
+  it('bit', () => {
     const r01 = getDefaultParamFieldOption({ bit: { enable: true, withZero: false } });
     expect(r01).toMatchObject({
       type: 'param',
@@ -185,7 +185,7 @@ describe('getDefaultParamFieldOption', () => {
 });
 
 describe('getDefaultBodyFieldOption', () => {
-  test('default', () => {
+  it('default', () => {
     const option = getDefaultBodyFieldOption();
 
     expect(option).toEqual({
@@ -195,7 +195,7 @@ describe('getDefaultBodyFieldOption', () => {
     });
   });
 
-  test('formatter', () => {
+  it('formatter', () => {
     const f: IFormatter = { string: (s) => `f:${s}` };
     const option = getDefaultBodyFieldOption({ formatters: f });
 
@@ -207,7 +207,7 @@ describe('getDefaultBodyFieldOption', () => {
     });
   });
 
-  test('formatter - undefined', () => {
+  it('formatter - undefined', () => {
     const option = getDefaultBodyFieldOption({ formatters: undefined });
 
     expect(option).toMatchObject({
@@ -218,7 +218,7 @@ describe('getDefaultBodyFieldOption', () => {
     });
   });
 
-  test('replaceAt', () => {
+  it('replaceAt', () => {
     const r01 = getDefaultBodyFieldOption({ replaceAt: 'replace-need' });
     expect(r01).toMatchObject({
       type: 'body',
@@ -227,7 +227,7 @@ describe('getDefaultBodyFieldOption', () => {
     });
   });
 
-  test('encode', () => {
+  it('encode', () => {
     const r01 = getDefaultBodyFieldOption({ encode: false });
     expect(r01).toMatchObject({
       type: 'body',
@@ -238,7 +238,7 @@ describe('getDefaultBodyFieldOption', () => {
 });
 
 describe('getDefaultObjectBodyFieldOption', () => {
-  test('default', () => {
+  it('default', () => {
     const option = getDefaultObjectBodyFieldOption();
 
     expect(option).toEqual({
@@ -248,7 +248,7 @@ describe('getDefaultObjectBodyFieldOption', () => {
     });
   });
 
-  test('formatter', () => {
+  it('formatter', () => {
     const f: TSingleObjectBodyFormatter = { findFrom: 'f', string: (s) => `f:${s}` };
     const option = getDefaultObjectBodyFieldOption({ formatters: f });
 
@@ -260,7 +260,7 @@ describe('getDefaultObjectBodyFieldOption', () => {
     });
   });
 
-  test('formatter - undefined', () => {
+  it('formatter - undefined', () => {
     const option = getDefaultObjectBodyFieldOption({ formatters: undefined });
 
     expect(option).toMatchObject({
@@ -271,7 +271,7 @@ describe('getDefaultObjectBodyFieldOption', () => {
     });
   });
 
-  test('replaceAt', () => {
+  it('replaceAt', () => {
     const r01 = getDefaultObjectBodyFieldOption({ order: 1 });
     expect(r01).toMatchObject({
       type: 'object-body',
@@ -280,7 +280,7 @@ describe('getDefaultObjectBodyFieldOption', () => {
     });
   });
 
-  test('encode', () => {
+  it('encode', () => {
     const r01 = getDefaultObjectBodyFieldOption({ encode: false });
     expect(r01).toMatchObject({
       type: 'object-body',
@@ -291,7 +291,7 @@ describe('getDefaultObjectBodyFieldOption', () => {
 });
 
 describe('getDefaultHeaderFieldOption', () => {
-  test('default', () => {
+  it('default', () => {
     const option = getDefaultHeaderFieldOption();
 
     expect(option).toEqual({
@@ -302,7 +302,7 @@ describe('getDefaultHeaderFieldOption', () => {
     });
   });
 
-  test('formatter', () => {
+  it('formatter', () => {
     const f: IFormatter = { string: (s) => `f:${s}` };
     const option = getDefaultHeaderFieldOption({ formatters: f });
 
@@ -315,7 +315,7 @@ describe('getDefaultHeaderFieldOption', () => {
     });
   });
 
-  test('replaceAt', () => {
+  it('replaceAt', () => {
     const r01 = getDefaultHeaderFieldOption({ replaceAt: 'replace-need' });
     expect(r01).toMatchObject({
       type: 'header',
@@ -325,7 +325,7 @@ describe('getDefaultHeaderFieldOption', () => {
     });
   });
 
-  test('comma', () => {
+  it('comma', () => {
     const r01 = getDefaultHeaderFieldOption({ comma: true });
     expect(r01).toMatchObject({
       type: 'header',
@@ -335,7 +335,7 @@ describe('getDefaultHeaderFieldOption', () => {
     });
   });
 
-  test('encode', () => {
+  it('encode', () => {
     const r01 = getDefaultHeaderFieldOption({ encode: false });
     expect(r01).toMatchObject({
       type: 'header',
@@ -346,7 +346,7 @@ describe('getDefaultHeaderFieldOption', () => {
   });
 });
 
-test('formatter - undefined', () => {
+it('formatter - undefined', () => {
   const option = getDefaultHeaderFieldOption({ formatters: undefined });
 
   expect(option).toMatchObject({

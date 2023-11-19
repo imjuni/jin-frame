@@ -1,5 +1,6 @@
 import { JinEitherFrame } from '#frames/JinEitherFrame';
 import { lightFormat } from 'date-fns';
+import { expect, it } from 'vitest';
 
 class Test001PostFrame extends JinEitherFrame {
   @JinEitherFrame.param()
@@ -32,7 +33,7 @@ class Test001PostFrame extends JinEitherFrame {
   }
 }
 
-test('T001-plain-object-type', async () => {
+it('T001-plain-object-type', async () => {
   const frame = new Test001PostFrame({
     passing: 'hello',
     username: 'ironman',
@@ -95,7 +96,7 @@ class Test002PostFrame extends JinEitherFrame {
   }
 }
 
-test('T002-merge-two-object', async () => {
+it('T002-merge-two-object', async () => {
   const frame = new Test002PostFrame({
     passing: 'hello',
     username: 'ironman',
@@ -170,7 +171,7 @@ class Test003PostFrame extends JinEitherFrame {
   }
 }
 
-test('T003-merge-and-formatting', async () => {
+it('T003-merge-and-formatting', async () => {
   const frame = new Test003PostFrame({
     passing: 'hello',
     username: 'ironman',
@@ -251,7 +252,7 @@ class Test004PostFrame extends JinEitherFrame {
   }
 }
 
-test('T004-merge-and-formatting', async () => {
+it('T004-merge-and-formatting', async () => {
   const frame = new Test004PostFrame({
     passing: 'hello',
     username: 'ironman',
