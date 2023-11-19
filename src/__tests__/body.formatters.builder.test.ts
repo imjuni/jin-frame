@@ -1,5 +1,6 @@
 import { JinEitherFrame } from '#frames/JinEitherFrame';
 import { lightFormat } from 'date-fns';
+import { expect, it } from 'vitest';
 
 class Test001PostFrame extends JinEitherFrame {
   @JinEitherFrame.P()
@@ -25,7 +26,7 @@ class Test001PostFrame extends JinEitherFrame {
   }
 }
 
-test('T001-primitive-type-multiple-formatters', async () => {
+it('T001-primitive-type-multiple-formatters', async () => {
   const frame = new Test001PostFrame({
     passing: 'hello',
     username: ['ironman', 'thor'],
@@ -97,7 +98,7 @@ class Test002PostFrame extends JinEitherFrame {
   }
 }
 
-test('T002-zero-depth-post-frame', async () => {
+it('T002-zero-depth-post-frame', async () => {
   const frame = new Test002PostFrame({
     passing: 'hello',
     hero: { name: 'ironman', age: 33, bio: { birth: new Date(1978, 2, 3, 11, 22, 33) } },

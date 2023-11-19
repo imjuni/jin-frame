@@ -1,6 +1,7 @@
 import { JinEitherFrame } from '#frames/JinEitherFrame';
-import type JinBuiltInMember from '#tools/type-utilities/JinBuiltInMember';
-import type OmitConstructorType from '#tools/type-utilities/OmitConstructorType';
+import type { JinBuiltInMember } from '#tools/type-utilities/JinBuiltInMember';
+import type { OmitConstructorType } from '#tools/type-utilities/OmitConstructorType';
+import { expect, it } from 'vitest';
 
 class Test001PostFrame extends JinEitherFrame {
   @JinEitherFrame.param()
@@ -21,7 +22,7 @@ class Test001PostFrame extends JinEitherFrame {
   }
 }
 
-test('T001-plain-array-body', async () => {
+it('T001-plain-array-body', async () => {
   const frame = new Test001PostFrame({
     passing: 'hello',
     username: ['ironman', 'thor'],
@@ -68,7 +69,7 @@ class Test002PostFrame extends JinEitherFrame {
   }
 }
 
-test('T002-plain-array-overwrite', async () => {
+it('T002-plain-array-overwrite', async () => {
   const frame = new Test002PostFrame({
     passing: 'hello',
     username: ['ironman', 'thor'],

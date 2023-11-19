@@ -1,6 +1,7 @@
 import { JinEitherFrame } from '#frames/JinEitherFrame';
 import cloneDeep from 'clone-deep';
 import { format, parse } from 'date-fns';
+import { expect, it } from 'vitest';
 
 interface IFirstBody {
   name: string;
@@ -103,7 +104,7 @@ class Test001PostFrame extends JinEitherFrame {
   }
 }
 
-test('T001-object-type-field-multiple-formatting', async () => {
+it('T001-object-type-field-multiple-formatting', async () => {
   const frame = new Test001PostFrame({ multipleFormatting: cloneDeep(share.first) });
   const req = frame.request();
 
@@ -191,7 +192,7 @@ class Test002PostFrame extends JinEitherFrame {
   }
 }
 
-test('T0002-many-object-field-multiple-formattin', async () => {
+it('T0002-many-object-field-multiple-formattin', async () => {
   const frame = new Test002PostFrame({
     firstBody: cloneDeep(share.first),
     secondBody: cloneDeep(share.second),

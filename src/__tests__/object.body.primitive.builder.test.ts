@@ -1,5 +1,6 @@
 import { JinEitherFrame } from '#frames/JinEitherFrame';
 import { lightFormat } from 'date-fns';
+import { expect, it } from 'vitest';
 
 class Test001PostFrame extends JinEitherFrame {
   @JinEitherFrame.param()
@@ -19,7 +20,7 @@ class Test001PostFrame extends JinEitherFrame {
   }
 }
 
-test('T001-primitive-number', async () => {
+it('T001-primitive-number', async () => {
   const frame = new Test001PostFrame({
     passing: 'hello',
     ability: 1,
@@ -59,7 +60,7 @@ class Test002PostFrame extends JinEitherFrame {
   }
 }
 
-test('T002-primitive-string', async () => {
+it('T002-primitive-string', async () => {
   const frame = new Test002PostFrame({
     passing: 'hello',
     ability: 'Energy repulsor',
@@ -104,7 +105,7 @@ class Test003PostFrame extends JinEitherFrame {
   }
 }
 
-test('T003-primitive-date-with-format', async () => {
+it('T003-primitive-date-with-format', async () => {
   const frame = new Test003PostFrame({
     passing: 'hello',
     ability: new Date(2022, 9, 19, 11, 22, 33, 44),
@@ -145,7 +146,7 @@ class Test004PostFrame extends JinEitherFrame {
   }
 }
 
-test('T004-primitive-boolean', async () => {
+it('T004-primitive-boolean', async () => {
   const frame = new Test004PostFrame({
     passing: 'hello',
     ability: true,

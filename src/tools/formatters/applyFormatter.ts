@@ -1,6 +1,6 @@
 import type { IFormatter } from '#interfaces/IFormatter';
 
-export default function applyFormatter(initialValue: string | boolean | number | Date, formatter: IFormatter) {
+export function applyFormatter(initialValue: string | boolean | number | Date, formatter: IFormatter) {
   const orders = formatter.order ?? ['number', 'string', 'dateTime'];
 
   const formatted: any = orders.reduce((processing, order) => {

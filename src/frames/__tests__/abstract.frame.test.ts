@@ -1,8 +1,8 @@
 import { JinFile } from '#frames/JinFile';
 import { JinFrame } from '#frames/JinFrame';
-import type JinConstructorType from '#tools/type-utilities/JinConstructorType';
-import 'jest';
+import type { JinConstructorType } from '#tools/type-utilities/JinConstructorType';
 import nock from 'nock';
+import { afterEach, describe, expect, it } from 'vitest';
 
 class Test001PostFrame extends JinFrame<{ message: string }> {
   @JinFrame.param()
@@ -86,7 +86,7 @@ afterEach(() => {
 });
 
 describe('AbstractJinFrame', () => {
-  test('form-data', async () => {
+  it('form-data', async () => {
     const frame = new Test001PostFrame({ username: 'ironman', password: 'avengers', passing: 'pass' });
 
     const fd = frame.getFormData({
@@ -106,7 +106,7 @@ describe('AbstractJinFrame', () => {
     });
   });
 
-  test('body, param', async () => {
+  it('body, param', async () => {
     const frame = new Test001PostFrame({ username: 'ironman', password: 'avengers', passing: 'pass' });
 
     frame.request();
@@ -115,7 +115,7 @@ describe('AbstractJinFrame', () => {
     expect(frame.$$param).toMatchObject({ passing: 'pass' });
   });
 
-  test('form-data exception', async () => {
+  it('form-data exception', async () => {
     try {
       const frame = new Test001PostFrame({ username: 'ironman', password: 'avengers', passing: 'pass' });
 
@@ -131,7 +131,7 @@ describe('AbstractJinFrame', () => {
     }
   });
 
-  test('user agent', async () => {
+  it('user agent', async () => {
     const frame = new Test001PostFrame({ username: 'ironman', password: 'avengers', passing: 'pass' });
 
     const ua =
@@ -145,7 +145,7 @@ describe('AbstractJinFrame', () => {
     });
   });
 
-  test('custom body', async () => {
+  it('custom body', async () => {
     const frame = new Test002PostFrame({
       username: 'ironman',
       password: 'avengers',
@@ -166,7 +166,7 @@ describe('AbstractJinFrame', () => {
     });
   });
 
-  test('host, path not pass exception', async () => {
+  it('host, path not pass exception', async () => {
     try {
       const frame = new Test003PostFrame({
         username: 'ironman',
@@ -181,7 +181,7 @@ describe('AbstractJinFrame', () => {
     }
   });
 
-  test('getTransformRequest', async () => {
+  it('getTransformRequest', async () => {
     // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
     const tr = (v: any) => `tr:${v}`;
     const frame = new Test002PostFrame({
@@ -197,7 +197,7 @@ describe('AbstractJinFrame', () => {
     expect(t).toBe(tr);
   });
 
-  test('param, query', async () => {
+  it('param, query', async () => {
     const frame = new Test004PostFrame({ name: ['ironman', 'captain'], passing: ['pass', 'fail'], nums: [1, 2, 3] });
     frame.request();
 
@@ -205,7 +205,7 @@ describe('AbstractJinFrame', () => {
     expect(frame.$$param).toMatchObject({ passing: '["pass","fail"]' });
   });
 
-  test('array paths, queries', async () => {
+  it('array paths, queries', async () => {
     const frame = new Test004PostFrame({ name: ['ironman', 'captain'], passing: ['pass', 'fail'], nums: [1, 2, 3] });
     const r = frame.request();
 

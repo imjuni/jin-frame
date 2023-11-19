@@ -1,5 +1,6 @@
 import { JinEitherFrame } from '#frames/JinEitherFrame';
 import nock from 'nock';
+import { afterEach, it } from 'vitest';
 
 class TestGetFrame extends JinEitherFrame {
   @JinEitherFrame.param()
@@ -23,7 +24,7 @@ afterEach(() => {
   nock.cleanAll();
 });
 
-test('overlap-param-query', async () => {
+it('overlap-param-query', async () => {
   nock('http://some.api.google.com')
     .post('/jinframe/pass?passing=pass&name=ironman&skills=beam%2Cflying%21')
     .reply(200, {

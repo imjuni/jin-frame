@@ -1,5 +1,5 @@
 import { AbstractJinFrame } from '#frames/AbstractJinFrame';
-import JinCreateError from '#frames/JinCreateError';
+import { JinCreateError } from '#frames/JinCreateError';
 import type { IDebugInfo } from '#interfaces/IDebugInfo';
 import type { IFailCreateJinEitherFrame, IFailReplyJinEitherFrame } from '#interfaces/IFailJinEitherFrame';
 import type { IFrameRetry } from '#interfaces/IFrameRetry';
@@ -9,8 +9,8 @@ import type { IJinFrameRequestConfig } from '#interfaces/IJinFrameRequestConfig'
 import type { TJinRequestConfig } from '#interfaces/TJinFrameResponse';
 import type { TPassJinEitherFrame } from '#interfaces/TPassJinEitherFrame';
 import { CE_HOOK_APPLY } from '#tools/CE_HOOK_APPLY';
-import getDuration from '#tools/getDuration';
-import isValidateStatusDefault from '#tools/isValidateStatusDefault';
+import { getDuration } from '#tools/getDuration';
+import { isValidateStatusDefault } from '#tools/isValidateStatusDefault';
 import { AxiosError, type AxiosRequestConfig, type AxiosResponse, type Method } from 'axios';
 import formatISO from 'date-fns/formatISO';
 import getUnixTime from 'date-fns/getUnixTime';

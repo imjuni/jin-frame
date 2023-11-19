@@ -1,9 +1,9 @@
 import { getQueryParamInfo } from '#processors/getQueryParamInfo';
 import { format, parse } from 'date-fns';
-import 'jest';
+import { describe, expect, it } from 'vitest';
 
 describe('getQueryParamInfo', () => {
-  test('bitwized', () => {
+  it('bitwized', () => {
     const r01 = getQueryParamInfo({ bit: [0b1, 0b10, 0b1000] }, [
       { key: 'bit', option: { type: 'query', bit: { enable: true, withZero: false }, comma: false } },
     ]);
@@ -21,7 +21,7 @@ describe('getQueryParamInfo', () => {
     expect(r03).toMatchObject({});
   });
 
-  test('formatter', () => {
+  it('formatter', () => {
     const r01 = getQueryParamInfo({ fm: '2023-01-20' }, [
       {
         key: 'fm',
@@ -37,7 +37,7 @@ describe('getQueryParamInfo', () => {
     expect(r01).toMatchObject({ fm: '20/Jan/2023' });
   });
 
-  test('formatter - array', () => {
+  it('formatter - array', () => {
     const r01 = getQueryParamInfo({ fm: ['2023-01-19', '2023-01-20'] }, [
       {
         key: 'fm',
@@ -53,7 +53,7 @@ describe('getQueryParamInfo', () => {
     expect(r01).toMatchObject({ fm: '19/Jan/2023,20/Jan/2023' });
   });
 
-  test('formatter - exception', () => {
+  it('formatter - exception', () => {
     const r01 = getQueryParamInfo({ fm: '2023-01-20' }, [
       {
         key: 'fm',
@@ -73,7 +73,7 @@ describe('getQueryParamInfo', () => {
     expect(r01).toMatchObject({});
   });
 
-  test('array - comma', () => {
+  it('array - comma', () => {
     const r01 = getQueryParamInfo({ heroes: ['ironman', 'captain'] }, [
       {
         key: 'heroes',
@@ -88,7 +88,7 @@ describe('getQueryParamInfo', () => {
     expect(r01).toMatchObject({ heroes: 'ironman,captain' });
   });
 
-  test('array - formatted', () => {
+  it('array - formatted', () => {
     const r01 = getQueryParamInfo({ heroes: ['ironman', 'captain'] }, [
       {
         key: 'heroes',
@@ -106,7 +106,7 @@ describe('getQueryParamInfo', () => {
     expect(r01).toMatchObject({ heroes: ['marvel-ironman', 'marvel-captain'] });
   });
 
-  test('array', () => {
+  it('array', () => {
     const r01 = getQueryParamInfo({ heroes: ['ironman', 'captain'] }, [
       {
         key: 'heroes',
@@ -121,7 +121,7 @@ describe('getQueryParamInfo', () => {
     expect(r01).toMatchObject({ heroes: ['ironman', 'captain'] });
   });
 
-  test('plain value', () => {
+  it('plain value', () => {
     const r01 = getQueryParamInfo({ hero: 'ironman' }, [
       {
         key: 'hero',
@@ -136,7 +136,7 @@ describe('getQueryParamInfo', () => {
     expect(r01).toMatchObject({ hero: 'ironman' });
   });
 
-  test('null value', () => {
+  it('null value', () => {
     const r01 = getQueryParamInfo({ hero: null }, [
       {
         key: 'hero',

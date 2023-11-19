@@ -22,9 +22,9 @@ import {
 } from '#processors/getDefaultOption';
 import { getHeaderInfo } from '#processors/getHeaderInfo';
 import { getQueryParamInfo } from '#processors/getQueryParamInfo';
-import removeBothSlash from '#tools/slash-utils/removeBothSlash';
-import removeEndSlash from '#tools/slash-utils/removeEndSlash';
-import startWithSlash from '#tools/slash-utils/startWithSlash';
+import { removeBothSlash } from '#tools/slash-utils/removeBothSlash';
+import { removeEndSlash } from '#tools/slash-utils/removeEndSlash';
+import { startWithSlash } from '#tools/slash-utils/startWithSlash';
 import axios, { type AxiosRequestConfig, type AxiosResponse, type Method } from 'axios';
 import fastSafeStringify from 'fast-safe-stringify';
 import FormData from 'form-data';
@@ -473,7 +473,7 @@ export abstract class AbstractJinFrame {
             }
           })
           .catch(
-            /* istanbul ignore next */
+            /* c8 ignore next 9 */
             () => {
               if (retry.max <= retry.try) {
                 resolve(prevResponse);

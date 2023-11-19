@@ -1,3 +1,3 @@
-export default function startWithSlash(value: string): string {
+export function startWithSlash(value: string): string {
   return value.startsWith('/') ? value : `/${value}`;
 }

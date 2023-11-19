@@ -1,16 +1,15 @@
-/* eslint-disable max-classes-per-file */
-import JinCreateError from '#frames/JinCreateError';
+import { JinCreateError } from '#frames/JinCreateError';
 import { JinEitherFrame } from '#frames/JinEitherFrame';
 import { JinFrame } from '#frames/JinFrame';
-import type JinRequestError from '#frames/JinRequestError';
+import type { JinRequestError } from '#frames/JinRequestError';
 import type { IDebugInfo } from '#interfaces/IDebugInfo';
 import type { IFailReplyJinEitherFrame } from '#interfaces/IFailJinEitherFrame';
 import type { TJinFrameResponse, TJinRequestConfig } from '#interfaces/TJinFrameResponse';
 import type { TPassJinEitherFrame } from '#interfaces/TPassJinEitherFrame';
-import type JinBuiltInMember from '#tools/type-utilities/JinBuiltInMember';
-import type OmitConstructorType from '#tools/type-utilities/OmitConstructorType';
-import 'jest';
+import type { JinBuiltInMember } from '#tools/type-utilities/JinBuiltInMember';
+import type { OmitConstructorType } from '#tools/type-utilities/OmitConstructorType';
 import nock from 'nock';
+import { afterEach, describe, expect, it } from 'vitest';
 
 class CustomError extends Error {
   readonly discriminator = '__CustomError__';
@@ -140,7 +139,7 @@ describe('JinFrame', () => {
     nock.cleanAll();
   });
 
-  test('validateStatus false', async () => {
+  it('validateStatus false', async () => {
     nock('http://some.api.google.com').post('/jinframe/pass', { username: 'ironman', password: 'marvel' }).reply(400, {
       message: 'hello',
     });
@@ -153,7 +152,7 @@ describe('JinFrame', () => {
     }
   });
 
-  test('validateStatus true', async () => {
+  it('validateStatus true', async () => {
     nock('http://some.api.google.com').post('/jinframe/pass', { username: 'ironman', password: 'marvel' }).reply(200, {
       message: 'hello',
     });
@@ -167,7 +166,7 @@ describe('JinFrame', () => {
     expect(reply.status).toEqual(200);
   });
 
-  test('exception - type01 404', async () => {
+  it('exception - type01 404', async () => {
     nock('http://some.api.google.com')
       .post('/jinframe/pass', { username: 'ironman', password: 'marvel' })
       .reply(404, 'not found');
@@ -181,7 +180,7 @@ describe('JinFrame', () => {
     }
   });
 
-  test('exception - type02 404', async () => {
+  it('exception - type02 404', async () => {
     nock('http://some.api.google.com').post('/jinframe/pass', { username: 'ironman', password: 'marvel' }).reply(200, {
       message: 'hello',
     });
@@ -195,7 +194,7 @@ describe('JinFrame', () => {
     }
   });
 
-  test('exception - type03 404', async () => {
+  it('exception - type03 404', async () => {
     nock('http://some.api.google.com')
       .post('/jinframe/pass', { username: 'ironman', password: 'marvel' })
       .reply(200, { message: 'hello' });
@@ -209,7 +208,7 @@ describe('JinFrame', () => {
     }
   });
 
-  test('exception - invalid exception', async () => {
+  it('exception - invalid exception', async () => {
     nock('http://some.api.google.com')
       .post('/jinframe/pass', { username: 'ironman', password: 'marvel' })
       .reply(200, { message: 'hello' });
@@ -228,7 +227,7 @@ describe('JinFrame', () => {
     }
   });
 
-  test('exception - type01 404 - getError', async () => {
+  it('exception - type01 404 - getError', async () => {
     nock('http://some.api.google.com')
       .post('/jinframe/pass', { username: 'ironman', password: 'marvel' })
       .reply(404, 'not found');
@@ -250,7 +249,7 @@ describe('JinFrame', () => {
     }
   });
 
-  test('exception - type03 404 - getError', async () => {
+  it('exception - type03 404 - getError', async () => {
     nock('http://some.api.google.com')
       .post('/jinframe/pass', { username: 'ironman', password: 'marvel' })
       .reply(200, { message: 'hello' });
@@ -272,7 +271,7 @@ describe('JinFrame', () => {
     }
   });
 
-  test('exception - invalid exception - getError', async () => {
+  it('exception - invalid exception - getError', async () => {
     nock('http://some.api.google.com')
       .post('/jinframe/pass', { username: 'ironman', password: 'marvel' })
       .reply(200, { message: 'hello' });
@@ -304,7 +303,7 @@ describe('hook count frame test', () => {
     nock.cleanAll();
   });
 
-  test('validateStatus false', async () => {
+  it('validateStatus false', async () => {
     nock('http://some.api.google.com').post('/jinframe/pass', { username: 'ironman', password: 'marvel' }).reply(400, {
       message: 'error',
     });
@@ -319,7 +318,7 @@ describe('hook count frame test', () => {
     }
   });
 
-  test('validateStatus true', async () => {
+  it('validateStatus true', async () => {
     nock('http://some.api.google.com').post('/jinframe/pass', { username: 'ironman', password: 'marvel' }).reply(200, {
       message: 'hello',
     });
@@ -342,7 +341,7 @@ describe('hook count either frame test', () => {
     nock.cleanAll();
   });
 
-  test('validateStatus false', async () => {
+  it('validateStatus false', async () => {
     nock('http://some.api.google.com').post('/jinframe/pass', { username: 'ironman', password: 'marvel' }).reply(400, {
       message: 'error',
     });
@@ -357,7 +356,7 @@ describe('hook count either frame test', () => {
     }
   });
 
-  test('validateStatus true', async () => {
+  it('validateStatus true', async () => {
     nock('http://some.api.google.com').post('/jinframe/pass', { username: 'ironman', password: 'marvel' }).reply(200, {
       message: 'error',
     });

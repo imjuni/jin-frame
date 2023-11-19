@@ -1,4 +1,5 @@
 import { JinEitherFrame } from '#frames/JinEitherFrame';
+import { expect, it } from 'vitest';
 
 class Test001PostFrame extends JinEitherFrame {
   @JinEitherFrame.param()
@@ -19,7 +20,7 @@ class Test001PostFrame extends JinEitherFrame {
   }
 }
 
-test('T001-primitive-type', async () => {
+it('T001-primitive-type', async () => {
   const frame = new Test001PostFrame({ passing: 'hello', username: 'ironman', password: 'advengers' });
   const req = frame.request();
 
@@ -35,7 +36,7 @@ test('T001-primitive-type', async () => {
   expect(req).toEqual(excpetation);
 });
 
-test('T001-header', async () => {
+it('T001-header', async () => {
   const frame = new Test001PostFrame({ passing: 'hello', username: 'ironman', password: 'advengers' });
   frame.request();
 
@@ -65,7 +66,7 @@ class Test002PostFrame extends JinEitherFrame {
   }
 }
 
-test('T002-primitive-type-key-replace', async () => {
+it('T002-primitive-type-key-replace', async () => {
   const frame = new Test002PostFrame({ passing: 'hello', username: 'ironman', password: 'advengers' });
   const req = frame.request();
 
@@ -100,7 +101,7 @@ class Test003PostFrame extends JinEitherFrame {
   }
 }
 
-test('T003-primitive-type-key-replace-at-not-support-dot-props', async () => {
+it('T003-primitive-type-key-replace-at-not-support-dot-props', async () => {
   const frame = new Test003PostFrame({ passing: 'hello', username: 'ironman', password: 'advengers' });
   const req = frame.request();
 
@@ -149,7 +150,7 @@ class Test004PostFrame extends JinEitherFrame {
   }
 }
 
-test('T004-plain-object-type-json-serialization', async () => {
+it('T004-plain-object-type-json-serialization', async () => {
   const frame = new Test004PostFrame({
     passing: 'hello',
     username: 'ironman',
@@ -195,7 +196,7 @@ class Test005PostFrame extends JinEitherFrame {
   }
 }
 
-test('T005-plain-object-type-array-comma-seperated', async () => {
+it('T005-plain-object-type-array-comma-seperated', async () => {
   const frame = new Test005PostFrame({
     passing: 'hello',
     username: 'ironman',

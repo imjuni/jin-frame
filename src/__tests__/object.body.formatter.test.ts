@@ -1,5 +1,6 @@
 import { JinEitherFrame } from '#frames/JinEitherFrame';
 import { lightFormat } from 'date-fns';
+import { expect, it } from 'vitest';
 
 class Test001PostFrame extends JinEitherFrame {
   @JinEitherFrame.param()
@@ -46,7 +47,7 @@ class Test001PostFrame extends JinEitherFrame {
   }
 }
 
-test('object formatters array', async () => {
+it('object formatters array', async () => {
   const frame = new Test001PostFrame({
     passing: 'hello',
     ability: {

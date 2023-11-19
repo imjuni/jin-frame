@@ -1,11 +1,9 @@
-/* eslint-disable max-classes-per-file, no-console, import/no-extraneous-dependencies */
-
-import applyFormatters from '#tools/formatters/applyFormatters';
+import { applyFormatters } from '#tools/formatters/applyFormatters';
 import { format, parse } from 'date-fns';
-import 'jest';
+import { describe, expect, it } from 'vitest';
 
 describe('applyFormatters', () => {
-  test('no-order', () => {
+  it('no-order', () => {
     const val = applyFormatters(123, {
       number: (num) => `${num}`,
       string: (str) => `ABC:${str}`,
@@ -14,7 +12,7 @@ describe('applyFormatters', () => {
     expect(val).toEqual('ABC:123');
   });
 
-  test('number', () => {
+  it('number', () => {
     const val = applyFormatters(123, {
       order: ['string', 'number', 'dateTime'],
       number: (num) => `${num}`,
@@ -23,7 +21,7 @@ describe('applyFormatters', () => {
     expect(val).toEqual('123');
   });
 
-  test('string', () => {
+  it('string', () => {
     const num = applyFormatters(123, {
       order: ['string', 'number', 'dateTime'],
       string: (str) => `ABC:${str}`,
@@ -38,7 +36,7 @@ describe('applyFormatters', () => {
     expect(bool).toEqual(`ABC:true`);
   });
 
-  test('datetime', () => {
+  it('datetime', () => {
     const dtStrVal = applyFormatters('2023-01-20T11:22:33', {
       order: ['string', 'number', 'dateTime'],
       string: (dt) => parse(dt, "yyyy-MM-dd'T'HH:mm:ss", new Date()),
@@ -54,7 +52,7 @@ describe('applyFormatters', () => {
     expect(dtval).toEqual('2023-01-20');
   });
 
-  test('array', () => {
+  it('array', () => {
     const dts = applyFormatters(['2023-01-18T11:22:33', '2023-01-19T09:11:22', '2023-01-20T11:22:33'], {
       order: ['string', 'number', 'dateTime'],
       string: (dt) => parse(dt, "yyyy-MM-dd'T'HH:mm:ss", new Date()),

@@ -1,6 +1,7 @@
 import { JinEitherFrame } from '#frames/JinEitherFrame';
 import { isPass } from 'my-only-either';
 import nock from 'nock';
+import { afterEach, describe, expect, it } from 'vitest';
 
 class TestPostFrame extends JinEitherFrame {
   @JinEitherFrame.param()
@@ -53,7 +54,7 @@ describe('jinframe.test', () => {
     nock.cleanAll();
   });
 
-  test('nock-post-with-jinframe', async () => {
+  it('nock-post-with-jinframe', async () => {
     nock('http://some.api.google.com').post('/jinframe/pass').reply(200, {
       message: 'hello',
     });
@@ -64,7 +65,7 @@ describe('jinframe.test', () => {
     expect(isPass(resp)).toEqual(true);
   });
 
-  test('nock-post-without-eiter-jinframe', async () => {
+  it('nock-post-without-eiter-jinframe', async () => {
     nock('http://some.api.google.com').post('/jinframe/pass').reply(200, {
       message: 'hello',
     });
@@ -75,7 +76,7 @@ describe('jinframe.test', () => {
     expect(isPass(resp)).toEqual(true);
   });
 
-  test('nock-post-urlencoded', async () => {
+  it('nock-post-urlencoded', async () => {
     nock('http://some.api.google.com').post('/jinframe/pass', 'username=ironman&password=marvel').reply(200, {
       message: 'hello',
     });

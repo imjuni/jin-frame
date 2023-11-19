@@ -1,9 +1,8 @@
-/* eslint-disable max-classes-per-file, no-console */
 import { processHeaderFormatters } from '#processors/processHeaderFormatters';
-import 'jest';
+import { describe, expect, it } from 'vitest';
 
 describe('processHeaderFormatters', () => {
-  test('formatter', () => {
+  it('formatter', () => {
     const dts = processHeaderFormatters({ name: 'ironman' }, { key: 'name', option: { type: 'header' } }, [
       { string: (s) => `avengers:${s}` },
     ]);
@@ -11,7 +10,7 @@ describe('processHeaderFormatters', () => {
     expect(dts).toEqual({ name: 'avengers:ironman' });
   });
 
-  test('formatter', () => {
+  it('formatter', () => {
     const r01 = processHeaderFormatters(
       { name: ['ironman', 'captain'] },
       { key: 'name', option: { type: 'header', comma: true } },
@@ -28,7 +27,7 @@ describe('processHeaderFormatters', () => {
     expect(r02).toEqual({ name: '["avengers:ironman","avengers:captain"]' });
   });
 
-  test('formatter', () => {
+  it('formatter', () => {
     const r01 = processHeaderFormatters(
       { name: ['<ironman>', 'captain'] },
       { key: 'name', option: { type: 'header', comma: true, encode: true } },
@@ -52,7 +51,7 @@ describe('processHeaderFormatters', () => {
     expect(r03).toEqual({ name: '%5B%22avengers%3Aironman%22%2C%22avengers%3Acaptain%22%5D' });
   });
 
-  test('invalid value', () => {
+  it('invalid value', () => {
     const sym = Symbol('Symbol');
     const dts = processHeaderFormatters({ name: sym }, { key: 'name', option: { type: 'header' } }, []);
 

@@ -1,5 +1,3 @@
-/* eslint-disable class-methods-use-this, no-console, max-classes-per-file */
-
 import { JinEitherFrame } from '#frames/JinEitherFrame';
 import { JinFrame } from '#frames/JinFrame';
 import type { IFailReplyJinEitherFrame } from '#interfaces/IFailJinEitherFrame';
@@ -7,6 +5,7 @@ import type { TPassJinEitherFrame } from '#interfaces/TPassJinEitherFrame';
 import axios, { type AxiosRequestConfig, type AxiosResponse } from 'axios';
 import { isFail, isPass } from 'my-only-either';
 import nock from 'nock';
+import { afterEach, describe, expect, it } from 'vitest';
 
 class TestGetFrame extends JinEitherFrame {
   @JinEitherFrame.P()
@@ -222,7 +221,7 @@ describe('jinframe.test', () => {
     nock.cleanAll();
   });
 
-  test('nock-with-axios', async () => {
+  it('nock-with-axios', async () => {
     nock('http://some.api.google.com').get('/test').reply(200, {
       message: 'hello',
     });
@@ -230,7 +229,7 @@ describe('jinframe.test', () => {
     await axios.get('http://some.api.google.com/test');
   });
 
-  test('jin-either-frame', async () => {
+  it('jin-either-frame', async () => {
     nock('http://some.api.google.com').get('/jinframe/pass?myname=ironman&skill=beam&skill=flying!').reply(200, {
       message: 'hello',
     });
@@ -241,7 +240,7 @@ describe('jinframe.test', () => {
     expect(isPass(resp)).toEqual(true);
   });
 
-  test('jin-either-frame - pre hook no return', async () => {
+  it('jin-either-frame - pre hook no return', async () => {
     nock('http://some.api.google.com').get('/jinframe/pass?name=ironman&skill=beam&skill=flying!').reply(200, {
       message: 'hello',
     });
@@ -252,7 +251,7 @@ describe('jinframe.test', () => {
     expect(isPass(resp)).toEqual(true);
   });
 
-  test('jin-either-frame - async pre hook no return', async () => {
+  it('jin-either-frame - async pre hook no return', async () => {
     nock('http://some.api.google.com').get('/jinframe/pass?name=ironman&skill=beam&skill=flying!').reply(200, {
       message: 'hello',
     });
@@ -263,7 +262,7 @@ describe('jinframe.test', () => {
     expect(isPass(resp)).toEqual(true);
   });
 
-  test('jin-either-frame post hook fail case', async () => {
+  it('jin-either-frame post hook fail case', async () => {
     nock('http://some.api.google.com').get('/jinframe/pass?myname=ironman&skill=beam&skill=flying!').reply(400, {
       message: 'hello',
     });
@@ -274,7 +273,7 @@ describe('jinframe.test', () => {
     expect(isFail(resp)).toEqual(true);
   });
 
-  test('jin-frame pre hook', async () => {
+  it('jin-frame pre hook', async () => {
     nock('http://some.api.google.com').get('/jinframe/pass?name=ironman&skill=beam&skill=flying!').reply(200, {
       message: 'hello',
     });
@@ -285,7 +284,7 @@ describe('jinframe.test', () => {
     expect(resp.status).toEqual(200);
   });
 
-  test('jin-frame post hook fail case', async () => {
+  it('jin-frame post hook fail case', async () => {
     nock('http://some.api.google.com').get('/jinframe/pass?name=ironman&skill=beam&skill=flying!').reply(400, {
       message: 'hello',
     });
@@ -298,7 +297,7 @@ describe('jinframe.test', () => {
     }
   });
 
-  test('jin-frame with async pre hook', async () => {
+  it('jin-frame with async pre hook', async () => {
     nock('http://some.api.google.com').get('/jinframe/pass?name=ironman&skill=beam&skill=flying!').reply(200, {
       message: 'hello',
     });
@@ -309,7 +308,7 @@ describe('jinframe.test', () => {
     expect(resp.status).toEqual(200);
   });
 
-  test('jin-frame async post hook fail case', async () => {
+  it('jin-frame async post hook fail case', async () => {
     nock('http://some.api.google.com').get('/jinframe/pass?name=ironman&skill=beam&skill=flying!').reply(400, {
       message: 'hello',
     });
@@ -322,7 +321,7 @@ describe('jinframe.test', () => {
     }
   });
 
-  test('jin-frame with async pre hook - no return', async () => {
+  it('jin-frame with async pre hook - no return', async () => {
     nock('http://some.api.google.com').get('/jinframe/pass?name=ironman&skill=beam&skill=flying!').reply(200, {
       message: 'hello',
     });
@@ -333,7 +332,7 @@ describe('jinframe.test', () => {
     expect(resp.status).toEqual(200);
   });
 
-  test('jin-frame with async pre hook - no return', async () => {
+  it('jin-frame with async pre hook - no return', async () => {
     nock('http://some.api.google.com').get('/jinframe/pass?name=ironman&skill=beam&skill=flying!').reply(200, {
       message: 'hello',
     });
@@ -344,7 +343,7 @@ describe('jinframe.test', () => {
     expect(resp.status).toEqual(200);
   });
 
-  test('nock-get02-with-jinframe', async () => {
+  it('nock-get02-with-jinframe', async () => {
     nock('http://some.api.google.com').get('/jinframe/hello/test?name=ironman').reply(200, {
       message: 'hello',
     });
@@ -355,7 +354,7 @@ describe('jinframe.test', () => {
     expect(isPass(resp)).toEqual(true);
   });
 
-  test('nock-get02-with-jinframe-fail', async () => {
+  it('nock-get02-with-jinframe-fail', async () => {
     nock('http://some.api.google.com').get('/jinframe/hello/test?name=ironman').reply(500, {
       message: 'hello',
     });
@@ -366,7 +365,7 @@ describe('jinframe.test', () => {
     expect(isFail(resp)).toEqual(true);
   });
 
-  test('nock-get03-axios-request', async () => {
+  it('nock-get03-axios-request', async () => {
     nock('http://some.api.google.com').get('/jinframe/hello/test?name=ironman').reply(200, {
       message: 'hello',
     });

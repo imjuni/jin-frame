@@ -1,6 +1,7 @@
 import { JinEitherFrame } from '#frames/JinEitherFrame';
-import type JinConstructorType from '#tools/type-utilities/JinConstructorType';
+import type { JinConstructorType } from '#tools/type-utilities/JinConstructorType';
 import axios, { type AxiosRequestConfig } from 'axios';
+import { it } from 'vitest';
 
 interface IReqGetPokemonInfoByName {
   limit: number;
@@ -35,7 +36,7 @@ class PokemonPagingFrame extends JinEitherFrame<any, any> {
   }
 }
 
-test('getPokemonInfoByName', async () => {
+it('getPokemonInfoByName', async () => {
   await getPokemonInfoByName({
     limit: 10,
     offset: 0,
@@ -44,7 +45,7 @@ test('getPokemonInfoByName', async () => {
   // console.log(reply);
 });
 
-test('PokemonPagingFrame', async () => {
+it('PokemonPagingFrame', async () => {
   const frame = new PokemonPagingFrame({
     limit: 10,
     offset: 0,

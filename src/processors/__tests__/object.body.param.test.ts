@@ -1,9 +1,9 @@
 import { getBodyInfo } from '#processors/getBodyInfo';
 import { format, parse } from 'date-fns';
-import 'jest';
+import { describe, expect, it } from 'vitest';
 
 describe('getBodyInfo', () => {
-  test('formatter', () => {
+  it('formatter', () => {
     const r01 = getBodyInfo({ fm: '2023-01-20' }, [
       {
         key: 'fm',
@@ -21,7 +21,7 @@ describe('getBodyInfo', () => {
     expect(r01).toEqual('20/Jan/2023');
   });
 
-  test('sort - 1', () => {
+  it('sort - 1', () => {
     const r01 = getBodyInfo({ f01: '2023-01-20', f02: '2023-01-19', f03: '2023-01-18' }, [
       {
         key: 'f01',
@@ -63,7 +63,7 @@ describe('getBodyInfo', () => {
     expect(r01).toEqual('19/Jan/2023');
   });
 
-  test('sort - 2', () => {
+  it('sort - 2', () => {
     const r01 = getBodyInfo({ f01: '2023-01-20', f02: '2023-01-19', f03: '2023-01-18' }, [
       {
         key: 'f01',
@@ -103,7 +103,7 @@ describe('getBodyInfo', () => {
     expect(r01).toEqual('20/Jan/2023');
   });
 
-  test('primitive exception', () => {
+  it('primitive exception', () => {
     try {
       getBodyInfo({ fm: '2023-01-20' }, [
         {
@@ -124,7 +124,7 @@ describe('getBodyInfo', () => {
     }
   });
 
-  test('formatter - array', () => {
+  it('formatter - array', () => {
     const r01 = getBodyInfo({ fm: ['2023-01-19', '2023-01-20'] }, [
       {
         key: 'fm',
@@ -144,7 +144,7 @@ describe('getBodyInfo', () => {
     expect(r01).toMatchObject(['19/Jan/2023', '20/Jan/2023']);
   });
 
-  test('formatter - exception', () => {
+  it('formatter - exception', () => {
     const r01 = getBodyInfo({ fm: '2023-01-20' }, [
       {
         key: 'fm',
@@ -163,7 +163,7 @@ describe('getBodyInfo', () => {
     expect(r01).toEqual('2023-01-20');
   });
 
-  test('array', () => {
+  it('array', () => {
     const r01 = getBodyInfo({ heroes: ['ironman', 'captain'] }, [
       {
         key: 'heroes',
@@ -176,7 +176,7 @@ describe('getBodyInfo', () => {
     expect(r01).toMatchObject(['ironman', 'captain']);
   });
 
-  test('plain value', () => {
+  it('plain value', () => {
     const r01 = getBodyInfo({ hero: 'ironman' }, [
       {
         key: 'hero',
@@ -189,7 +189,7 @@ describe('getBodyInfo', () => {
     expect(r01).toEqual('ironman');
   });
 
-  test('null value', () => {
+  it('null value', () => {
     const r01 = getBodyInfo({ hero: null }, [
       {
         key: 'hero',
@@ -202,7 +202,7 @@ describe('getBodyInfo', () => {
     expect(r01).toMatchObject({});
   });
 
-  test('object value', () => {
+  it('object value', () => {
     const r01 = getBodyInfo({ hero: { name: 'ironman' } }, [
       {
         key: 'hero',
@@ -213,7 +213,7 @@ describe('getBodyInfo', () => {
     expect(r01).toMatchObject({ name: 'ironman' });
   });
 
-  test('exception value', () => {
+  it('exception value', () => {
     try {
       const sym = Symbol('ironman');
       getBodyInfo(
@@ -231,7 +231,7 @@ describe('getBodyInfo', () => {
     }
   });
 
-  test('invalid value', () => {
+  it('invalid value', () => {
     const sym = Symbol('ironman');
     const r01 = getBodyInfo({ hero: sym }, [
       {
