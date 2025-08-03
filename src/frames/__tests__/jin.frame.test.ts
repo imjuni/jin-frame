@@ -25,13 +25,13 @@ class CustomError extends Error {
 
 class Test001PostFrame extends JinFrame<{ message: string }> {
   @JinFrame.param()
-  public readonly passing!: string;
+  public declare readonly passing: string;
 
   @JinFrame.body()
-  public readonly username!: string;
+  public declare readonly username: string;
 
   @JinFrame.body()
-  public readonly password!: string;
+  public declare readonly password: string;
 
   constructor(args: OmitConstructorType<Test001PostFrame, JinBuiltInMember>) {
     super({
@@ -44,13 +44,13 @@ class Test001PostFrame extends JinFrame<{ message: string }> {
 
 class Test002PostFrame extends JinFrame<{ message: string }> {
   @JinFrame.param()
-  public readonly passing!: string;
+  public declare readonly passing: string;
 
   @JinFrame.body()
-  public readonly username!: string;
+  public declare readonly username: string;
 
   @JinFrame.body()
-  public readonly password!: string;
+  public declare readonly password: string;
 
   constructor(args: OmitConstructorType<Test001PostFrame, JinBuiltInMember>) {
     super({
@@ -63,13 +63,13 @@ class Test002PostFrame extends JinFrame<{ message: string }> {
 
 class Test003PostFrame extends JinFrame<{ message: string }> {
   @JinFrame.param()
-  public readonly passing!: string;
+  public declare readonly passing: string;
 
   @JinFrame.body()
-  public readonly username!: string;
+  public declare readonly username: string;
 
   @JinFrame.body()
-  public readonly password!: string;
+  public declare readonly password: string;
 
   accessor postHookCount: number = 0;
 
@@ -100,13 +100,13 @@ class Test003PostFrame extends JinFrame<{ message: string }> {
 
 class Test004PostEitherFrame extends JinEitherFrame<{ message: string }> {
   @JinFrame.param()
-  public readonly passing!: string;
+  public declare readonly passing: string;
 
   @JinFrame.body()
-  public readonly username!: string;
+  public declare readonly username: string;
 
   @JinFrame.body()
-  public readonly password!: string;
+  public declare readonly password: string;
 
   accessor postHookCount: number = 0;
 

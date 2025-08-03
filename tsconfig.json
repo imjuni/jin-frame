@@ -1,5 +1,5 @@
 {
-  "extends": "@tsconfig/node16/tsconfig.json",
+  "extends": "@tsconfig/node18/tsconfig.json",
   "ts-node": {
     "transpileOnly": true,
     "files": true,
@@ -7,7 +7,7 @@
   },
   "compilerOptions": {
     "lib": [
-      "es2017",
+      "es2021",
       "DOM"
     ],
     // "declaration": true, 
@@ -50,5 +50,5 @@
     }
   },
   "include": ["src/**/*.ts", ".configs/rollup.config.dev.ts", ".configs/rollup.config.prod.ts"],
-  "exclude": ["dist/**", ".configs/just.config.ts", "**/docs/**/*"]
+  "exclude": ["dist/**", ".configs/just.config.ts", "**/docs/**/*"],
 }

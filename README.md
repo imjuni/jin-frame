@@ -61,7 +61,7 @@ Querystring made by `query`, `Q` decorator.
 ```ts
 class IamReqest extends JinFrame {
   @JinFrame.Q()
-  public readonly name!: string;
+  public declare readonly name: string;
 }
 ```
 
@@ -71,7 +71,7 @@ Path parameter made by `param`, `P` decorator and URI.
 class IamReqest extends JinFrame {
   // decorator
   @JinFrame.P()
-  public readonly id!: string;
+  public declare readonly id: string;
 
   constructor(args: OmitConstructorType<IamReqest, JinBuiltInMember>) {
     // `:` character make path parameter on URI
@@ -85,7 +85,7 @@ Header parameter made by `header`, `H` decorator and URI.
 ```ts
 class IamReqest extends JinFrame {
   @JinFrame.H({ replaceAt: 'api-key' })
-  public readonly apiKey!: string;
+  public declare readonly apiKey: string;
 }
 ```
 
@@ -94,7 +94,7 @@ Body parameter made by `body`, `B` decorator and URI.
 ```ts
 class IamReqest extends JinFrame {
   @JinFrame.B({ replaceAt: 'api-key' })
-  public readonly gene!: string;
+  public declare readonly gene: string;
 }
 ```
 
@@ -103,13 +103,13 @@ This is example of union param, body, header parameter.
 ```ts
 class TestPostFrame extends JinFrame {
   @JinFrame.param()
-  public readonly id!: number;
+  public declare readonly id: number;
 
   @JinFrame.body({ replaceAt: 'test.hello.marvel.name' })
-  public readonly name!: string;
+  public declare readonly name: string;
 
   @JinFrame.header({ replaceAt: 'test.hello.marvel.skill' })
-  public readonly skill!: string;
+  public declare readonly skill: string;
 
   // automatically initialize via base class, have to use same name of args and JinFrame class
   // execute `Object.keys(args).forEach(key => this[key] = args[key])`
@@ -202,13 +202,13 @@ JinFrame support pre, post hook side of each request.
 ```ts
 class TestPostFrame extends JinFrame {
   @JinFrame.param()
-  public readonly id!: number;
+  public declare readonly id: number;
 
   @JinFrame.body({ replaceAt: 'test.hello.marvel.name' })
-  public readonly name!: string;
+  public declare readonly name: string;
 
   @JinFrame.header({ replaceAt: 'test.hello.marvel.skill' })
-  public readonly skill!: string;
+  public declare readonly skill: string;
 
   override preHook(req: AxiosRequestConfig<unknown>): void {
     console.log('pre hook executed');

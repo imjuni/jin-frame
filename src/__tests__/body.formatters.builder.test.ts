@@ -4,15 +4,15 @@ import { expect, it } from 'vitest';
 
 class Test001PostFrame extends JinEitherFrame {
   @JinEitherFrame.P()
-  public readonly passing: string;
+  public declare readonly passing: string;
 
   @JinEitherFrame.B({
     formatters: [{ string: (value) => `${value}+111` }, { string: (value) => `${value}+222` }],
   })
-  public readonly username: string[];
+  public declare readonly username: string[];
 
   @JinEitherFrame.body()
-  public readonly password: string;
+  public declare readonly password: string;
 
   constructor(args: { passing: string; username: string[]; password: string }) {
     super({
@@ -51,7 +51,7 @@ it('T001-primitive-type-multiple-formatters', async () => {
 
 class Test002PostFrame extends JinEitherFrame {
   @JinEitherFrame.param()
-  public readonly passing: string;
+  public declare readonly passing: string;
 
   @JinEitherFrame.body({
     formatters: [
@@ -65,7 +65,7 @@ class Test002PostFrame extends JinEitherFrame {
       },
     ],
   })
-  public readonly hero: {
+  public declare readonly hero: {
     name: string;
     age: number;
     bio: {
@@ -74,7 +74,7 @@ class Test002PostFrame extends JinEitherFrame {
   };
 
   @JinEitherFrame.body()
-  public readonly password: string;
+  public declare readonly password: string;
 
   constructor(args: {
     passing: string;

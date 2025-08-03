@@ -3,13 +3,13 @@ import { expect, it } from 'vitest';
 
 class TestGet2Frame extends JinEitherFrame {
   @JinEitherFrame.param()
-  public readonly passing: string;
+  public declare readonly passing: string;
 
   @JinEitherFrame.query()
-  public readonly name: string;
+  public declare readonly name: string;
 
   @JinEitherFrame.header()
-  public readonly ttt: string;
+  public declare readonly ttt: string;
 
   constructor() {
     super({ $$path: '/jinframe/:passing/test', $$method: 'get' });

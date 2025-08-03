@@ -6,13 +6,13 @@ import { afterEach, describe, expect, it } from 'vitest';
 
 class Test001PostFrame extends JinFrame<{ message: string }> {
   @JinFrame.param()
-  public readonly passing!: string;
+  public declare readonly passing: string;
 
   @JinFrame.body()
-  public readonly username!: string;
+  public declare readonly username: string;
 
   @JinFrame.body()
-  public readonly password!: string;
+  public declare readonly password: string;
 
   constructor(args: JinConstructorType<Test001PostFrame>) {
     super({
@@ -26,13 +26,13 @@ class Test001PostFrame extends JinFrame<{ message: string }> {
 
 class Test002PostFrame extends JinFrame<{ message: string }> {
   @JinFrame.param()
-  public readonly passing!: string;
+  public declare readonly passing: string;
 
   @JinFrame.body()
-  public readonly username!: string;
+  public declare readonly username: string;
 
   @JinFrame.body()
-  public readonly password!: string;
+  public declare readonly password: string;
 
   constructor(args: JinConstructorType<Test002PostFrame>) {
     super({
@@ -46,13 +46,13 @@ class Test002PostFrame extends JinFrame<{ message: string }> {
 
 class Test003PostFrame extends JinFrame<{ message: string }> {
   @JinFrame.param()
-  public readonly passing!: string;
+  public declare readonly passing: string;
 
   @JinFrame.body()
-  public readonly username!: string;
+  public declare readonly username: string;
 
   @JinFrame.body()
-  public readonly password!: string;
+  public declare readonly password: string;
 
   constructor(args: JinConstructorType<Test003PostFrame>) {
     super({
@@ -64,13 +64,13 @@ class Test003PostFrame extends JinFrame<{ message: string }> {
 
 class Test004PostFrame extends JinFrame<{ message: string }> {
   @JinFrame.param()
-  public readonly passing!: string[];
+  public declare readonly passing: string[];
 
   @JinFrame.query()
-  public readonly name!: string[];
+  public declare readonly name: string[];
 
   @JinFrame.query()
-  public readonly nums!: number[];
+  public declare readonly nums: number[];
 
   constructor(args: JinConstructorType<Test004PostFrame>) {
     super({

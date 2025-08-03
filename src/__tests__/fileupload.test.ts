@@ -7,13 +7,13 @@ import { afterEach, it } from 'vitest';
 
 class TestGetFrame extends JinEitherFrame {
   @JinEitherFrame.body()
-  public readonly description!: string;
+  public declare readonly description: string;
 
   @JinEitherFrame.body()
-  public readonly myFile!: JinFile<Buffer>;
+  public declare readonly myFile: JinFile<Buffer>;
 
   @JinEitherFrame.body()
-  public readonly myFiles!: JinFile<Buffer>[];
+  public declare readonly myFiles: JinFile<Buffer>[];
 
   constructor(args: { description: string; file: JinFile<Buffer>; files: JinFile<Buffer>[] }) {
     super({

@@ -3,13 +3,13 @@ import { expect, it } from 'vitest';
 
 class Test001PostFrame extends JinEitherFrame {
   @JinEitherFrame.param()
-  public readonly passing!: string;
+  public declare readonly passing: string;
 
   @JinEitherFrame.body()
-  public readonly username!: string;
+  public declare readonly username: string;
 
   @JinEitherFrame.body()
-  public readonly password!: string;
+  public declare readonly password: string;
 
   constructor(args: { passing: string; username: string; password: string }) {
     super({
@@ -39,13 +39,13 @@ it('T001-primitive-type', async () => {
 
 class Test002PostFrame extends JinEitherFrame {
   @JinEitherFrame.param()
-  public readonly passing!: string;
+  public declare readonly passing: string;
 
   @JinEitherFrame.body({ replaceAt: 'uuu' })
-  public readonly username!: string;
+  public declare readonly username: string;
 
   @JinEitherFrame.body({ replaceAt: 'ppp' })
-  public readonly password!: string;
+  public declare readonly password: string;
 
   constructor(args: { passing: string; username: string; password: string }) {
     super({
@@ -75,13 +75,13 @@ it('T002-primitive-type-key-replace', async () => {
 
 class Test003PostFrame extends JinEitherFrame {
   @JinEitherFrame.param()
-  public readonly passing!: string;
+  public declare readonly passing: string;
 
   @JinEitherFrame.body({ replaceAt: 'uuu.username' })
-  public readonly username!: string;
+  public declare readonly username: string;
 
   @JinEitherFrame.body({ replaceAt: 'ppp.password' })
-  public readonly password!: string;
+  public declare readonly password: string;
 
   constructor(args: { passing: string; username: string; password: string }) {
     super({
@@ -113,13 +113,13 @@ it('T003-primitive-type-key-replace-using-dot-props', async () => {
 
 class Test004ZeroDepthPostFrame extends JinEitherFrame {
   @JinEitherFrame.param()
-  public readonly passing!: string;
+  public declare readonly passing: string;
 
   @JinEitherFrame.body()
-  public readonly username!: string;
+  public declare readonly username: string;
 
   @JinEitherFrame.body()
-  public readonly hero!: {
+  public declare readonly hero: {
     name: string;
     ability: string;
     age: number;

@@ -9,13 +9,13 @@ import { afterEach, describe, expect, it } from 'vitest';
 
 class TestGetFrame extends JinEitherFrame {
   @JinEitherFrame.P()
-  public readonly passing: string;
+  public declare readonly passing: string;
 
   @JinEitherFrame.Q({ replaceAt: 'myname' })
-  public readonly name: string;
+  public declare readonly name: string;
 
   @JinEitherFrame.query({ encode: true })
-  public readonly skill: string[];
+  public declare readonly skill: string[];
 
   constructor() {
     super({ $$host: 'http://some.api.google.com', $$path: '/jinframe/:passing', $$method: 'get' });
@@ -37,13 +37,13 @@ class TestGetFrame extends JinEitherFrame {
 
 class TestGet2Frame extends JinEitherFrame {
   @JinEitherFrame.param()
-  public readonly passing: string;
+  public declare readonly passing: string;
 
   @JinEitherFrame.query()
-  public readonly name: string;
+  public declare readonly name: string;
 
   @JinEitherFrame.header()
-  public readonly ttt: string;
+  public declare readonly ttt: string;
 
   override async $$preHook(req: AxiosRequestConfig): Promise<void> {
     console.log(req);
@@ -67,13 +67,13 @@ class TestGet2Frame extends JinEitherFrame {
 
 class TestGet3Frame extends JinFrame {
   @JinEitherFrame.param()
-  public readonly passing: string;
+  public declare readonly passing: string;
 
   @JinEitherFrame.Q()
-  public readonly name: string;
+  public declare readonly name: string;
 
   @JinEitherFrame.Q({ encode: true })
-  public readonly skill: string[];
+  public declare readonly skill: string[];
 
   constructor() {
     super({ $$host: 'http://some.api.google.com', $$path: '/jinframe/:passing', $$method: 'get' });
@@ -98,13 +98,13 @@ class TestGet3Frame extends JinFrame {
 
 class TestGet4Frame extends JinFrame {
   @JinEitherFrame.param()
-  public readonly passing: string;
+  public declare readonly passing: string;
 
   @JinEitherFrame.query()
-  public readonly name: string;
+  public declare readonly name: string;
 
   @JinEitherFrame.query({ encode: true })
-  public readonly skill: string[];
+  public declare readonly skill: string[];
 
   constructor() {
     super({ $$host: 'http://some.api.google.com', $$path: '/jinframe/:passing', $$method: 'get' });
@@ -126,13 +126,13 @@ class TestGet4Frame extends JinFrame {
 
 class TestGet5Frame extends JinFrame {
   @JinEitherFrame.param()
-  public readonly passing: string;
+  public declare readonly passing: string;
 
   @JinEitherFrame.query()
-  public readonly name: string;
+  public declare readonly name: string;
 
   @JinEitherFrame.query({ encode: true })
-  public readonly skill: string[];
+  public declare readonly skill: string[];
 
   constructor() {
     super({ $$host: 'http://some.api.google.com', $$path: '/jinframe/:passing', $$method: 'get' });
@@ -149,13 +149,13 @@ class TestGet5Frame extends JinFrame {
 
 class TestGet6Frame extends JinFrame {
   @JinEitherFrame.param()
-  public readonly passing: string;
+  public declare readonly passing: string;
 
   @JinEitherFrame.query()
-  public readonly name: string;
+  public declare readonly name: string;
 
   @JinEitherFrame.query({ encode: true })
-  public readonly skill: string[];
+  public declare readonly skill: string[];
 
   constructor() {
     super({ $$host: 'http://some.api.google.com', $$path: '/jinframe/:passing', $$method: 'get' });
@@ -172,13 +172,13 @@ class TestGet6Frame extends JinFrame {
 
 class TestGet7Frame extends JinEitherFrame {
   @JinEitherFrame.param()
-  public readonly passing: string;
+  public declare readonly passing: string;
 
   @JinEitherFrame.query()
-  public readonly name: string;
+  public declare readonly name: string;
 
   @JinEitherFrame.query({ encode: true })
-  public readonly skill: string[];
+  public declare readonly skill: string[];
 
   constructor() {
     super({ $$host: 'http://some.api.google.com', $$path: '/jinframe/:passing', $$method: 'get' });
@@ -195,13 +195,13 @@ class TestGet7Frame extends JinEitherFrame {
 
 class TestGet8Frame extends JinEitherFrame {
   @JinEitherFrame.param()
-  public readonly passing: string;
+  public declare readonly passing: string;
 
   @JinEitherFrame.query()
-  public readonly name: string;
+  public declare readonly name: string;
 
   @JinEitherFrame.query({ encode: true })
-  public readonly skill: string[];
+  public declare readonly skill: string[];
 
   constructor() {
     super({ $$host: 'http://some.api.google.com', $$path: '/jinframe/:passing', $$method: 'get' });

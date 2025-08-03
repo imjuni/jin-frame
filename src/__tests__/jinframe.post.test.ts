@@ -5,16 +5,16 @@ import { afterEach, describe, expect, it } from 'vitest';
 
 class TestPostFrame extends JinEitherFrame {
   @JinEitherFrame.param()
-  public readonly passing: string;
+  public declare readonly passing: string;
 
   @JinEitherFrame.body({ replaceAt: 'test.hello.marvel.name' })
-  public readonly name: string;
+  public declare readonly name: string;
 
   @JinEitherFrame.header({ replaceAt: 'test.hello.marvel.skill' })
-  public readonly skill: string;
+  public declare readonly skill: string;
 
   @JinEitherFrame.body({ replaceAt: 'test.hello.marvel.gender' })
-  public readonly gender: string;
+  public declare readonly gender: string;
 
   constructor() {
     super({ $$host: 'http://some.api.google.com/jinframe/:passing', $$method: 'POST' });
@@ -28,13 +28,13 @@ class TestPostFrame extends JinEitherFrame {
 
 class TestUrlencodedPostFrame extends JinEitherFrame {
   @JinEitherFrame.param()
-  public readonly passing: string;
+  public declare readonly passing: string;
 
   @JinEitherFrame.body()
-  public readonly username: string;
+  public declare readonly username: string;
 
   @JinEitherFrame.body()
-  public readonly password: string;
+  public declare readonly password: string;
 
   constructor() {
     super({

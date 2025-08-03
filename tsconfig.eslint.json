@@ -9,6 +9,7 @@
     "examples/**/*.ts",
     ".eslintrc.cjs",
     "vitest.config.ts",
+    "vitest.config.mts",
     "prepublish.js"
   ],
   "exclude": ["**/node_modules/**", "**/dist/**/*", "**/.configs/**", "**/docs/**"]

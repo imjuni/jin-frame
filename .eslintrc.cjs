@@ -166,7 +166,7 @@ module.exports = {
       },
     },
     {
-      files: ['vitest.config.ts'],
+      files: ['vitest.config.{ts,mts}'],
       rules: {
         'import/no-default-export': ['off'],
         'import/no-extraneous-dependencies': ['off'],

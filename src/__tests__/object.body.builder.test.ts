@@ -4,16 +4,16 @@ import { expect, it } from 'vitest';
 
 class Test001PostFrame extends JinEitherFrame {
   @JinEitherFrame.param()
-  public readonly passing: string;
+  public declare readonly passing: string;
 
   @JinEitherFrame.body()
-  public readonly username: string;
+  public declare readonly username: string;
 
   @JinEitherFrame.body()
-  public readonly password: string;
+  public declare readonly password: string;
 
   @JinEitherFrame.O()
-  public readonly hero: { name: string; age: number; bio: { birth: string } };
+  public declare readonly hero: { name: string; age: number; bio: { birth: string } };
 
   constructor(args: {
     passing: string;
@@ -67,16 +67,16 @@ it('T001-plain-object-type', async () => {
 
 class Test002PostFrame extends JinEitherFrame {
   @JinEitherFrame.param()
-  public readonly passing: string;
+  public declare readonly passing: string;
 
   @JinEitherFrame.body()
-  public readonly username: string;
+  public declare readonly username: string;
 
   @JinEitherFrame.objectBody()
-  public readonly hero: { name: string; age: number; bio: { birth: string } };
+  public declare readonly hero: { name: string; age: number; bio: { birth: string } };
 
   @JinEitherFrame.objectBody()
-  public readonly ability: { skill: string; count: number; category: { name: string } };
+  public declare readonly ability: { skill: string; count: number; category: { name: string } };
 
   constructor(args: {
     passing: string;
@@ -132,10 +132,10 @@ it('T002-merge-two-object', async () => {
 
 class Test003PostFrame extends JinEitherFrame {
   @JinEitherFrame.param()
-  public readonly passing: string;
+  public declare readonly passing: string;
 
   @JinEitherFrame.body()
-  public readonly username: string;
+  public declare readonly username: string;
 
   @JinEitherFrame.objectBody({
     formatters: {
@@ -143,7 +143,7 @@ class Test003PostFrame extends JinEitherFrame {
       dateTime: (value) => lightFormat(value, 'yyyy-MM-dd HH:mm:ss'),
     },
   })
-  public readonly hero: { name: string; age: number; bio: { birth: Date } };
+  public declare readonly hero: { name: string; age: number; bio: { birth: Date } };
 
   @JinEitherFrame.objectBody({
     formatters: {
@@ -151,7 +151,7 @@ class Test003PostFrame extends JinEitherFrame {
       dateTime: (value) => lightFormat(value, 'yyyy-MM-dd HH:mm:ss'),
     },
   })
-  public readonly ability: { skill: string; count: number; category: { name: string; developAt: Date } };
+  public declare readonly ability: { skill: string; count: number; category: { name: string; developAt: Date } };
 
   constructor(args: {
     passing: string;
@@ -211,10 +211,10 @@ it('T003-merge-and-formatting', async () => {
 
 class Test004PostFrame extends JinEitherFrame {
   @JinEitherFrame.param()
-  public readonly passing: string;
+  public declare readonly passing: string;
 
   @JinEitherFrame.body()
-  public readonly username: string;
+  public declare readonly username: string;
 
   @JinEitherFrame.objectBody({
     order: 2,
@@ -223,7 +223,7 @@ class Test004PostFrame extends JinEitherFrame {
       dateTime: (value) => lightFormat(value, 'yyyy-MM-dd HH:mm:ss'),
     },
   })
-  public readonly hero: { name: string; age: number; bio: { birth: Date } };
+  public declare readonly hero: { name: string; age: number; bio: { birth: Date } };
 
   @JinEitherFrame.objectBody({
     order: 1,
@@ -232,7 +232,12 @@ class Test004PostFrame extends JinEitherFrame {
       dateTime: (value) => lightFormat(value, 'yyyy-MM-dd HH:mm:ss'),
     },
   })
-  public readonly ability: { name: string; skill: string; count: number; category: { name: string; developAt: Date } };
+  public declare readonly ability: {
+    name: string;
+    skill: string;
+    count: number;
+    category: { name: string; developAt: Date };
+  };
 
   constructor(args: {
     passing: string;
