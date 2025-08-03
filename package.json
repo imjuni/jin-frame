@@ -23,8 +23,8 @@
     "test:silent": "vitest run --coverage",
     "test": "vitest run --coverage",
     "docs": "typedoc --options .configs/typedoc.json",
-    "ctix": "ctix build --config .configs/.ctirc",
-    "ctix-rm": "ctix remove --config .configs/.ctirc --force-yes --remove-backup",
+    "ctix": "ctix build",
+    "ctix-rm": "ctix remove --force-yes --remove-backup",
     "dd": "deps-diff md -d dev -d prod -d peer --title-list-type 'm' --deps-list-type 'm' --content-list-type 'm'",
     "httpd": "http-server ./docs -p 19983",
     "prepublishOnly": "node prepublish.cjs",
@@ -42,7 +42,7 @@
     "url": "git+https://github.com/imjuni/jin-frame.git"
   },
   "engines": {
-    "node": ">=16"
+    "node": ">=18"
   },
   "author": "ByungJoon Lee <imjuni+github@gmail.com>",
   "license": "MIT",
@@ -69,7 +69,7 @@
   ],
   "homepage": "https://imjuni.github.io/jin-frame",
   "dependencies": {
-    "axios": "^1.5.1",
+    "axios": "^1.11.0",
     "dot-prop": "^6.0.1",
     "fast-safe-stringify": "^2.1.1",
     "form-data": "^4.0.0",
@@ -83,22 +83,20 @@
   },
   "devDependencies": {
     "@rollup/plugin-node-resolve": "^15.2.3",
-    "@tsconfig/node16": "^16.1.1",
-    "@types/clone-deep": "^4.0.4",
+    "@tsconfig/node18": "^18.2.4",
     "@types/debug": "^4.1.12",
     "@typescript-eslint/eslint-plugin": "^6.11.0",
     "@typescript-eslint/parser": "^6.11.0",
-    "@vitest/coverage-v8": "^0.34.6",
-    "@vitest/ui": "^0.34.6",
-    "clone-deep": "^4.0.1",
+    "@vitest/coverage-v8": "^3.2.4",
+    "@vitest/ui": "^3.2.4",
     "cross-env": "^7.0.3",
-    "ctix": "^2.3.0",
+    "ctix": "^2.7.1",
     "date-fns": "^2.30.0",
     "date-fns-tz": "^2.0.0",
     "dayjs": "^1.11.9",
     "debug": "^4.3.4",
     "deps-diff": "^1.0.2",
-    "esbuild": "^0.19.2",
+    "esbuild": "^0.25.8",
     "eslint": "^8.54.0",
     "eslint-config-airbnb-base": "^15.0.0",
     "eslint-config-airbnb-typescript": "^17.1.0",
@@ -115,9 +113,7 @@
     "lint-staged": "^15.1.0",
     "nock": "^13.3.8",
     "npm-run-all": "^4.1.5",
-    "prettier": "^3.0.2",
     "prettier-eslint": "^16.1.2",
-    "prettier-plugin-organize-imports": "^3.2.4",
     "read-pkg": "^5.2.0",
     "rimraf": "^5.0.5",
     "rollup": "^4.5.0",
@@ -127,11 +123,11 @@
     "tsc-alias": "^1.8.8",
     "tsconfig-paths": "^4.2.0",
     "tslib": "^2.6.2",
-    "typedoc": "^0.25.3",
-    "typedoc-plugin-markdown": "^3.17.1",
-    "typescript": "^5.2.2",
-    "vite-tsconfig-paths": "^4.2.1",
-    "vitest": "^0.34.6"
+    "typedoc": "^0.28.9",
+    "typedoc-plugin-markdown": "^4.8.0",
+    "typescript": "^5.9.2",
+    "vite-tsconfig-paths": "^5.1.4",
+    "vitest": "^3.2.4"
   },
   "directories": {
     "test": "test"

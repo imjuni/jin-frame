@@ -6,13 +6,13 @@ import { afterEach, describe, expect, it } from 'vitest';
 
 class RetryTestGet01Frame extends JinFrame {
   @JinFrame.P()
-  public readonly passing: string;
+  public declare readonly passing: string;
 
   @JinFrame.Q()
-  public readonly name: string;
+  public declare readonly name: string;
 
   @JinFrame.Q({ encode: true })
-  public readonly skill: string[];
+  public declare readonly skill: string[];
 
   constructor() {
     super({
@@ -30,13 +30,13 @@ class RetryTestGet01Frame extends JinFrame {
 
 class RetryTestGet02Frame extends JinFrame {
   @JinFrame.P()
-  public readonly passing: string;
+  public declare readonly passing: string;
 
   @JinFrame.Q()
-  public readonly name: string;
+  public declare readonly name: string;
 
   @JinFrame.Q({ encode: true })
-  public readonly skill: string[];
+  public declare readonly skill: string[];
 
   #retryFail: string;
 

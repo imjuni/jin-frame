@@ -9,13 +9,13 @@ import { JinEitherFrame } from '../src/frames/JinEitherFrame';
  */
 export default class CommaSeperatedGetFrame extends JinEitherFrame {
   @JinEitherFrame.param()
-  public readonly passing: string;
+  public declare readonly passing: string;
 
   @JinEitherFrame.query()
-  public readonly name: string;
+  public declare readonly name: string;
 
   @JinEitherFrame.query({ comma: true })
-  public readonly skill: string[];
+  public declare readonly skill: string[];
 
   constructor() {
     super({ $$path: '/jinframe/:passing', $$method: 'GET' });

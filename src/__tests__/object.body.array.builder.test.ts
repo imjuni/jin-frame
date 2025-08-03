@@ -4,10 +4,10 @@ import { expect, it } from 'vitest';
 
 class Test001PostFrame extends JinEitherFrame {
   @JinEitherFrame.param()
-  public readonly passing!: string;
+  public declare readonly passing: string;
 
   @JinEitherFrame.objectBody()
-  public readonly ability!: {
+  public declare readonly ability: {
     name: string;
     skill: string;
     count: number;
@@ -76,7 +76,7 @@ it('T001-plain-array-body', async () => {
 
 class Test002PostFrame extends JinEitherFrame {
   @JinEitherFrame.param()
-  public readonly passing!: string;
+  public declare readonly passing: string;
 
   @JinEitherFrame.objectBody({
     formatters: {
@@ -84,7 +84,7 @@ class Test002PostFrame extends JinEitherFrame {
       dateTime: (value) => lightFormat(value, 'yyyy-MM-dd HH:mm:ss'),
     },
   })
-  public readonly ability!: {
+  public declare readonly ability: {
     name: string;
     skill: string;
     count: number;
@@ -153,10 +153,10 @@ it('T002-plain-array-with-formatters', async () => {
 
 class Test003PostFrame extends JinEitherFrame {
   @JinEitherFrame.param()
-  public readonly passing!: string;
+  public declare readonly passing: string;
 
   @JinEitherFrame.objectBody()
-  public readonly ability!: string[];
+  public declare readonly ability: string[];
 
   constructor(args: { passing: string; ability: string[] }) {
     super({
@@ -192,7 +192,7 @@ it('T003-primitive-array', async () => {
 
 class Test004PostFrame extends JinEitherFrame {
   @JinEitherFrame.param()
-  public readonly passing!: string;
+  public declare readonly passing: string;
 
   @JinEitherFrame.objectBody({
     formatters: {
@@ -200,7 +200,7 @@ class Test004PostFrame extends JinEitherFrame {
       dateTime: (value) => lightFormat(value, 'yyyy-MM-dd HH:mm:ss'),
     },
   })
-  public readonly ability!: Date[];
+  public declare readonly ability: Date[];
 
   constructor(args: { passing: string; ability: Date[] }) {
     super({
@@ -236,7 +236,7 @@ it('T004-primitive-date-array', async () => {
 
 class Test005PostFrame extends JinEitherFrame {
   @JinEitherFrame.param()
-  public readonly passing!: string;
+  public declare readonly passing: string;
 
   @JinEitherFrame.objectBody({
     order: 2,
@@ -245,7 +245,7 @@ class Test005PostFrame extends JinEitherFrame {
       dateTime: (value) => lightFormat(value, 'yyyy-MM-dd HH:mm:ss'),
     },
   })
-  public readonly ability!: Date[];
+  public declare readonly ability: Date[];
 
   @JinEitherFrame.objectBody({
     order: 1,
@@ -254,7 +254,7 @@ class Test005PostFrame extends JinEitherFrame {
       dateTime: (value) => lightFormat(value, 'yyyy-MM-dd HH:mm:ss'),
     },
   })
-  public readonly birthAt!: Date[];
+  public declare readonly birthAt: Date[];
 
   constructor(args: { passing: string; ability: Date[]; birthAt: Date[] }) {
     super({
@@ -291,12 +291,12 @@ it('T005-primitive-date-array-ordered-merge', async () => {
 
 class Test006PostFrame extends JinEitherFrame {
   @JinEitherFrame.param()
-  public readonly passing!: string;
+  public declare readonly passing: string;
 
   @JinEitherFrame.objectBody({
     order: 1,
   })
-  public readonly ability!: string[];
+  public declare readonly ability: string[];
 
   @JinEitherFrame.objectBody({
     order: 2,
@@ -305,7 +305,7 @@ class Test006PostFrame extends JinEitherFrame {
       dateTime: (value) => lightFormat(value, 'yyyy-MM-dd HH:mm:ss'),
     },
   })
-  public readonly birthAt!: Date[];
+  public declare readonly birthAt: Date[];
 
   constructor(args: { passing: string; ability: string[]; birthAt: Date[] }) {
     super({
@@ -342,7 +342,7 @@ it('T006-primitive-date-complex-type-merge', async () => {
 
 class Test007PostFrame extends JinEitherFrame {
   @JinEitherFrame.param()
-  public readonly passing!: string;
+  public declare readonly passing: string;
 
   @JinEitherFrame.objectBody({
     order: 2,
@@ -351,7 +351,7 @@ class Test007PostFrame extends JinEitherFrame {
       dateTime: (value) => lightFormat(value, 'yyyy-MM-dd HH:mm:ss'),
     },
   })
-  public readonly ability!: {
+  public declare readonly ability: {
     name: string;
     skill: string;
     count: number;
@@ -365,7 +365,7 @@ class Test007PostFrame extends JinEitherFrame {
       dateTime: (value) => lightFormat(value, 'yyyy-MM-dd HH:mm:ss'),
     },
   })
-  public readonly birthAt!: Date[];
+  public declare readonly birthAt: Date[];
 
   constructor(args: {
     passing: string;

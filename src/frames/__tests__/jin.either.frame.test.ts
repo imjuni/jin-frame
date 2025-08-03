@@ -6,13 +6,13 @@ import { afterEach, describe, expect, it } from 'vitest';
 
 class Test001PostFrame extends JinEitherFrame {
   @JinEitherFrame.param()
-  public readonly passing!: string;
+  public declare readonly passing: string;
 
   @JinEitherFrame.body()
-  public readonly username!: string;
+  public declare readonly username: string;
 
   @JinEitherFrame.body()
-  public readonly password!: string;
+  public declare readonly password: string;
 
   constructor(args: OmitConstructorType<Test001PostFrame, JinBuiltInMember>) {
     super({
@@ -25,13 +25,13 @@ class Test001PostFrame extends JinEitherFrame {
 
 class Test002PostFrame extends JinEitherFrame {
   @JinEitherFrame.param()
-  public readonly passing!: string;
+  public declare readonly passing: string;
 
   @JinEitherFrame.body()
-  public readonly username!: string;
+  public declare readonly username: string;
 
   @JinEitherFrame.body()
-  public readonly password!: string;
+  public declare readonly password: string;
 
   constructor(args: OmitConstructorType<Test002PostFrame, JinBuiltInMember>) {
     super({

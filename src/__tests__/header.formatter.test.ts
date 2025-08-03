@@ -5,10 +5,10 @@ import { expect, it } from 'vitest';
 
 class Test001PostFrame extends JinEitherFrame {
   @JinEitherFrame.param()
-  public readonly passing!: string;
+  public declare readonly passing: string;
 
   @JinEitherFrame.header()
-  public readonly username!: string;
+  public declare readonly username: string;
 
   @JinEitherFrame.header({
     replaceAt: 'send-at',
@@ -16,7 +16,7 @@ class Test001PostFrame extends JinEitherFrame {
       dateTime: (value) => lightFormat(value, `yyyyMMdd'T'HHmmss`),
     },
   })
-  public readonly sendAt!: Date;
+  public declare readonly sendAt: Date;
 
   constructor(args: { passing: string; username: string; sendAt: Date }) {
     super({
@@ -51,10 +51,10 @@ it('T001-datetime-formatter', async () => {
 
 class Test002PostFrame extends JinEitherFrame {
   @JinEitherFrame.param()
-  public readonly passing: string;
+  public declare readonly passing: string;
 
   @JinEitherFrame.header({ replaceAt: 'uuu' })
-  public readonly username: string;
+  public declare readonly username: string;
 
   @JinEitherFrame.header({
     replaceAt: 'send-at',
@@ -64,7 +64,7 @@ class Test002PostFrame extends JinEitherFrame {
       dateTime: (value) => lightFormat(value, `yyyyMMdd'T'HHmmss`),
     },
   })
-  public readonly sendAt: Date[];
+  public declare readonly sendAt: Date[];
 
   constructor(args: { passing: string; username: string; sendAt: Date[] }) {
     super({
@@ -104,10 +104,10 @@ it('T002-datetime-array-formatter', async () => {
 
 class Test003PostFrame extends JinEitherFrame {
   @JinEitherFrame.param()
-  public readonly passing: string;
+  public declare readonly passing: string;
 
   @JinEitherFrame.header()
-  public readonly username: string;
+  public declare readonly username: string;
 
   @JinEitherFrame.header({
     replaceAt: 'send-at',
@@ -118,7 +118,7 @@ class Test003PostFrame extends JinEitherFrame {
       dateTime: (value) => lightFormat(value, `yyyyMMdd'T'HHmmss`),
     },
   })
-  public readonly sendAt: string[];
+  public declare readonly sendAt: string[];
 
   constructor(args: { passing: string; username: string; sendAt: string[] }) {
     super({
@@ -160,10 +160,10 @@ it('T003-primitive-type-key-replace-at-not-support-dot-props', async () => {
 
 class Test004PostFrame extends JinEitherFrame {
   @JinEitherFrame.param()
-  public readonly passing: string;
+  public declare readonly passing: string;
 
   @JinEitherFrame.header()
-  public readonly username: string;
+  public declare readonly username: string;
 
   @JinEitherFrame.header({
     replaceAt: 'send-at',
@@ -177,7 +177,7 @@ class Test004PostFrame extends JinEitherFrame {
       },
     ],
   })
-  public readonly sendAt: number[];
+  public declare readonly sendAt: number[];
 
   constructor(args: { passing: string; username: string; sendAt: number[] }) {
     super({

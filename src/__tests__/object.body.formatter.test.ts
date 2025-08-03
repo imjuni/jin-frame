@@ -4,7 +4,7 @@ import { expect, it } from 'vitest';
 
 class Test001PostFrame extends JinEitherFrame {
   @JinEitherFrame.param()
-  public readonly passing: string;
+  public declare readonly passing: string;
 
   @JinEitherFrame.O({
     formatters: [
@@ -23,7 +23,7 @@ class Test001PostFrame extends JinEitherFrame {
       },
     ],
   })
-  public readonly ability: {
+  public declare readonly ability: {
     name: string;
     date: Date;
     desc: string;

@@ -4,17 +4,17 @@ import { expect, it } from 'vitest';
 
 class Test001PostFrame extends JinEitherFrame {
   @JinEitherFrame.param()
-  public readonly passing: string;
+  public declare readonly passing: string;
 
   @JinEitherFrame.body({
     formatters: {
       string: (value) => `${value}+111`,
     },
   })
-  public readonly username: string[];
+  public declare readonly username: string[];
 
   @JinEitherFrame.body()
-  public readonly password: string;
+  public declare readonly password: string;
 
   constructor(args: { passing: string; username: string[]; password: string }) {
     super({
@@ -53,17 +53,17 @@ it('T001-array-type-formatter', async () => {
 
 class Test002PostFrame extends JinEitherFrame {
   @JinEitherFrame.param()
-  public readonly passing: string;
+  public declare readonly passing: string;
 
   @JinEitherFrame.body()
-  public readonly username: string[];
+  public declare readonly username: string[];
 
   @JinEitherFrame.body({
     formatters: {
       string: (value) => `${value}+111`,
     },
   })
-  public readonly password: string;
+  public declare readonly password: string;
 
   constructor(args: { passing: string; username: string[]; password: string }) {
     super({
@@ -102,24 +102,24 @@ it('T002-string-type-formatter', async () => {
 
 class Test003PostFrame extends JinEitherFrame {
   @JinEitherFrame.param()
-  public readonly passing: string;
+  public declare readonly passing: string;
 
   @JinEitherFrame.body({
     formatters: {
       string: (value) => `000+${value}+222`,
     },
   })
-  public readonly username: string[];
+  public declare readonly username: string[];
 
   @JinEitherFrame.body({
     formatters: {
       string: (value) => `${value}+111`,
     },
   })
-  public readonly password: string;
+  public declare readonly password: string;
 
   @JinEitherFrame.body()
-  public readonly today: Date;
+  public declare readonly today: Date;
 
   constructor(args: { passing: string; username: string[]; password: string; today: Date }) {
     super({
@@ -164,28 +164,28 @@ it('T003-string-array-and-string-formatter', async () => {
 
 class Test004PostFrame extends JinEitherFrame {
   @JinEitherFrame.param()
-  public readonly passing: string;
+  public declare readonly passing: string;
 
   @JinEitherFrame.body({
     formatters: {
       string: (value) => `000+${value}+222`,
     },
   })
-  public readonly username: string[];
+  public declare readonly username: string[];
 
   @JinEitherFrame.body({
     formatters: {
       string: (value) => `${value}+111`,
     },
   })
-  public readonly password: string;
+  public declare readonly password: string;
 
   @JinEitherFrame.body({
     formatters: {
       dateTime: (value) => lightFormat(value, 'yyyy-MM-dd HH:mm:ss'),
     },
   })
-  public readonly today: Date;
+  public declare readonly today: Date;
 
   constructor(args: { passing: string; username: string[]; password: string; today: Date }) {
     super({
@@ -230,21 +230,21 @@ it('T004-plain-date-formatter', async () => {
 
 class Test005PostFrame extends JinEitherFrame {
   @JinEitherFrame.param()
-  public readonly passing: string;
+  public declare readonly passing: string;
 
   @JinEitherFrame.body({
     formatters: {
       string: (value) => `000+${value}+222`,
     },
   })
-  public readonly username: string[];
+  public declare readonly username: string[];
 
   @JinEitherFrame.body({
     formatters: {
       string: (value) => `${value}+111`,
     },
   })
-  public readonly password: string;
+  public declare readonly password: string;
 
   @JinEitherFrame.body({
     formatters: {
@@ -252,7 +252,7 @@ class Test005PostFrame extends JinEitherFrame {
       dateTime: (value) => lightFormat(value, `yyyy-MM-dd'T'HH:mm:ss`),
     },
   })
-  public readonly today: string;
+  public declare readonly today: string;
 
   constructor(args: { passing: string; username: string[]; password: string; today: string }) {
     super({
@@ -297,14 +297,14 @@ it('T005-string-datetime-formatter-sequential', async () => {
 
 class Test006PostFrame extends JinEitherFrame {
   @JinEitherFrame.param()
-  public readonly passing: string;
+  public declare readonly passing: string;
 
   @JinEitherFrame.body({
     formatters: {
       string: (value) => `000+${value}+222`,
     },
   })
-  public readonly username: string[];
+  public declare readonly username: string[];
 
   @JinEitherFrame.body({
     replaceAt: 'pw',
@@ -312,7 +312,7 @@ class Test006PostFrame extends JinEitherFrame {
       string: (value) => `${value}+111`,
     },
   })
-  public readonly password: string;
+  public declare readonly password: string;
 
   @JinEitherFrame.body({
     replaceAt: 'format-day',
@@ -321,7 +321,7 @@ class Test006PostFrame extends JinEitherFrame {
       dateTime: (value) => lightFormat(value, `yyyy-MM-dd'T'HH:mm:ss`),
     },
   })
-  public readonly today: string;
+  public declare readonly today: string;
 
   constructor(args: { passing: string; username: string[]; password: string; today: string }) {
     super({

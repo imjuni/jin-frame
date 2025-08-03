@@ -5,13 +5,13 @@ import { expect, it } from 'vitest';
 
 class Test001PostFrame extends JinEitherFrame {
   @JinEitherFrame.param()
-  public readonly passing!: string;
+  public declare readonly passing: string;
 
   @JinEitherFrame.body()
-  public readonly username!: string[];
+  public declare readonly username: string[];
 
   @JinEitherFrame.body()
-  public readonly password!: string;
+  public declare readonly password: string;
 
   constructor(args: OmitConstructorType<Test001PostFrame, JinBuiltInMember>) {
     super({
@@ -48,17 +48,17 @@ it('T001-plain-array-body', async () => {
 
 class Test002PostFrame extends JinEitherFrame {
   @JinEitherFrame.param()
-  public readonly passing!: string;
+  public declare readonly passing: string;
 
   @JinEitherFrame.body()
-  public readonly username!: string[];
+  public declare readonly username: string[];
 
   // warnning, username2 is invalid usage. It will be overwrite previous username key
   @JinEitherFrame.body({ replaceAt: 'username' })
-  public readonly username2!: string[];
+  public declare readonly username2: string[];
 
   @JinEitherFrame.body()
-  public readonly password!: string;
+  public declare readonly password: string;
 
   constructor(args: { passing: string; username: string[]; username2: string[]; password: string }) {
     super({

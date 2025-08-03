@@ -40,16 +40,16 @@ npm i jin-frame --save
 ```ts
 class TestPostQuery extends JinFrame {
   @JinFrame.param()
-  public readonly passing: string;
+  public declare readonly passing: string;
 
   @JinFrame.body({ key: 'test.hello.marvel.name' })
-  public readonly name: string;
+  public declare readonly name: string;
 
   @JinFrame.header({ key: 'test.hello.marvel.skill' })
-  public readonly skill: string;
+  public declare readonly skill: string;
 
   @JinFrame.body({ key: 'test.hello.marvel.gender' })
-  public readonly gender: string;
+  public declare readonly gender: string;
 
   constructor(name: string, skill: string) {
     super({ ...args, host: 'http://some.api.yanolja.com/jinframe/:passing', method: 'POST' });

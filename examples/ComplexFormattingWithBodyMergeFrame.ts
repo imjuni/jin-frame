@@ -35,13 +35,13 @@ interface IThirdBody {
  */
 export default class ComplexFormattingWithBodyMergeFrame extends JinEitherFrame {
   @JinEitherFrame.param()
-  public readonly passing: string;
+  public declare readonly passing: string;
 
   @JinEitherFrame.query()
-  public readonly name: string;
+  public declare readonly name: string;
 
   @JinEitherFrame.query({ encode: true })
-  public readonly skill: string[];
+  public declare readonly skill: string[];
 
   @JinEitherFrame.objectBody({
     formatters: [
@@ -61,7 +61,7 @@ export default class ComplexFormattingWithBodyMergeFrame extends JinEitherFrame 
       },
     ],
   })
-  public readonly firstBody: IFirstBody;
+  public declare readonly firstBody: IFirstBody;
 
   @JinEitherFrame.objectBody({
     formatters: [
@@ -72,10 +72,10 @@ export default class ComplexFormattingWithBodyMergeFrame extends JinEitherFrame 
       },
     ],
   })
-  public readonly secondBody: ISecondBody;
+  public declare readonly secondBody: ISecondBody;
 
   @JinEitherFrame.objectBody()
-  public readonly thirdBody: IThirdBody;
+  public declare readonly thirdBody: IThirdBody;
 
   constructor({
     firstBody,

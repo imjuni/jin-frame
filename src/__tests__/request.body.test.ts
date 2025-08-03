@@ -1,5 +1,4 @@
 import { JinEitherFrame } from '#frames/JinEitherFrame';
-import cloneDeep from 'clone-deep';
 import { format, parse } from 'date-fns';
 import { expect, it } from 'vitest';
 
@@ -65,13 +64,13 @@ const share: { first: IFirstBody; second: ISecondBody; third: IThirdBody } = {
 
 class Test001PostFrame extends JinEitherFrame {
   @JinEitherFrame.param()
-  public readonly passing: string;
+  public declare readonly passing: string;
 
   @JinEitherFrame.query()
-  public readonly name: string;
+  public declare readonly name: string;
 
   @JinEitherFrame.query({ encode: true })
-  public readonly skill: string[];
+  public declare readonly skill: string[];
 
   @JinEitherFrame.body({
     formatters: [
@@ -91,7 +90,7 @@ class Test001PostFrame extends JinEitherFrame {
       },
     ],
   })
-  public readonly multipleFormatting: IFirstBody;
+  public declare readonly multipleFormatting: IFirstBody;
 
   constructor({ multipleFormatting }: { multipleFormatting: IFirstBody }) {
     super({ $$host: 'http://some.api.google.com', $$path: '/jinframe/:passing', $$method: 'POST' });
@@ -105,7 +104,7 @@ class Test001PostFrame extends JinEitherFrame {
 }
 
 it('T001-object-type-field-multiple-formatting', async () => {
-  const frame = new Test001PostFrame({ multipleFormatting: cloneDeep(share.first) });
+  const frame = new Test001PostFrame({ multipleFormatting: structuredClone(share.first) });
   const req = frame.request();
 
   const expectation = {
@@ -127,13 +126,13 @@ it('T001-object-type-field-multiple-formatting', async () => {
 
 class Test002PostFrame extends JinEitherFrame {
   @JinEitherFrame.param()
-  public readonly passing: string;
+  public declare readonly passing: string;
 
   @JinEitherFrame.query()
-  public readonly name: string;
+  public declare readonly name: string;
 
   @JinEitherFrame.query({ encode: true })
-  public readonly skill: string[];
+  public declare readonly skill: string[];
 
   @JinEitherFrame.body({
     formatters: [
@@ -153,7 +152,7 @@ class Test002PostFrame extends JinEitherFrame {
       },
     ],
   })
-  public readonly hero: IFirstBody;
+  public declare readonly hero: IFirstBody;
 
   @JinEitherFrame.body({
     formatters: [
@@ -164,12 +163,12 @@ class Test002PostFrame extends JinEitherFrame {
       },
     ],
   })
-  public readonly heroBio: ISecondBody;
+  public declare readonly heroBio: ISecondBody;
 
   @JinEitherFrame.body({
     replaceAt: 'companion',
   })
-  public readonly thirdField: IThirdBody;
+  public declare readonly thirdField: IThirdBody;
 
   constructor({
     firstBody,
@@ -194,9 +193,9 @@ class Test002PostFrame extends JinEitherFrame {
 
 it('T0002-many-object-field-multiple-formattin', async () => {
   const frame = new Test002PostFrame({
-    firstBody: cloneDeep(share.first),
-    secondBody: cloneDeep(share.second),
-    thirdBody: cloneDeep(share.third),
+    firstBody: structuredClone(share.first),
+    secondBody: structuredClone(share.second),
+    thirdBody: structuredClone(share.third),
   });
   const req = frame.request();
 

@@ -4,10 +4,10 @@ import { expect, it } from 'vitest';
 
 class Test001PostFrame extends JinEitherFrame {
   @JinEitherFrame.param()
-  public readonly passing: string;
+  public declare readonly passing: string;
 
   @JinEitherFrame.objectBody()
-  public readonly ability: number;
+  public declare readonly ability: number;
 
   constructor(args: { passing: string; ability: number }) {
     super({
@@ -44,10 +44,10 @@ it('T001-primitive-number', async () => {
 
 class Test002PostFrame extends JinEitherFrame {
   @JinEitherFrame.param()
-  public readonly passing: string;
+  public declare readonly passing: string;
 
   @JinEitherFrame.objectBody()
-  public readonly ability: string;
+  public declare readonly ability: string;
 
   constructor(args: { passing: string; ability: string }) {
     super({
@@ -84,7 +84,7 @@ it('T002-primitive-string', async () => {
 
 class Test003PostFrame extends JinEitherFrame {
   @JinEitherFrame.param()
-  public readonly passing: string;
+  public declare readonly passing: string;
 
   @JinEitherFrame.objectBody({
     formatters: {
@@ -92,7 +92,7 @@ class Test003PostFrame extends JinEitherFrame {
       dateTime: (value) => lightFormat(value, 'yyyy-MM-dd HH:mm:ss'),
     },
   })
-  public readonly ability: Date;
+  public declare readonly ability: Date;
 
   constructor(args: { passing: string; ability: Date }) {
     super({
@@ -130,10 +130,10 @@ it('T003-primitive-date-with-format', async () => {
 
 class Test004PostFrame extends JinEitherFrame {
   @JinEitherFrame.param()
-  public readonly passing: string;
+  public declare readonly passing: string;
 
   @JinEitherFrame.objectBody()
-  public readonly ability: boolean;
+  public declare readonly ability: boolean;
 
   constructor(args: { passing: string; ability: boolean }) {
     super({

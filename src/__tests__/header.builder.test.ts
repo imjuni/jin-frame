@@ -3,13 +3,13 @@ import { expect, it } from 'vitest';
 
 class Test001PostFrame extends JinEitherFrame {
   @JinEitherFrame.param()
-  public readonly passing!: string;
+  public declare readonly passing: string;
 
   @JinEitherFrame.H()
-  public readonly username!: string;
+  public declare readonly username: string;
 
   @JinEitherFrame.H()
-  public readonly password!: string;
+  public declare readonly password: string;
 
   constructor(args: { passing: string; username: string; password: string }) {
     super({
@@ -49,13 +49,13 @@ it('T001-header', async () => {
 
 class Test002PostFrame extends JinEitherFrame {
   @JinEitherFrame.param()
-  public readonly passing!: string;
+  public declare readonly passing: string;
 
   @JinEitherFrame.header({ replaceAt: 'uuu' })
-  public readonly username!: string;
+  public declare readonly username: string;
 
   @JinEitherFrame.header({ replaceAt: 'ppp' })
-  public readonly password!: string;
+  public declare readonly password: string;
 
   constructor(args: { passing: string; username: string; password: string }) {
     super({
@@ -84,13 +84,13 @@ it('T002-primitive-type-key-replace', async () => {
 
 class Test003PostFrame extends JinEitherFrame {
   @JinEitherFrame.param()
-  public readonly passing!: string;
+  public declare readonly passing: string;
 
   @JinEitherFrame.header({ replaceAt: 'uuu.username' })
-  public readonly username!: string;
+  public declare readonly username: string;
 
   @JinEitherFrame.header({ replaceAt: 'ppp.password' })
-  public readonly password!: string;
+  public declare readonly password: string;
 
   constructor(args: { passing: string; username: string; password: string }) {
     super({
@@ -121,13 +121,13 @@ it('T003-primitive-type-key-replace-at-not-support-dot-props', async () => {
 
 class Test004PostFrame extends JinEitherFrame {
   @JinEitherFrame.param()
-  public readonly passing!: string;
+  public declare readonly passing: string;
 
   @JinEitherFrame.header()
-  public readonly username!: string;
+  public declare readonly username: string;
 
   @JinEitherFrame.header()
-  public readonly hero!: {
+  public declare readonly hero: {
     name: string;
     ability: string;
     age: number;
@@ -179,13 +179,13 @@ it('T004-plain-object-type-json-serialization', async () => {
 
 class Test005PostFrame extends JinEitherFrame {
   @JinEitherFrame.param()
-  public readonly passing!: string;
+  public declare readonly passing: string;
 
   @JinEitherFrame.header()
-  public readonly username!: string;
+  public declare readonly username: string;
 
   @JinEitherFrame.header({ comma: true, encode: false })
-  public readonly hero!: string[];
+  public declare readonly hero: string[];
 
   constructor(args: { passing: string; username: string; hero: string[] }) {
     super({
