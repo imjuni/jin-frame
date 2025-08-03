@@ -123,7 +123,7 @@
 
       // Output directory. Default value is same project directory
       // @mode bundle
-      "output": "./src/",
+      "output": "./src",
 
       // remove with backup file
       // @mode remove
