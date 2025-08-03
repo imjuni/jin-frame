@@ -123,3 +123,6 @@ docs/media
 
 # swc
 .swc/
+
+# script
+git-short.sh
