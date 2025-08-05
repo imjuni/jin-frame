@@ -227,7 +227,7 @@ describe('AbstractJinFrame', () => {
     const r = frame.request();
 
     expect(r.url).toMatch(
-      'http://some.api.google.com/jinframe/[%22pass%22,%22fail%22]?name=ironman&name=captain&nums=1&nums=2&nums=3',
+      'http://some.api.google.com/jinframe/%5B%22pass%22%2C%22fail%22%5D?name=ironman&name=captain&nums=1&nums=2&nums=3',
     );
   });
 

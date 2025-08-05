@@ -404,7 +404,7 @@ export abstract class AbstractJinFrame {
 
     // stage 06. path parameter evaluation
     const pathfunc = compile(url.pathname);
-    const buildPath = pathfunc(safePaths);
+    const buildPath = pathfunc(safePaths as object);
     url.pathname = removeEndSlash(buildPath);
 
     // stage 07. querystring post processing
