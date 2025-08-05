@@ -1,18 +1,9 @@
+import { isValidPrimitiveType } from '#tools/type-narrowing/isValidPrimitiveType';
 import type { TSupportArrayType } from '#tools/type-utilities/TSupportArrayType';
-import { first } from 'my-easy-fp';
 
-export function isValidArrayType(value: unknown): value is TSupportArrayType {
-  if (typeof value === 'object' && Array.isArray(value)) {
-    if (
-      typeof first(value) === 'string' ||
-      typeof first(value) === 'boolean' ||
-      typeof first(value) === 'number' ||
-      (typeof first(value) === 'object' && first(value) instanceof Date)
-    ) {
-      return true;
-    }
-
-    return false;
+export function isValidArrayType(values: unknown): values is TSupportArrayType {
+  if (Array.isArray(values)) {
+    return values.every((value) => isValidPrimitiveType(value));
   }
 
   return false;
