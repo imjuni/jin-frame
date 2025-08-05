@@ -25,13 +25,15 @@ import { getQueryParamInfo } from '#processors/getQueryParamInfo';
 import { removeBothSlash } from '#tools/slash-utils/removeBothSlash';
 import { removeEndSlash } from '#tools/slash-utils/removeEndSlash';
 import { startWithSlash } from '#tools/slash-utils/startWithSlash';
-import axios, { type AxiosRequestConfig, type AxiosResponse, type Method } from 'axios';
+import type { JinBuiltInOption } from '#tools/type-utilities/JinBuiltInOption';
+import type { AxiosInstance, AxiosRequestConfig, AxiosResponse, Method } from 'axios';
+import axios from 'axios';
 import fastSafeStringify from 'fast-safe-stringify';
 import FormData from 'form-data';
 import { first } from 'my-easy-fp';
 import { compile } from 'path-to-regexp';
 import 'reflect-metadata';
-import type { Except } from 'type-fest';
+import type { Except, SetRequired } from 'type-fest';
 
 /**
  * HTTP Request Hook
@@ -68,8 +70,7 @@ export abstract class AbstractJinFrame {
    * decorator to set class variable to HTTP API path parameter
    * @param option path parameter option
    */
-  public static P = (option?: Partial<Omit<IParamFieldOption, 'type'>>) =>
-    Reflect.metadata(AbstractJinFrame.ParamSymbolBox, ['PARAM', getDefaultParamFieldOption(option)]);
+  public static P = AbstractJinFrame.param;
 
   /**
    * decorator to set class variable to HTTP API query parameter
@@ -82,8 +83,7 @@ export abstract class AbstractJinFrame {
    * decorator to set class variable to HTTP API query parameter
    * @param option query parameter option
    */
-  public static Q = (option?: Partial<Omit<IQueryFieldOption, 'type'>>) =>
-    Reflect.metadata(AbstractJinFrame.QuerySymbolBox, ['QUERY', getDefaultQueryFieldOption(option)]);
+  public static Q = AbstractJinFrame.query;
 
   /**
    * decorator to set class variable to HTTP API body parameter
@@ -96,8 +96,7 @@ export abstract class AbstractJinFrame {
    * decorator to set class variable to HTTP API body parameter
    * @param option body parameter option
    */
-  public static B = (option?: Partial<Except<IBodyFieldOption, 'type'>>) =>
-    Reflect.metadata(AbstractJinFrame.BodySymbolBox, ['BODY', getDefaultBodyFieldOption(option)]);
+  public static B = AbstractJinFrame.body;
 
   /**
    * decorator to set class variable to HTTP API body parameter
@@ -110,8 +109,7 @@ export abstract class AbstractJinFrame {
    * decorator to set class variable to HTTP API body parameter
    * @param option body parameter option
    */
-  public static O = (option?: Partial<Except<IObjectBodyFieldOption, 'type'>>) =>
-    Reflect.metadata(AbstractJinFrame.ObjectBodySymbolBox, ['OBJECTBODY', getDefaultObjectBodyFieldOption(option)]);
+  public static O = AbstractJinFrame.objectBody;
 
   /**
    * decorator to set class variable to HTTP API header parameter
@@ -124,8 +122,7 @@ export abstract class AbstractJinFrame {
    * decorator to set class variable to HTTP API header parameter
    * @param option header parameter option
    */
-  public static H = (option?: Partial<Except<IHeaderFieldOption, 'type'>>) =>
-    Reflect.metadata(AbstractJinFrame.HeaderSymbolBox, ['HEADER', getDefaultHeaderFieldOption(option)]);
+  public static H = AbstractJinFrame.header;
 
   /** host of API Request endpoint */
   #host?: string;
@@ -154,6 +151,8 @@ export abstract class AbstractJinFrame {
   #param?: Record<string, unknown>;
 
   #retry?: IFrameRetry & { try: number };
+
+  #instance: AxiosInstance;
 
   public get $$query() {
     return this.#query;
@@ -209,6 +208,10 @@ export abstract class AbstractJinFrame {
     this.#retry = value;
   }
 
+  public get $$instance(): AxiosInstance {
+    return this.#instance;
+  }
+
   protected $$startAt: Date;
 
   /**
@@ -218,15 +221,7 @@ export abstract class AbstractJinFrame {
    * @param __namedParameters.contentType - content-type of API Request endpoint
    * @param __namedParameters.customBody - custom object of POST Request body data
    */
-  constructor(args: {
-    $$host?: string;
-    $$path?: string;
-    $$method: Method;
-    $$contentType?: string;
-    $$customBody?: unknown;
-    $$transformRequest?: AxiosRequestConfig['transformRequest'];
-    $$retry?: IFrameRetry;
-  }) {
+  constructor(args: SetRequired<JinBuiltInOption, '$$method'>) {
     Object.keys(args)
       .filter(
         (key) =>
@@ -236,7 +231,8 @@ export abstract class AbstractJinFrame {
           key !== '$$contentType' &&
           key !== '$$customBody' &&
           key !== '$$transformRequest' &&
-          key !== '$$retry',
+          key !== '$$retry' &&
+          key !== '$$instance',
       )
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       .forEach((key: any) => {
@@ -257,6 +253,12 @@ export abstract class AbstractJinFrame {
 
     this.#host = args.$$host;
     this.#path = args.$$path;
+
+    if (args.$$instance) {
+      this.#instance = axios.create();
+    } else {
+      this.#instance = axios;
+    }
   }
 
   public getTransformRequest() {
@@ -446,7 +448,7 @@ export abstract class AbstractJinFrame {
   }
 
   async retry<TPASS>(req: AxiosRequestConfig, isValidateStatus: (status: number) => boolean) {
-    const response = await axios.request<TPASS, AxiosResponse<TPASS>>(req);
+    const response = await this.#instance.request<TPASS, AxiosResponse<TPASS>>(req);
     const retry = this.#retry;
 
     if (isValidateStatus(response.status) || retry == null) {

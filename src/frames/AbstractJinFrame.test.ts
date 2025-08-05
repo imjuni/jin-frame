@@ -1,6 +1,7 @@
 import { JinFile } from '#frames/JinFile';
 import { JinFrame } from '#frames/JinFrame';
 import type { JinConstructorType } from '#tools/type-utilities/JinConstructorType';
+import MockAdapter from 'axios-mock-adapter';
 import nock from 'nock';
 import { afterEach, describe, expect, it } from 'vitest';
 
@@ -81,11 +82,27 @@ class Test004PostFrame extends JinFrame<{ message: string }> {
   }
 }
 
-afterEach(() => {
-  nock.cleanAll();
-});
+class Test005PostFrame extends JinFrame<{ message: string }> {
+  @JinFrame.query()
+  public declare readonly name: string[];
+
+  @JinFrame.query()
+  public declare readonly nums: number[];
+
+  constructor(args: JinConstructorType<Test005PostFrame>) {
+    super({
+      ...args,
+      $$method: 'post',
+      $$host: 'http://some.api.google.com/jinframe',
+    });
+  }
+}
 
 describe('AbstractJinFrame', () => {
+  afterEach(() => {
+    nock.cleanAll();
+  });
+
   it('form-data', async () => {
     const frame = new Test001PostFrame({ username: 'ironman', password: 'avengers', passing: 'pass' });
 
@@ -212,5 +229,34 @@ describe('AbstractJinFrame', () => {
     expect(r.url).toMatch(
       'http://some.api.google.com/jinframe/[%22pass%22,%22fail%22]?name=ironman&name=captain&nums=1&nums=2&nums=3',
     );
+  });
+
+  it('create instance', async () => {
+    const frame = new Test004PostFrame({
+      name: ['ironman', 'captain'],
+      passing: ['pass', 'fail'],
+      nums: [1, 2, 3],
+      $$instance: true,
+    });
+    frame.request();
+
+    expect(frame.$$query).toMatchObject({ name: ['ironman', 'captain'], nums: [1, 2, 3] });
+    expect(frame.$$param).toMatchObject({ passing: '["pass","fail"]' });
+  });
+
+  it('mocking with instance', async () => {
+    const frame = new Test005PostFrame({
+      name: ['ironman', 'captain'],
+      nums: [1, 2, 3],
+      $$instance: true,
+    });
+
+    const mock = new MockAdapter(frame.$$instance);
+    const reply = { mock: { name: 'i am mock' } };
+
+    mock.onPost().reply(200, reply);
+    const response = await frame.execute();
+
+    expect(response.data).toMatchObject(reply);
   });
 });

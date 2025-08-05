@@ -1,17 +1,8 @@
 import { JinCreateError } from '#frames/JinCreateError';
-import { JinFile } from '#frames/JinFile';
 import { JinRequestError } from '#frames/JinRequestError';
 import { getDuration } from '#tools/getDuration';
 import { getReasonPhrase } from 'http-status-codes';
 import { describe, expect, it } from 'vitest';
-
-describe('JinFile', () => {
-  it('formatter', () => {
-    const jf = new JinFile('test', Buffer.from('ironman'));
-    expect(jf.file.toString()).toEqual('ironman');
-    expect(jf.name).toEqual('test');
-  });
-});
 
 describe('JinCreateError', () => {
   it('gettter/setter', () => {

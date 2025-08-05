@@ -2,7 +2,6 @@ import { AbstractJinFrame } from '#frames/AbstractJinFrame';
 import { JinCreateError } from '#frames/JinCreateError';
 import { JinRequestError } from '#frames/JinRequestError';
 import type { IDebugInfo } from '#interfaces/IDebugInfo';
-import type { IFrameRetry } from '#interfaces/IFrameRetry';
 import type { IJinFrameCreateConfig } from '#interfaces/IJinFrameCreateConfig';
 import type { IJinFrameFunction } from '#interfaces/IJinFrameFunction';
 import type { IJinFrameRequestConfig } from '#interfaces/IJinFrameRequestConfig';
@@ -10,11 +9,13 @@ import type { TJinFrameResponse, TJinRequestConfig } from '#interfaces/TJinFrame
 import { CE_HOOK_APPLY } from '#tools/CE_HOOK_APPLY';
 import { getDuration } from '#tools/getDuration';
 import { isValidateStatusDefault } from '#tools/isValidateStatusDefault';
-import { AxiosError, type AxiosRequestConfig, type AxiosResponse, type Method } from 'axios';
+import type { JinBuiltInOption } from '#tools/type-utilities/JinBuiltInOption';
+import { AxiosError, type AxiosRequestConfig, type AxiosResponse } from 'axios';
 import formatISO from 'date-fns/formatISO';
 import getUnixTime from 'date-fns/getUnixTime';
 import httpStatusCodes, { getReasonPhrase } from 'http-status-codes';
 import 'reflect-metadata';
+import type { SetRequired } from 'type-fest';
 
 /**
  * HTTP Request Hook
@@ -62,14 +63,7 @@ export class JinFrame<TPASS = unknown, TFAIL = TPASS>
    * @param __namedParameters.contentType - content-type of API Request endpoint
    * @param __namedParameters.customBody - custom object of POST Request body data
    */
-  constructor(args: {
-    $$host?: string;
-    $$path?: string;
-    $$method: Method;
-    $$contentType?: string;
-    $$customBody?: unknown;
-    $$retry?: IFrameRetry;
-  }) {
+  constructor(args: SetRequired<JinBuiltInOption, '$$method'>) {
     super({ ...args });
   }
 
@@ -115,7 +109,7 @@ export class JinFrame<TPASS = unknown, TFAIL = TPASS>
 
     const isValidateStatus = option?.validateStatus == null ? isValidateStatusDefault : option.validateStatus;
 
-    return async () => {
+    const jinFrameHandle = async () => {
       const startAt = new Date();
       const debug: Omit<IDebugInfo, 'duration'> = {
         ts: {
@@ -244,6 +238,8 @@ export class JinFrame<TPASS = unknown, TFAIL = TPASS>
         throw option?.getError != null ? option.getError(jinFrameError) : jinFrameError;
       }
     };
+
+    return jinFrameHandle;
   }
 
   /**

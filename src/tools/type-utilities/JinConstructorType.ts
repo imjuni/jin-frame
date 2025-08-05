@@ -4,17 +4,9 @@
  * [TypeScript: Create a condition-based subset types - DailyJS](https://medium.com/dailyjs/typescript-create-a-condition-based-subset-types-9d902cea5b8c)
  */
 import type { AbstractJinFrame } from '#frames/AbstractJinFrame';
-import type { IFrameRetry } from '#interfaces/IFrameRetry';
 import type { ConstructorType } from '#tools/type-utilities/ConstructorType';
 import type { JinBuiltInMember } from '#tools/type-utilities/JinBuiltInMember';
-import type { AxiosRequestConfig, Method } from 'axios';
+import type { JinBuiltInOption } from '#tools/type-utilities/JinBuiltInOption';
 
-export type JinConstructorType<T extends AbstractJinFrame> = Omit<ConstructorType<T>, JinBuiltInMember> & {
-  $$host?: string;
-  $$path?: string;
-  $$method?: Method;
-  $$contentType?: string;
-  $$customBody?: unknown;
-  $$transformRequest?: AxiosRequestConfig['transformRequest'];
-  $$retry?: IFrameRetry;
-};
+export type JinConstructorType<T extends AbstractJinFrame> = Omit<ConstructorType<T>, JinBuiltInMember> &
+  JinBuiltInOption;

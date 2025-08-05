@@ -6,16 +6,9 @@
 import type { AbstractJinFrame } from '#frames/AbstractJinFrame';
 import type { ConstructorType } from '#tools/type-utilities/ConstructorType';
 import type { JinBuiltInMember } from '#tools/type-utilities/JinBuiltInMember';
-import type { AxiosRequestConfig, Method } from 'axios';
+import type { JinBuiltInOption } from '#tools/type-utilities/JinBuiltInOption';
 
 export type JinOmitConstructorType<T extends AbstractJinFrame, M extends keyof ConstructorType<T>> = Omit<
-  ConstructorType<T> & {
-    $$host?: string;
-    $$path?: string;
-    $$method?: Method;
-    $$contentType?: string;
-    $$customBody?: unknown;
-    $$transformRequest?: AxiosRequestConfig['transformRequest'];
-  },
+  ConstructorType<T> & JinBuiltInOption,
   JinBuiltInMember | M
 >;
