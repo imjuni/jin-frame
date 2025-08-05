@@ -27,17 +27,17 @@ importers:
         specifier: ^2.1.1
         version: 2.1.1
       my-easy-fp:
-        specifier: ^0.21.0
-        version: 0.21.0
+        specifier: ^0.22.0
+        version: 0.22.0
       my-only-either:
         specifier: ^1.3.0
         version: 1.3.0
       path-to-regexp:
-        specifier: ^6.2.1
-        version: 6.2.1
+        specifier: ^8.2.0
+        version: 8.2.0
       reflect-metadata:
-        specifier: ^0.1.13
-        version: 0.1.13
+        specifier: ^0.2.2
+        version: 0.2.2
       type-fest:
         specifier: ^4.3.0
         version: 4.8.1
@@ -2937,10 +2937,6 @@ packages:
   my-easy-fp@0.19.3:
     resolution: {integrity: sha512-8cGodV0auSLh7S57pTn+pult9t1NDWA2E3gCUVqwMZB6kfV0mpGwUzM/lWYCDFEhwL6So7py/lWPEH1F2dTHJw==}
 
-  my-easy-fp@0.21.0:
-    resolution: {integrity: sha512-oQy/Ec4WsBAf337BuOZNTRHRnuWaDax54BtHQKOL41zfFy2BEyLovOEbSH/i3k8uU5UcagijosPMQvyrMNeeJQ==}
-    engines: {node: '>=16'}
-
   my-easy-fp@0.22.0:
     resolution: {integrity: sha512-fWM/HrbfUiBt8GcwMXad5r8s2urQezRqNiaa5GispeXGKptpaz5m+NUwBazkow5oxktZGWyQj1bSx40xtq00zg==}
     engines: {node: '>=16'}
@@ -3141,8 +3137,9 @@ packages:
     resolution: {integrity: sha512-Xa4Nw17FS9ApQFJ9umLiJS4orGjm7ZzwUrwamcGQuHSzDyth9boKDaycYdDcZDuqYATXw4HFXgaqWTctW/v1HA==}
     engines: {node: '>=16 || 14 >=14.18'}
 
-  path-to-regexp@6.2.1:
-    resolution: {integrity: sha512-JLyh7xT1kizaEvcaXOQwOc2/Yhw6KZOvPf1S8401UyLk86CU79LN3vl7ztXGm/pZ+YjoyAJ4rxmHwbkBXJX+yw==}
+  path-to-regexp@8.2.0:
+    resolution: {integrity: sha512-TdrF7fW9Rphjq4RjrW0Kp2AW0Ahwu9sRGTkS6bvDi0SCwZlEZYmcfDbEsTz8RVk0EHIS/Vd1bv3JhG+1xZuAyQ==}
+    engines: {node: '>=16'}
 
   path-type@3.0.0:
     resolution: {integrity: sha512-T2ZUsdZFHgA3u4e5PfPbjd7HDDpxPnQb5jN0SrDsjNSuVXHJqtwTnWqG0B1jZrgmJ/7lj1EmVIByWt1gxGkWvg==}
@@ -3302,8 +3299,8 @@ packages:
     resolution: {integrity: sha512-hOS089on8RduqdbhvQ5Z37A0ESjsqz6qnRcffsMU3495FuTdqSm+7bhJ29JvIOsBDEEnan5DPu9t3To9VRlMzA==}
     engines: {node: '>=8.10.0'}
 
-  reflect-metadata@0.1.13:
-    resolution: {integrity: sha512-Ts1Y/anZELhSsjMcU605fU9RE4Oi3p5ORujwbIKXfWa+0Zxs510Qrmrce5/Jowq3cHSZSJqBjypxmHarc+vEWg==}
+  reflect-metadata@0.2.2:
+    resolution: {integrity: sha512-urBwgfrvVP/eAyXx4hluJivBKzuEbSQs9rKWCrCkbSxNv8mxPcUZKeuoF3Uy4mJl3Lwprp6yy5/39VWigZ4K6Q==}
 
   regenerator-runtime@0.14.0:
     resolution: {integrity: sha512-srw17NI0TUWHuGa5CFGGmhfNIeja30WMBfbslPNhf6JrqQlLN5gcrvig1oqPxiVaXb0oW0XRKtH6Nngs5lKCIA==}
@@ -7261,8 +7258,6 @@ snapshots:
 
   my-easy-fp@0.19.3: {}
 
-  my-easy-fp@0.21.0: {}
-
   my-easy-fp@0.22.0: {}
 
   my-node-fp@0.10.3:
@@ -7486,7 +7481,7 @@ snapshots:
       lru-cache: 10.4.3
       minipass: 7.1.2
 
-  path-to-regexp@6.2.1: {}
+  path-to-regexp@8.2.0: {}
 
   path-type@3.0.0:
     dependencies:
@@ -7628,7 +7623,7 @@ snapshots:
     dependencies:
       picomatch: 2.3.1
 
-  reflect-metadata@0.1.13: {}
+  reflect-metadata@0.2.2: {}
 
   regenerator-runtime@0.14.0: {}
 
