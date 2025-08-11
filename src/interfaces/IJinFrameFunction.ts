@@ -6,17 +6,17 @@ import type { AxiosResponse } from 'axios';
 import type { PassFailEither } from 'my-only-either';
 
 export interface IJinFrameFunction<TPASS = unknown, TFAIL = TPASS> {
-  create(
+  create: (
     args?: IJinFrameRequestConfig & IJinFrameCreateConfig,
-  ):
+  ) =>
     | (() => Promise<AxiosResponse<TPASS>>)
     | (() => Promise<
         PassFailEither<IFailReplyJinEitherFrame<TFAIL> | IFailCreateJinEitherFrame<TFAIL>, TPassJinEitherFrame<TPASS>>
       >);
 
-  execute(
+  execute: (
     args?: IJinFrameRequestConfig & IJinFrameCreateConfig,
-  ):
+  ) =>
     | Promise<AxiosResponse<TPASS>>
     | Promise<
         PassFailEither<IFailReplyJinEitherFrame<TFAIL> | IFailCreateJinEitherFrame<TFAIL>, TPassJinEitherFrame<TPASS>>

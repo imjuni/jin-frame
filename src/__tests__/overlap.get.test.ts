@@ -7,13 +7,13 @@ class TestGetFrame extends JinEitherFrame {
   @JinEitherFrame.query()
   @JinEitherFrame.body()
   @JinEitherFrame.header()
-  public declare readonly id: string;
+  declare public readonly id: string;
 
   @JinEitherFrame.query()
-  public declare readonly name: string;
+  declare public readonly name: string;
 
   @JinEitherFrame.query({ encode: false, comma: true })
-  public declare readonly skills: string[];
+  declare public readonly skills: string[];
 
   constructor(args: { id: string; name: string; skills: string[] }) {
     super({ ...args, $$host: 'http://some.api.google.com', $$path: '/jinframe/:id', $$method: 'post' });

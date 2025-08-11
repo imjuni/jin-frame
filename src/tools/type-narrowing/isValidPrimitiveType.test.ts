@@ -19,7 +19,7 @@ describe('isValidPrimitiveType', () => {
 
   it('date object', () => {
     const r = isValidPrimitiveType(new Date());
-    expect(r).toBeTruthy();
+    expect(r).toBeFalsy();
   });
 
   it('plain object', () => {

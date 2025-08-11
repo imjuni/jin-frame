@@ -1,19 +1,19 @@
 import { JinEitherFrame } from '#frames/JinEitherFrame';
 import { JinFile } from '#frames/JinFile';
-import fs from 'fs';
+import fs from 'node:fs';
 import nock from 'nock';
-import path from 'path';
+import path from 'node:path';
 import { afterEach, it } from 'vitest';
 
 class TestGetFrame extends JinEitherFrame {
   @JinEitherFrame.body()
-  public declare readonly description: string;
+  declare public readonly description: string;
 
   @JinEitherFrame.body()
-  public declare readonly myFile: JinFile<Buffer>;
+  declare public readonly myFile: JinFile<Buffer>;
 
   @JinEitherFrame.body()
-  public declare readonly myFiles: JinFile<Buffer>[];
+  declare public readonly myFiles: JinFile<Buffer>[];
 
   constructor(args: { description: string; file: JinFile<Buffer>; files: JinFile<Buffer>[] }) {
     super({

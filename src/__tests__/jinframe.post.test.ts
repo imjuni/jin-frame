@@ -5,47 +5,53 @@ import { afterEach, describe, expect, it } from 'vitest';
 
 class TestPostFrame extends JinEitherFrame {
   @JinEitherFrame.param()
-  public declare readonly passing: string;
+  declare public readonly passing: string;
 
   @JinEitherFrame.body({ replaceAt: 'test.hello.marvel.name' })
-  public declare readonly name: string;
+  declare public readonly name: string;
 
   @JinEitherFrame.header({ replaceAt: 'test.hello.marvel.skill' })
-  public declare readonly skill: string;
+  declare public readonly skill: string;
 
   @JinEitherFrame.body({ replaceAt: 'test.hello.marvel.gender' })
-  public declare readonly gender: string;
+  declare public readonly gender: string;
 
   constructor() {
-    super({ $$host: 'http://some.api.google.com/jinframe/:passing', $$method: 'POST' });
-
-    this.passing = 'pass';
-    this.name = 'ironman';
-    this.skill = 'beam';
-    this.gender = 'male';
+    super(
+      {
+        passing: 'pass',
+        name: 'ironman',
+        skill: 'beam',
+        gender: 'male',
+      },
+      { host: 'http://some.api.google.com/jinframe/:passing', method: 'POST' },
+    );
   }
 }
 
 class TestUrlencodedPostFrame extends JinEitherFrame {
   @JinEitherFrame.param()
-  public declare readonly passing: string;
+  declare public readonly passing: string;
 
   @JinEitherFrame.body()
-  public declare readonly username: string;
+  declare public readonly username: string;
 
   @JinEitherFrame.body()
-  public declare readonly password: string;
+  declare public readonly password: string;
 
   constructor() {
-    super({
-      $$host: 'http://some.api.google.com/jinframe/:passing',
-      $$contentType: 'application/x-www-form-urlencoded',
-      $$method: 'POST',
-    });
-
-    this.passing = 'pass';
-    this.username = 'ironman';
-    this.password = 'marvel';
+    super(
+      {
+        passing: 'pass',
+        username: 'ironman',
+        password: 'marvel',
+      },
+      {
+        host: 'http://some.api.google.com/jinframe/:passing',
+        contentType: 'application/x-www-form-urlencoded',
+        method: 'POST',
+      },
+    );
   }
 }
 

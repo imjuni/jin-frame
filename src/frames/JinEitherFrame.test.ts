@@ -1,43 +1,40 @@
 import { JinEitherFrame } from '#frames/JinEitherFrame';
-import type { JinBuiltInMember } from '#tools/type-utilities/JinBuiltInMember';
-import type { OmitConstructorType } from '#tools/type-utilities/OmitConstructorType';
+import { ConstructorType } from '#tools/type-utilities/ConstructorType';
 import nock from 'nock';
 import { afterEach, describe, expect, it } from 'vitest';
 
 class Test001PostFrame extends JinEitherFrame {
   @JinEitherFrame.param()
-  public declare readonly passing: string;
+  declare public readonly passing: string;
 
   @JinEitherFrame.body()
-  public declare readonly username: string;
+  declare public readonly username: string;
 
   @JinEitherFrame.body()
-  public declare readonly password: string;
+  declare public readonly password: string;
 
-  constructor(args: OmitConstructorType<Test001PostFrame, JinBuiltInMember>) {
-    super({
-      ...args,
-      $$host: 'http://some.api.google.com/jinframe/:passing',
-      $$method: 'post',
+  constructor(args: ConstructorType<Test001PostFrame>) {
+    super(args, {
+      host: 'http://some.api.google.com/jinframe/:passing',
+      method: 'post',
     });
   }
 }
 
 class Test002PostFrame extends JinEitherFrame {
   @JinEitherFrame.param()
-  public declare readonly passing: string;
+  declare public readonly passing: string;
 
   @JinEitherFrame.body()
-  public declare readonly username: string;
+  declare public readonly username: string;
 
   @JinEitherFrame.body()
-  public declare readonly password: string;
+  declare public readonly password: string;
 
-  constructor(args: OmitConstructorType<Test002PostFrame, JinBuiltInMember>) {
-    super({
-      ...args,
-      $$host: 'http://some.api.google.com/jinframe/:passing/:raiseerr',
-      $$method: 'post',
+  constructor(args: ConstructorType<Test002PostFrame>) {
+    super(args, {
+      host: 'http://some.api.google.com/jinframe/:passing/:raiseerr',
+      method: 'post',
     });
   }
 }

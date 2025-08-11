@@ -3,25 +3,28 @@ import { expect, it } from 'vitest';
 
 class TestGet2Frame extends JinEitherFrame {
   @JinEitherFrame.param()
-  public declare readonly passing: string;
+  declare public readonly passing: string;
 
   @JinEitherFrame.query()
-  public declare readonly name: string;
+  declare public readonly name: string;
 
   @JinEitherFrame.header()
-  public declare readonly ttt: string;
+  declare public readonly ttt: string;
 
   constructor() {
-    super({ $$path: '/jinframe/:passing/test', $$method: 'get' });
-
-    this.passing = 'hello';
-    this.name = 'ironman';
-    this.ttt = 'header value';
+    super(
+      {
+        passing: 'hello',
+        name: 'ironman',
+        ttt: 'header value',
+      },
+      { path: '/jinframe/:passing/test', method: 'get' },
+    );
   }
 }
 
 it('ignore-hostname-axios-request', async () => {
   const frame = new TestGet2Frame();
   const req = frame.request();
-  expect(req.url).toEqual('/jinframe/hello/test?name=ironman');
+  expect(req.url).toEqual('http://localhost/jinframe/hello/test?name=ironman');
 });

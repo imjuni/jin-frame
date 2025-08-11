@@ -6,37 +6,48 @@ import { afterEach, describe, expect, it } from 'vitest';
 
 class RetryTestGet01Frame extends JinFrame {
   @JinFrame.P()
-  public declare readonly passing: string;
+  declare public readonly passing: string;
 
   @JinFrame.Q()
-  public declare readonly name: string;
+  declare public readonly name: string;
 
   @JinFrame.Q({ encode: true })
-  public declare readonly skill: string[];
+  declare public readonly skill: string[];
 
   constructor() {
-    super({
-      $$host: 'http://some.api.google.com',
-      $$path: '/jinframe/:passing',
-      $$method: 'get',
-      $$retry: { max: 3, interval: 20 },
-    });
+    super(
+      {
+        passing: 'pass',
+        name: 'ironman',
+        skill: ['beam', 'flying!'],
+      },
+      {
+        host: 'http://some.api.google.com',
+        path: '/jinframe/:passing',
+        method: 'get',
+        retry: { max: 3, interval: 20 },
+      },
+    );
+  }
 
-    this.passing = 'pass';
-    this.name = 'ironman';
-    this.skill = ['beam', 'flying!'];
+  get retryData() {
+    return this.$_data.retry;
+  }
+
+  set retryData(value) {
+    this.$_data.retry = value;
   }
 }
 
 class RetryTestGet02Frame extends JinFrame {
   @JinFrame.P()
-  public declare readonly passing: string;
+  declare public readonly passing: string;
 
   @JinFrame.Q()
-  public declare readonly name: string;
+  declare public readonly name: string;
 
   @JinFrame.Q({ encode: true })
-  public declare readonly skill: string[];
+  declare public readonly skill: string[];
 
   #retryFail: string;
 
@@ -44,7 +55,11 @@ class RetryTestGet02Frame extends JinFrame {
     return this.#retryFail;
   }
 
-  $$retryFailHook<TDATA>(req: TJinRequestConfig, res: AxiosResponse<TDATA, any>): void | Promise<void> {
+  get retryData() {
+    return this.$_data.retry;
+  }
+
+  override $_retryFail<TDATA>(req: TJinRequestConfig, res: AxiosResponse<TDATA>): void | Promise<void> {
     this.#retryFail = res.data as string;
 
     console.log(req.url);
@@ -52,17 +67,21 @@ class RetryTestGet02Frame extends JinFrame {
   }
 
   constructor() {
-    super({
-      $$host: 'http://some.api.google.com',
-      $$path: '/jinframe/:passing',
-      $$method: 'get',
-      $$retry: { max: 2 },
-    });
+    super(
+      {
+        passing: 'pass',
+        name: 'ironman',
+        skill: ['beam', 'flying!'],
+      },
+      {
+        host: 'http://some.api.google.com',
+        path: '/jinframe/:passing',
+        method: 'get',
+        retry: { max: 2 },
+      },
+    );
 
     this.#retryFail = '';
-    this.passing = 'pass';
-    this.name = 'ironman';
-    this.skill = ['beam', 'flying!'];
   }
 }
 
@@ -73,16 +92,16 @@ describe('TestGet9Frame', () => {
 
   it('retry - getter', () => {
     const frame = new RetryTestGet01Frame();
-    expect(frame.$$retry?.max).toEqual(3);
-    expect(frame.$$retry?.interval).toEqual(20);
+    expect(frame.retryData?.max).toEqual(3);
+    expect(frame.retryData?.interval).toEqual(20);
   });
 
   it('retry - setter', () => {
     const frame = new RetryTestGet01Frame();
-    frame.$$retry = { max: 10, interval: 100, try: 1 };
-    expect(frame.$$retry?.max).toEqual(10);
-    expect(frame.$$retry?.try).toEqual(1);
-    expect(frame.$$retry?.interval).toEqual(100);
+    frame.retryData = { max: 10, interval: 100, try: 1 };
+    expect(frame.retryData?.max).toEqual(10);
+    expect(frame.retryData?.try).toEqual(1);
+    expect(frame.retryData?.interval).toEqual(100);
   });
 
   it('under retry count', async () => {
@@ -99,7 +118,7 @@ describe('TestGet9Frame', () => {
 
     const resp = await frame.execute();
     expect(resp.status < 400).toEqual(true);
-    expect(frame.$$retry?.try).toEqual(1);
+    expect(frame.retryData?.try).toEqual(1);
   });
 
   it('over retry count', async () => {
@@ -118,7 +137,7 @@ describe('TestGet9Frame', () => {
       await frame.execute();
     }).rejects.toThrowError();
 
-    console.log(frame.$$retry);
+    console.log(frame.retryData);
   });
 
   it('retry with hook', async () => {
@@ -138,7 +157,7 @@ describe('TestGet9Frame', () => {
       await frame.execute();
     }).rejects.toThrowError();
 
-    console.log('A: ', frame.$$retry, frame.retryFail);
+    console.log('A: ', frame.retryData, frame.retryFail);
 
     expect(frame.retryFail).toEqual(errorMessage);
   });

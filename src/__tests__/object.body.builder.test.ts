@@ -1,141 +1,56 @@
 import { JinEitherFrame } from '#frames/JinEitherFrame';
+import { ConstructorType } from '#tools/type-utilities/ConstructorType';
 import { lightFormat } from 'date-fns';
-import { expect, it } from 'vitest';
+import { describe, expect, it } from 'vitest';
 
 class Test001PostFrame extends JinEitherFrame {
   @JinEitherFrame.param()
-  public declare readonly passing: string;
+  declare public readonly passing: string;
 
   @JinEitherFrame.body()
-  public declare readonly username: string;
+  declare public readonly username: string;
 
   @JinEitherFrame.body()
-  public declare readonly password: string;
+  declare public readonly password: string;
 
   @JinEitherFrame.O()
-  public declare readonly hero: { name: string; age: number; bio: { birth: string } };
+  declare public readonly hero: { name: string; age: number; bio: { birth: string } };
 
-  constructor(args: {
-    passing: string;
-    username: string;
-    password: string;
-    hero: { name: string; age: number; bio: { birth: string } };
-  }) {
-    super({
-      $$host: 'http://some.api.google.com/jinframe/:passing',
-      $$method: 'POST',
+  constructor(args: ConstructorType<Test001PostFrame>) {
+    super(args, {
+      host: 'http://some.api.google.com/jinframe/:passing',
+      method: 'POST',
     });
-
-    this.passing = args.passing;
-    this.username = args.username;
-    this.password = args.password;
-    this.hero = args.hero;
   }
 }
-
-it('T001-plain-object-type', async () => {
-  const frame = new Test001PostFrame({
-    passing: 'hello',
-    username: 'ironman',
-    password: 'advengers',
-    hero: { name: 'ironman', age: 33, bio: { birth: '2022-11-22 11:22:33' } },
-  });
-  const req = frame.request();
-
-  const excpetation = {
-    timeout: 120000,
-    headers: { 'Content-Type': 'application/json' },
-    method: 'POST',
-    data: {
-      username: 'ironman',
-      password: 'advengers',
-      age: 33,
-      bio: {
-        birth: '2022-11-22 11:22:33',
-      },
-      name: 'ironman',
-    },
-    transformRequest: undefined,
-    url: 'http://some.api.google.com/jinframe/hello',
-    validateStatus: undefined,
-  };
-
-  // console.log(req.data);
-
-  expect(req).toEqual(excpetation);
-});
 
 class Test002PostFrame extends JinEitherFrame {
   @JinEitherFrame.param()
-  public declare readonly passing: string;
+  declare public readonly passing: string;
 
   @JinEitherFrame.body()
-  public declare readonly username: string;
+  declare public readonly username: string;
 
   @JinEitherFrame.objectBody()
-  public declare readonly hero: { name: string; age: number; bio: { birth: string } };
+  declare public readonly hero: { name: string; age: number; bio: { birth: string } };
 
   @JinEitherFrame.objectBody()
-  public declare readonly ability: { skill: string; count: number; category: { name: string } };
+  declare public readonly ability: { skill: string; count: number; category: { name: string } };
 
-  constructor(args: {
-    passing: string;
-    username: string;
-    hero: { name: string; age: number; bio: { birth: string } };
-    ability: { skill: string; count: number; category: { name: string } };
-  }) {
-    super({
-      $$host: 'http://some.api.google.com/jinframe/:passing',
-      $$method: 'POST',
+  constructor(args: ConstructorType<Test002PostFrame>) {
+    super(args, {
+      host: 'http://some.api.google.com/jinframe/:passing',
+      method: 'POST',
     });
-
-    this.passing = args.passing;
-    this.username = args.username;
-    this.hero = args.hero;
-    this.ability = args.ability;
   }
 }
 
-it('T002-merge-two-object', async () => {
-  const frame = new Test002PostFrame({
-    passing: 'hello',
-    username: 'ironman',
-    ability: { skill: 'Energy repulsor', count: 5, category: { name: 'laser' } },
-    hero: { name: 'ironman', age: 33, bio: { birth: '2022-11-22 11:22:33' } },
-  });
-  const req = frame.request();
-
-  const excpetation = {
-    timeout: 120000,
-    headers: { 'Content-Type': 'application/json' },
-    method: 'POST',
-    data: {
-      username: 'ironman',
-      age: 33,
-      bio: {
-        birth: '2022-11-22 11:22:33',
-      },
-      name: 'ironman',
-      skill: 'Energy repulsor',
-      count: 5,
-      category: { name: 'laser' },
-    },
-    transformRequest: undefined,
-    url: 'http://some.api.google.com/jinframe/hello',
-    validateStatus: undefined,
-  };
-
-  // console.log(req.data);
-
-  expect(req).toEqual(excpetation);
-});
-
 class Test003PostFrame extends JinEitherFrame {
   @JinEitherFrame.param()
-  public declare readonly passing: string;
+  declare public readonly passing: string;
 
   @JinEitherFrame.body()
-  public declare readonly username: string;
+  declare public readonly username: string;
 
   @JinEitherFrame.objectBody({
     formatters: {
@@ -143,7 +58,7 @@ class Test003PostFrame extends JinEitherFrame {
       dateTime: (value) => lightFormat(value, 'yyyy-MM-dd HH:mm:ss'),
     },
   })
-  public declare readonly hero: { name: string; age: number; bio: { birth: Date } };
+  declare public readonly hero: { name: string; age: number; bio: { birth: Date } };
 
   @JinEitherFrame.objectBody({
     formatters: {
@@ -151,70 +66,22 @@ class Test003PostFrame extends JinEitherFrame {
       dateTime: (value) => lightFormat(value, 'yyyy-MM-dd HH:mm:ss'),
     },
   })
-  public declare readonly ability: { skill: string; count: number; category: { name: string; developAt: Date } };
+  declare public readonly ability: { skill: string; count: number; category: { name: string; developAt: Date } };
 
-  constructor(args: {
-    passing: string;
-    username: string;
-    hero: { name: string; age: number; bio: { birth: Date } };
-    ability: { skill: string; count: number; category: { name: string; developAt: Date } };
-  }) {
-    super({
-      $$host: 'http://some.api.google.com/jinframe/:passing',
-      $$method: 'POST',
+  constructor(args: ConstructorType<Test003PostFrame>) {
+    super(args, {
+      host: 'http://some.api.google.com/jinframe/:passing',
+      method: 'POST',
     });
-
-    this.passing = args.passing;
-    this.username = args.username;
-    this.hero = args.hero;
-    this.ability = args.ability;
   }
 }
 
-it('T003-merge-and-formatting', async () => {
-  const frame = new Test003PostFrame({
-    passing: 'hello',
-    username: 'ironman',
-    ability: {
-      skill: 'Energy repulsor',
-      count: 5,
-      category: { name: 'laser', developAt: new Date(1980, 2, 11, 1, 33, 0) },
-    },
-    hero: { name: 'ironman', age: 33, bio: { birth: new Date(1970, 2, 11, 1, 33, 0) } },
-  });
-  const req = frame.request();
-
-  const excpetation = {
-    timeout: 120000,
-    headers: { 'Content-Type': 'application/json' },
-    method: 'POST',
-    data: {
-      username: 'ironman',
-      age: 33,
-      bio: {
-        birth: '1970-03-11 01:33:00',
-      },
-      name: 'ironman',
-      skill: 'Energy repulsor',
-      count: 5,
-      category: { name: 'laser', developAt: '1980-03-11 01:33:00' },
-    },
-    transformRequest: undefined,
-    url: 'http://some.api.google.com/jinframe/hello',
-    validateStatus: undefined,
-  };
-
-  // console.log(req.data);
-
-  expect(req).toEqual(excpetation);
-});
-
 class Test004PostFrame extends JinEitherFrame {
   @JinEitherFrame.param()
-  public declare readonly passing: string;
+  declare public readonly passing: string;
 
   @JinEitherFrame.body()
-  public declare readonly username: string;
+  declare public readonly username: string;
 
   @JinEitherFrame.objectBody({
     order: 2,
@@ -223,7 +90,7 @@ class Test004PostFrame extends JinEitherFrame {
       dateTime: (value) => lightFormat(value, 'yyyy-MM-dd HH:mm:ss'),
     },
   })
-  public declare readonly hero: { name: string; age: number; bio: { birth: Date } };
+  declare public readonly hero: { name: string; age: number; bio: { birth: Date } };
 
   @JinEitherFrame.objectBody({
     order: 1,
@@ -232,22 +99,17 @@ class Test004PostFrame extends JinEitherFrame {
       dateTime: (value) => lightFormat(value, 'yyyy-MM-dd HH:mm:ss'),
     },
   })
-  public declare readonly ability: {
+  declare public readonly ability: {
     name: string;
     skill: string;
     count: number;
     category: { name: string; developAt: Date };
   };
 
-  constructor(args: {
-    passing: string;
-    username: string;
-    hero: { name: string; age: number; bio: { birth: Date } };
-    ability: { name: string; skill: string; count: number; category: { name: string; developAt: Date } };
-  }) {
-    super({
-      $$host: 'http://some.api.google.com/jinframe/:passing',
-      $$method: 'POST',
+  constructor(args: ConstructorType<Test004PostFrame>) {
+    super(args, {
+      host: 'http://some.api.google.com/jinframe/:passing',
+      method: 'POST',
     });
 
     this.passing = args.passing;
@@ -257,41 +119,147 @@ class Test004PostFrame extends JinEitherFrame {
   }
 }
 
-it('T004-merge-and-formatting', async () => {
-  const frame = new Test004PostFrame({
-    passing: 'hello',
-    username: 'ironman',
-    ability: {
-      name: 'batman',
-      skill: 'Energy repulsor',
-      count: 5,
-      category: { name: 'laser', developAt: new Date(1980, 2, 11, 1, 33, 0) },
-    },
-    hero: { name: 'ironman', age: 33, bio: { birth: new Date(1970, 2, 11, 1, 33, 0) } },
-  });
-  const req = frame.request();
-
-  const excpetation = {
-    timeout: 120000,
-    headers: { 'Content-Type': 'application/json' },
-    method: 'POST',
-    data: {
+describe('JinEitherFrame ObjectBody using Object', () => {
+  it('T001-plain-object-type', async () => {
+    const frame = new Test001PostFrame({
+      passing: 'hello',
       username: 'ironman',
-      age: 33,
-      bio: {
-        birth: '1970-03-11 01:33:00',
+      password: 'advengers',
+      hero: { name: 'ironman', age: 33, bio: { birth: '2022-11-22 11:22:33' } },
+    });
+    const req = frame.request();
+
+    const excpetation = {
+      timeout: 120000,
+      headers: { 'Content-Type': 'application/json' },
+      method: 'POST',
+      data: {
+        username: 'ironman',
+        password: 'advengers',
+        age: 33,
+        bio: {
+          birth: '2022-11-22 11:22:33',
+        },
+        name: 'ironman',
       },
-      name: 'ironman',
-      skill: 'Energy repulsor',
-      count: 5,
-      category: { name: 'laser', developAt: '1980-03-11 01:33:00' },
-    },
-    transformRequest: undefined,
-    url: 'http://some.api.google.com/jinframe/hello',
-    validateStatus: undefined,
-  };
+      transformRequest: undefined,
+      url: 'http://some.api.google.com/jinframe/hello',
+      validateStatus: undefined,
+    };
 
-  // console.log(req.data);
+    // console.log(req.data);
 
-  expect(req).toEqual(excpetation);
+    expect(req).toEqual(excpetation);
+  });
+
+  it('T002-merge-two-object', async () => {
+    const frame = new Test002PostFrame({
+      passing: 'hello',
+      username: 'ironman',
+      ability: { skill: 'Energy repulsor', count: 5, category: { name: 'laser' } },
+      hero: { name: 'ironman', age: 33, bio: { birth: '2022-11-22 11:22:33' } },
+    });
+    const req = frame.request();
+
+    const excpetation = {
+      timeout: 120000,
+      headers: { 'Content-Type': 'application/json' },
+      method: 'POST',
+      data: {
+        username: 'ironman',
+        age: 33,
+        bio: {
+          birth: '2022-11-22 11:22:33',
+        },
+        name: 'ironman',
+        skill: 'Energy repulsor',
+        count: 5,
+        category: { name: 'laser' },
+      },
+      transformRequest: undefined,
+      url: 'http://some.api.google.com/jinframe/hello',
+      validateStatus: undefined,
+    };
+
+    // console.log(req.data);
+
+    expect(req).toEqual(excpetation);
+  });
+
+  it('T003-merge-and-formatting', async () => {
+    const frame = new Test003PostFrame({
+      passing: 'hello',
+      username: 'ironman',
+      ability: {
+        skill: 'Energy repulsor',
+        count: 5,
+        category: { name: 'laser', developAt: new Date(1980, 2, 11, 1, 33, 0) },
+      },
+      hero: { name: 'ironman', age: 33, bio: { birth: new Date(1970, 2, 11, 1, 33, 0) } },
+    });
+    const req = frame.request();
+
+    const excpetation = {
+      timeout: 120000,
+      headers: { 'Content-Type': 'application/json' },
+      method: 'POST',
+      data: {
+        username: 'ironman',
+        age: 33,
+        bio: {
+          birth: '1970-03-11 01:33:00',
+        },
+        name: 'ironman',
+        skill: 'Energy repulsor',
+        count: 5,
+        category: { name: 'laser', developAt: '1980-03-11 01:33:00' },
+      },
+      transformRequest: undefined,
+      url: 'http://some.api.google.com/jinframe/hello',
+      validateStatus: undefined,
+    };
+
+    // console.log(req.data);
+
+    expect(req).toEqual(excpetation);
+  });
+
+  it('T004-merge-and-formatting', async () => {
+    const frame = new Test004PostFrame({
+      passing: 'hello',
+      username: 'ironman',
+      ability: {
+        name: 'batman',
+        skill: 'Energy repulsor',
+        count: 5,
+        category: { name: 'laser', developAt: new Date(1980, 2, 11, 1, 33, 0) },
+      },
+      hero: { name: 'ironman', age: 33, bio: { birth: new Date(1970, 2, 11, 1, 33, 0) } },
+    });
+    const req = frame.request();
+
+    const excpetation = {
+      timeout: 120000,
+      headers: { 'Content-Type': 'application/json' },
+      method: 'POST',
+      data: {
+        username: 'ironman',
+        age: 33,
+        bio: {
+          birth: '1970-03-11 01:33:00',
+        },
+        name: 'ironman',
+        skill: 'Energy repulsor',
+        count: 5,
+        category: { name: 'laser', developAt: '1980-03-11 01:33:00' },
+      },
+      transformRequest: undefined,
+      url: 'http://some.api.google.com/jinframe/hello',
+      validateStatus: undefined,
+    };
+
+    // console.log(req.data);
+
+    expect(req).toEqual(excpetation);
+  });
 });

@@ -1,15 +1,5 @@
+import type { TSingleBodyFormatter } from '#interfaces/body/TSingleBodyFormatter';
 import type { ICommonFieldOption } from '#interfaces/ICommonFieldOption';
-import type { IFormatter } from '#interfaces/IFormatter';
-
-export type TSingleObjectBodyFormatter = {
-  /** use `dot notation`(eg. data.more.birthday) to specify where the results will be stored */
-  findFrom: string;
-} & IFormatter;
-
-export type TMultipleObjectBodyFormatter = ({
-  /** use `dot notation`(eg. data.more.birthday) to specify where the results will be stored */
-  findFrom: string;
-} & IFormatter)[];
 
 export interface IObjectBodyFieldOption extends ICommonFieldOption {
   type: 'object-body';
@@ -18,7 +8,7 @@ export interface IObjectBodyFieldOption extends ICommonFieldOption {
    * merge order of object-body. Sorted in ascending order. Objects with fast numbers are overwritten by
    * object with slow number.
    *
-   * @default 0
+   * @default Number.MAX_SAFE_INTEGER
    * */
   order?: number;
 
@@ -46,5 +36,5 @@ export interface IObjectBodyFieldOption extends ICommonFieldOption {
    * }
    * ```
    * */
-  formatters?: TSingleObjectBodyFormatter | TMultipleObjectBodyFormatter;
+  formatters?: TSingleBodyFormatter | TSingleBodyFormatter[];
 }

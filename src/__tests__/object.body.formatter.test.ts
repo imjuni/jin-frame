@@ -1,10 +1,11 @@
 import { JinEitherFrame } from '#frames/JinEitherFrame';
+import { ConstructorType } from '#tools/type-utilities/ConstructorType';
 import { lightFormat } from 'date-fns';
 import { expect, it } from 'vitest';
 
 class Test001PostFrame extends JinEitherFrame {
   @JinEitherFrame.param()
-  public declare readonly passing: string;
+  declare public readonly passing: string;
 
   @JinEitherFrame.O({
     formatters: [
@@ -23,23 +24,16 @@ class Test001PostFrame extends JinEitherFrame {
       },
     ],
   })
-  public declare readonly ability: {
+  declare public readonly ability: {
     name: string;
     date: Date;
     desc: string;
   };
 
-  constructor(args: {
-    passing: string;
-    ability: {
-      name: string;
-      date: Date;
-      desc: string;
-    };
-  }) {
-    super({
-      $$host: 'http://some.api.google.com/jinframe/:passing',
-      $$method: 'POST',
+  constructor(args: ConstructorType<Test001PostFrame>) {
+    super(args, {
+      host: 'http://some.api.google.com/jinframe/:passing',
+      method: 'POST',
     });
 
     this.passing = args.passing;

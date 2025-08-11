@@ -1,4 +1,4 @@
-import type { ReadStream } from 'fs';
+import type { ReadStream } from 'node:fs';
 
 export class JinFile<T extends ReadStream | Buffer | File | Blob = File> {
   /** filename */
@@ -12,11 +12,11 @@ export class JinFile<T extends ReadStream | Buffer | File | Blob = File> {
     this.#name = name;
   }
 
-  get file() {
+  get file(): T {
     return this.#file;
   }
 
-  get name() {
+  get name(): string {
     return this.#name;
   }
 }
