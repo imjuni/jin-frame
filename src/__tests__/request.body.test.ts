@@ -1,4 +1,5 @@
 import { JinEitherFrame } from '#frames/JinEitherFrame';
+import { ConstructorType } from '#tools/type-utilities/ConstructorType';
 import { format, parse } from 'date-fns';
 import { expect, it } from 'vitest';
 
@@ -64,13 +65,13 @@ const share: { first: IFirstBody; second: ISecondBody; third: IThirdBody } = {
 
 class Test001PostFrame extends JinEitherFrame {
   @JinEitherFrame.param()
-  public declare readonly passing: string;
+  declare public readonly passing: string;
 
   @JinEitherFrame.query()
-  public declare readonly name: string;
+  declare public readonly name: string;
 
   @JinEitherFrame.query({ encode: true })
-  public declare readonly skill: string[];
+  declare public readonly skill: string[];
 
   @JinEitherFrame.body({
     formatters: [
@@ -90,16 +91,18 @@ class Test001PostFrame extends JinEitherFrame {
       },
     ],
   })
-  public declare readonly multipleFormatting: IFirstBody;
+  declare public readonly multipleFormatting: IFirstBody;
 
-  constructor({ multipleFormatting }: { multipleFormatting: IFirstBody }) {
-    super({ $$host: 'http://some.api.google.com', $$path: '/jinframe/:passing', $$method: 'POST' });
-
-    this.passing = 'pass';
-    this.name = 'ironman';
-    this.skill = ['beam', 'flying!'];
-
-    this.multipleFormatting = multipleFormatting;
+  constructor(args: Pick<ConstructorType<Test001PostFrame>, 'multipleFormatting'>) {
+    super(
+      {
+        ...args,
+        passing: 'pass',
+        name: 'ironman',
+        skill: ['beam', 'flying!'],
+      },
+      { host: 'http://some.api.google.com', path: '/jinframe/:passing', method: 'POST' },
+    );
   }
 }
 
@@ -126,13 +129,13 @@ it('T001-object-type-field-multiple-formatting', async () => {
 
 class Test002PostFrame extends JinEitherFrame {
   @JinEitherFrame.param()
-  public declare readonly passing: string;
+  declare public readonly passing: string;
 
   @JinEitherFrame.query()
-  public declare readonly name: string;
+  declare public readonly name: string;
 
   @JinEitherFrame.query({ encode: true })
-  public declare readonly skill: string[];
+  declare public readonly skill: string[];
 
   @JinEitherFrame.body({
     formatters: [
@@ -152,7 +155,7 @@ class Test002PostFrame extends JinEitherFrame {
       },
     ],
   })
-  public declare readonly hero: IFirstBody;
+  declare public readonly hero: IFirstBody;
 
   @JinEitherFrame.body({
     formatters: [
@@ -163,39 +166,31 @@ class Test002PostFrame extends JinEitherFrame {
       },
     ],
   })
-  public declare readonly heroBio: ISecondBody;
+  declare public readonly heroBio: ISecondBody;
 
   @JinEitherFrame.body({
     replaceAt: 'companion',
   })
-  public declare readonly thirdField: IThirdBody;
+  declare public readonly thirdField: IThirdBody;
 
-  constructor({
-    firstBody,
-    secondBody,
-    thirdBody,
-  }: {
-    firstBody: IFirstBody;
-    secondBody: ISecondBody;
-    thirdBody: IThirdBody;
-  }) {
-    super({ $$host: 'http://some.api.google.com', $$path: '/jinframe/:passing', $$method: 'POST' });
-
-    this.passing = 'pass';
-    this.name = 'ironman';
-    this.skill = ['beam', 'flying!'];
-
-    this.hero = { ...firstBody };
-    this.heroBio = { ...secondBody };
-    this.thirdField = { ...thirdBody };
+  constructor(args: Pick<ConstructorType<Test002PostFrame>, 'hero' | 'heroBio' | 'thirdField'>) {
+    super(
+      {
+        ...args,
+        passing: 'pass',
+        name: 'ironman',
+        skill: ['beam', 'flying!'],
+      },
+      { host: 'http://some.api.google.com', path: '/jinframe/:passing', method: 'POST' },
+    );
   }
 }
 
 it('T0002-many-object-field-multiple-formattin', async () => {
   const frame = new Test002PostFrame({
-    firstBody: structuredClone(share.first),
-    secondBody: structuredClone(share.second),
-    thirdBody: structuredClone(share.third),
+    hero: structuredClone(share.first),
+    heroBio: structuredClone(share.second),
+    thirdField: structuredClone(share.third),
   });
   const req = frame.request();
 

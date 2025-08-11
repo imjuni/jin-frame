@@ -1,6 +1,6 @@
 import type { ICommonFieldOption } from '#interfaces/ICommonFieldOption';
-import type { IQueryParamCommonFieldOption } from '#interfaces/IQueryParamCommonFieldOption';
+import type { IQueryParamHeaderCommonFieldOption } from '#interfaces/IQueryParamHeaderCommonFieldOption';
 
-export interface IQueryFieldOption extends ICommonFieldOption, IQueryParamCommonFieldOption {
+export interface IQueryFieldOption extends ICommonFieldOption, IQueryParamHeaderCommonFieldOption {
   type: 'query';
 }

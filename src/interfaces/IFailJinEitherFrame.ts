@@ -10,6 +10,7 @@ export interface IFailJinEitherFrame<T = unknown> extends Pick<AxiosResponse, 's
   /** debugging information */
   $debug: Omit<IDebugInfo, 'req'>;
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   $frame: JinEitherFrame<any, T>;
 }
 

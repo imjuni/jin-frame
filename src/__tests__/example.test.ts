@@ -1,7 +1,7 @@
 import { JinEitherFrame } from '#frames/JinEitherFrame';
-import type { JinConstructorType } from '#tools/type-utilities/JinConstructorType';
+import { ConstructorType } from '#tools/type-utilities/ConstructorType';
 import axios, { type AxiosRequestConfig } from 'axios';
-import { it } from 'vitest';
+import { describe, it } from 'vitest';
 
 interface IReqGetPokemonInfoByName {
   limit: number;
@@ -14,44 +14,43 @@ async function getPokemonInfoByName(inp: IReqGetPokemonInfoByName) {
     method: 'get',
   };
 
-  const reply = await axios.request(req);
+  const reply = await axios.request<Record<string, string>>(req);
   return reply.data;
 }
 
 class PokemonPagingFrame extends JinEitherFrame<any, any> {
   @JinEitherFrame.query()
-  readonly limit: number;
+  declare readonly limit: number;
 
   @JinEitherFrame.query()
-  readonly offset: number;
+  declare readonly offset: number;
 
-  constructor(args: JinConstructorType<PokemonPagingFrame>) {
-    super({
-      $$host: 'https://pokeapi.co/api/v2/pokemon',
-      $$method: 'GET',
+  constructor(args: ConstructorType<PokemonPagingFrame>) {
+    super(args, {
+      host: 'https://pokeapi.co/api/v2/pokemon',
+      method: 'GET',
     });
-
-    this.limit = args.limit;
-    this.offset = args.offset;
   }
 }
 
-it('getPokemonInfoByName', async () => {
-  await getPokemonInfoByName({
-    limit: 10,
-    offset: 0,
+describe('Real Request and Response', () => {
+  it('getPokemonInfoByName', async () => {
+    await getPokemonInfoByName({
+      limit: 10,
+      offset: 0,
+    });
+
+    // console.log(reply);
   });
 
-  // console.log(reply);
-});
+  it('PokemonPagingFrame', async () => {
+    const frame = new PokemonPagingFrame({
+      limit: 10,
+      offset: 0,
+    });
 
-it('PokemonPagingFrame', async () => {
-  const frame = new PokemonPagingFrame({
-    limit: 10,
-    offset: 0,
+    await frame.execute();
+
+    // console.log(reply.pass.data);
   });
-
-  await frame.execute();
-
-  // console.log(reply.pass.data);
 });

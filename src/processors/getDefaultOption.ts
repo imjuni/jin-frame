@@ -10,7 +10,7 @@ export function getDefaultQueryFieldOption(
 ): IQueryFieldOption {
   return {
     type: 'query',
-    formatter: option?.formatter ?? undefined,
+    formatters: option?.formatters ?? undefined,
     comma: option?.comma ?? false,
     bit: {
       enable: option?.bit?.enable ?? false,
@@ -26,7 +26,7 @@ export function getDefaultParamFieldOption(
 ): IParamFieldOption {
   return {
     type: 'param',
-    formatter: option?.formatter ?? undefined,
+    formatters: option?.formatters ?? undefined,
     comma: option?.comma ?? false,
     bit: {
       enable: option?.bit?.enable ?? false,
@@ -97,6 +97,7 @@ export function getDefaultHeaderFieldOption(
   if (option == null) {
     return {
       type: 'header',
+      bit: { enable: false, withZero: false },
       encode: true,
       comma: false,
     };
@@ -105,6 +106,7 @@ export function getDefaultHeaderFieldOption(
   if ('formatters' in option) {
     return {
       type: 'header',
+      bit: { enable: false, withZero: false },
       formatters: option.formatters ?? undefined,
       replaceAt: option.replaceAt ?? undefined,
       comma: option.comma ?? false,
@@ -115,6 +117,7 @@ export function getDefaultHeaderFieldOption(
   return {
     type: 'header',
     replaceAt: option.replaceAt ?? undefined,
+    bit: { enable: false, withZero: false },
     comma: option.comma ?? false,
     encode: option.encode ?? true,
   };

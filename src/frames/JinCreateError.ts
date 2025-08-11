@@ -13,21 +13,13 @@ export class JinCreateError<
 
   #debug: Omit<IDebugInfo, 'req'>;
 
-  #frame: T extends JinFrame<TPASS, TFAIL> ? JinFrame<TPASS, TFAIL> : JinEitherFrame<TPASS, TFAIL>;
+  #frame: T;
 
   #status: AxiosError['status'];
 
   #statusText: string;
 
-  constructor({
-    debug,
-    frame,
-    message,
-  }: {
-    debug: Omit<IDebugInfo, 'req'>;
-    frame: T extends JinFrame<TPASS, TFAIL> ? JinFrame<TPASS, TFAIL> : JinEitherFrame<TPASS, TFAIL>;
-    message: string;
-  }) {
+  constructor({ debug, frame, message }: { debug: Omit<IDebugInfo, 'req'>; frame: T; message: string }) {
     super(message);
 
     this.#debug = debug;
@@ -40,7 +32,7 @@ export class JinCreateError<
     return this.#debug;
   }
 
-  get frame(): T extends JinFrame<TPASS, TFAIL> ? JinFrame<TPASS, TFAIL> : JinEitherFrame<TPASS, TFAIL> {
+  get frame(): T {
     return this.#frame;
   }
 

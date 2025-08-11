@@ -1,15 +1,5 @@
+import type { TSingleBodyFormatter } from '#interfaces/body/TSingleBodyFormatter';
 import type { ICommonFieldOption } from '#interfaces/ICommonFieldOption';
-import type { IFormatter } from '#interfaces/IFormatter';
-
-export type TSingleBodyFormatter = {
-  /** use `dot notation`(eg. data.more.birthday) to specify where the results will be stored */
-  findFrom?: string;
-} & IFormatter;
-
-export type TMultipleBodyFormatter = ({
-  /** use `dot notation`(eg. data.more.birthday) to specify where the results will be stored */
-  findFrom?: string;
-} & IFormatter)[];
 
 export interface IBodyFieldOption extends ICommonFieldOption {
   type: 'body';
@@ -47,5 +37,5 @@ export interface IBodyFieldOption extends ICommonFieldOption {
    * }
    * ```
    * */
-  formatters?: TSingleBodyFormatter | TMultipleBodyFormatter;
+  formatters?: TSingleBodyFormatter | TSingleBodyFormatter[];
 }

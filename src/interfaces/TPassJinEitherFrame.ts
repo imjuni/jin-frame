@@ -6,6 +6,7 @@ import type { IPass } from 'my-only-either';
 export type TPassJinEitherFrame<T> = AxiosResponse<T> & {
   $progress: 'pass';
   $debug: IDebugInfo;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   $frame: JinEitherFrame<T, any>;
 };
 

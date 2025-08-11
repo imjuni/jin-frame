@@ -1,224 +1,214 @@
 import { JinEitherFrame } from '#frames/JinEitherFrame';
-import { expect, it } from 'vitest';
+import { ConstructorType } from '#tools/type-utilities/ConstructorType';
+import { describe, expect, it } from 'vitest';
 
 class Test001PostFrame extends JinEitherFrame {
   @JinEitherFrame.param()
-  public declare readonly passing: string;
+  declare public readonly passing: string;
 
   @JinEitherFrame.H()
-  public declare readonly username: string;
+  declare public readonly username: string;
 
   @JinEitherFrame.H()
-  public declare readonly password: string;
+  declare public readonly password: string;
 
-  constructor(args: { passing: string; username: string; password: string }) {
-    super({
-      ...args,
-      $$host: 'http://some.api.google.com/jinframe/:passing',
-      $$method: 'POST',
+  constructor(args: ConstructorType<Test001PostFrame>) {
+    super(args, {
+      host: 'http://some.api.google.com/jinframe/:passing',
+      method: 'POST',
     });
   }
 }
-
-it('T001-primitive-type', async () => {
-  const frame = new Test001PostFrame({ passing: 'hello', username: 'ironman', password: 'advengers' });
-  const req = frame.request();
-
-  const excpetation = {
-    timeout: 120000,
-    headers: { 'Content-Type': 'application/json', username: 'ironman', password: 'advengers' },
-    method: 'POST',
-    transformRequest: undefined,
-    url: 'http://some.api.google.com/jinframe/hello',
-    validateStatus: undefined,
-  };
-
-  expect(req).toEqual(excpetation);
-});
-
-it('T001-header', async () => {
-  const frame = new Test001PostFrame({ passing: 'hello', username: 'ironman', password: 'advengers' });
-  frame.request();
-
-  expect(frame.$$header).toMatchObject({
-    username: 'ironman',
-    password: 'advengers',
-    'Content-Type': 'application/json',
-  });
-});
 
 class Test002PostFrame extends JinEitherFrame {
   @JinEitherFrame.param()
-  public declare readonly passing: string;
+  declare public readonly passing: string;
 
   @JinEitherFrame.header({ replaceAt: 'uuu' })
-  public declare readonly username: string;
+  declare public readonly username: string;
 
   @JinEitherFrame.header({ replaceAt: 'ppp' })
-  public declare readonly password: string;
+  declare public readonly password: string;
 
-  constructor(args: { passing: string; username: string; password: string }) {
-    super({
-      ...args,
-      $$host: 'http://some.api.google.com/jinframe/:passing',
-      $$method: 'POST',
+  constructor(args: ConstructorType<Test002PostFrame>) {
+    super(args, {
+      host: 'http://some.api.google.com/jinframe/:passing',
+      method: 'POST',
     });
   }
 }
-
-it('T002-primitive-type-key-replace', async () => {
-  const frame = new Test002PostFrame({ passing: 'hello', username: 'ironman', password: 'advengers' });
-  const req = frame.request();
-
-  const excpetation = {
-    timeout: 120000,
-    headers: { 'Content-Type': 'application/json', uuu: 'ironman', ppp: 'advengers' },
-    method: 'POST',
-    transformRequest: undefined,
-    url: 'http://some.api.google.com/jinframe/hello',
-    validateStatus: undefined,
-  };
-
-  expect(req).toEqual(excpetation);
-});
 
 class Test003PostFrame extends JinEitherFrame {
   @JinEitherFrame.param()
-  public declare readonly passing: string;
+  declare public readonly passing: string;
 
   @JinEitherFrame.header({ replaceAt: 'uuu.username' })
-  public declare readonly username: string;
+  declare public readonly username: string;
 
   @JinEitherFrame.header({ replaceAt: 'ppp.password' })
-  public declare readonly password: string;
+  declare public readonly password: string;
 
-  constructor(args: { passing: string; username: string; password: string }) {
-    super({
-      ...args,
-      $$host: 'http://some.api.google.com/jinframe/:passing',
-      $$method: 'POST',
+  constructor(args: ConstructorType<Test003PostFrame>) {
+    super(args, {
+      host: 'http://some.api.google.com/jinframe/:passing',
+      method: 'POST',
     });
   }
 }
 
-it('T003-primitive-type-key-replace-at-not-support-dot-props', async () => {
-  const frame = new Test003PostFrame({ passing: 'hello', username: 'ironman', password: 'advengers' });
-  const req = frame.request();
-
-  const excpetation = {
-    timeout: 120000,
-    headers: { 'Content-Type': 'application/json', 'ppp.password': 'advengers', 'uuu.username': 'ironman' },
-    method: 'POST',
-    transformRequest: undefined,
-    url: 'http://some.api.google.com/jinframe/hello',
-    validateStatus: undefined,
-  };
-
-  // console.log(req.headers);
-
-  expect(req).toEqual(excpetation);
-});
-
 class Test004PostFrame extends JinEitherFrame {
   @JinEitherFrame.param()
-  public declare readonly passing: string;
+  declare public readonly passing: string;
 
   @JinEitherFrame.header()
-  public declare readonly username: string;
+  declare public readonly username: string;
 
   @JinEitherFrame.header()
-  public declare readonly hero: {
+  declare public readonly hero: {
     name: string;
     ability: string;
     age: number;
   };
 
-  constructor(args: {
-    passing: string;
-    username: string;
-    hero: {
-      name: string;
-      ability: string;
-      age: number;
-    };
-  }) {
-    super({
-      ...args,
-      $$host: 'http://some.api.google.com/jinframe/:passing',
-      $$method: 'POST',
+  constructor(args: ConstructorType<Test004PostFrame>) {
+    super(args, {
+      host: 'http://some.api.google.com/jinframe/:passing',
+      method: 'POST',
     });
   }
 }
-
-it('T004-plain-object-type-json-serialization', async () => {
-  const frame = new Test004PostFrame({
-    passing: 'hello',
-    username: 'ironman',
-    hero: { name: 'ironman', ability: 'proto cannon', age: 33 },
-  });
-
-  const req = frame.request();
-
-  const excpetation = {
-    timeout: 120000,
-    headers: {
-      'Content-Type': 'application/json',
-      username: 'ironman',
-      hero: '%7B%22name%22%3A%22ironman%22%2C%22ability%22%3A%22proto%20cannon%22%2C%22age%22%3A33%7D',
-    },
-    method: 'POST',
-    transformRequest: undefined,
-    url: 'http://some.api.google.com/jinframe/hello',
-    validateStatus: undefined,
-  };
-
-  // console.log(req.headers);
-
-  expect(req).toEqual(excpetation);
-});
 
 class Test005PostFrame extends JinEitherFrame {
   @JinEitherFrame.param()
-  public declare readonly passing: string;
+  declare public readonly passing: string;
 
   @JinEitherFrame.header()
-  public declare readonly username: string;
+  declare public readonly username: string;
 
   @JinEitherFrame.header({ comma: true, encode: false })
-  public declare readonly hero: string[];
+  declare public readonly hero: string[];
 
-  constructor(args: { passing: string; username: string; hero: string[] }) {
-    super({
-      ...args,
-      $$host: 'http://some.api.google.com/jinframe/:passing',
-      $$method: 'POST',
+  constructor(args: ConstructorType<Test005PostFrame>) {
+    super(args, {
+      host: 'http://some.api.google.com/jinframe/:passing',
+      method: 'POST',
     });
   }
 }
 
-it('T005-plain-object-type-array-comma-seperated', async () => {
-  const frame = new Test005PostFrame({
-    passing: 'hello',
-    username: 'ironman',
-    hero: ['ironman', 'thor', 'hulk', 'doctor strange'],
+describe('JinEitherFrame - Header', () => {
+  it('T001-primitive-type', async () => {
+    const frame = new Test001PostFrame({ passing: 'hello', username: 'ironman', password: 'advengers' });
+    const req = frame.request();
+
+    const excpetation = {
+      timeout: 120000,
+      headers: { 'Content-Type': 'application/json', username: 'ironman', password: 'advengers' },
+      method: 'POST',
+      transformRequest: undefined,
+      url: 'http://some.api.google.com/jinframe/hello',
+      validateStatus: undefined,
+    };
+
+    expect(req).toEqual(excpetation);
   });
 
-  const req = frame.request();
+  it('T001-header', async () => {
+    const frame = new Test001PostFrame({ passing: 'hello', username: 'ironman', password: 'advengers' });
+    const req = frame.request();
 
-  const excpetation = {
-    timeout: 120000,
-    headers: {
-      'Content-Type': 'application/json',
+    expect(req.headers).toMatchObject({
       username: 'ironman',
-      hero: 'ironman,thor,hulk,doctor strange',
-    },
-    method: 'POST',
-    transformRequest: undefined,
-    url: 'http://some.api.google.com/jinframe/hello',
-    validateStatus: undefined,
-  };
+      password: 'advengers',
+      'Content-Type': 'application/json',
+    });
+  });
 
-  // console.log(req.headers);
+  it('T002-primitive-type-key-replace', async () => {
+    const frame = new Test002PostFrame({ passing: 'hello', username: 'ironman', password: 'advengers' });
+    const req = frame.request();
 
-  expect(req).toEqual(excpetation);
+    const excpetation = {
+      timeout: 120000,
+      headers: { 'Content-Type': 'application/json', uuu: 'ironman', ppp: 'advengers' },
+      method: 'POST',
+      transformRequest: undefined,
+      url: 'http://some.api.google.com/jinframe/hello',
+      validateStatus: undefined,
+    };
+
+    expect(req).toEqual(excpetation);
+  });
+
+  it('T003-primitive-type-key-replace-at-not-support-dot-props', async () => {
+    const frame = new Test003PostFrame({ passing: 'hello', username: 'ironman', password: 'advengers' });
+    const req = frame.request();
+
+    const excpetation = {
+      timeout: 120000,
+      headers: { 'Content-Type': 'application/json', 'ppp.password': 'advengers', 'uuu.username': 'ironman' },
+      method: 'POST',
+      transformRequest: undefined,
+      url: 'http://some.api.google.com/jinframe/hello',
+      validateStatus: undefined,
+    };
+
+    // console.log(req.headers);
+
+    expect(req).toEqual(excpetation);
+  });
+
+  it('T004-plain-object-type-json-serialization', async () => {
+    const frame = new Test004PostFrame({
+      passing: 'hello',
+      username: 'ironman',
+      hero: { name: 'ironman', ability: 'proto cannon', age: 33 },
+    });
+
+    const req = frame.request();
+
+    const excpetation = {
+      timeout: 120000,
+      headers: {
+        'Content-Type': 'application/json',
+        username: 'ironman',
+        hero: '%7B%22name%22%3A%22ironman%22%2C%22ability%22%3A%22proto%20cannon%22%2C%22age%22%3A33%7D',
+      },
+      method: 'POST',
+      transformRequest: undefined,
+      url: 'http://some.api.google.com/jinframe/hello',
+      validateStatus: undefined,
+    };
+
+    // console.log(req.headers);
+
+    expect(req).toEqual(excpetation);
+  });
+
+  it('T005-plain-object-type-array-comma-seperated', async () => {
+    const frame = new Test005PostFrame({
+      passing: 'hello',
+      username: 'ironman',
+      hero: ['ironman', 'thor', 'hulk', 'doctor strange'],
+    });
+
+    const req = frame.request();
+
+    const excpetation = {
+      timeout: 120000,
+      headers: {
+        'Content-Type': 'application/json',
+        username: 'ironman',
+        hero: 'ironman,thor,hulk,doctor strange',
+      },
+      method: 'POST',
+      transformRequest: undefined,
+      url: 'http://some.api.google.com/jinframe/hello',
+      validateStatus: undefined,
+    };
+
+    // console.log(req.headers);
+
+    expect(req).toEqual(excpetation);
+  });
 });

@@ -6,8 +6,7 @@ import type { IDebugInfo } from '#interfaces/IDebugInfo';
 import type { IFailReplyJinEitherFrame } from '#interfaces/IFailJinEitherFrame';
 import type { TJinFrameResponse, TJinRequestConfig } from '#interfaces/TJinFrameResponse';
 import type { TPassJinEitherFrame } from '#interfaces/TPassJinEitherFrame';
-import type { JinBuiltInMember } from '#tools/type-utilities/JinBuiltInMember';
-import type { OmitConstructorType } from '#tools/type-utilities/OmitConstructorType';
+import { ConstructorType } from '#tools/type-utilities/ConstructorType';
 import nock from 'nock';
 import { afterEach, describe, expect, it } from 'vitest';
 
@@ -25,57 +24,55 @@ class CustomError extends Error {
 
 class Test001PostFrame extends JinFrame<{ message: string }> {
   @JinFrame.param()
-  public declare readonly passing: string;
+  declare public readonly passing: string;
 
   @JinFrame.body()
-  public declare readonly username: string;
+  declare public readonly username: string;
 
   @JinFrame.body()
-  public declare readonly password: string;
+  declare public readonly password: string;
 
-  constructor(args: OmitConstructorType<Test001PostFrame, JinBuiltInMember>) {
-    super({
-      ...args,
-      $$host: 'http://some.api.google.com/jinframe/:passing',
-      $$method: 'post',
+  constructor(args: ConstructorType<Test001PostFrame>) {
+    super(args, {
+      host: 'http://some.api.google.com/jinframe/:passing',
+      method: 'post',
     });
   }
 }
 
 class Test002PostFrame extends JinFrame<{ message: string }> {
   @JinFrame.param()
-  public declare readonly passing: string;
+  declare public readonly passing: string;
 
   @JinFrame.body()
-  public declare readonly username: string;
+  declare public readonly username: string;
 
   @JinFrame.body()
-  public declare readonly password: string;
+  declare public readonly password: string;
 
-  constructor(args: OmitConstructorType<Test001PostFrame, JinBuiltInMember>) {
-    super({
-      ...args,
-      $$host: 'http://some.api.google.com/jinframe/:passing/:raiseerr',
-      $$method: 'post',
+  constructor(args: ConstructorType<Test001PostFrame>) {
+    super(args, {
+      host: 'http://some.api.google.com/jinframe/:passing/:raiseerr',
+      method: 'post',
     });
   }
 }
 
 class Test003PostFrame extends JinFrame<{ message: string }> {
   @JinFrame.param()
-  public declare readonly passing: string;
+  declare public readonly passing: string;
 
   @JinFrame.body()
-  public declare readonly username: string;
+  declare public readonly username: string;
 
   @JinFrame.body()
-  public declare readonly password: string;
+  declare public readonly password: string;
 
-  accessor postHookCount: number = 0;
+  accessor postHookCount = 0;
 
-  accessor preHookCount: number = 0;
+  accessor preHookCount = 0;
 
-  async $$postHook(
+  async $_postHook(
     _req: TJinRequestConfig,
     _result: TJinFrameResponse<{ message: string }, { message: string }>,
     _debugInfo: IDebugInfo,
@@ -84,35 +81,34 @@ class Test003PostFrame extends JinFrame<{ message: string }> {
     console.log('post hook executed: ', this.postHookCount);
   }
 
-  async $$preHook(_req: TJinRequestConfig): Promise<void> {
+  async $_preHook(_req: TJinRequestConfig): Promise<void> {
     this.preHookCount += 1;
     console.log('pre hook executed: ', this.preHookCount);
   }
 
-  constructor(args: OmitConstructorType<Test001PostFrame, JinBuiltInMember>) {
-    super({
-      ...args,
-      $$host: 'http://some.api.google.com/jinframe/:passing',
-      $$method: 'post',
+  constructor(args: ConstructorType<Test001PostFrame>) {
+    super(args, {
+      host: 'http://some.api.google.com/jinframe/:passing',
+      method: 'post',
     });
   }
 }
 
 class Test004PostEitherFrame extends JinEitherFrame<{ message: string }> {
   @JinFrame.param()
-  public declare readonly passing: string;
+  declare public readonly passing: string;
 
   @JinFrame.body()
-  public declare readonly username: string;
+  declare public readonly username: string;
 
   @JinFrame.body()
-  public declare readonly password: string;
+  declare public readonly password: string;
 
-  accessor postHookCount: number = 0;
+  accessor postHookCount = 0;
 
-  accessor preHookCount: number = 0;
+  accessor preHookCount = 0;
 
-  async $$postHook(
+  async $_postHook(
     _req: TJinRequestConfig,
     _reply: IFailReplyJinEitherFrame<{ message: string }> | TPassJinEitherFrame<{ message: string }>,
   ): Promise<void> {
@@ -120,16 +116,15 @@ class Test004PostEitherFrame extends JinEitherFrame<{ message: string }> {
     console.log('post hook executed: ', this.postHookCount);
   }
 
-  async $$preHook(_req: TJinRequestConfig): Promise<void> {
+  async $_preHook(_req: TJinRequestConfig): Promise<void> {
     this.preHookCount += 1;
     console.log('pre hook executed: ', this.preHookCount);
   }
 
-  constructor(args: OmitConstructorType<Test001PostFrame, JinBuiltInMember>) {
-    super({
-      ...args,
-      $$host: 'http://some.api.google.com/jinframe/:passing',
-      $$method: 'post',
+  constructor(args: ConstructorType<Test001PostFrame>) {
+    super(args, {
+      host: 'http://some.api.google.com/jinframe/:passing',
+      method: 'post',
     });
   }
 }
@@ -218,7 +213,7 @@ describe('JinFrame', () => {
     try {
       await frame.execute({
         validateStatus: () => {
-          // eslint-disable-next-line @typescript-eslint/no-throw-literal
+          // eslint-disable-next-line @typescript-eslint/only-throw-error
           throw 'invalid exception';
         },
       });
@@ -281,7 +276,7 @@ describe('JinFrame', () => {
     try {
       await frame.execute({
         validateStatus: () => {
-          // eslint-disable-next-line @typescript-eslint/no-throw-literal
+          // eslint-disable-next-line @typescript-eslint/only-throw-error
           throw 'invalid exception';
         },
         getError: (err) => {

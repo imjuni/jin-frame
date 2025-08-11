@@ -11,7 +11,7 @@ export default defineConfig({
         '.configs/**',
         'dist',
         'examples',
-        'vitest.config.mts',
+        'vitest.config.ts',
         'src/interfaces',
         'src/tools/type-utilities',
       ],

@@ -1,18 +1,15 @@
-/* eslint-disable @typescript-eslint/no-unsafe-argument */
 import { JinFile } from '#frames/JinFile';
 import { defaultJinFrameTimeout } from '#frames/defaultJinFrameTimeout';
-import type { IFrameRetry } from '#interfaces/IFrameRetry';
 import type { IHeaderFieldOption } from '#interfaces/IHeaderFieldOption';
 import type { IJinFrameCreateConfig } from '#interfaces/IJinFrameCreateConfig';
 import type { IJinFrameRequestConfig } from '#interfaces/IJinFrameRequestConfig';
 import type { IParamFieldOption } from '#interfaces/IParamFieldOption';
 import type { IQueryFieldOption } from '#interfaces/IQueryFieldOption';
 import type { TFieldRecords } from '#interfaces/TFieldRecords';
-import type { TJinRequestConfig } from '#interfaces/TJinFrameResponse';
 import type { TRequestPart } from '#interfaces/TRequestPart';
 import type { IBodyFieldOption } from '#interfaces/body/IBodyFieldOption';
 import type { IObjectBodyFieldOption } from '#interfaces/body/IObjectBodyFieldOption';
-import { getBodyInfo } from '#processors/getBodyInfo';
+import { getBodyMap } from '#processors/getBodyMap';
 import {
   getDefaultBodyFieldOption,
   getDefaultHeaderFieldOption,
@@ -20,35 +17,23 @@ import {
   getDefaultParamFieldOption,
   getDefaultQueryFieldOption,
 } from '#processors/getDefaultOption';
-import { getHeaderInfo } from '#processors/getHeaderInfo';
-import { getQueryParamInfo } from '#processors/getQueryParamInfo';
+import { getQuerystringMap } from '#processors/getQuerystringMap';
 import { removeBothSlash } from '#tools/slash-utils/removeBothSlash';
 import { removeEndSlash } from '#tools/slash-utils/removeEndSlash';
 import { startWithSlash } from '#tools/slash-utils/startWithSlash';
-import type { JinBuiltInOption } from '#tools/type-utilities/JinBuiltInOption';
-import type { AxiosInstance, AxiosRequestConfig, AxiosResponse, Method } from 'axios';
+import type { IFrameOption } from '#tools/type-utilities/IFrameOption';
+import type { IFrameInternal } from '#tools/type-utilities/IFrameInternal';
+import type { AxiosRequestConfig, AxiosResponse } from 'axios';
 import axios from 'axios';
 import fastSafeStringify from 'fast-safe-stringify';
 import FormData from 'form-data';
 import { first } from 'my-easy-fp';
 import { compile } from 'path-to-regexp';
 import 'reflect-metadata';
-import type { Except, SetRequired } from 'type-fest';
+import type { Except } from 'type-fest';
+import { flatStringMap } from '#processors/flatStringMap';
 
-/**
- * HTTP Request Hook
- */
-export interface AbstractJinFrame {
-  /**
-   * Execute before request. If you can change request object that is affected request.
-   *
-   * @param this this instance
-   * @param req request object
-   * */
-  $$retryFailHook?<TDATA>(req: TJinRequestConfig, res: AxiosResponse<TDATA>): void | Promise<void>;
-}
-
-export abstract class AbstractJinFrame {
+export abstract class AbstractJinFrame<TPASS> {
   public static ParamSymbolBox = Symbol('ParamSymbolBoxForAbstractJinFrame');
 
   public static QuerySymbolBox = Symbol('QuerySymbolBoxForAbstractJinFrame');
@@ -63,7 +48,7 @@ export abstract class AbstractJinFrame {
    * decorator to set class variable to HTTP API path parameter
    * @param option path parameter option
    */
-  public static param = (option?: Partial<Omit<IParamFieldOption, 'type'>>) =>
+  public static param = (option?: Partial<Omit<IParamFieldOption, 'type'>>): ReturnType<typeof Reflect.metadata> =>
     Reflect.metadata(AbstractJinFrame.ParamSymbolBox, ['PARAM', getDefaultParamFieldOption(option)]);
 
   /**
@@ -76,7 +61,7 @@ export abstract class AbstractJinFrame {
    * decorator to set class variable to HTTP API query parameter
    * @param option query parameter option
    */
-  public static query = (option?: Partial<Omit<IQueryFieldOption, 'type'>>) =>
+  public static query = (option?: Partial<Omit<IQueryFieldOption, 'type'>>): ReturnType<typeof Reflect.metadata> =>
     Reflect.metadata(AbstractJinFrame.QuerySymbolBox, ['QUERY', getDefaultQueryFieldOption(option)]);
 
   /**
@@ -89,7 +74,7 @@ export abstract class AbstractJinFrame {
    * decorator to set class variable to HTTP API body parameter
    * @param option body parameter option
    */
-  public static body = (option?: Partial<Except<IBodyFieldOption, 'type'>>) =>
+  public static body = (option?: Partial<Except<IBodyFieldOption, 'type'>>): ReturnType<typeof Reflect.metadata> =>
     Reflect.metadata(AbstractJinFrame.BodySymbolBox, ['BODY', getDefaultBodyFieldOption(option)]);
 
   /**
@@ -102,7 +87,9 @@ export abstract class AbstractJinFrame {
    * decorator to set class variable to HTTP API body parameter
    * @param option body parameter option
    */
-  public static objectBody = (option?: Partial<Except<IObjectBodyFieldOption, 'type'>>) =>
+  public static objectBody = (
+    option?: Partial<Except<IObjectBodyFieldOption, 'type'>>,
+  ): ReturnType<typeof Reflect.metadata> =>
     Reflect.metadata(AbstractJinFrame.ObjectBodySymbolBox, ['OBJECTBODY', getDefaultObjectBodyFieldOption(option)]);
 
   /**
@@ -115,7 +102,7 @@ export abstract class AbstractJinFrame {
    * decorator to set class variable to HTTP API header parameter
    * @param option header parameter option
    */
-  public static header = (option?: Partial<Except<IHeaderFieldOption, 'type'>>) =>
+  public static header = (option?: Partial<Except<IHeaderFieldOption, 'type'>>): ReturnType<typeof Reflect.metadata> =>
     Reflect.metadata(AbstractJinFrame.HeaderSymbolBox, ['HEADER', getDefaultHeaderFieldOption(option)]);
 
   /**
@@ -124,95 +111,12 @@ export abstract class AbstractJinFrame {
    */
   public static H = AbstractJinFrame.header;
 
-  /** host of API Request endpoint */
-  #host?: string;
+  // eslint-disable-next-line class-methods-use-this
+  protected $_retryFail(_req: AxiosRequestConfig, _res: AxiosResponse<TPASS>): void {}
 
-  /** pathname of API Request endpoint */
-  #path?: string;
+  protected $_option: IFrameOption;
 
-  /** method of API Request endpoint */
-  #method: Method;
-
-  /** content-type of API Request endpoint */
-  #contentType: string;
-
-  /** custom object of POST Request body data */
-  #customBody?: unknown;
-
-  /** transformRequest function of POST Request */
-  #transformRequest?: AxiosRequestConfig['transformRequest'];
-
-  #query?: Record<string, unknown>;
-
-  #header?: Record<string, unknown>;
-
-  #body?: unknown;
-
-  #param?: Record<string, unknown>;
-
-  #retry?: IFrameRetry & { try: number };
-
-  #instance: AxiosInstance;
-
-  public get $$query() {
-    return this.#query;
-  }
-
-  public get $$header() {
-    return this.#header;
-  }
-
-  public get $$body() {
-    return this.#body;
-  }
-
-  public get $$param() {
-    return this.#param;
-  }
-
-  /** host of API Request endpoint */
-  public get $$host() {
-    return this.#host;
-  }
-
-  /** pathname of API Request endpoint */
-  public get $$path() {
-    return this.#path;
-  }
-
-  /** method of API Request endpoint */
-  public get $$method() {
-    return this.#method;
-  }
-
-  /** content-type of API Request endpoint */
-  public get $$contentType() {
-    return this.#contentType;
-  }
-
-  /** custom object of POST Request body data */
-  public get $$customBody() {
-    return this.#customBody;
-  }
-
-  /** transformRequest function of POST Request */
-  public get $$transformRequest() {
-    return this.#transformRequest;
-  }
-
-  public get $$retry() {
-    return this.#retry;
-  }
-
-  public set $$retry(value) {
-    this.#retry = value;
-  }
-
-  public get $$instance(): AxiosInstance {
-    return this.#instance;
-  }
-
-  protected $$startAt: Date;
+  protected $_data: IFrameInternal;
 
   /**
    * @param __namedParameters.host - host of API Request endpoint
@@ -221,70 +125,70 @@ export abstract class AbstractJinFrame {
    * @param __namedParameters.contentType - content-type of API Request endpoint
    * @param __namedParameters.customBody - custom object of POST Request body data
    */
-  constructor(args: SetRequired<JinBuiltInOption, '$$method'>) {
-    Object.keys(args)
-      .filter(
-        (key) =>
-          key !== '$$host' &&
-          key !== '$$path' &&
-          key !== '$$method' &&
-          key !== '$$contentType' &&
-          key !== '$$customBody' &&
-          key !== '$$transformRequest' &&
-          key !== '$$retry' &&
-          key !== '$$instance',
-      )
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      .forEach((key: any) => {
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-explicit-any
-        (this as any)[key] = (args as any)[key];
-      });
+  constructor(option?: Partial<IFrameOption>) {
+    this.$_option = {
+      host: option?.host ?? 'http://localhost',
+      path: option?.path ?? '/',
+      method: option?.method ?? 'GET',
+      customBody: option?.customBody,
+      transformRequest: option?.transformRequest,
+      useInstance: option?.useInstance ?? false,
+      contentType: option?.contentType ?? 'application/json',
+      userAgent: option?.userAgent,
+    };
 
-    this.#method = args.$$method;
-    this.#contentType = args.$$contentType ?? 'application/json';
-    this.#customBody = args.$$customBody;
-    this.#transformRequest = args.$$transformRequest;
-    this.#retry = args.$$retry != null ? { ...args.$$retry, try: 0 } : undefined;
-    this.$$startAt = new Date();
+    this.$_data = {
+      startAt: new Date(),
+      endAt: new Date(),
+      query: {},
+      header: {},
+      param: {},
+      retry: option?.retry != null ? { ...option.retry, try: 0 } : option?.retry,
+      instance: this.$_option.useInstance ? axios.create() : axios,
+    };
+  }
 
-    if (args.$$host == null && args.$$path == null) {
-      throw new Error('Invalid host & path. Cannot set undefined both');
-    }
+  public getData<K extends keyof Pick<IFrameInternal, 'body' | 'param' | 'query' | 'header' | 'instance'>>(
+    kind: K,
+  ): Pick<IFrameInternal, 'body' | 'param' | 'query' | 'header' | 'instance'>[K] {
+    return this.$_data[kind];
+  }
 
-    this.#host = args.$$host;
-    this.#path = args.$$path;
+  public getOption<K extends keyof IFrameOption>(kind: K): IFrameOption[K] {
+    return this.$_option[kind];
+  }
 
-    if (args.$$instance) {
-      this.#instance = axios.create();
-    } else {
-      this.#instance = axios;
+  public setFields(args: typeof this): void {
+    for (const key of Object.keys(args) as (keyof typeof this)[]) {
+      this[key] = args[key];
     }
   }
 
-  public getTransformRequest() {
-    if (this.#contentType !== 'application/x-www-form-urlencoded') {
+  public getTransformRequest(): undefined | axios.AxiosRequestTransformer | axios.AxiosRequestTransformer[] {
+    if (this.$_option.contentType !== 'application/x-www-form-urlencoded') {
       return undefined;
     }
 
-    if (this.#transformRequest != null) {
-      return this.#transformRequest;
+    if (this.$_option.transformRequest != null) {
+      return this.$_option.transformRequest;
     }
 
-    return (formData: any) =>
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const transformRequest: axios.AxiosRequestTransformer = (formData: any) =>
       Object.entries<string | undefined>(formData)
         .filter((entry): entry is [string, string] => entry[1] != null)
-        .map(([key, value]) => {
-          return `${encodeURIComponent(key)}=${encodeURIComponent(value)}`;
-        })
+        .map(([key, value]) => `${encodeURIComponent(key)}=${encodeURIComponent(value)}`)
         .join('&');
+
+    return transformRequest;
   }
 
-  getFormData(bodies: unknown): unknown {
-    if (this.#method !== 'post' && this.#method !== 'POST') {
+  public getFormData(bodies: unknown): unknown {
+    if (this.$_option.method !== 'post' && this.$_option.method !== 'POST') {
       return bodies;
     }
 
-    if (this.#contentType === 'multipart/form-data' && typeof bodies === 'object' && bodies != null) {
+    if (this.$_option.contentType === 'multipart/form-data' && typeof bodies === 'object' && bodies != null) {
       const formData = new FormData();
 
       Object.entries(bodies).forEach(([key, value]) => {
@@ -297,7 +201,7 @@ export abstract class AbstractJinFrame {
         } else if (typeof value === 'number') {
           formData.append(key, `${value}`);
         } else if (typeof value === 'boolean') {
-          formData.append(key, `${value.toString()}`);
+          formData.append(key, value.toString());
         } else if (typeof value === 'object') {
           formData.append(key, fastSafeStringify(value));
         } else {
@@ -366,36 +270,29 @@ export abstract class AbstractJinFrame {
     );
 
     // stage 02. each request parameter apply option
-    const queries = getQueryParamInfo(this as Record<string, unknown>, fields.query); // create querystring information
-    const headers = getHeaderInfo(this as Record<string, unknown>, fields.header); // create header information
-    const paths = getQueryParamInfo(this as Record<string, unknown>, fields.param); // create param information
+    const queries = getQuerystringMap(this as Record<string, unknown>, fields.query); // create querystring information
+    const headers = flatStringMap(getQuerystringMap(this as Record<string, unknown>, fields.header)); // create header information
+    const paths = flatStringMap(getQuerystringMap(this as Record<string, unknown>, fields.param)); // create param information
     const bodies: unknown = (() => {
-      if (this.#customBody != null) {
-        return this.#customBody;
+      if (this.$_option.customBody != null) {
+        return this.$_option.customBody;
       }
 
       if (fields.body.length <= 0) {
         return undefined;
       }
 
-      return getBodyInfo(this as Record<string, unknown>, fields.body);
+      return getBodyMap(this as Record<string, unknown>, fields.body);
     })();
 
-    // stage 03. path parameter array value stringify
-    const safePaths = Object.entries(paths).reduce(
-      (processing, [key, value]) =>
-        Array.isArray(value) ? { ...processing, [key]: fastSafeStringify(value) } : processing,
-      { ...paths },
-    );
-
     // stage 04. set debuggint variable
-    this.#query = queries;
-    this.#body = bodies;
-    this.#header = headers;
-    this.#param = safePaths;
+    this.$_data.query = queries;
+    this.$_data.body = bodies;
+    this.$_data.header = headers;
+    this.$_data.param = paths;
 
     // stage 05. url endpoint build
-    const buildEndpoint = [this.#host ?? 'http://localhost', this.#path ?? '']
+    const buildEndpoint = [this.$_option.host, this.$_option.path]
       .map((endpointPart) => endpointPart.trim())
       .map((endpointPart) => removeBothSlash(endpointPart))
       .join('/');
@@ -404,17 +301,15 @@ export abstract class AbstractJinFrame {
 
     // stage 06. path parameter evaluation
     const pathfunc = compile(url.pathname);
-    const buildPath = pathfunc(safePaths as object);
+    const buildPath = pathfunc(paths);
     url.pathname = removeEndSlash(buildPath);
 
     // stage 07. querystring post processing
     Object.entries(queries).forEach(([key, value]) => {
       if (Array.isArray(value)) {
-        value.forEach((val) =>
-          url.searchParams.append(key, typeof val !== 'string' ? `${fastSafeStringify(val)}` : val),
-        );
+        value.forEach((val) => url.searchParams.append(key, typeof val !== 'string' ? fastSafeStringify(val) : val));
       } else {
-        url.searchParams.set(key, typeof value !== 'string' ? `${fastSafeStringify(value)}` : value);
+        url.searchParams.set(key, typeof value !== 'string' ? fastSafeStringify(value) : value);
       }
     });
 
@@ -425,18 +320,19 @@ export abstract class AbstractJinFrame {
       headers['User-Agent'] = option.userAgent;
     }
 
-    headers['Content-Type'] = this.#contentType;
+    headers['Content-Type'] = this.$_option.contentType;
 
     const transformRequest = this.getTransformRequest();
     const data = this.getFormData(bodies);
+    const timeout = option?.timeout ?? this.$_option.timeout ?? defaultJinFrameTimeout;
 
-    const targetUrl = this.#host != null ? url.href : `${startWithSlash(url.pathname)}${url.search}`;
+    const targetUrl = this.$_option.host != null ? url.href : `${startWithSlash(url.pathname)}${url.search}`;
     const req: AxiosRequestConfig = {
       ...option,
       ...{
-        timeout: option?.timeout ?? defaultJinFrameTimeout,
+        timeout,
         headers,
-        method: this.#method,
+        method: this.$_option.method,
         data,
         transformRequest: option?.transformRequest ?? transformRequest,
         url: targetUrl,
@@ -447,17 +343,17 @@ export abstract class AbstractJinFrame {
     return req;
   }
 
-  async retry<TPASS>(req: AxiosRequestConfig, isValidateStatus: (status: number) => boolean) {
-    const response = await this.#instance.request<TPASS, AxiosResponse<TPASS>>(req);
-    const retry = this.#retry;
+  async retry(req: AxiosRequestConfig, isValidateStatus: (status: number) => boolean): Promise<AxiosResponse<TPASS>> {
+    const response = await this.$_data.instance.request<TPASS, AxiosResponse<TPASS>>(req);
+    const { retry } = this.$_data;
 
     if (isValidateStatus(response.status) || retry == null) {
       return response;
     }
 
     let prevResponse = response;
-    const hook = this.$$retryFailHook != null ? this.$$retryFailHook.bind(this) : () => {};
-    retry.interval = retry.interval != null ? retry.interval : 10;
+    const hook = this.$_retryFail != null ? this.$_retryFail.bind(this) : () => {};
+    retry.interval = retry.interval ?? 10;
 
     const retried = await new Promise<AxiosResponse<TPASS>>((resolve) => {
       const attempt = () => {
@@ -466,7 +362,9 @@ export abstract class AbstractJinFrame {
           .then((retryResponse) => {
             prevResponse = retryResponse;
 
-            if (isValidateStatus(retryResponse.status) || retry.max <= retry.try) {
+            if (isValidateStatus(retryResponse.status)) {
+              resolve(retryResponse);
+            } else if (retry.max <= retry.try) {
               resolve(retryResponse);
             } else {
               retry.try += 1;

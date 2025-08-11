@@ -1,5 +1,5 @@
 {
-  "extends": "@tsconfig/node18/tsconfig.json",
+  "extends": "@tsconfig/node20/tsconfig.json",
   "ts-node": {
     "transpileOnly": true,
     "files": true,
@@ -49,6 +49,6 @@
       "#interfaces/*": ["src/interfaces/*"]
     }
   },
-  "include": ["src/**/*.ts", ".configs/rollup.config.dev.ts", ".configs/rollup.config.prod.ts"],
-  "exclude": ["dist/**", ".configs/just.config.ts", "**/docs/**/*"],
+  "include": ["src/**/*.ts"],
+  "exclude": ["dist/**", "**/docs/**/*"],
 }
