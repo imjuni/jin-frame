@@ -1,7 +1,8 @@
 import { JinEitherFrame } from '#frames/JinEitherFrame';
-import type { ConstructorType } from '#tools/type-utilities/ConstructorType';
+import { Post } from '#tools/decorators/MethodDecorators';
 import { describe, expect, it } from 'vitest';
 
+@Post({ host: 'http://some.api.google.com/jinframe/:passing' })
 class Test001PostFrame extends JinEitherFrame {
   @JinEitherFrame.param()
   declare public readonly passing: string;
@@ -11,15 +12,9 @@ class Test001PostFrame extends JinEitherFrame {
 
   @JinEitherFrame.body()
   declare public readonly password: string;
-
-  constructor(args: ConstructorType<Test001PostFrame>) {
-    super(args, {
-      host: 'http://some.api.google.com/jinframe/:passing',
-      method: 'POST',
-    });
-  }
 }
 
+@Post({ host: 'http://some.api.google.com/jinframe/:passing' })
 class Test002PostFrame extends JinEitherFrame {
   @JinEitherFrame.param()
   declare public readonly passing: string;
@@ -29,15 +24,9 @@ class Test002PostFrame extends JinEitherFrame {
 
   @JinEitherFrame.body({ replaceAt: 'ppp' })
   declare public readonly password: string;
-
-  constructor(args: ConstructorType<Test002PostFrame>) {
-    super(args, {
-      host: 'http://some.api.google.com/jinframe/:passing',
-      method: 'POST',
-    });
-  }
 }
 
+@Post({ host: 'http://some.api.google.com/jinframe/:passing' })
 class Test003PostFrame extends JinEitherFrame {
   @JinEitherFrame.param()
   declare public readonly passing: string;
@@ -47,15 +36,9 @@ class Test003PostFrame extends JinEitherFrame {
 
   @JinEitherFrame.body({ replaceAt: 'ppp.password' })
   declare public readonly password: string;
-
-  constructor(args: ConstructorType<Test003PostFrame>) {
-    super(args, {
-      host: 'http://some.api.google.com/jinframe/:passing',
-      method: 'POST',
-    });
-  }
 }
 
+@Post({ host: 'http://some.api.google.com/jinframe/:passing' })
 class Test004ZeroDepthPostFrame extends JinEitherFrame {
   @JinEitherFrame.param()
   declare public readonly passing: string;
@@ -69,13 +52,6 @@ class Test004ZeroDepthPostFrame extends JinEitherFrame {
     ability: string;
     age: number;
   };
-
-  constructor(args: ConstructorType<Test004ZeroDepthPostFrame>) {
-    super(args, {
-      host: 'http://some.api.google.com/jinframe/:passing',
-      method: 'POST',
-    });
-  }
 }
 
 describe('JinEitherFrame - primitive type', () => {

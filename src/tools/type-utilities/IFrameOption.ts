@@ -2,11 +2,18 @@ import type { IFrameRetry } from '#interfaces/IFrameRetry';
 import type { AxiosRequestConfig, Method, Milliseconds } from 'axios';
 
 export interface IFrameOption {
-  /** host of API Request endpoint */
-  host: string;
+  /**
+   * host and path of API Request endpoint
+   *
+   * 원한다면 protocol://host/path 전체를 host에 전달해도 정상 동작한다. 그럼에도 불구하고
+   * 굳이 host와 path를 분리한 이유는 Parent Class에 host를 설정하고 그것을 계속 상속을 받아서
+   * 사용하는 방식으로 확장하는 경우, Child Class에서는 path만 설정할 수 있어야 하기 때문에
+   * 둘을 분리해서 처리할 수도 있어야 한다.
+   * */
+  host?: string;
 
-  /** pathname of API Request endpoint */
-  path: string;
+  /** path of API Request endpoint */
+  path?: string;
 
   /** method of API Request endpoint */
   method: Method;

@@ -2,11 +2,13 @@ import { JinEitherFrame } from '#frames/JinEitherFrame';
 import { JinFrame } from '#frames/JinFrame';
 import type { IFailReplyJinEitherFrame } from '#interfaces/IFailJinEitherFrame';
 import type { TPassJinEitherFrame } from '#interfaces/TPassJinEitherFrame';
+import { Get } from '#tools/decorators/MethodDecorators';
 import axios, { type AxiosRequestConfig, type AxiosResponse } from 'axios';
 import { isFail, isPass } from 'my-only-either';
 import nock from 'nock';
 import { afterEach, describe, expect, it } from 'vitest';
 
+@Get({ host: 'http://some.api.google.com/jinframe/:passing' })
 class TestGetFrame extends JinEitherFrame {
   @JinEitherFrame.P()
   declare public readonly passing: string;
@@ -18,14 +20,11 @@ class TestGetFrame extends JinEitherFrame {
   declare public readonly skill: string[];
 
   constructor() {
-    super(
-      {
-        passing: 'pass',
-        name: 'ironman',
-        skill: ['beam', 'flying!'],
-      },
-      { host: 'http://some.api.google.com', path: '/jinframe/:passing', method: 'get' },
-    );
+    super({
+      passing: 'pass',
+      name: 'ironman',
+      skill: ['beam', 'flying!'],
+    });
   }
 
   override $_preHook(req: AxiosRequestConfig): void {
@@ -38,6 +37,7 @@ class TestGetFrame extends JinEitherFrame {
   }
 }
 
+@Get({ host: 'http://some.api.google.com/jinframe/:passing/test' })
 class TestGet2Frame extends JinEitherFrame {
   @JinEitherFrame.param()
   declare public readonly passing: string;
@@ -59,18 +59,16 @@ class TestGet2Frame extends JinEitherFrame {
     console.log(reply);
   }
 
-  constructor(host: string) {
-    super(
-      {
-        passing: 'hello',
-        name: 'ironman',
-        ttt: 'header value',
-      },
-      { host, path: '/jinframe/:passing/test', method: 'get' },
-    );
+  constructor() {
+    super({
+      passing: 'hello',
+      name: 'ironman',
+      ttt: 'header value',
+    });
   }
 }
 
+@Get({ host: 'http://some.api.google.com/jinframe/:passing' })
 class TestGet3Frame extends JinFrame {
   @JinEitherFrame.param()
   declare public readonly passing: string;
@@ -82,14 +80,11 @@ class TestGet3Frame extends JinFrame {
   declare public readonly skill: string[];
 
   constructor() {
-    super(
-      {
-        passing: 'pass',
-        name: 'ironman',
-        skill: ['beam', 'flying!'],
-      },
-      { host: 'http://some.api.google.com', path: '/jinframe/:passing', method: 'get' },
-    );
+    super({
+      passing: 'pass',
+      name: 'ironman',
+      skill: ['beam', 'flying!'],
+    });
   }
 
   override $_preHook(req: AxiosRequestConfig): void {
@@ -102,6 +97,7 @@ class TestGet3Frame extends JinFrame {
   }
 }
 
+@Get({ host: 'http://some.api.google.com/jinframe/:passing' })
 class TestGet4Frame extends JinFrame {
   @JinEitherFrame.param()
   declare public readonly passing: string;
@@ -113,14 +109,11 @@ class TestGet4Frame extends JinFrame {
   declare public readonly skill: string[];
 
   constructor() {
-    super(
-      {
-        passing: 'pass',
-        name: 'ironman',
-        skill: ['beam', 'flying!'],
-      },
-      { host: 'http://some.api.google.com', path: '/jinframe/:passing', method: 'get' },
-    );
+    super({
+      passing: 'pass',
+      name: 'ironman',
+      skill: ['beam', 'flying!'],
+    });
   }
 
   override async $_preHook(req: AxiosRequestConfig): Promise<void> {
@@ -133,6 +126,7 @@ class TestGet4Frame extends JinFrame {
   }
 }
 
+@Get({ host: 'http://some.api.google.com/jinframe/:passing' })
 class TestGet5Frame extends JinFrame {
   @JinEitherFrame.param()
   declare public readonly passing: string;
@@ -144,14 +138,11 @@ class TestGet5Frame extends JinFrame {
   declare public readonly skill: string[];
 
   constructor() {
-    super(
-      {
-        passing: 'pass',
-        name: 'ironman',
-        skill: ['beam', 'flying!'],
-      },
-      { host: 'http://some.api.google.com', path: '/jinframe/:passing', method: 'get' },
-    );
+    super({
+      passing: 'pass',
+      name: 'ironman',
+      skill: ['beam', 'flying!'],
+    });
   }
 
   override $_preHook(req: AxiosRequestConfig): void {
@@ -159,6 +150,7 @@ class TestGet5Frame extends JinFrame {
   }
 }
 
+@Get({ host: 'http://some.api.google.com/jinframe/:passing' })
 class TestGet6Frame extends JinFrame {
   @JinEitherFrame.param()
   declare public readonly passing: string;
@@ -170,14 +162,11 @@ class TestGet6Frame extends JinFrame {
   declare public readonly skill: string[];
 
   constructor() {
-    super(
-      {
-        passing: 'pass',
-        name: 'ironman',
-        skill: ['beam', 'flying!'],
-      },
-      { host: 'http://some.api.google.com', path: '/jinframe/:passing', method: 'get' },
-    );
+    super({
+      passing: 'pass',
+      name: 'ironman',
+      skill: ['beam', 'flying!'],
+    });
   }
 
   override async $_preHook(req: AxiosRequestConfig): Promise<void> {
@@ -185,6 +174,7 @@ class TestGet6Frame extends JinFrame {
   }
 }
 
+@Get({ host: 'http://some.api.google.com/jinframe/:passing' })
 class TestGet7Frame extends JinEitherFrame {
   @JinEitherFrame.param()
   declare public readonly passing: string;
@@ -196,14 +186,11 @@ class TestGet7Frame extends JinEitherFrame {
   declare public readonly skill: string[];
 
   constructor() {
-    super(
-      {
-        passing: 'pass',
-        name: 'ironman',
-        skill: ['beam', 'flying!'],
-      },
-      { host: 'http://some.api.google.com', path: '/jinframe/:passing', method: 'get' },
-    );
+    super({
+      passing: 'pass',
+      name: 'ironman',
+      skill: ['beam', 'flying!'],
+    });
   }
 
   override $_preHook(req: AxiosRequestConfig): void {
@@ -211,6 +198,7 @@ class TestGet7Frame extends JinEitherFrame {
   }
 }
 
+@Get({ host: 'http://some.api.google.com/jinframe/:passing' })
 class TestGet8Frame extends JinEitherFrame {
   @JinEitherFrame.param()
   declare public readonly passing: string;
@@ -222,14 +210,11 @@ class TestGet8Frame extends JinEitherFrame {
   declare public readonly skill: string[];
 
   constructor() {
-    super(
-      {
-        passing: 'pass',
-        name: 'ironman',
-        skill: ['beam', 'flying!'],
-      },
-      { host: 'http://some.api.google.com', path: '/jinframe/:passing', method: 'get' },
-    );
+    super({
+      passing: 'pass',
+      name: 'ironman',
+      skill: ['beam', 'flying!'],
+    });
   }
 
   override async $_preHook(req: AxiosRequestConfig): Promise<void> {
@@ -365,23 +350,23 @@ describe('jinframe.test', () => {
   });
 
   it('nock-get02-with-jinframe', async () => {
-    nock('http://some.api.google.com').get('/jinframe/hello/test?name=ironman').reply(200, {
+    nock('http://some2.api.google.com').get('/jinframe/hello/test?name=ironman').reply(200, {
       message: 'hello',
     });
 
-    const frame = new TestGet2Frame('http://some.api.google.com');
-    const resp = await frame.execute();
+    const frame = new TestGet2Frame();
+    const resp = await frame.execute({ url: 'http://some2.api.google.com/jinframe/:passing/test' });
 
     expect(isPass(resp)).toEqual(true);
   });
 
   it('nock-get02-with-jinframe-fail', async () => {
-    nock('http://some.api.google.com').get('/jinframe/hello/test?name=ironman').reply(500, {
+    nock('http://some2.api.google.com').get('/jinframe/hello/test?name=ironman').reply(500, {
       message: 'hello',
     });
 
-    const frame = new TestGet2Frame('http://some.api.google.com');
-    const resp = await frame.execute();
+    const frame = new TestGet2Frame();
+    const resp = await frame.execute({ url: 'http://some2.api.google.com' });
 
     expect(isFail(resp)).toEqual(true);
   });
@@ -391,8 +376,8 @@ describe('jinframe.test', () => {
       message: 'hello',
     });
 
-    const frame = new TestGet2Frame('http://some.api.google.com');
-    const req = frame.request();
+    const frame = new TestGet2Frame();
+    const req = frame.request({ url: 'http://some.api.google.com/jinframe/:passing/test' });
     try {
       const resp = await axios.get(req.url ?? '', { ...req, validateStatus: () => true });
 

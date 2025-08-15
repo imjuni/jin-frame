@@ -4,7 +4,9 @@ import fs from 'node:fs';
 import nock from 'nock';
 import path from 'node:path';
 import { afterEach, it } from 'vitest';
+import { Post } from '#tools/decorators/MethodDecorators';
 
+@Post({ host: 'http://some.api.google.com/fileupload-case04', contentType: 'multipart/form-data' })
 class TestGetFrame extends JinEitherFrame {
   @JinEitherFrame.body()
   declare public readonly description: string;
@@ -14,16 +16,6 @@ class TestGetFrame extends JinEitherFrame {
 
   @JinEitherFrame.body()
   declare public readonly myFiles: JinFile<Buffer>[];
-
-  constructor(args: { description: string; file: JinFile<Buffer>; files: JinFile<Buffer>[] }) {
-    super({
-      ...args,
-      $$host: 'http://some.api.google.com',
-      $$path: '/fileupload-case04',
-      $$method: 'post',
-      $$contentType: 'multipart/form-data',
-    });
-  }
 }
 
 afterEach(() => {
@@ -37,8 +29,8 @@ it('fileupload-test', async () => {
 
   const frame = new TestGetFrame({
     description: 'test',
-    file: new JinFile('README.md', fs.readFileSync(path.join(process.cwd(), 'README.md'))),
-    files: [
+    myFile: new JinFile('README.md', fs.readFileSync(path.join(process.cwd(), 'README.md'))),
+    myFiles: [
       new JinFile('README01.md', fs.readFileSync(path.join(process.cwd(), 'README.md'))),
       new JinFile('README02.md', fs.readFileSync(path.join(process.cwd(), 'README.md'))),
       new JinFile('README03.md', fs.readFileSync(path.join(process.cwd(), 'README.md'))),

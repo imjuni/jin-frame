@@ -11,4 +11,8 @@ export interface IJinFrameRequestConfig
    * that string by useAgent field.
    */
   userAgent?: string;
+
+  url?: string;
+
+  customBody?: unknown;
 }

@@ -18,7 +18,6 @@ import {
   getDefaultQueryFieldOption,
 } from '#processors/getDefaultOption';
 import { getQuerystringMap } from '#processors/getQuerystringMap';
-import { removeBothSlash } from '#tools/slash-utils/removeBothSlash';
 import { removeEndSlash } from '#tools/slash-utils/removeEndSlash';
 import { startWithSlash } from '#tools/slash-utils/startWithSlash';
 import type { IFrameOption } from '#tools/type-utilities/IFrameOption';
@@ -32,6 +31,9 @@ import { compile } from 'path-to-regexp';
 import 'reflect-metadata';
 import type { Except } from 'type-fest';
 import { flatStringMap } from '#processors/flatStringMap';
+import { getUrl } from '#tools/slash-utils/getUrl';
+import { getClassOption } from '#tools/decorators/MethodDecorators';
+import { getFrameInternalData, getFrameOption } from '#tools/decorators/getFrameOption';
 
 export abstract class AbstractJinFrame<TPASS> {
   public static ParamSymbolBox = Symbol('ParamSymbolBoxForAbstractJinFrame');
@@ -125,27 +127,11 @@ export abstract class AbstractJinFrame<TPASS> {
    * @param __namedParameters.contentType - content-type of API Request endpoint
    * @param __namedParameters.customBody - custom object of POST Request body data
    */
-  constructor(option?: Partial<IFrameOption>) {
-    this.$_option = {
-      host: option?.host ?? 'http://localhost',
-      path: option?.path ?? '/',
-      method: option?.method ?? 'GET',
-      customBody: option?.customBody,
-      transformRequest: option?.transformRequest,
-      useInstance: option?.useInstance ?? false,
-      contentType: option?.contentType ?? 'application/json',
-      userAgent: option?.userAgent,
-    };
+  constructor() {
+    const fromDecorator = getClassOption(this.constructor.name);
 
-    this.$_data = {
-      startAt: new Date(),
-      endAt: new Date(),
-      query: {},
-      header: {},
-      param: {},
-      retry: option?.retry != null ? { ...option.retry, try: 0 } : option?.retry,
-      instance: this.$_option.useInstance ? axios.create() : axios,
-    };
+    this.$_option = fromDecorator?.option != null ? { ...fromDecorator.option } : getFrameOption('GET');
+    this.$_data = fromDecorator?.data != null ? { ...fromDecorator.data } : getFrameInternalData(this.$_option);
   }
 
   public getData<K extends keyof Pick<IFrameInternal, 'body' | 'param' | 'query' | 'header' | 'instance'>>(
@@ -274,6 +260,10 @@ export abstract class AbstractJinFrame<TPASS> {
     const headers = flatStringMap(getQuerystringMap(this as Record<string, unknown>, fields.header)); // create header information
     const paths = flatStringMap(getQuerystringMap(this as Record<string, unknown>, fields.param)); // create param information
     const bodies: unknown = (() => {
+      if (option?.customBody != null) {
+        return option.customBody;
+      }
+
       if (this.$_option.customBody != null) {
         return this.$_option.customBody;
       }
@@ -292,12 +282,8 @@ export abstract class AbstractJinFrame<TPASS> {
     this.$_data.param = paths;
 
     // stage 05. url endpoint build
-    const buildEndpoint = [this.$_option.host, this.$_option.path]
-      .map((endpointPart) => endpointPart.trim())
-      .map((endpointPart) => removeBothSlash(endpointPart))
-      .join('/');
-
-    const url = new URL(buildEndpoint);
+    const { url, isOnlyPath } =
+      option?.url != null ? getUrl(option.url) : getUrl(this.$_option.host, this.$_option.path);
 
     // stage 06. path parameter evaluation
     const pathfunc = compile(url.pathname);
@@ -326,7 +312,7 @@ export abstract class AbstractJinFrame<TPASS> {
     const data = this.getFormData(bodies);
     const timeout = option?.timeout ?? this.$_option.timeout ?? defaultJinFrameTimeout;
 
-    const targetUrl = this.$_option.host != null ? url.href : `${startWithSlash(url.pathname)}${url.search}`;
+    const targetUrl = isOnlyPath ? `${startWithSlash(url.pathname)}${url.search}` : url.href;
     const req: AxiosRequestConfig = {
       ...option,
       ...{

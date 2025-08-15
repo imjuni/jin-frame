@@ -1,7 +1,8 @@
 import { JinEitherFrame } from '#frames/JinEitherFrame';
-import { ConstructorType } from '#tools/type-utilities/ConstructorType';
+import { Post } from '#tools/decorators/MethodDecorators';
 import { describe, expect, it } from 'vitest';
 
+@Post({ host: 'http://some.api.google.com/jinframe/:passing' })
 class Test001PostFrame extends JinEitherFrame {
   @JinEitherFrame.param()
   declare public readonly passing: string;
@@ -11,16 +12,9 @@ class Test001PostFrame extends JinEitherFrame {
 
   @JinEitherFrame.body()
   declare public readonly password: string;
-
-  constructor(args: ConstructorType<Test001PostFrame>) {
-    super(args, {
-      host: 'http://some.api.google.com',
-      path: 'jinframe/:passing',
-      method: 'POST',
-    });
-  }
 }
 
+@Post({ host: 'http://some.api.google.com/jinframe/:passing' })
 class Test002PostFrame extends JinEitherFrame {
   @JinEitherFrame.param()
   declare public readonly passing: string;
@@ -34,13 +28,6 @@ class Test002PostFrame extends JinEitherFrame {
 
   @JinEitherFrame.body()
   declare public readonly password: string;
-
-  constructor(args: { passing: string; username: string[]; username2: string[]; password: string }) {
-    super(args, {
-      host: 'http://some.api.google.com/jinframe/:passing',
-      method: 'POST',
-    });
-  }
 }
 
 describe('JinEitherFrame - Body', () => {

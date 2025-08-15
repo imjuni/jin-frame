@@ -7,7 +7,7 @@
   },
   "compilerOptions": {
     "lib": [
-      "es2021",
+      "es2023",
       "DOM"
     ],
     // "declaration": true, 
