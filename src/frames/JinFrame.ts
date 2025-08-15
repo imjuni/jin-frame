@@ -10,7 +10,6 @@ import { CE_HOOK_APPLY } from '#tools/CE_HOOK_APPLY';
 import { getDuration } from '#tools/getDuration';
 import { isValidateStatusDefault } from '#tools/isValidateStatusDefault';
 import type { ConstructorType } from '#tools/type-utilities/ConstructorType';
-import type { IFrameOption } from '#tools/type-utilities/IFrameOption';
 import { AxiosError, type AxiosRequestConfig, type AxiosResponse } from 'axios';
 // eslint-disable-next-line import-x/no-extraneous-dependencies
 import formatISO from 'date-fns/formatISO';
@@ -39,8 +38,8 @@ export class JinFrame<TPASS = unknown, TFAIL = TPASS>
    * @param __namedParameters.contentType - content-type of API Request endpoint
    * @param __namedParameters.customBody - custom object of POST Request body data
    */
-  constructor(args: ConstructorType<JinFrame<TPASS, TFAIL>>, option?: Partial<IFrameOption>) {
-    super(option);
+  constructor(args: ConstructorType<JinFrame<TPASS, TFAIL>>) {
+    super();
     this.setFields(args as typeof this);
   }
 

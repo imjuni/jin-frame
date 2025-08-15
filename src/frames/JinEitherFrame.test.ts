@@ -1,8 +1,9 @@
 import { JinEitherFrame } from '#frames/JinEitherFrame';
-import { ConstructorType } from '#tools/type-utilities/ConstructorType';
+import { Post } from '#tools/decorators/MethodDecorators';
 import nock from 'nock';
 import { afterEach, describe, expect, it } from 'vitest';
 
+@Post({ host: 'http://some.api.google.com/jinframe/:passing' })
 class Test001PostFrame extends JinEitherFrame {
   @JinEitherFrame.param()
   declare public readonly passing: string;
@@ -12,15 +13,9 @@ class Test001PostFrame extends JinEitherFrame {
 
   @JinEitherFrame.body()
   declare public readonly password: string;
-
-  constructor(args: ConstructorType<Test001PostFrame>) {
-    super(args, {
-      host: 'http://some.api.google.com/jinframe/:passing',
-      method: 'post',
-    });
-  }
 }
 
+@Post({ host: 'http://some.api.google.com/jinframe/:passing/:raiseerr' })
 class Test002PostFrame extends JinEitherFrame {
   @JinEitherFrame.param()
   declare public readonly passing: string;
@@ -30,13 +25,6 @@ class Test002PostFrame extends JinEitherFrame {
 
   @JinEitherFrame.body()
   declare public readonly password: string;
-
-  constructor(args: ConstructorType<Test002PostFrame>) {
-    super(args, {
-      host: 'http://some.api.google.com/jinframe/:passing/:raiseerr',
-      method: 'post',
-    });
-  }
 }
 
 afterEach(() => {

@@ -1,5 +1,5 @@
 import { JinEitherFrame } from '#frames/JinEitherFrame';
-import { ConstructorType } from '#tools/type-utilities/ConstructorType';
+import { Get } from '#tools/decorators/MethodDecorators';
 import axios, { type AxiosRequestConfig } from 'axios';
 import { describe, it } from 'vitest';
 
@@ -18,19 +18,13 @@ async function getPokemonInfoByName(inp: IReqGetPokemonInfoByName) {
   return reply.data;
 }
 
+@Get({ host: 'https://pokeapi.co/api/v2/pokemon' })
 class PokemonPagingFrame extends JinEitherFrame<any, any> {
   @JinEitherFrame.query()
   declare readonly limit: number;
 
   @JinEitherFrame.query()
   declare readonly offset: number;
-
-  constructor(args: ConstructorType<PokemonPagingFrame>) {
-    super(args, {
-      host: 'https://pokeapi.co/api/v2/pokemon',
-      method: 'GET',
-    });
-  }
 }
 
 describe('Real Request and Response', () => {

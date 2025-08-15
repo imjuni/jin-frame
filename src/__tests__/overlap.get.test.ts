@@ -1,7 +1,12 @@
 import { JinEitherFrame } from '#frames/JinEitherFrame';
+import { Post } from '#tools/decorators/MethodDecorators';
 import nock from 'nock';
 import { afterEach, it } from 'vitest';
 
+@Post({
+  host: 'http://some.api.google.com',
+  path: '/jinframe/:passing',
+})
 class TestGetFrame extends JinEitherFrame {
   @JinEitherFrame.param()
   @JinEitherFrame.query()
@@ -14,10 +19,6 @@ class TestGetFrame extends JinEitherFrame {
 
   @JinEitherFrame.query({ encode: false, comma: true })
   declare public readonly skills: string[];
-
-  constructor(args: { id: string; name: string; skills: string[] }) {
-    super({ ...args, $$host: 'http://some.api.google.com', $$path: '/jinframe/:id', $$method: 'post' });
-  }
 }
 
 afterEach(() => {

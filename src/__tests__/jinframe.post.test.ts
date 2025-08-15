@@ -1,8 +1,10 @@
 import { JinEitherFrame } from '#frames/JinEitherFrame';
+import { Post } from '#tools/decorators/MethodDecorators';
 import { isPass } from 'my-only-either';
 import nock from 'nock';
 import { afterEach, describe, expect, it } from 'vitest';
 
+@Post({ host: 'http://some.api.google.com/jinframe/:passing' })
 class TestPostFrame extends JinEitherFrame {
   @JinEitherFrame.param()
   declare public readonly passing: string;
@@ -17,18 +19,19 @@ class TestPostFrame extends JinEitherFrame {
   declare public readonly gender: string;
 
   constructor() {
-    super(
-      {
-        passing: 'pass',
-        name: 'ironman',
-        skill: 'beam',
-        gender: 'male',
-      },
-      { host: 'http://some.api.google.com/jinframe/:passing', method: 'POST' },
-    );
+    super({
+      passing: 'pass',
+      name: 'ironman',
+      skill: 'beam',
+      gender: 'male',
+    });
   }
 }
 
+@Post({
+  host: 'http://some.api.google.com/jinframe/:passing',
+  contentType: 'application/x-www-form-urlencoded',
+})
 class TestUrlencodedPostFrame extends JinEitherFrame {
   @JinEitherFrame.param()
   declare public readonly passing: string;
@@ -40,18 +43,11 @@ class TestUrlencodedPostFrame extends JinEitherFrame {
   declare public readonly password: string;
 
   constructor() {
-    super(
-      {
-        passing: 'pass',
-        username: 'ironman',
-        password: 'marvel',
-      },
-      {
-        host: 'http://some.api.google.com/jinframe/:passing',
-        contentType: 'application/x-www-form-urlencoded',
-        method: 'POST',
-      },
-    );
+    super({
+      passing: 'pass',
+      username: 'ironman',
+      password: 'marvel',
+    });
   }
 }
 

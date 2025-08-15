@@ -1,24 +1,47 @@
 import { JinEitherFrame } from '#frames/JinEitherFrame';
-import { ConstructorType } from '#tools/type-utilities/ConstructorType';
+import { Post } from '#tools/decorators/MethodDecorators';
 import { lightFormat } from 'date-fns';
 import { describe, expect, it } from 'vitest';
 
+@Post({ host: 'http://some.api.google.com/jinframe/:passing' })
 class Test001PostFrame extends JinEitherFrame {
   @JinEitherFrame.param()
   declare public readonly passing: string;
 
   @JinEitherFrame.objectBody()
   declare public readonly ability: number;
+}
 
-  constructor(args: ConstructorType<Test001PostFrame>) {
-    super(args, {
-      host: 'http://some.api.google.com/jinframe/:passing',
-      method: 'POST',
-    });
+@Post({ host: 'http://some.api.google.com/jinframe/:passing' })
+class Test002PostFrame extends JinEitherFrame {
+  @JinEitherFrame.param()
+  declare public readonly passing: string;
 
-    this.passing = args.passing;
-    this.ability = args.ability;
-  }
+  @JinEitherFrame.objectBody()
+  declare public readonly ability: string;
+}
+
+@Post({ host: 'http://some.api.google.com/jinframe/:passing' })
+class Test003PostFrame extends JinEitherFrame {
+  @JinEitherFrame.param()
+  declare public readonly passing: string;
+
+  @JinEitherFrame.objectBody({
+    formatters: {
+      findFrom: 'ability',
+      dateTime: (value) => lightFormat(value, 'yyyy-MM-dd HH:mm:ss'),
+    },
+  })
+  declare public readonly ability: Date;
+}
+
+@Post({ host: 'http://some.api.google.com/jinframe/:passing' })
+class Test004PostFrame extends JinEitherFrame {
+  @JinEitherFrame.param()
+  declare public readonly passing: string;
+
+  @JinEitherFrame.objectBody()
+  declare public readonly ability: boolean;
 }
 
 describe('JinEitherFrame ObjectBody using Primitive type', () => {
@@ -44,21 +67,6 @@ describe('JinEitherFrame ObjectBody using Primitive type', () => {
     expect(req).toEqual(excpetation);
   });
 
-  class Test002PostFrame extends JinEitherFrame {
-    @JinEitherFrame.param()
-    declare public readonly passing: string;
-
-    @JinEitherFrame.objectBody()
-    declare public readonly ability: string;
-
-    constructor(args: ConstructorType<Test002PostFrame>) {
-      super(args, {
-        host: 'http://some.api.google.com/jinframe/:passing',
-        method: 'POST',
-      });
-    }
-  }
-
   it('T002-primitive-string', async () => {
     const frame = new Test002PostFrame({
       passing: 'hello',
@@ -80,29 +88,6 @@ describe('JinEitherFrame ObjectBody using Primitive type', () => {
 
     expect(req).toEqual(excpetation);
   });
-
-  class Test003PostFrame extends JinEitherFrame {
-    @JinEitherFrame.param()
-    declare public readonly passing: string;
-
-    @JinEitherFrame.objectBody({
-      formatters: {
-        findFrom: 'ability',
-        dateTime: (value) => lightFormat(value, 'yyyy-MM-dd HH:mm:ss'),
-      },
-    })
-    declare public readonly ability: Date;
-
-    constructor(args: ConstructorType<Test003PostFrame>) {
-      super(args, {
-        host: 'http://some.api.google.com/jinframe/:passing',
-        method: 'POST',
-      });
-
-      this.passing = args.passing;
-      this.ability = args.ability;
-    }
-  }
 
   it('T003-primitive-date-with-format', async () => {
     const frame = new Test003PostFrame({
@@ -126,21 +111,6 @@ describe('JinEitherFrame ObjectBody using Primitive type', () => {
 
     expect(req).toEqual(excpetation);
   });
-
-  class Test004PostFrame extends JinEitherFrame {
-    @JinEitherFrame.param()
-    declare public readonly passing: string;
-
-    @JinEitherFrame.objectBody()
-    declare public readonly ability: boolean;
-
-    constructor(args: ConstructorType<Test004PostFrame>) {
-      super(args, {
-        host: 'http://some.api.google.com/jinframe/:passing',
-        method: 'POST',
-      });
-    }
-  }
 
   it('T004-primitive-boolean', async () => {
     const frame = new Test004PostFrame({

@@ -1,7 +1,9 @@
 import { JinEitherFrame } from '#frames/JinEitherFrame';
+import { Post } from '#tools/decorators/MethodDecorators';
 import { lightFormat, parse } from 'date-fns';
 import { describe, expect, it } from 'vitest';
 
+@Post({ host: 'http://some.api.google.com/jinframe/:passing' })
 class Test001PostFrame extends JinEitherFrame {
   @JinEitherFrame.param()
   declare public readonly passing: string;
@@ -15,15 +17,9 @@ class Test001PostFrame extends JinEitherFrame {
 
   @JinEitherFrame.body()
   declare public readonly password: string;
-
-  constructor(args: { passing: string; username: string[]; password: string }) {
-    super(args, {
-      host: 'http://some.api.google.com/jinframe/:passing',
-      method: 'POST',
-    });
-  }
 }
 
+@Post({ host: 'http://some.api.google.com/jinframe/:passing' })
 class Test002PostFrame extends JinEitherFrame {
   @JinEitherFrame.param()
   declare public readonly passing: string;
@@ -37,15 +33,9 @@ class Test002PostFrame extends JinEitherFrame {
     },
   })
   declare public readonly password: string;
-
-  constructor(args: { passing: string; username: string[]; password: string }) {
-    super(args, {
-      host: 'http://some.api.google.com/jinframe/:passing',
-      method: 'POST',
-    });
-  }
 }
 
+@Post({ host: 'http://some.api.google.com/jinframe/:passing' })
 class Test003PostFrame extends JinEitherFrame {
   @JinEitherFrame.param()
   declare public readonly passing: string;
@@ -66,15 +56,9 @@ class Test003PostFrame extends JinEitherFrame {
 
   @JinEitherFrame.body()
   declare public readonly today: Date;
-
-  constructor(args: { passing: string; username: string[]; password: string; today: Date }) {
-    super(args, {
-      host: 'http://some.api.google.com/jinframe/:passing',
-      method: 'POST',
-    });
-  }
 }
 
+@Post({ host: 'http://some.api.google.com/jinframe/:passing' })
 class Test004PostFrame extends JinEitherFrame {
   @JinEitherFrame.param()
   declare public readonly passing: string;
@@ -99,15 +83,9 @@ class Test004PostFrame extends JinEitherFrame {
     },
   })
   declare public readonly today: Date;
-
-  constructor(args: { passing: string; username: string[]; password: string; today: Date }) {
-    super(args, {
-      host: 'http://some.api.google.com/jinframe/:passing',
-      method: 'POST',
-    });
-  }
 }
 
+@Post({ host: 'http://some.api.google.com/jinframe/:passing' })
 class Test005PostFrame extends JinEitherFrame {
   @JinEitherFrame.param()
   declare public readonly passing: string;
@@ -133,15 +111,9 @@ class Test005PostFrame extends JinEitherFrame {
     },
   })
   declare public readonly today: string;
-
-  constructor(args: { passing: string; username: string[]; password: string; today: string }) {
-    super(args, {
-      host: 'http://some.api.google.com/jinframe/:passing',
-      method: 'POST',
-    });
-  }
 }
 
+@Post({ host: 'http://some.api.google.com/jinframe/:passing' })
 class Test006PostFrame extends JinEitherFrame {
   @JinEitherFrame.param()
   declare public readonly passing: string;
@@ -169,13 +141,6 @@ class Test006PostFrame extends JinEitherFrame {
     },
   })
   declare public readonly today: string;
-
-  constructor(args: { passing: string; username: string[]; password: string; today: string }) {
-    super(args, {
-      host: 'http://some.api.google.com/jinframe/:passing',
-      method: 'POST',
-    });
-  }
 }
 
 describe('JinEitherFrame - Body with formatters', () => {

@@ -1,9 +1,11 @@
 import { JinFrame } from '#frames/JinFrame';
 import type { TJinRequestConfig } from '#interfaces/TJinFrameResponse';
+import { Get } from '#tools/decorators/MethodDecorators';
 import type { AxiosResponse } from 'axios';
 import nock from 'nock';
 import { afterEach, describe, expect, it } from 'vitest';
 
+@Get({ host: 'http://some.api.google.com/jinframe/:passing', retry: { max: 3, interval: 20 } })
 class RetryTestGet01Frame extends JinFrame {
   @JinFrame.P()
   declare public readonly passing: string;
@@ -15,19 +17,11 @@ class RetryTestGet01Frame extends JinFrame {
   declare public readonly skill: string[];
 
   constructor() {
-    super(
-      {
-        passing: 'pass',
-        name: 'ironman',
-        skill: ['beam', 'flying!'],
-      },
-      {
-        host: 'http://some.api.google.com',
-        path: '/jinframe/:passing',
-        method: 'get',
-        retry: { max: 3, interval: 20 },
-      },
-    );
+    super({
+      passing: 'pass',
+      name: 'ironman',
+      skill: ['beam', 'flying!'],
+    });
   }
 
   get retryData() {
@@ -39,6 +33,7 @@ class RetryTestGet01Frame extends JinFrame {
   }
 }
 
+@Get({ host: 'http://some.api.google.com/jinframe/:passing', retry: { max: 2 } })
 class RetryTestGet02Frame extends JinFrame {
   @JinFrame.P()
   declare public readonly passing: string;
@@ -67,19 +62,11 @@ class RetryTestGet02Frame extends JinFrame {
   }
 
   constructor() {
-    super(
-      {
-        passing: 'pass',
-        name: 'ironman',
-        skill: ['beam', 'flying!'],
-      },
-      {
-        host: 'http://some.api.google.com',
-        path: '/jinframe/:passing',
-        method: 'get',
-        retry: { max: 2 },
-      },
-    );
+    super({
+      passing: 'pass',
+      name: 'ironman',
+      skill: ['beam', 'flying!'],
+    });
 
     this.#retryFail = '';
   }

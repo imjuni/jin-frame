@@ -1,8 +1,9 @@
 import { JinEitherFrame } from '#frames/JinEitherFrame';
-import { ConstructorType } from '#tools/type-utilities/ConstructorType';
+import { Post } from '#tools/decorators/MethodDecorators';
 import { lightFormat } from 'date-fns';
 import { expect, it } from 'vitest';
 
+@Post({ host: 'http://some.api.google.com/jinframe/:passing' })
 class Test001PostFrame extends JinEitherFrame {
   @JinEitherFrame.param()
   declare public readonly passing: string;
@@ -29,16 +30,6 @@ class Test001PostFrame extends JinEitherFrame {
     date: Date;
     desc: string;
   };
-
-  constructor(args: ConstructorType<Test001PostFrame>) {
-    super(args, {
-      host: 'http://some.api.google.com/jinframe/:passing',
-      method: 'POST',
-    });
-
-    this.passing = args.passing;
-    this.ability = args.ability;
-  }
 }
 
 it('object formatters array', async () => {

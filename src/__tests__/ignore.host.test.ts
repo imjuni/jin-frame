@@ -1,6 +1,8 @@
 import { JinEitherFrame } from '#frames/JinEitherFrame';
+import { Get } from '#tools/decorators/MethodDecorators';
 import { expect, it } from 'vitest';
 
+@Get({ host: '/jinframe/:passing/test' })
 class TestGet2Frame extends JinEitherFrame {
   @JinEitherFrame.param()
   declare public readonly passing: string;
@@ -10,21 +12,10 @@ class TestGet2Frame extends JinEitherFrame {
 
   @JinEitherFrame.header()
   declare public readonly ttt: string;
-
-  constructor() {
-    super(
-      {
-        passing: 'hello',
-        name: 'ironman',
-        ttt: 'header value',
-      },
-      { path: '/jinframe/:passing/test', method: 'get' },
-    );
-  }
 }
 
 it('ignore-hostname-axios-request', async () => {
-  const frame = new TestGet2Frame();
+  const frame = new TestGet2Frame({ passing: 'hello', name: 'ironman', ttt: 'c' });
   const req = frame.request();
-  expect(req.url).toEqual('http://localhost/jinframe/hello/test?name=ironman');
+  expect(req.url).toEqual('/jinframe/hello/test?name=ironman');
 });

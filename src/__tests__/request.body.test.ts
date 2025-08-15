@@ -1,4 +1,5 @@
 import { JinEitherFrame } from '#frames/JinEitherFrame';
+import { Post } from '#tools/decorators/MethodDecorators';
 import { ConstructorType } from '#tools/type-utilities/ConstructorType';
 import { format, parse } from 'date-fns';
 import { expect, it } from 'vitest';
@@ -63,6 +64,7 @@ const share: { first: IFirstBody; second: ISecondBody; third: IThirdBody } = {
   },
 };
 
+@Post({ host: 'http://some.api.google.com/jinframe/:passing' })
 class Test001PostFrame extends JinEitherFrame {
   @JinEitherFrame.param()
   declare public readonly passing: string;
@@ -94,15 +96,12 @@ class Test001PostFrame extends JinEitherFrame {
   declare public readonly multipleFormatting: IFirstBody;
 
   constructor(args: Pick<ConstructorType<Test001PostFrame>, 'multipleFormatting'>) {
-    super(
-      {
-        ...args,
-        passing: 'pass',
-        name: 'ironman',
-        skill: ['beam', 'flying!'],
-      },
-      { host: 'http://some.api.google.com', path: '/jinframe/:passing', method: 'POST' },
-    );
+    super({
+      ...args,
+      passing: 'pass',
+      name: 'ironman',
+      skill: ['beam', 'flying!'],
+    });
   }
 }
 
@@ -127,6 +126,7 @@ it('T001-object-type-field-multiple-formatting', async () => {
   expect(req.data).toEqual(expectation);
 });
 
+@Post({ host: 'http://some.api.google.com/jinframe/:passing' })
 class Test002PostFrame extends JinEitherFrame {
   @JinEitherFrame.param()
   declare public readonly passing: string;
@@ -174,15 +174,12 @@ class Test002PostFrame extends JinEitherFrame {
   declare public readonly thirdField: IThirdBody;
 
   constructor(args: Pick<ConstructorType<Test002PostFrame>, 'hero' | 'heroBio' | 'thirdField'>) {
-    super(
-      {
-        ...args,
-        passing: 'pass',
-        name: 'ironman',
-        skill: ['beam', 'flying!'],
-      },
-      { host: 'http://some.api.google.com', path: '/jinframe/:passing', method: 'POST' },
-    );
+    super({
+      ...args,
+      passing: 'pass',
+      name: 'ironman',
+      skill: ['beam', 'flying!'],
+    });
   }
 }
 
