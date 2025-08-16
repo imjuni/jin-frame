@@ -29,11 +29,12 @@ import FormData from 'form-data';
 import { first } from 'my-easy-fp';
 import { compile } from 'path-to-regexp';
 import 'reflect-metadata';
-import type { Except } from 'type-fest';
+import type { Constructor, Except } from 'type-fest';
 import { flatStringMap } from '#processors/flatStringMap';
 import { getUrl } from '#tools/slash-utils/getUrl';
-import { getClassOption } from '#tools/decorators/MethodDecorators';
-import { getFrameInternalData, getFrameOption } from '#tools/decorators/getFrameOption';
+import { getFrameOption } from '#tools/decorators/getFrameOption';
+import { getFrameInternalData } from '#tools/decorators/getFrameInternalData';
+import { getRequestMeta } from '#tools/decorators/methods/handlers/getRequestMeta';
 
 export abstract class AbstractJinFrame<TPASS> {
   public static ParamSymbolBox = Symbol('ParamSymbolBoxForAbstractJinFrame');
@@ -116,9 +117,9 @@ export abstract class AbstractJinFrame<TPASS> {
   // eslint-disable-next-line class-methods-use-this
   protected $_retryFail(_req: AxiosRequestConfig, _res: AxiosResponse<TPASS>): void {}
 
-  protected $_option: IFrameOption;
+  protected $_option!: IFrameOption;
 
-  protected $_data: IFrameInternal;
+  protected $_data!: IFrameInternal;
 
   /**
    * @param __namedParameters.host - host of API Request endpoint
@@ -128,7 +129,7 @@ export abstract class AbstractJinFrame<TPASS> {
    * @param __namedParameters.customBody - custom object of POST Request body data
    */
   constructor() {
-    const fromDecorator = getClassOption(this.constructor.name);
+    const fromDecorator = getRequestMeta(this.constructor as Constructor<unknown>);
 
     this.$_option = fromDecorator?.option != null ? { ...fromDecorator.option } : getFrameOption('GET');
     this.$_data = fromDecorator?.data != null ? { ...fromDecorator.data } : getFrameInternalData(this.$_option);

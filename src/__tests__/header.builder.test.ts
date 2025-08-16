@@ -1,5 +1,5 @@
 import { JinEitherFrame } from '#frames/JinEitherFrame';
-import { Post } from '#tools/decorators/MethodDecorators';
+import { Post } from '#tools/decorators/methods/Post';
 import { describe, expect, it } from 'vitest';
 
 @Post({ host: 'http://some.api.google.com/jinframe/:passing' })

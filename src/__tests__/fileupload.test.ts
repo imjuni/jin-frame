@@ -4,7 +4,7 @@ import fs from 'node:fs';
 import nock from 'nock';
 import path from 'node:path';
 import { afterEach, it } from 'vitest';
-import { Post } from '#tools/decorators/MethodDecorators';
+import { Post } from '#tools/decorators/methods/Post';
 
 @Post({ host: 'http://some.api.google.com/fileupload-case04', contentType: 'multipart/form-data' })
 class TestGetFrame extends JinEitherFrame {

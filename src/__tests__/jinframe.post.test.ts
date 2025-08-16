@@ -1,5 +1,5 @@
 import { JinEitherFrame } from '#frames/JinEitherFrame';
-import { Post } from '#tools/decorators/MethodDecorators';
+import { Post } from '#tools/decorators/methods/Post';
 import { isPass } from 'my-only-either';
 import nock from 'nock';
 import { afterEach, describe, expect, it } from 'vitest';

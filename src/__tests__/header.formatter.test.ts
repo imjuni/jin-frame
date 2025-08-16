@@ -1,5 +1,5 @@
 import { JinEitherFrame } from '#frames/JinEitherFrame';
-import { Post } from '#tools/decorators/MethodDecorators';
+import { Post } from '#tools/decorators/methods/Post';
 import { lightFormat, parse } from 'date-fns';
 import { format } from 'date-fns-tz';
 import { describe, expect, it } from 'vitest';

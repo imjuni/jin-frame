@@ -1,5 +1,5 @@
 import { JinEitherFrame } from '#frames/JinEitherFrame';
-import { Get } from '#tools/decorators/MethodDecorators';
+import { Get } from '#tools/decorators/methods/Get';
 import axios, { type AxiosRequestConfig } from 'axios';
 import { describe, it } from 'vitest';
 

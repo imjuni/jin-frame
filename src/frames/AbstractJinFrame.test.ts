@@ -1,6 +1,6 @@
 import { JinFile } from '#frames/JinFile';
 import { JinFrame } from '#frames/JinFrame';
-import { Post } from '#tools/decorators/MethodDecorators';
+import { Post } from '#tools/decorators/methods/Post';
 import MockAdapter from 'axios-mock-adapter';
 import nock from 'nock';
 import { afterEach, describe, expect, it } from 'vitest';
