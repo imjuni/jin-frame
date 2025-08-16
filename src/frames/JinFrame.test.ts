@@ -6,7 +6,7 @@ import type { IDebugInfo } from '#interfaces/IDebugInfo';
 import type { IFailReplyJinEitherFrame } from '#interfaces/IFailJinEitherFrame';
 import type { TJinFrameResponse, TJinRequestConfig } from '#interfaces/TJinFrameResponse';
 import type { TPassJinEitherFrame } from '#interfaces/TPassJinEitherFrame';
-import { Post } from '#tools/decorators/MethodDecorators';
+import { Post } from '#tools/decorators/methods/Post';
 import nock from 'nock';
 import { afterEach, describe, expect, it } from 'vitest';
 

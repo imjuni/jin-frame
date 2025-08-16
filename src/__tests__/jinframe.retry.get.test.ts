@@ -1,6 +1,6 @@
 import { JinFrame } from '#frames/JinFrame';
 import type { TJinRequestConfig } from '#interfaces/TJinFrameResponse';
-import { Get } from '#tools/decorators/MethodDecorators';
+import { Get } from '#tools/decorators/methods/Get';
 import type { AxiosResponse } from 'axios';
 import nock from 'nock';
 import { afterEach, describe, expect, it } from 'vitest';

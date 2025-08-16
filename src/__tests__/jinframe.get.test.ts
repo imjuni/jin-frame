@@ -2,7 +2,7 @@ import { JinEitherFrame } from '#frames/JinEitherFrame';
 import { JinFrame } from '#frames/JinFrame';
 import type { IFailReplyJinEitherFrame } from '#interfaces/IFailJinEitherFrame';
 import type { TPassJinEitherFrame } from '#interfaces/TPassJinEitherFrame';
-import { Get } from '#tools/decorators/MethodDecorators';
+import { Get } from '#tools/decorators/methods/Get';
 import axios, { type AxiosRequestConfig, type AxiosResponse } from 'axios';
 import { isFail, isPass } from 'my-only-either';
 import nock from 'nock';
