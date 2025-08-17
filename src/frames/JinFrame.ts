@@ -100,7 +100,7 @@ export class JinFrame<TPASS = unknown, TFAIL = TPASS>
         ) => Error;
       },
   ): () => Promise<AxiosResponse<TPASS>> {
-    const req = this.request({ ...option, validateStatus: () => true });
+    const req = this.requestWrap({ ...option, validateStatus: () => true });
     const isValidateStatus = option?.validateStatus ?? isValidateStatusDefault;
 
     const jinFrameHandle = async () => {
@@ -211,12 +211,8 @@ export class JinFrame<TPASS = unknown, TFAIL = TPASS>
       return CE_HOOK_APPLY.ASYNC_HOOK_APPLIED;
     }
 
-    if (this.$_preHook != null) {
-      this.$_preHook(req);
-      return CE_HOOK_APPLY.SYNC_HOOK_APPLIED;
-    }
-
-    return CE_HOOK_APPLY.HOOK_UNDEFINED;
+    this.$_preHook(req);
+    return CE_HOOK_APPLY.SYNC_HOOK_APPLIED;
   }
 
   public async executePostHook(
@@ -229,11 +225,7 @@ export class JinFrame<TPASS = unknown, TFAIL = TPASS>
       return CE_HOOK_APPLY.ASYNC_HOOK_APPLIED;
     }
 
-    if (this.$_postHook != null) {
-      this.$_postHook(req, reply, debugInfo);
-      return CE_HOOK_APPLY.SYNC_HOOK_APPLIED;
-    }
-
-    return CE_HOOK_APPLY.HOOK_UNDEFINED;
+    this.$_postHook(req, reply, debugInfo);
+    return CE_HOOK_APPLY.SYNC_HOOK_APPLIED;
   }
 }

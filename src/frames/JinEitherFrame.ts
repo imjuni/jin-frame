@@ -208,12 +208,8 @@ export class JinEitherFrame<TPASS = unknown, TFAIL = TPASS>
       return CE_HOOK_APPLY.ASYNC_HOOK_APPLIED;
     }
 
-    if (this.$_preHook != null) {
-      this.$_preHook(req);
-      return CE_HOOK_APPLY.SYNC_HOOK_APPLIED;
-    }
-
-    return CE_HOOK_APPLY.HOOK_UNDEFINED;
+    this.$_preHook(req);
+    return CE_HOOK_APPLY.SYNC_HOOK_APPLIED;
   }
 
   public async executePostHook(
@@ -225,11 +221,7 @@ export class JinEitherFrame<TPASS = unknown, TFAIL = TPASS>
       return CE_HOOK_APPLY.ASYNC_HOOK_APPLIED;
     }
 
-    if (this.$_postHook != null) {
-      this.$_postHook(req, reply);
-      return CE_HOOK_APPLY.SYNC_HOOK_APPLIED;
-    }
-
-    return CE_HOOK_APPLY.HOOK_UNDEFINED;
+    this.$_postHook(req, reply);
+    return CE_HOOK_APPLY.SYNC_HOOK_APPLIED;
   }
 }

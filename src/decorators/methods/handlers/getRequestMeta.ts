@@ -3,7 +3,7 @@ import { recursive } from 'merge';
 import type { AbstractConstructor, Constructor } from 'type-fest';
 import type { IFrameInternal } from '#tools/type-utilities/IFrameInternal';
 import type { IFrameOption } from '#tools/type-utilities/IFrameOption';
-import type { TMethodEntry } from '#decorators/methods/handlers/TMethodEntry';
+import type { TMethodEntry } from '#interfaces/TMethodEntry';
 
 /**
  *
@@ -29,6 +29,10 @@ export function getRequestMeta(ctor: AbstractConstructor<unknown> | Constructor<
 
   recursive(mergedOption, ...reversed.map((meta) => meta.option));
   recursive(mergedData, ...reversed.map((meta) => meta.data));
+
+  if (Object.keys(mergedOption).length <= 0) {
+    throw new Error('You need to configure using method decorators such as Get, Post, Put, Delete, Patch, etc!');
+  }
 
   return {
     option: mergedOption,

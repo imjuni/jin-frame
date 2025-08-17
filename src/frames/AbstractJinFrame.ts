@@ -18,8 +18,6 @@ import 'reflect-metadata';
 import type { Constructor } from 'type-fest';
 import { flatStringMap } from '#processors/flatStringMap';
 import { getUrl } from '#tools/slash-utils/getUrl';
-import { getFrameOption } from '#decorators/getFrameOption';
-import { getFrameInternalData } from '#decorators/getFrameInternalData';
 import { getRequestMeta } from '#decorators/methods/handlers/getRequestMeta';
 import { getFieldMetadata } from '#decorators/fields/handlers/getFieldMetadata';
 
@@ -34,8 +32,8 @@ export abstract class AbstractJinFrame<TPASS> {
   constructor() {
     const fromDecorator = getRequestMeta(this.constructor as Constructor<unknown>);
 
-    this.$_option = fromDecorator?.option != null ? { ...fromDecorator.option } : getFrameOption('GET');
-    this.$_data = fromDecorator?.data != null ? { ...fromDecorator.data } : getFrameInternalData(this.$_option);
+    this.$_option = { ...fromDecorator.option };
+    this.$_data = { ...fromDecorator.data };
   }
 
   public getData<K extends keyof Pick<IFrameInternal, 'body' | 'param' | 'query' | 'header' | 'instance'>>(
@@ -168,9 +166,9 @@ export abstract class AbstractJinFrame<TPASS> {
     // stage 07. querystring post processing
     Object.entries(queries).forEach(([key, value]) => {
       if (Array.isArray(value)) {
-        value.forEach((val) => url.searchParams.append(key, typeof val !== 'string' ? fastSafeStringify(val) : val));
+        value.forEach((val) => url.searchParams.append(key, val));
       } else {
-        url.searchParams.set(key, typeof value !== 'string' ? fastSafeStringify(value) : value);
+        url.searchParams.set(key, value);
       }
     });
 
@@ -213,7 +211,7 @@ export abstract class AbstractJinFrame<TPASS> {
     }
 
     let prevResponse = response;
-    const hook = this.$_retryFail != null ? this.$_retryFail.bind(this) : () => {};
+    const hook = this.$_retryFail.bind(this);
     retry.interval = retry.interval ?? 10;
 
     const retried = await new Promise<AxiosResponse<TPASS>>((resolve) => {
@@ -233,18 +231,22 @@ export abstract class AbstractJinFrame<TPASS> {
               setTimeout(() => attempt(), retry.interval);
             }
           })
-          .catch(
-            /* c8 ignore next 9 */
-            () => {
-              if (retry.max <= retry.try) {
-                resolve(prevResponse);
-              } else {
-                retry.try += 1;
-                hook(req, prevResponse);
-                setTimeout(() => attempt(), retry.interval);
-              }
-            },
-          );
+          // 보통의 경우 requestWrap에서 validateStatus: () => true 를 설정하기 때문에
+          // 내부 오류로 인해서 이 catch에 도달하는 경우는 발생할 수 없으나, 알 수 없는 오류 방지를 위해 추가함
+          //
+          // In normal cases, the requestWrap function sets validateStatus: () => true,
+          // so this catch block will not be reached. However, it is added to handle any unexpected errors
+          // that may arise from Axios.
+          /* c8 ignore next 9 */
+          .catch(() => {
+            if (retry.max <= retry.try) {
+              resolve(prevResponse);
+            } else {
+              retry.try += 1;
+              hook(req, prevResponse);
+              setTimeout(() => attempt(), retry.interval);
+            }
+          });
       };
 
       attempt();

@@ -10,7 +10,7 @@ export interface IObjectBodyFieldOption extends ICommonFieldOption {
    *
    * @default Number.MAX_SAFE_INTEGER
    * */
-  order?: number;
+  order: number;
 
   /**
    * formatter configuration, use convert date type or transform data shape
