@@ -1,7 +1,11 @@
 /* eslint-disable import/no-extraneous-dependencies */
 
 import { format, parse } from 'date-fns';
-import { JinEitherFrame } from '../src/frames/JinEitherFrame';
+import { JinFrame } from '../src/frames/JinFrame';
+import { ObjectBody } from '../src/decorators/fields/ObjectBody';
+import { Query } from '../src/decorators/fields/Query';
+import { Param } from '../src/decorators/fields/Param';
+import { Get } from '../src/decorators/methods/Get';
 
 interface IFirstBody {
   name: string;
@@ -35,7 +39,8 @@ interface IThirdBody {
 /**
  * Complex datetime formatting With Body Object merging with set body object merge order
  */
-export default class BodyOrderedMergeFrame extends JinEitherFrame {
+@Get({ host: 'http://some.api.google.com', path: '/jinframe/:passing' })
+export default class BodyOrderedMergeFrame extends JinFrame {
   @Param()
   declare public readonly passing: string;
 
@@ -45,7 +50,7 @@ export default class BodyOrderedMergeFrame extends JinEitherFrame {
   @Query({ encode: true })
   declare public readonly skill: string[];
 
-  @JinEitherFrame.objectBody({
+  @ObjectBody({
     order: 3,
     formatters: [
       {
@@ -66,7 +71,7 @@ export default class BodyOrderedMergeFrame extends JinEitherFrame {
   })
   declare public readonly firstBody: IFirstBody;
 
-  @JinEitherFrame.objectBody({
+  @ObjectBody({
     order: 1,
     formatters: [
       {
@@ -78,28 +83,8 @@ export default class BodyOrderedMergeFrame extends JinEitherFrame {
   })
   declare public readonly secondBody: ISecondBody;
 
-  @JinEitherFrame.objectBody({
+  @ObjectBody({
     order: 2,
   })
   declare public readonly thirdBody: IThirdBody;
-
-  constructor({
-    firstBody,
-    secondBody,
-    thirdBody,
-  }: {
-    firstBody: IFirstBody;
-    secondBody: ISecondBody;
-    thirdBody: IThirdBody;
-  }) {
-    super({ $$host: 'http://some.api.google.com', $$path: '/jinframe/:passing', $$method: 'GET' });
-
-    this.passing = 'pass';
-    this.name = 'ironman';
-    this.skill = ['beam', 'flying!'];
-
-    this.firstBody = { ...firstBody };
-    this.secondBody = { ...secondBody };
-    this.thirdBody = { ...thirdBody };
-  }
 }

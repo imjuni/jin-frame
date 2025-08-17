@@ -1,9 +1,9 @@
 import axios, { type AxiosRequestConfig } from 'axios';
 import { describe, it } from 'vitest';
 
-import { JinEitherFrame } from '#frames/JinEitherFrame';
 import { Get } from '#decorators/methods/Get';
 import { Query } from '#decorators/fields/Query';
+import { JinFrame } from '#frames/JinFrame';
 
 interface IReqGetPokemonInfoByName {
   limit: number;
@@ -21,7 +21,7 @@ async function getPokemonInfoByName(inp: IReqGetPokemonInfoByName) {
 }
 
 @Get({ host: 'https://pokeapi.co/api/v2/pokemon' })
-class PokemonPagingFrame extends JinEitherFrame<any, any> {
+class PokemonPagingFrame extends JinFrame {
   @Query()
   declare readonly limit: number;
 

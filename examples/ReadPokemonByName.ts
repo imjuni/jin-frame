@@ -1,16 +1,9 @@
-import { JinEitherFrame } from '../src/frames/JinEitherFrame';
-import type JinConstructorType from '../src/tools/type-utilities/JinConstructorType';
+import { JinFrame } from '../src/frames/JinFrame';
+import { Param } from '../src/decorators/fields/Param';
+import { Get } from '../src/decorators/methods/Get';
 
-export class PokemonFrame extends JinEitherFrame<any, any> {
+@Get({ host: 'https://pokeapi.co/api/v2/pokemon/:name' })
+export class PokemonFrame extends JinFrame<any, any> {
   @Param()
-  name: string;
-
-  constructor(args: JinConstructorType<PokemonFrame>) {
-    super({
-      $$host: 'https://pokeapi.co/api/v2/pokemon/:name',
-      $$method: 'GET',
-    });
-
-    this.name = args.name;
-  }
+  declare public readonly name: string;
 }

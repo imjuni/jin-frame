@@ -12,22 +12,27 @@
 
 **HTTP Reqest** = **TypeScript Class**
 
-`jin-frame` help to make HTTP Request `template` using by TypeScript class, decorator.
+A reusable, declarative, type-safe, and extendable HTTP request library.
 
 Why `jin-frame`?
 
-1. decorator: decorator function make HTTP request parameter
-2. Static Type Checking: **Compile-Time** static type checking on request parameter
-3. HTTP Request can extends inheritance, OOP design
-4. Use Axios EcoSystem
+1. Declarative API Definition
+   - Define URL, Querystring, Path Parameters, Body, and Headers intuitively using classes and decorators.
+2. Type Safety
+   - Leverage TypeScript’s type system to detect type mismatches at compile time.
+3. Support for Retry, Hooks, File Upload, and Mocking
+   - Provides essential features for real-world usage, including Retry, Hooks, File Upload, and Mocking.
+4. Leverage the Axios Ecosystem
+5. Path Parameter Support
+   - Supports path parameter substitution via URLs, e.g., example.com/:id.
 
 ## Table of Contents <!-- omit in toc -->
 
 - [How to works?](#how-to-works)
 - [Comparison of direct usage and jin-frame](#comparison-of-direct-usage-and-jin-frame)
+- [Requirements](#requirements)
 - [Install](#install)
 - [Useage](#useage)
-- [Requirements](#requirements)
 - [Axios version](#axios-version)
 - [Mocking](#mocking)
 - [Form](#form)
@@ -46,83 +51,59 @@ Why `jin-frame`?
 
 | Direct usage                     | Jin-Frame                               |
 | -------------------------------- | --------------------------------------- |
-| ![axios](assets/axios-usage.png) | ![jin-frame](assets/jinframe-usage.png) |
+| ![axios](assets/axios-usage.svg) | ![jin-frame](assets/jinframe-usage.svg) |
+
+## Requirements
+
+1. TypeScript
+1. Decorator
+   - enable experimentalDecorators, emitDecoratorMetadata option in `tsconfig.json`
+
+```json
+{
+  "extends": "@tsconfig/node20/tsconfig.json",
+  "compilerOptions": {
+    // enable experimentalDecorators, emitDecoratorMetadata for using decorator
+    "experimentalDecorators": true,
+    "emitDecoratorMetadata": true, 
+  }
+}
+```
 
 ## Install
 
 ```sh
-npm i jin-frame --save
+npm install jin-frame --save
 ```
 
 ## Useage
 
-Querystring made by `query`, `Q` decorator.
-
-```ts
-class IamReqest extends JinFrame {
-  @JinFrame.Q()
-  public declare readonly name: string;
-}
-```
-
-Path parameter made by `param`, `P` decorator and URI.
-
-```ts
-class IamReqest extends JinFrame {
-  // decorator
-  @JinFrame.P()
-  public declare readonly id: string;
-
-  constructor(args: OmitConstructorType<IamReqest, JinBuiltInMember>) {
-    // `:` character make path parameter on URI
-    super({ ...args, host: 'http://some.api.google.com/jinframe/:id', method: 'post' });
-  }
-}
-```
-
-Header parameter made by `header`, `H` decorator and URI.
-
-```ts
-class IamReqest extends JinFrame {
-  @JinFrame.H({ replaceAt: 'api-key' })
-  public declare readonly apiKey: string;
-}
-```
-
-Body parameter made by `body`, `B` decorator and URI.
-
-```ts
-class IamReqest extends JinFrame {
-  @JinFrame.B({ replaceAt: 'api-key' })
-  public declare readonly gene: string;
-}
-```
-
 This is example of union param, body, header parameter.
-
+  
 ```ts
-class TestPostFrame extends JinFrame {
-  @JinFrame.param()
-  public declare readonly id: number;
+import { Post, Param, Body, Header, Query} from 'jin-frame';
 
-  @JinFrame.body({ replaceAt: 'test.hello.marvel.name' })
+@Post({ host: 'http://some.api.google.com', path: '/jinframe/:passing' })
+class TestPostQuery extends JinFrame {
+  @Param()
+  public declare readonly passing: string;
+
+  @Body({ key: 'test.hello.marvel.name' })
   public declare readonly name: string;
 
-  @JinFrame.header({ replaceAt: 'test.hello.marvel.skill' })
+  @Header({ key: 'test.hello.marvel.skill' })
   public declare readonly skill: string;
 
-  // automatically initialize via base class, have to use same name of args and JinFrame class
-  // execute `Object.keys(args).forEach(key => this[key] = args[key])`
-  constructor(args: OmitConstructorType<TestPostFrame, JinBuiltInMember>) {
-    super({ ...args, $$host: 'http://some.api.yanolja.com/jinframe/:id', $$method: 'POST' });
-  }
+  @Body({ key: 'test.hello.marvel.gender' })
+  public declare readonly gender: string;
 }
 ```
 
-TestPostFrame class create AxiosRequestConfig object below. `$$` character is show that is built-in variable.
+TestPostFrame class create AxiosRequestConfig object below.
 
 ```ts
-const frame = new TestPostFrame({ id: 1, name: 'ironman', skill: 'beam' });
+const frame = TestPostFrame.of({ passing: 'pass', name: 'ironman', skill: 'beam', gender: 'male' });
+
 console.log(frame.request());
 
 // console.log show below,
@@ -140,18 +121,9 @@ console.log(frame.request());
 You can direct execute jin-frame. Curried request function create after execute it. jin-frame using axios library so using on browser.
 
 ```ts
-const frame = new TestPostFrame({ id: 1, name: 'ironman', skill: 'beam' });
+const frame = TestPostFrame.of({ passing: 'pass', name: 'ironman', skill: 'beam', gender: 'male' });
 const res = await frame.execute();
-
-// or
-const resp = await axios.request(frame.request());
 ```
-
-## Requirements
-
-1. TypeScript
-1. Decorator
-   - enable experimentalDecorators, emitDecoratorMetadata option in `tsconfig.json`
 
 ## Axios version
 
@@ -159,6 +131,7 @@ const resp = await axios.request(frame.request());
 | --------- | --------- |
 | 2.x       | <= 0.27.x |
 | 3.x       | >= 1.1.x  |
+| 4.x       | >= 1.4.x |
 
 ## Mocking
 
@@ -177,7 +150,7 @@ mock.onGet('/users').reply(200, {
   users: [{ id: 1, name: 'John Smith' }],
 });
 
-const frame = new UserFrame({ params: { searchText: 'John' } });
+const frame = UserFrame.of({ params: { searchText: 'John' } });
 const reply = await frame.execute();
 
 console.log(response.data);
@@ -200,32 +173,27 @@ jin-frame uses the [form-data](https://github.com/form-data/form-data) package f
 JinFrame support pre, post hook side of each request.
 
 ```ts
+@Post({ host: 'http://some.api.google.com', path: '/jinframe/:id' })
 class TestPostFrame extends JinFrame {
-  @JinFrame.param()
+  @Param()
   public declare readonly id: number;
 
-  @JinFrame.body({ replaceAt: 'test.hello.marvel.name' })
+  @Body({ replaceAt: 'test.hello.marvel.name' })
   public declare readonly name: string;
 
-  @JinFrame.header({ replaceAt: 'test.hello.marvel.skill' })
+  @Header({ replaceAt: 'test.hello.marvel.skill' })
   public declare readonly skill: string;
 
-  override preHook(req: AxiosRequestConfig<unknown>): void {
+  override $_preHook(req: AxiosRequestConfig<unknown>): void {
     console.log('pre hook executed');
   }
 
-  override postHook(req: AxiosRequestConfig<unknown>): void {
+  override $_postHook(req: AxiosRequestConfig<unknown>): void {
     console.log('post hook executed');
-  }
-
-  // automatically initialize via base class, have to use same name of args and JinFrame class
-  // execute `Object.keys(args).forEach(key => this[key] = args[key])`
-  constructor(args: OmitConstructorType<TestPostFrame, JinBuiltInMember>) {
-    super({ ...args, host: 'http://some.api.google.com/jinframe/:id', method: 'POST' });
   }
 }
 
-const frame = new TestPostFrame({ id: 1, name: 'ironman', skill: 'beam' });
+const frame = TestPostFrame.of({ id: 1, name: 'ironman', skill: 'beam' });
 
 // 'pre hook executed' display console
 const res = await frame.execute();
@@ -237,15 +205,15 @@ const res = await frame.execute();
 query, header, param, body getter function have each request parameter.
 
 ```ts
-const frame = new TestPostFrame({ id: 1, name: 'ironman', skill: 'beam' });
+const frame = TestPostFrame.of({ id: 1, name: 'ironman', skill: 'beam' });
 // jin-frame build body, header, query, param variable
 const res = await frame.execute();
 
 // You can verify body, header, query parameter
-console.log(frame.body);
-console.log(frame.header);
-console.log(frame.query);
-console.log(frame.param);
+console.log(frame.getData('body'));
+console.log(frame.getData('header'));
+console.log(frame.getData('query'));
+console.log(frame.getData('param'));
 ```
 
 ## Example

@@ -1,7 +1,11 @@
 /* eslint-disable import/no-extraneous-dependencies */
 
 import { format, parse } from 'date-fns';
-import { JinEitherFrame } from '../src/frames/JinEitherFrame';
+import { JinFrame } from '../src/frames/JinFrame';
+import { Query } from '../src/decorators/fields/Query';
+import { Param } from '../src/decorators/fields/Param';
+import { ObjectBody } from '../src/decorators/fields/ObjectBody';
+import { Get } from '../src/decorators/methods/Get';
 
 interface IFirstBody {
   name: string;
@@ -18,7 +22,8 @@ interface IFirstBody {
 /**
  * Complex date formatting In jin-frame
  */
-export default class ComplexFormatGetFrame extends JinEitherFrame {
+@Get({ host: 'http://some.api.google.com', path: '/jinframe/:passing' })
+export default class ComplexFormatGetFrame extends JinFrame {
   @Param()
   declare public readonly passing: string;
 
@@ -28,7 +33,7 @@ export default class ComplexFormatGetFrame extends JinEitherFrame {
   @Query()
   declare public readonly skill: string[];
 
-  @JinEitherFrame.objectBody({
+  @ObjectBody({
     formatters: [
       {
         findFrom: 'data.more.weddingAnniversary',
@@ -47,14 +52,4 @@ export default class ComplexFormatGetFrame extends JinEitherFrame {
     ],
   })
   declare public readonly body: IFirstBody;
-
-  constructor({ body }: { body: IFirstBody }) {
-    super({ $$host: 'http://some.api.google.com', $$path: '/jinframe/:passing', $$method: 'GET' });
-
-    this.passing = 'pass';
-    this.name = 'ironman';
-    this.skill = ['beam', 'flying!'];
-
-    this.body = { ...body };
-  }
 }
