@@ -4,17 +4,17 @@ import { JinEitherFrame } from '../src/frames/JinEitherFrame';
  * Overlap decorator in class variable
  */
 export default class OverlapDecoratorGetFrame extends JinEitherFrame {
-  @JinEitherFrame.param()
-  @JinEitherFrame.query()
-  @JinEitherFrame.body()
-  @JinEitherFrame.header()
-  public declare readonly id: string;
+  @Param()
+  @Query()
+  @Body()
+  @Header)
+  declare public readonly id: string;
 
-  @JinEitherFrame.query()
-  public declare readonly name: string;
+  @Query()
+  declare public readonly name: string;
 
-  @JinEitherFrame.query({ encode: false, comma: true })
-  public declare readonly skills: string[];
+  @Query({ encode: false, comma: true })
+  declare public readonly skills: string[];
 
   constructor({ id, name, skills }: { id: string; name: string; skills: string[] }) {
     super({ $$host: 'http://some.api.google.com', $$path: '/jinframe/:id', $$method: 'post' });

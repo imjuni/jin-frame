@@ -1,10 +1,10 @@
 import { describe, expect, it } from 'vitest';
-import { getRequestMeta } from '#tools/decorators/methods/handlers/getRequestMeta';
-import { pushRequestMeta } from '#tools/decorators/methods/handlers/pushRequestMeta';
+import { getRequestMeta } from '#decorators/methods/handlers/getRequestMeta';
+import { pushRequestMeta } from '#decorators/methods/handlers/pushRequestMeta';
 import type { IFrameOption } from '#tools/type-utilities/IFrameOption';
 import type { IFrameInternal } from '#tools/type-utilities/IFrameInternal';
-import { getFrameOption } from '#tools/decorators/getFrameOption';
-import { getFrameInternalData } from '#tools/decorators/getFrameInternalData';
+import { getFrameOption } from '#decorators/getFrameOption';
+import { getFrameInternalData } from '#decorators/getFrameInternalData';
 
 class IamClass {}
 

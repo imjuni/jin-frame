@@ -1,52 +1,54 @@
 import { JinEitherFrame } from '#frames/JinEitherFrame';
-import { Post } from '#tools/decorators/methods/Post';
+import { Post } from '#decorators/methods/Post';
 import { describe, expect, it } from 'vitest';
+import { Param } from '#decorators/fields/Param';
+import { Header } from '#decorators/fields/Header';
 
 @Post({ host: 'http://some.api.google.com/jinframe/:passing' })
 class Test001PostFrame extends JinEitherFrame {
-  @JinEitherFrame.param()
+  @Param()
   declare public readonly passing: string;
 
-  @JinEitherFrame.H()
+  @Header()
   declare public readonly username: string;
 
-  @JinEitherFrame.H()
+  @Header()
   declare public readonly password: string;
 }
 
 @Post({ host: 'http://some.api.google.com/jinframe/:passing' })
 class Test002PostFrame extends JinEitherFrame {
-  @JinEitherFrame.param()
+  @Param()
   declare public readonly passing: string;
 
-  @JinEitherFrame.header({ replaceAt: 'uuu' })
+  @Header({ replaceAt: 'uuu' })
   declare public readonly username: string;
 
-  @JinEitherFrame.header({ replaceAt: 'ppp' })
+  @Header({ replaceAt: 'ppp' })
   declare public readonly password: string;
 }
 
 @Post({ host: 'http://some.api.google.com/jinframe/:passing' })
 class Test003PostFrame extends JinEitherFrame {
-  @JinEitherFrame.param()
+  @Param()
   declare public readonly passing: string;
 
-  @JinEitherFrame.header({ replaceAt: 'uuu.username' })
+  @Header({ replaceAt: 'uuu.username' })
   declare public readonly username: string;
 
-  @JinEitherFrame.header({ replaceAt: 'ppp.password' })
+  @Header({ replaceAt: 'ppp.password' })
   declare public readonly password: string;
 }
 
 @Post({ host: 'http://some.api.google.com/jinframe/:passing' })
 class Test004PostFrame extends JinEitherFrame {
-  @JinEitherFrame.param()
+  @Param()
   declare public readonly passing: string;
 
-  @JinEitherFrame.header()
+  @Header()
   declare public readonly username: string;
 
-  @JinEitherFrame.header()
+  @Header()
   declare public readonly hero: {
     name: string;
     ability: string;
@@ -56,13 +58,13 @@ class Test004PostFrame extends JinEitherFrame {
 
 @Post({ host: 'http://some.api.google.com/jinframe/:passing' })
 class Test005PostFrame extends JinEitherFrame {
-  @JinEitherFrame.param()
+  @Param()
   declare public readonly passing: string;
 
-  @JinEitherFrame.header()
+  @Header()
   declare public readonly username: string;
 
-  @JinEitherFrame.header({ comma: true, encode: false })
+  @Header({ comma: true, encode: false })
   declare public readonly hero: string[];
 }
 

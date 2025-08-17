@@ -36,14 +36,14 @@ interface IThirdBody {
  * Complex datetime formatting With Body Object merging with set body object merge order
  */
 export default class BodyOrderedMergeFrame extends JinEitherFrame {
-  @JinEitherFrame.param()
-  public declare readonly passing: string;
+  @Param()
+  declare public readonly passing: string;
 
-  @JinEitherFrame.query()
-  public declare readonly name: string;
+  @Query()
+  declare public readonly name: string;
 
-  @JinEitherFrame.query({ encode: true })
-  public declare readonly skill: string[];
+  @Query({ encode: true })
+  declare public readonly skill: string[];
 
   @JinEitherFrame.objectBody({
     order: 3,
@@ -64,7 +64,7 @@ export default class BodyOrderedMergeFrame extends JinEitherFrame {
       },
     ],
   })
-  public declare readonly firstBody: IFirstBody;
+  declare public readonly firstBody: IFirstBody;
 
   @JinEitherFrame.objectBody({
     order: 1,
@@ -76,12 +76,12 @@ export default class BodyOrderedMergeFrame extends JinEitherFrame {
       },
     ],
   })
-  public declare readonly secondBody: ISecondBody;
+  declare public readonly secondBody: ISecondBody;
 
   @JinEitherFrame.objectBody({
     order: 2,
   })
-  public declare readonly thirdBody: IThirdBody;
+  declare public readonly thirdBody: IThirdBody;
 
   constructor({
     firstBody,

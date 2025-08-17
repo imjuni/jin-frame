@@ -1,13 +1,13 @@
-import { Delete } from '#tools/decorators/methods/Delete';
+import { Head } from '#decorators/methods/Head';
 import { describe, expect, it } from 'vitest';
-import { getRequestMeta } from '#tools/decorators/methods/handlers/getRequestMeta';
+import { getRequestMeta } from '#decorators/methods/handlers/getRequestMeta';
 
 class IamClass {}
 
-describe('Delete', () => {
+describe('Head', () => {
   it('should return configuration when pass custom content-type', () => {
     const contentType = 'custom content type';
-    const hanlde = Delete({ contentType });
+    const hanlde = Head({ contentType });
     hanlde(IamClass);
 
     const meta = getRequestMeta(IamClass);

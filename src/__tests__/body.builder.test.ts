@@ -1,52 +1,55 @@
-import { JinEitherFrame } from '#frames/JinEitherFrame';
-import { Post } from '#tools/decorators/methods/Post';
 import { describe, expect, it } from 'vitest';
+
+import { JinEitherFrame } from '#frames/JinEitherFrame';
+import { Post } from '#decorators/methods/Post';
+import { Param } from '#decorators/fields/Param';
+import { Body } from '#decorators/fields/Body';
 
 @Post({ host: 'http://some.api.google.com/jinframe/:passing' })
 class Test001PostFrame extends JinEitherFrame {
-  @JinEitherFrame.param()
+  @Param()
   declare public readonly passing: string;
 
-  @JinEitherFrame.body()
+  @Body()
   declare public readonly username: string;
 
-  @JinEitherFrame.body()
+  @Body()
   declare public readonly password: string;
 }
 
 @Post({ host: 'http://some.api.google.com/jinframe/:passing' })
 class Test002PostFrame extends JinEitherFrame {
-  @JinEitherFrame.param()
+  @Param()
   declare public readonly passing: string;
 
-  @JinEitherFrame.body({ replaceAt: 'uuu' })
+  @Body({ replaceAt: 'uuu' })
   declare public readonly username: string;
 
-  @JinEitherFrame.body({ replaceAt: 'ppp' })
+  @Body({ replaceAt: 'ppp' })
   declare public readonly password: string;
 }
 
 @Post({ host: 'http://some.api.google.com/jinframe/:passing' })
 class Test003PostFrame extends JinEitherFrame {
-  @JinEitherFrame.param()
+  @Param()
   declare public readonly passing: string;
 
-  @JinEitherFrame.body({ replaceAt: 'uuu.username' })
+  @Body({ replaceAt: 'uuu.username' })
   declare public readonly username: string;
 
-  @JinEitherFrame.body({ replaceAt: 'ppp.password' })
+  @Body({ replaceAt: 'ppp.password' })
   declare public readonly password: string;
 }
 
 @Post({ host: 'http://some.api.google.com/jinframe/:passing' })
 class Test004ZeroDepthPostFrame extends JinEitherFrame {
-  @JinEitherFrame.param()
+  @Param()
   declare public readonly passing: string;
 
-  @JinEitherFrame.body()
+  @Body()
   declare public readonly username: string;
 
-  @JinEitherFrame.body()
+  @Body()
   declare public readonly hero: {
     name: string;
     ability: string;

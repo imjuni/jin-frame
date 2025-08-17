@@ -1,7 +1,9 @@
-import { JinEitherFrame } from '#frames/JinEitherFrame';
-import { Get } from '#tools/decorators/methods/Get';
 import axios, { type AxiosRequestConfig } from 'axios';
 import { describe, it } from 'vitest';
+
+import { JinEitherFrame } from '#frames/JinEitherFrame';
+import { Get } from '#decorators/methods/Get';
+import { Query } from '#decorators/fields/Query';
 
 interface IReqGetPokemonInfoByName {
   limit: number;
@@ -20,10 +22,10 @@ async function getPokemonInfoByName(inp: IReqGetPokemonInfoByName) {
 
 @Get({ host: 'https://pokeapi.co/api/v2/pokemon' })
 class PokemonPagingFrame extends JinEitherFrame<any, any> {
-  @JinEitherFrame.query()
+  @Query()
   declare readonly limit: number;
 
-  @JinEitherFrame.query()
+  @Query()
   declare readonly offset: number;
 }
 

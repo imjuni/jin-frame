@@ -1,9 +1,9 @@
-import { getAllRequestMetaInherited } from '#tools/decorators/methods/handlers/getAllMethodMetaInherited';
+import { getAllRequestMetaInherited } from '#decorators/methods/handlers/getAllMethodMetaInherited';
 import { recursive } from 'merge';
 import type { AbstractConstructor, Constructor } from 'type-fest';
 import type { IFrameInternal } from '#tools/type-utilities/IFrameInternal';
 import type { IFrameOption } from '#tools/type-utilities/IFrameOption';
-import type { TMethodEntry } from '#tools/decorators/methods/handlers/TMethodEntry';
+import type { TMethodEntry } from '#decorators/methods/handlers/TMethodEntry';
 
 /**
  *

@@ -8,14 +8,14 @@ import { JinEitherFrame } from '../src/frames/JinEitherFrame';
  * after encoding: http://some.api.google.com/jinframe/pass?passing=pass&name=ironman&skills=beam%2Cflying%21
  */
 export default class CommaSeperatedGetFrame extends JinEitherFrame {
-  @JinEitherFrame.param()
-  public declare readonly passing: string;
+  @Param()
+  declare public readonly passing: string;
 
-  @JinEitherFrame.query()
-  public declare readonly name: string;
+  @Query()
+  declare public readonly name: string;
 
-  @JinEitherFrame.query({ comma: true })
-  public declare readonly skill: string[];
+  @Query({ comma: true })
+  declare public readonly skill: string[];
 
   constructor() {
     super({ $$path: '/jinframe/:passing', $$method: 'GET' });

@@ -1,18 +1,20 @@
 import { JinEitherFrame } from '#frames/JinEitherFrame';
-import { Post } from '#tools/decorators/methods/Post';
+import { Post } from '#decorators/methods/Post';
 import { lightFormat, parse } from 'date-fns';
 import { format } from 'date-fns-tz';
 import { describe, expect, it } from 'vitest';
+import { Param } from '#decorators/fields/Param';
+import { Header } from '#decorators/fields/Header';
 
 @Post({ host: 'http://some.api.google.com/jinframe/:passing' })
 class Test001PostFrame extends JinEitherFrame {
-  @JinEitherFrame.param()
+  @Param()
   declare public readonly passing: string;
 
-  @JinEitherFrame.header()
+  @Header()
   declare public readonly username: string;
 
-  @JinEitherFrame.header({
+  @Header({
     replaceAt: 'send-at',
     formatters: {
       dateTime: (value) => lightFormat(value, `yyyyMMdd'T'HHmmss`),
@@ -23,13 +25,13 @@ class Test001PostFrame extends JinEitherFrame {
 
 @Post({ host: 'http://some.api.google.com/jinframe/:passing' })
 class Test002PostFrame extends JinEitherFrame {
-  @JinEitherFrame.param()
+  @Param()
   declare public readonly passing: string;
 
-  @JinEitherFrame.header({ replaceAt: 'uuu' })
+  @Header({ replaceAt: 'uuu' })
   declare public readonly username: string;
 
-  @JinEitherFrame.header({
+  @Header({
     replaceAt: 'send-at',
     comma: true,
     encode: false,
@@ -42,13 +44,13 @@ class Test002PostFrame extends JinEitherFrame {
 
 @Post({ host: 'http://some.api.google.com/jinframe/:passing' })
 class Test003PostFrame extends JinEitherFrame {
-  @JinEitherFrame.param()
+  @Param()
   declare public readonly passing: string;
 
-  @JinEitherFrame.header()
+  @Header()
   declare public readonly username: string;
 
-  @JinEitherFrame.header({
+  @Header({
     replaceAt: 'send-at',
     comma: true,
     encode: false,
@@ -62,13 +64,13 @@ class Test003PostFrame extends JinEitherFrame {
 
 @Post({ host: 'http://some.api.google.com/jinframe/:passing' })
 class Test004PostFrame extends JinEitherFrame {
-  @JinEitherFrame.param()
+  @Param()
   declare public readonly passing: string;
 
-  @JinEitherFrame.header()
+  @Header()
   declare public readonly username: string;
 
-  @JinEitherFrame.header({
+  @Header({
     replaceAt: 'send-at',
     comma: true,
     encode: false,

@@ -1,8 +1,11 @@
 import { JinEitherFrame } from '#frames/JinEitherFrame';
-import { Post } from '#tools/decorators/methods/Post';
+import { Post } from '#decorators/methods/Post';
 import { ConstructorType } from '#tools/type-utilities/ConstructorType';
 import { format, parse } from 'date-fns';
 import { expect, it } from 'vitest';
+import { Param } from '#decorators/fields/Param';
+import { Query } from '#decorators/fields/Query';
+import { Body } from '#decorators/fields/Body';
 
 interface IFirstBody {
   name: string;
@@ -66,16 +69,16 @@ const share: { first: IFirstBody; second: ISecondBody; third: IThirdBody } = {
 
 @Post({ host: 'http://some.api.google.com/jinframe/:passing' })
 class Test001PostFrame extends JinEitherFrame {
-  @JinEitherFrame.param()
+  @Param()
   declare public readonly passing: string;
 
-  @JinEitherFrame.query()
+  @Query()
   declare public readonly name: string;
 
-  @JinEitherFrame.query({ encode: true })
+  @Query({ encode: true })
   declare public readonly skill: string[];
 
-  @JinEitherFrame.body({
+  @Body({
     formatters: [
       {
         findFrom: 'data.more.weddingAnniversary',
@@ -128,16 +131,16 @@ it('T001-object-type-field-multiple-formatting', async () => {
 
 @Post({ host: 'http://some.api.google.com/jinframe/:passing' })
 class Test002PostFrame extends JinEitherFrame {
-  @JinEitherFrame.param()
+  @Param()
   declare public readonly passing: string;
 
-  @JinEitherFrame.query()
+  @Query()
   declare public readonly name: string;
 
-  @JinEitherFrame.query({ encode: true })
+  @Query({ encode: true })
   declare public readonly skill: string[];
 
-  @JinEitherFrame.body({
+  @Body({
     formatters: [
       {
         findFrom: 'data.more.weddingAnniversary',
@@ -157,7 +160,7 @@ class Test002PostFrame extends JinEitherFrame {
   })
   declare public readonly hero: IFirstBody;
 
-  @JinEitherFrame.body({
+  @Body({
     formatters: [
       {
         findFrom: 'data.more.birthday',
@@ -168,7 +171,7 @@ class Test002PostFrame extends JinEitherFrame {
   })
   declare public readonly heroBio: ISecondBody;
 
-  @JinEitherFrame.body({
+  @Body({
     replaceAt: 'companion',
   })
   declare public readonly thirdField: IThirdBody;

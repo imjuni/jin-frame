@@ -1,21 +1,24 @@
 import { JinEitherFrame } from '#frames/JinEitherFrame';
-import { Post } from '#tools/decorators/methods/Post';
+import { Post } from '#decorators/methods/Post';
 import { isPass } from 'my-only-either';
 import nock from 'nock';
 import { afterEach, describe, expect, it } from 'vitest';
+import { Param } from '#decorators/fields/Param';
+import { Body } from '#decorators/fields/Body';
+import { Header } from '#decorators/fields/Header';
 
 @Post({ host: 'http://some.api.google.com/jinframe/:passing' })
 class TestPostFrame extends JinEitherFrame {
-  @JinEitherFrame.param()
+  @Param()
   declare public readonly passing: string;
 
-  @JinEitherFrame.body({ replaceAt: 'test.hello.marvel.name' })
+  @Body({ replaceAt: 'test.hello.marvel.name' })
   declare public readonly name: string;
 
-  @JinEitherFrame.header({ replaceAt: 'test.hello.marvel.skill' })
+  @Header({ replaceAt: 'test.hello.marvel.skill' })
   declare public readonly skill: string;
 
-  @JinEitherFrame.body({ replaceAt: 'test.hello.marvel.gender' })
+  @Body({ replaceAt: 'test.hello.marvel.gender' })
   declare public readonly gender: string;
 
   constructor() {
@@ -33,13 +36,13 @@ class TestPostFrame extends JinEitherFrame {
   contentType: 'application/x-www-form-urlencoded',
 })
 class TestUrlencodedPostFrame extends JinEitherFrame {
-  @JinEitherFrame.param()
+  @Param()
   declare public readonly passing: string;
 
-  @JinEitherFrame.body()
+  @Body()
   declare public readonly username: string;
 
-  @JinEitherFrame.body()
+  @Body()
   declare public readonly password: string;
 
   constructor() {

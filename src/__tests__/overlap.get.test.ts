@@ -1,23 +1,27 @@
 import { JinEitherFrame } from '#frames/JinEitherFrame';
-import { Post } from '#tools/decorators/methods/Post';
+import { Post } from '#decorators/methods/Post';
 import nock from 'nock';
 import { afterEach, it } from 'vitest';
+import { Param } from '#decorators/fields/Param';
+import { Query } from '#decorators/fields/Query';
+import { Body } from '#decorators/fields/Body';
+import { Header } from '#decorators/fields/Header';
 
 @Post({
   host: 'http://some.api.google.com',
   path: '/jinframe/:passing',
 })
 class TestGetFrame extends JinEitherFrame {
-  @JinEitherFrame.param()
-  @JinEitherFrame.query()
-  @JinEitherFrame.body()
-  @JinEitherFrame.header()
+  @Param()
+  @Query()
+  @Body()
+  @Header()
   declare public readonly id: string;
 
-  @JinEitherFrame.query()
+  @Query()
   declare public readonly name: string;
 
-  @JinEitherFrame.query({ encode: false, comma: true })
+  @Query({ encode: false, comma: true })
   declare public readonly skills: string[];
 }
 

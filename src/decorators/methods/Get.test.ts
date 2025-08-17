@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
-import { Get } from '#tools/decorators/methods/Get';
-import { Delete } from '#tools/decorators/methods/Delete';
-import { getRequestMeta } from '#tools/decorators/methods/handlers/getRequestMeta';
+import { Get } from '#decorators/methods/Get';
+import { Delete } from '#decorators/methods/Delete';
+import { getRequestMeta } from '#decorators/methods/handlers/getRequestMeta';
 
 class IamGet01Class {}
 

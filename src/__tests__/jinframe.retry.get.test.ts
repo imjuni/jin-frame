@@ -1,19 +1,21 @@
 import { JinFrame } from '#frames/JinFrame';
 import type { TJinRequestConfig } from '#interfaces/TJinFrameResponse';
-import { Get } from '#tools/decorators/methods/Get';
+import { Get } from '#decorators/methods/Get';
 import type { AxiosResponse } from 'axios';
 import nock from 'nock';
 import { afterEach, describe, expect, it } from 'vitest';
+import { Param } from '#decorators/fields/Param';
+import { Query } from '#decorators/fields/Query';
 
 @Get({ host: 'http://some.api.google.com/jinframe/:passing', retry: { max: 3, interval: 20 } })
 class RetryTestGet01Frame extends JinFrame {
-  @JinFrame.P()
+  @Param()
   declare public readonly passing: string;
 
-  @JinFrame.Q()
+  @Query()
   declare public readonly name: string;
 
-  @JinFrame.Q({ encode: true })
+  @Query({ encode: true })
   declare public readonly skill: string[];
 
   constructor() {
@@ -35,13 +37,13 @@ class RetryTestGet01Frame extends JinFrame {
 
 @Get({ host: 'http://some.api.google.com/jinframe/:passing', retry: { max: 2 } })
 class RetryTestGet02Frame extends JinFrame {
-  @JinFrame.P()
+  @Param()
   declare public readonly passing: string;
 
-  @JinFrame.Q()
+  @Query()
   declare public readonly name: string;
 
-  @JinFrame.Q({ encode: true })
+  @Query({ encode: true })
   declare public readonly skill: string[];
 
   #retryFail: string;

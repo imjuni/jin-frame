@@ -4,17 +4,18 @@ import fs from 'node:fs';
 import nock from 'nock';
 import path from 'node:path';
 import { afterEach, it } from 'vitest';
-import { Post } from '#tools/decorators/methods/Post';
+import { Post } from '#decorators/methods/Post';
+import { Body } from '#decorators/fields/Body';
 
 @Post({ host: 'http://some.api.google.com/fileupload-case04', contentType: 'multipart/form-data' })
 class TestGetFrame extends JinEitherFrame {
-  @JinEitherFrame.body()
+  @Body()
   declare public readonly description: string;
 
-  @JinEitherFrame.body()
+  @Body()
   declare public readonly myFile: JinFile<Buffer>;
 
-  @JinEitherFrame.body()
+  @Body()
   declare public readonly myFiles: JinFile<Buffer>[];
 }
 
