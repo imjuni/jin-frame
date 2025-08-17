@@ -1,5 +1,4 @@
 import { JinCreateError } from '#frames/JinCreateError';
-import { JinEitherFrame } from '#frames/JinEitherFrame';
 import { JinFrame } from '#frames/JinFrame';
 import type { JinRequestError } from '#frames/JinRequestError';
 import type { IDebugInfo } from '#interfaces/IDebugInfo';
@@ -79,7 +78,7 @@ class Test003PostFrame extends JinFrame<{ message: string }> {
 }
 
 @Post({ host: 'http://some.api.google.com/jinframe/:passing' })
-class Test004PostEitherFrame extends JinEitherFrame<{ message: string }> {
+class Test004PostFrame extends JinFrame<{ message: string }> {
   @Param()
   declare public readonly passing: string;
 
@@ -135,8 +134,30 @@ describe('JinFrame', () => {
       password: 'marvel',
       passing: 'pass',
     });
+
     const reply = await frame.execute({ validateStatus: (status) => status < 400 });
     expect(reply.status).toEqual(200);
+  });
+
+  it('custom body passing', async () => {
+    const customBody = { name: 'i-am-custom-body' };
+
+    nock('http://some.api.google.com').post('/jinframe/pass', customBody).reply(200, {
+      message: 'hello',
+    });
+
+    const frame = new Test001PostFrame({
+      username: 'ironman',
+      password: 'marvel',
+      passing: 'pass',
+    });
+
+    const reply = await frame.execute({
+      validateStatus: (status) => status < 400,
+      customBody,
+    });
+
+    expect(reply.data).toEqual({ message: 'hello' });
   });
 
   it('exception - type01 404', async () => {
@@ -319,7 +340,7 @@ describe('hook count either frame test', () => {
       message: 'error',
     });
 
-    const frame = new Test004PostEitherFrame({ username: 'ironman', password: 'marvel', passing: 'pass' });
+    const frame = new Test004PostFrame({ username: 'ironman', password: 'marvel', passing: 'pass' });
     try {
       await frame.execute({ validateStatus: (status) => status < 400 });
     } catch (catched) {
@@ -334,7 +355,7 @@ describe('hook count either frame test', () => {
       message: 'error',
     });
 
-    const frame = new Test004PostEitherFrame({
+    const frame = new Test004PostFrame({
       username: 'ironman',
       password: 'marvel',
       passing: 'pass',
@@ -343,6 +364,6 @@ describe('hook count either frame test', () => {
     const reply = await frame.execute({ validateStatus: (status) => status < 400 });
     expect(frame.preHookCount).toEqual(1);
     expect(frame.postHookCount).toEqual(1);
-    expect(reply.type).toEqual('pass');
+    expect(reply.status).toEqual(200);
   });
 });

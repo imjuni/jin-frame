@@ -37,9 +37,7 @@ export function getBodyMap<T extends Record<string, unknown>>(
     },
   );
 
-  classifed.objectBodies = classifed.objectBodies.sort(
-    (l, r) => (l.option.order ?? Number.MAX_SAFE_INTEGER) - (r.option.order ?? Number.MAX_SAFE_INTEGER),
-  );
+  classifed.objectBodies = classifed.objectBodies.sort((l, r) => l.option.order - r.option.order);
 
   for (const field of classifed.bodies) {
     bodies.push(getBodyField(thisFrame, { key: field.key, option: field.option }));
