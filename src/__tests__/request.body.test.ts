@@ -1,6 +1,5 @@
 import { JinEitherFrame } from '#frames/JinEitherFrame';
 import { Post } from '#decorators/methods/Post';
-import { ConstructorType } from '#tools/type-utilities/ConstructorType';
 import { format, parse } from 'date-fns';
 import { expect, it } from 'vitest';
 import { Param } from '#decorators/fields/Param';
@@ -98,13 +97,13 @@ class Test001PostFrame extends JinEitherFrame {
   })
   declare public readonly multipleFormatting: IFirstBody;
 
-  constructor(args: Pick<ConstructorType<Test001PostFrame>, 'multipleFormatting'>) {
-    super({
-      ...args,
-      passing: 'pass',
-      name: 'ironman',
-      skill: ['beam', 'flying!'],
-    });
+  constructor({ multipleFormatting }: { multipleFormatting: IFirstBody }) {
+    super();
+
+    this.passing = 'pass';
+    this.name = 'ironman';
+    this.skill = ['beam', 'flying!'];
+    this.multipleFormatting = multipleFormatting;
   }
 }
 
@@ -175,19 +174,13 @@ class Test002PostFrame extends JinEitherFrame {
     replaceAt: 'companion',
   })
   declare public readonly thirdField: IThirdBody;
-
-  constructor(args: Pick<ConstructorType<Test002PostFrame>, 'hero' | 'heroBio' | 'thirdField'>) {
-    super({
-      ...args,
-      passing: 'pass',
-      name: 'ironman',
-      skill: ['beam', 'flying!'],
-    });
-  }
 }
 
 it('T0002-many-object-field-multiple-formattin', async () => {
-  const frame = new Test002PostFrame({
+  const frame = Test002PostFrame.of({
+    passing: '1',
+    name: '2',
+    skill: ['3'],
     hero: structuredClone(share.first),
     heroBio: structuredClone(share.second),
     thirdField: structuredClone(share.third),

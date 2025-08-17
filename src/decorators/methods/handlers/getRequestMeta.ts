@@ -1,7 +1,6 @@
 import { getAllRequestMetaInherited } from '#decorators/methods/handlers/getAllMethodMetaInherited';
 import { recursive } from 'merge';
 import type { AbstractConstructor, Constructor } from 'type-fest';
-import type { IFrameInternal } from '#tools/type-utilities/IFrameInternal';
 import type { IFrameOption } from '#tools/type-utilities/IFrameOption';
 import type { TMethodEntry } from '#interfaces/TMethodEntry';
 
@@ -22,13 +21,11 @@ import type { TMethodEntry } from '#interfaces/TMethodEntry';
 export function getRequestMeta(ctor: AbstractConstructor<unknown> | Constructor<unknown>): TMethodEntry {
   const metas = getAllRequestMetaInherited(ctor);
   const mergedOption: IFrameOption = {} as unknown as IFrameOption;
-  const mergedData: IFrameInternal = {} as unknown as IFrameInternal;
 
   // reverse meta data for recursive merge
   const reversed = [...metas].reverse();
 
   recursive(mergedOption, ...reversed.map((meta) => meta.option));
-  recursive(mergedData, ...reversed.map((meta) => meta.data));
 
   if (Object.keys(mergedOption).length <= 0) {
     throw new Error('You need to configure using method decorators such as Get, Post, Put, Delete, Patch, etc!');
@@ -36,6 +33,5 @@ export function getRequestMeta(ctor: AbstractConstructor<unknown> | Constructor<
 
   return {
     option: mergedOption,
-    data: mergedData,
   };
 }

@@ -1,5 +1,4 @@
 import { describe, expect, it } from 'vitest';
-
 import { JinEitherFrame } from '#frames/JinEitherFrame';
 import { Post } from '#decorators/methods/Post';
 import { Param } from '#decorators/fields/Param';
@@ -35,7 +34,7 @@ class Test002PostFrame extends JinEitherFrame {
 
 describe('JinEitherFrame - Body', () => {
   it('should process array when pass plain array body field', async () => {
-    const frame = new Test001PostFrame({
+    const frame = Test001PostFrame.of({
       passing: 'hello',
       username: ['ironman', 'thor'],
       password: 'advengers',
@@ -59,7 +58,7 @@ describe('JinEitherFrame - Body', () => {
   });
 
   it('should overrite body field when pass multiple body field', async () => {
-    const frame = new Test002PostFrame({
+    const frame = Test002PostFrame.of({
       passing: 'hello',
       username: ['ironman', 'thor'],
       username2: ['hulk', 'black widow'],

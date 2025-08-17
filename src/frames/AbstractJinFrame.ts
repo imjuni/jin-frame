@@ -8,8 +8,8 @@ import { removeEndSlash } from '#tools/slash-utils/removeEndSlash';
 import { startWithSlash } from '#tools/slash-utils/startWithSlash';
 import type { IFrameOption } from '#tools/type-utilities/IFrameOption';
 import type { IFrameInternal } from '#tools/type-utilities/IFrameInternal';
-import type { AxiosRequestConfig, AxiosResponse } from 'axios';
-import axios from 'axios';
+import type { AxiosError, AxiosRequestConfig, AxiosResponse } from 'axios';
+import type axios from 'axios';
 import fastSafeStringify from 'fast-safe-stringify';
 import FormData from 'form-data';
 import { first } from 'my-easy-fp';
@@ -20,6 +20,9 @@ import { flatStringMap } from '#processors/flatStringMap';
 import { getUrl } from '#tools/slash-utils/getUrl';
 import { getRequestMeta } from '#decorators/methods/handlers/getRequestMeta';
 import { getFieldMetadata } from '#decorators/fields/handlers/getFieldMetadata';
+import { getRetryInterval } from '#tools/responses/getRetryInterval';
+import { getDuration } from '#tools/getDuration';
+import { getFrameInternalData } from '#decorators/getFrameInternalData';
 
 export abstract class AbstractJinFrame<TPASS> {
   // eslint-disable-next-line class-methods-use-this
@@ -33,12 +36,12 @@ export abstract class AbstractJinFrame<TPASS> {
     const fromDecorator = getRequestMeta(this.constructor as Constructor<unknown>);
 
     this.$_option = { ...fromDecorator.option };
-    this.$_data = { ...fromDecorator.data };
+    this.$_data = getFrameInternalData(this.$_option);
   }
 
-  public getData<K extends keyof Pick<IFrameInternal, 'body' | 'param' | 'query' | 'header' | 'instance'>>(
+  public getData<K extends keyof Pick<IFrameInternal, 'body' | 'param' | 'query' | 'header' | 'instance' | 'retry'>>(
     kind: K,
-  ): Pick<IFrameInternal, 'body' | 'param' | 'query' | 'header' | 'instance'>[K] {
+  ): Pick<IFrameInternal, 'body' | 'param' | 'query' | 'header' | 'instance' | 'retry'>[K] {
     return this.$_data[kind];
   }
 
@@ -203,32 +206,35 @@ export abstract class AbstractJinFrame<TPASS> {
   }
 
   async retry(req: AxiosRequestConfig, isValidateStatus: (status: number) => boolean): Promise<AxiosResponse<TPASS>> {
-    const response = await this.$_data.instance.request<TPASS, AxiosResponse<TPASS>>(req);
     const { retry } = this.$_data;
 
-    if (isValidateStatus(response.status) || retry == null) {
-      return response;
-    }
-
-    let prevResponse = response;
+    let prevResponse: AxiosResponse<TPASS, unknown>;
     const hook = this.$_retryFail.bind(this);
-    retry.interval = retry.interval ?? 10;
 
-    const retried = await new Promise<AxiosResponse<TPASS>>((resolve) => {
+    const retried = await new Promise<AxiosResponse<TPASS>>((resolve, reject) => {
       const attempt = () => {
-        axios
+        this.$_data.instance
           .request<TPASS, AxiosResponse<TPASS>>(req)
           .then((retryResponse) => {
+            // 헷깔리는 부분이라 자세히 기록해둔다. then 블록은 이미 1회 시도를 하고, 응답을 받는 것에 성공했기 때문에
+            // then 블록에 진입하면 retry.try에 1을 더해준다.
             prevResponse = retryResponse;
+            retry.try += 1;
 
             if (isValidateStatus(retryResponse.status)) {
               resolve(retryResponse);
-            } else if (retry.max <= retry.try) {
+            } else if (retry.max < retry.try + 1) {
               resolve(retryResponse);
             } else {
-              retry.try += 1;
               hook(req, prevResponse);
-              setTimeout(() => attempt(), retry.interval);
+
+              const interval = getRetryInterval(
+                retry,
+                getDuration(this.$_data.startAt, new Date()),
+                getDuration(this.$_data.eachStartAt, new Date()),
+              );
+
+              setTimeout(() => attempt(), interval);
             }
           })
           // 보통의 경우 requestWrap에서 validateStatus: () => true 를 설정하기 때문에
@@ -237,14 +243,21 @@ export abstract class AbstractJinFrame<TPASS> {
           // In normal cases, the requestWrap function sets validateStatus: () => true,
           // so this catch block will not be reached. However, it is added to handle any unexpected errors
           // that may arise from Axios.
-          /* c8 ignore next 9 */
-          .catch(() => {
-            if (retry.max <= retry.try) {
-              resolve(prevResponse);
+          .catch((error: AxiosError) => {
+            retry.try += 1;
+
+            if (retry.max < retry.try + 1) {
+              reject(error);
             } else {
-              retry.try += 1;
               hook(req, prevResponse);
-              setTimeout(() => attempt(), retry.interval);
+
+              const interval = getRetryInterval(
+                retry,
+                getDuration(this.$_data.startAt, new Date()),
+                getDuration(this.$_data.eachStartAt, new Date()),
+              );
+
+              setTimeout(() => attempt(), interval);
             }
           });
       };

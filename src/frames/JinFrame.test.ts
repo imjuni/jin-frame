@@ -1,6 +1,5 @@
 import { JinCreateError } from '#frames/JinCreateError';
 import { JinFrame } from '#frames/JinFrame';
-import type { JinRequestError } from '#frames/JinRequestError';
 import type { IDebugInfo } from '#interfaces/IDebugInfo';
 import type { IFailReplyJinEitherFrame } from '#interfaces/IFailJinEitherFrame';
 import type { TJinFrameResponse, TJinRequestConfig } from '#interfaces/TJinFrameResponse';
@@ -62,22 +61,25 @@ class Test003PostFrame extends JinFrame<{ message: string }> {
 
   accessor preHookCount = 0;
 
-  async $_postHook(
+  override async $_postHook(
     _req: TJinRequestConfig,
     _result: TJinFrameResponse<{ message: string }, { message: string }>,
     _debugInfo: IDebugInfo,
   ): Promise<void> {
     this.postHookCount += 1;
-    console.log('post hook executed: ', this.postHookCount);
+    // console.log('post hook executed: ', this.postHookCount);
   }
 
-  async $_preHook(_req: TJinRequestConfig): Promise<void> {
+  override async $_preHook(_req: TJinRequestConfig): Promise<void> {
     this.preHookCount += 1;
-    console.log('pre hook executed: ', this.preHookCount);
+    // console.log('pre hook executed: ', this.preHookCount);
   }
 }
 
-@Post({ host: 'http://some.api.google.com/jinframe/:passing' })
+@Post({
+  host: 'http://some.api.google.com/jinframe/:passing',
+  retry: { max: 3, interval: 100 },
+})
 class Test004PostFrame extends JinFrame<{ message: string }> {
   @Param()
   declare public readonly passing: string;
@@ -92,7 +94,7 @@ class Test004PostFrame extends JinFrame<{ message: string }> {
 
   accessor preHookCount = 0;
 
-  async $_postHook(
+  override async $_postHook(
     _req: TJinRequestConfig,
     _reply: IFailReplyJinEitherFrame<{ message: string }> | TPassJinEitherFrame<{ message: string }>,
   ): Promise<void> {
@@ -100,7 +102,7 @@ class Test004PostFrame extends JinFrame<{ message: string }> {
     console.log('post hook executed: ', this.postHookCount);
   }
 
-  async $_preHook(_req: TJinRequestConfig): Promise<void> {
+  override async $_preHook(_req: TJinRequestConfig): Promise<void> {
     this.preHookCount += 1;
     console.log('pre hook executed: ', this.preHookCount);
   }
@@ -111,25 +113,23 @@ describe('JinFrame', () => {
     nock.cleanAll();
   });
 
-  it('validateStatus false', async () => {
+  it('should throw exception when response status code 400', async () => {
     nock('http://some.api.google.com').post('/jinframe/pass', { username: 'ironman', password: 'marvel' }).reply(400, {
       message: 'hello',
     });
 
-    const frame = new Test001PostFrame({ username: 'ironman', password: 'marvel', passing: 'pass' });
-    try {
+    await expect(async () => {
+      const frame = Test001PostFrame.of({ username: 'ironman', password: 'marvel', passing: 'pass' });
       await frame.execute({ validateStatus: (status) => status < 400 });
-    } catch (catched) {
-      expect(catched).toBeDefined();
-    }
+    }).rejects.toThrowError();
   });
 
-  it('validateStatus true', async () => {
+  it('should return response object when response status code 200', async () => {
     nock('http://some.api.google.com').post('/jinframe/pass', { username: 'ironman', password: 'marvel' }).reply(200, {
       message: 'hello',
     });
 
-    const frame = new Test001PostFrame({
+    const frame = Test001PostFrame.of({
       username: 'ironman',
       password: 'marvel',
       passing: 'pass',
@@ -139,14 +139,14 @@ describe('JinFrame', () => {
     expect(reply.status).toEqual(200);
   });
 
-  it('custom body passing', async () => {
+  it('shoud return response object when using custom body', async () => {
     const customBody = { name: 'i-am-custom-body' };
 
     nock('http://some.api.google.com').post('/jinframe/pass', customBody).reply(200, {
       message: 'hello',
     });
 
-    const frame = new Test001PostFrame({
+    const frame = Test001PostFrame.of({
       username: 'ironman',
       password: 'marvel',
       passing: 'pass',
@@ -160,26 +160,25 @@ describe('JinFrame', () => {
     expect(reply.data).toEqual({ message: 'hello' });
   });
 
-  it('exception - type01 404', async () => {
+  it('should throw exception when status 404 response', async () => {
     nock('http://some.api.google.com')
       .post('/jinframe/pass', { username: 'ironman', password: 'marvel' })
       .reply(404, 'not found');
 
-    const frame = new Test001PostFrame({ username: 'ironman', password: 'marvel', passing: 'pass' });
-
-    try {
+    await expect(async () => {
+      const frame = Test001PostFrame.of({ username: 'ironman', password: 'marvel', passing: 'pass' });
       await frame.execute();
-    } catch (catched) {
-      expect((catched as JinRequestError<any, any>).resp?.status).toEqual(404);
-    }
+    }).rejects.toMatchObject({
+      resp: { status: 404 },
+    });
   });
 
-  it('exception - type02 404', async () => {
+  it('should throw exception from request builder when missing path parameter', async () => {
     nock('http://some.api.google.com').post('/jinframe/pass', { username: 'ironman', password: 'marvel' }).reply(200, {
       message: 'hello',
     });
 
-    const frame = new Test002PostFrame({ username: 'ironman', password: 'marvel', passing: 'fail' });
+    const frame = Test002PostFrame.of({ username: 'ironman', password: 'marvel', passing: 'fail' });
 
     try {
       await frame.execute();
@@ -188,18 +187,15 @@ describe('JinFrame', () => {
     }
   });
 
-  it('exception - type03 404', async () => {
+  it('should throw 404 not found exception when invalid url', async () => {
     nock('http://some.api.google.com')
       .post('/jinframe/pass', { username: 'ironman', password: 'marvel' })
       .reply(200, { message: 'hello' });
 
-    const frame = new Test001PostFrame({ username: 'ironman', password: 'marvel', passing: 'fail' });
-
-    try {
+    await expect(async () => {
+      const frame = Test001PostFrame.of({ username: 'ironman', password: 'marvel', passing: 'fail' });
       await frame.execute();
-    } catch (catched) {
-      expect((catched as JinRequestError<any, any>).resp?.status).toEqual(500);
-    }
+    }).rejects.toMatchObject({ resp: { status: 404 } });
   });
 
   it('exception - invalid exception', async () => {
@@ -207,28 +203,24 @@ describe('JinFrame', () => {
       .post('/jinframe/pass', { username: 'ironman', password: 'marvel' })
       .reply(200, { message: 'hello' });
 
-    const frame = new Test001PostFrame({ username: 'ironman', password: 'marvel', passing: 'pass' });
-
-    try {
+    await expect(async () => {
+      const frame = Test001PostFrame.of({ username: 'ironman', password: 'marvel', passing: 'pass' });
       await frame.execute({
         validateStatus: () => {
           // eslint-disable-next-line @typescript-eslint/only-throw-error
           throw 'invalid exception';
         },
       });
-    } catch (catched) {
-      expect((catched as JinRequestError<any, any>).resp?.status).toEqual(500);
-    }
+    }).rejects.toMatchObject({ resp: { status: 500 } });
   });
 
-  it('exception - type01 404 - getError', async () => {
+  it('should raise error wrap custom error using getError when server response 404', async () => {
     nock('http://some.api.google.com')
       .post('/jinframe/pass', { username: 'ironman', password: 'marvel' })
       .reply(404, 'not found');
 
-    const frame = new Test001PostFrame({ username: 'ironman', password: 'marvel', passing: 'pass' });
-
-    try {
+    await expect(async () => {
+      const frame = Test001PostFrame.of({ username: 'ironman', password: 'marvel', passing: 'pass' });
       await frame.execute({
         getError: (err) => {
           if (err instanceof JinCreateError) {
@@ -238,19 +230,16 @@ describe('JinFrame', () => {
           return new CustomError(err.message, { status: `${err.status ?? 500}` });
         },
       });
-    } catch (catched) {
-      expect((catched as CustomError).log).toMatchObject({ status: '404' });
-    }
+    }).rejects.toMatchObject({ log: { status: '404' } });
   });
 
-  it('exception - type03 404 - getError', async () => {
+  it('should raise error wrap custom error using getError when request building', async () => {
     nock('http://some.api.google.com')
       .post('/jinframe/pass', { username: 'ironman', password: 'marvel' })
       .reply(200, { message: 'hello' });
 
-    const frame = new Test001PostFrame({ username: 'ironman', password: 'marvel', passing: 'fail' });
-
-    try {
+    await expect(async () => {
+      const frame = Test001PostFrame.of({ username: 'ironman', password: 'marvel', passing: 'fail' });
       await frame.execute({
         getError: (err) => {
           if (err instanceof JinCreateError) {
@@ -260,24 +249,17 @@ describe('JinFrame', () => {
           return new CustomError(err.message, { status: `${err.status ?? 500}` });
         },
       });
-    } catch (catched) {
-      expect((catched as CustomError).log).toMatchObject({ status: '500' });
-    }
+    }).rejects.toMatchObject({ log: { status: '404' } });
   });
 
-  it('exception - invalid exception - getError', async () => {
+  it('should custom wrap using getError when unknown error raise on request api', async () => {
     nock('http://some.api.google.com')
       .post('/jinframe/pass', { username: 'ironman', password: 'marvel' })
-      .reply(200, { message: 'hello' });
+      .reply(500, { message: 'hello' });
 
-    const frame = new Test001PostFrame({ username: 'ironman', password: 'marvel', passing: 'pass' });
-
-    try {
+    await expect(async () => {
+      const frame = Test001PostFrame.of({ username: 'ironman', password: 'marvel', passing: 'pass' });
       await frame.execute({
-        validateStatus: () => {
-          // eslint-disable-next-line @typescript-eslint/only-throw-error
-          throw 'invalid exception';
-        },
         getError: (err) => {
           if (err instanceof JinCreateError) {
             return new CustomError(err.message, { status: `${err.status ?? 500}` });
@@ -286,41 +268,76 @@ describe('JinFrame', () => {
           return new CustomError(err.message, { status: `${err.status ?? 500}` });
         },
       });
-    } catch (catched) {
-      expect((catched as CustomError).log).toMatchObject({ status: '500' });
-    }
+    }).rejects.toMatchObject({
+      log: { status: '500' },
+    });
+  });
+
+  it('should custom wrap using getError when unknown error raise on hook', async () => {
+    nock('http://some.api.google.com').post('/jinframe/pass', { username: 'ironman', password: 'marvel' }).reply(401, {
+      message: 'hello',
+    });
+
+    await expect(async () => {
+      const frame = Test003PostFrame.of({
+        username: 'ironman',
+        password: 'marvel',
+        passing: 'pass',
+        postHookCount: 0,
+        preHookCount: 0,
+      });
+      frame.$_postHook = () => {
+        throw new Error('unknown error raised');
+      };
+
+      await frame.execute({
+        getError: (err) => {
+          if (err instanceof JinCreateError) {
+            return new CustomError(err.message, { status: `${err.status ?? 500}` });
+          }
+
+          return new CustomError(err.message, { status: `${err.status ?? 500}` });
+        },
+      });
+    }).rejects.toMatchObject({
+      log: { status: '500' },
+    });
   });
 });
 
-describe('hook count frame test', () => {
+describe('JinFrame pre, post Hook execution', () => {
   afterEach(() => {
     nock.cleanAll();
   });
 
-  it('validateStatus false', async () => {
+  it('should throw error when override pre, post hook but dont configured retry configuration', async () => {
     nock('http://some.api.google.com').post('/jinframe/pass', { username: 'ironman', password: 'marvel' }).reply(400, {
       message: 'error',
     });
 
-    const frame = new Test003PostFrame({ username: 'ironman', password: 'marvel', passing: 'pass' });
-    try {
+    await expect(async () => {
+      const frame = Test003PostFrame.of({
+        username: 'ironman',
+        password: 'marvel',
+        passing: 'pass',
+        postHookCount: 0,
+        preHookCount: 0,
+      });
       await frame.execute({ validateStatus: (status) => status < 400 });
-    } catch (catched) {
-      expect(frame.preHookCount).toEqual(1);
-      expect(frame.postHookCount).toEqual(1);
-      expect(catched).toBeDefined();
-    }
+    }).rejects.toThrowError();
   });
 
-  it('validateStatus true', async () => {
+  it('should response reply data when override pre, post hook but dont configured retry configuration', async () => {
     nock('http://some.api.google.com').post('/jinframe/pass', { username: 'ironman', password: 'marvel' }).reply(200, {
       message: 'hello',
     });
 
-    const frame = new Test003PostFrame({
+    const frame = Test003PostFrame.of({
       username: 'ironman',
       password: 'marvel',
       passing: 'pass',
+      postHookCount: 0,
+      preHookCount: 0,
     });
 
     const reply = await frame.execute({ validateStatus: (status) => status < 400 });
@@ -335,33 +352,74 @@ describe('hook count either frame test', () => {
     nock.cleanAll();
   });
 
-  it('validateStatus false', async () => {
-    nock('http://some.api.google.com').post('/jinframe/pass', { username: 'ironman', password: 'marvel' }).reply(400, {
-      message: 'error',
+  it('should every retry count but fail when server response 401 every request', async () => {
+    nock('http://some.api.google.com')
+      .post('/jinframe/pass', { username: 'ironman', password: 'marvel' })
+      .times(5)
+      .reply(401, {
+        message: 'error',
+      });
+
+    const frame = Test004PostFrame.of({
+      username: 'ironman',
+      password: 'marvel',
+      passing: 'pass',
+      postHookCount: 0,
+      preHookCount: 0,
     });
 
-    const frame = new Test004PostFrame({ username: 'ironman', password: 'marvel', passing: 'pass' });
     try {
-      await frame.execute({ validateStatus: (status) => status < 400 });
+      await frame.execute();
     } catch (catched) {
+      expect(frame.getData('retry')?.try).toEqual(3);
       expect(frame.preHookCount).toEqual(1);
       expect(frame.postHookCount).toEqual(1);
       expect(catched).toBeDefined();
     }
   });
 
-  it('validateStatus true', async () => {
-    nock('http://some.api.google.com').post('/jinframe/pass', { username: 'ironman', password: 'marvel' }).reply(200, {
-      message: 'error',
-    });
+  it('should every retry count but fail when server response one time after not found url', async () => {
+    nock('http://some.api.google.com')
+      .post('/jinframe/pass', { username: 'ironman', password: 'marvel' })
+      .times(1)
+      .reply(401, {
+        message: 'error',
+      });
 
-    const frame = new Test004PostFrame({
+    const frame = Test004PostFrame.of({
       username: 'ironman',
       password: 'marvel',
       passing: 'pass',
+      postHookCount: 0,
+      preHookCount: 0,
     });
 
-    const reply = await frame.execute({ validateStatus: (status) => status < 400 });
+    try {
+      await frame.execute({ validateStatus: (status) => status < 400 });
+    } catch (catched) {
+      expect(frame.getData('retry')?.try).toEqual(3);
+      expect(frame.preHookCount).toEqual(1);
+      expect(frame.postHookCount).toEqual(0);
+      expect(catched).toBeDefined();
+    }
+  });
+
+  it('validateStatus true', async () => {
+    nock('http://some.api.google.com').post('/jinframe/pass', { username: 'ironman', password: 'marvel' }).reply(200, {
+      message: 'success',
+    });
+
+    const frame = Test004PostFrame.of({
+      username: 'ironman',
+      password: 'marvel',
+      passing: 'pass',
+      postHookCount: 0,
+      preHookCount: 0,
+    });
+
+    const reply = await frame.execute();
+
+    expect(frame.getData('retry')?.try).toEqual(1);
     expect(frame.preHookCount).toEqual(1);
     expect(frame.postHookCount).toEqual(1);
     expect(reply.status).toEqual(200);

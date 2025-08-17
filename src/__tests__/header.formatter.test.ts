@@ -87,7 +87,7 @@ class Test004PostFrame extends JinEitherFrame {
 
 describe('JinEitherFrame - Header with formatters', () => {
   it('T001-datetime-formatter', async () => {
-    const frame = new Test001PostFrame({
+    const frame = Test001PostFrame.of({
       passing: 'hello',
       username: 'ironman',
       sendAt: new Date(2022, 7, 10, 11, 22, 33),
@@ -109,7 +109,7 @@ describe('JinEitherFrame - Header with formatters', () => {
   });
 
   it('T002-datetime-array-formatter', async () => {
-    const frame = new Test002PostFrame({
+    const frame = Test002PostFrame.of({
       passing: 'hello',
       username: 'ironman',
       sendAt: [new Date(2022, 7, 10, 11, 22, 33), new Date(2022, 7, 11, 12, 23, 34), new Date(2022, 7, 12, 13, 24, 35)],
@@ -133,7 +133,7 @@ describe('JinEitherFrame - Header with formatters', () => {
   });
 
   it('T003-primitive-type-key-replace-at-not-support-dot-props', async () => {
-    const frame = new Test003PostFrame({
+    const frame = Test003PostFrame.of({
       passing: 'hello',
       username: 'ironman',
       sendAt: ['2022-08-10 11:22:33', '2022-08-11 12:23:34', '2022-08-12 13:24:35'],
@@ -159,7 +159,7 @@ describe('JinEitherFrame - Header with formatters', () => {
   });
 
   it('T005-plain-object-type-json-serialization', async () => {
-    const frame = new Test004PostFrame({
+    const frame = Test004PostFrame.of({
       passing: 'hello',
       username: 'ironman',
       sendAt: [1660036953, 1660044153, 1660062153],

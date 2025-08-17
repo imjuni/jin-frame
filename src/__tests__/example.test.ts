@@ -40,7 +40,7 @@ describe('Real Request and Response', () => {
   });
 
   it('PokemonPagingFrame', async () => {
-    const frame = new PokemonPagingFrame({
+    const frame = PokemonPagingFrame.of({
       limit: 10,
       offset: 0,
     });

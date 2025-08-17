@@ -136,7 +136,7 @@ class Test007PostFrame extends JinEitherFrame {
 
 describe('JinEitherFrame ObjectBody using Array', () => {
   it('T001-plain-array-body', async () => {
-    const frame = new Test001PostFrame({
+    const frame = Test001PostFrame.of({
       passing: 'hello',
       ability: [
         {
@@ -184,7 +184,7 @@ describe('JinEitherFrame ObjectBody using Array', () => {
   });
 
   it('T002-plain-array-with-formatters', async () => {
-    const frame = new Test002PostFrame({
+    const frame = Test002PostFrame.of({
       passing: 'hello',
       ability: [
         {
@@ -233,7 +233,7 @@ describe('JinEitherFrame ObjectBody using Array', () => {
   });
 
   it('T003-primitive-array', async () => {
-    const frame = new Test003PostFrame({
+    const frame = Test003PostFrame.of({
       passing: 'hello',
       ability: ['Energy repulsor', 'Regeneration'],
     });
@@ -256,7 +256,7 @@ describe('JinEitherFrame ObjectBody using Array', () => {
   });
 
   it('T004-primitive-date-array', async () => {
-    const frame = new Test004PostFrame({
+    const frame = Test004PostFrame.of({
       passing: 'hello',
       ability: [new Date(1980, 2, 11, 1, 33, 0), new Date(2020, 9, 11, 11, 22, 10)],
     });
@@ -279,7 +279,7 @@ describe('JinEitherFrame ObjectBody using Array', () => {
   });
 
   it('T005-primitive-date-array-ordered-merge', async () => {
-    const frame = new Test005PostFrame({
+    const frame = Test005PostFrame.of({
       passing: 'hello',
       ability: [new Date(1980, 2, 11, 1, 33, 0), new Date(2010, 9, 11, 11, 22, 10)],
       birthAt: [new Date(1990, 3, 6, 1, 33, 0), new Date(2020, 5, 8, 11, 32, 10)],
@@ -303,7 +303,7 @@ describe('JinEitherFrame ObjectBody using Array', () => {
   });
 
   it('T006-primitive-date-complex-type-merge', async () => {
-    const frame = new Test006PostFrame({
+    const frame = Test006PostFrame.of({
       passing: 'hello',
       ability: ['Energy repulsor', 'Regeneration'],
       birthAt: [new Date(1990, 3, 6, 1, 33, 0), new Date(2020, 5, 8, 11, 32, 10)],
@@ -327,7 +327,7 @@ describe('JinEitherFrame ObjectBody using Array', () => {
   });
 
   it('T007-primitive-date-complex-type-merge', async () => {
-    const frame = new Test007PostFrame({
+    const frame = Test007PostFrame.of({
       passing: 'hello',
       ability: [
         {

@@ -1,6 +1,5 @@
 import { JinEitherFrame } from '#frames/JinEitherFrame';
 import { Post } from '#decorators/methods/Post';
-import type { ConstructorType } from '#tools/type-utilities/ConstructorType';
 import { lightFormat } from 'date-fns';
 import { describe, expect, it } from 'vitest';
 import { Param } from '#decorators/fields/Param';
@@ -92,20 +91,11 @@ class Test004PostFrame extends JinEitherFrame {
     count: number;
     category: { name: string; developAt: Date };
   };
-
-  constructor(args: ConstructorType<Test004PostFrame>) {
-    super({
-      passing: args.passing,
-      username: args.username,
-      hero: args.hero,
-      ability: args.ability,
-    });
-  }
 }
 
 describe('JinEitherFrame ObjectBody using Object', () => {
   it('T001-plain-object-type', async () => {
-    const frame = new Test001PostFrame({
+    const frame = Test001PostFrame.of({
       passing: 'hello',
       username: 'ironman',
       password: 'advengers',
@@ -137,7 +127,7 @@ describe('JinEitherFrame ObjectBody using Object', () => {
   });
 
   it('T002-merge-two-object', async () => {
-    const frame = new Test002PostFrame({
+    const frame = Test002PostFrame.of({
       passing: 'hello',
       username: 'ironman',
       ability: { skill: 'Energy repulsor', count: 5, category: { name: 'laser' } },
@@ -171,7 +161,7 @@ describe('JinEitherFrame ObjectBody using Object', () => {
   });
 
   it('T003-merge-and-formatting', async () => {
-    const frame = new Test003PostFrame({
+    const frame = Test003PostFrame.of({
       passing: 'hello',
       username: 'ironman',
       ability: {
@@ -209,7 +199,7 @@ describe('JinEitherFrame ObjectBody using Object', () => {
   });
 
   it('T004-merge-and-formatting', async () => {
-    const frame = new Test004PostFrame({
+    const frame = Test004PostFrame.of({
       passing: 'hello',
       username: 'ironman',
       ability: {

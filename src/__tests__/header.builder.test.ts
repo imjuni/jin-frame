@@ -70,7 +70,7 @@ class Test005PostFrame extends JinEitherFrame {
 
 describe('JinEitherFrame - Header', () => {
   it('T001-primitive-type', async () => {
-    const frame = new Test001PostFrame({ passing: 'hello', username: 'ironman', password: 'advengers' });
+    const frame = Test001PostFrame.of({ passing: 'hello', username: 'ironman', password: 'advengers' });
     const req = frame.request();
 
     const excpetation = {
@@ -86,7 +86,7 @@ describe('JinEitherFrame - Header', () => {
   });
 
   it('T001-header', async () => {
-    const frame = new Test001PostFrame({ passing: 'hello', username: 'ironman', password: 'advengers' });
+    const frame = Test001PostFrame.of({ passing: 'hello', username: 'ironman', password: 'advengers' });
     const req = frame.request();
 
     expect(req.headers).toMatchObject({
@@ -97,7 +97,7 @@ describe('JinEitherFrame - Header', () => {
   });
 
   it('T002-primitive-type-key-replace', async () => {
-    const frame = new Test002PostFrame({ passing: 'hello', username: 'ironman', password: 'advengers' });
+    const frame = Test002PostFrame.of({ passing: 'hello', username: 'ironman', password: 'advengers' });
     const req = frame.request();
 
     const excpetation = {
@@ -113,7 +113,7 @@ describe('JinEitherFrame - Header', () => {
   });
 
   it('T003-primitive-type-key-replace-at-not-support-dot-props', async () => {
-    const frame = new Test003PostFrame({ passing: 'hello', username: 'ironman', password: 'advengers' });
+    const frame = Test003PostFrame.of({ passing: 'hello', username: 'ironman', password: 'advengers' });
     const req = frame.request();
 
     const excpetation = {
@@ -131,7 +131,7 @@ describe('JinEitherFrame - Header', () => {
   });
 
   it('T004-plain-object-type-json-serialization', async () => {
-    const frame = new Test004PostFrame({
+    const frame = Test004PostFrame.of({
       passing: 'hello',
       username: 'ironman',
       hero: { name: 'ironman', ability: 'proto cannon', age: 33 },
@@ -158,7 +158,7 @@ describe('JinEitherFrame - Header', () => {
   });
 
   it('T005-plain-object-type-array-comma-seperated', async () => {
-    const frame = new Test005PostFrame({
+    const frame = Test005PostFrame.of({
       passing: 'hello',
       username: 'ironman',
       hero: ['ironman', 'thor', 'hulk', 'doctor strange'],

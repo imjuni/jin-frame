@@ -28,7 +28,7 @@ it('fileupload-test', async () => {
     message: 'hello',
   });
 
-  const frame = new TestGetFrame({
+  const frame = TestGetFrame.of({
     description: 'test',
     myFile: new JinFile('README.md', fs.readFileSync(path.join(process.cwd(), 'README.md'))),
     myFiles: [

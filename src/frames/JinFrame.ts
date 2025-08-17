@@ -9,7 +9,8 @@ import type { TJinRequestConfig } from '#interfaces/TJinFrameResponse';
 import { CE_HOOK_APPLY } from '#tools/CE_HOOK_APPLY';
 import { getDuration } from '#tools/getDuration';
 import { isValidateStatusDefault } from '#tools/isValidateStatusDefault';
-import type { ConstructorType } from '#tools/type-utilities/ConstructorType';
+import { getStatusFromAxiosError } from '#tools/responses/getStatusFromAxiosError';
+import type { InstanceFields } from '#tools/type-utilities/InstanceFields';
 import { AxiosError, type AxiosRequestConfig, type AxiosResponse } from 'axios';
 // eslint-disable-next-line import-x/no-extraneous-dependencies
 import formatISO from 'date-fns/formatISO';
@@ -31,16 +32,16 @@ export class JinFrame<TPASS = unknown, TFAIL = TPASS>
   extends AbstractJinFrame<TPASS>
   implements IJinFrameFunction<TPASS, TFAIL>
 {
-  /**
-   * @param __namedParameters.host - host of API Request endpoint
-   * @param __namedParameters.path - pathname of API Request endpoint
-   * @param __namedParameters.method -  method of API Request endpoint
-   * @param __namedParameters.contentType - content-type of API Request endpoint
-   * @param __namedParameters.customBody - custom object of POST Request body data
-   */
-  constructor(args: ConstructorType<JinFrame<TPASS, TFAIL>>) {
-    super();
-    this.setFields(args as typeof this);
+  // static of factory: 서브클래스에서 this가 “그 서브클래스 생성자”로 잡힘
+  // static of factory: In a subclass, the this keyword refers to the constructor of that subclass.
+  static of<T extends JinFrame<TPASS, TFAIL>, TPASS = unknown, TFAIL = TPASS>(
+    this: new () => T,
+    args: InstanceFields<T>,
+  ): T {
+    const inst = new this();
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    (inst as any).setFields(args);
+    return inst;
   }
 
   /**
@@ -130,7 +131,7 @@ export class JinFrame<TPASS = unknown, TFAIL = TPASS>
             message: 'response error',
           });
 
-          this.executePostHook(req, failReply, debugInfo);
+          await this.executePostHook(req, failReply, debugInfo);
 
           throw err;
         }
@@ -153,13 +154,14 @@ export class JinFrame<TPASS = unknown, TFAIL = TPASS>
         if (caught instanceof AxiosError) {
           const duration = getDuration(this.$_data.startAt, new Date());
           const reply = caught.response as AxiosResponse<TFAIL> | undefined;
+          const { status, statusText } = getStatusFromAxiosError(caught);
 
           const jinFrameError = new JinRequestError<TPASS, TFAIL>({
             resp:
               reply ??
               ({
-                status: httpStatusCodes.INTERNAL_SERVER_ERROR,
-                statusText: getReasonPhrase(httpStatusCodes.INTERNAL_SERVER_ERROR),
+                status,
+                statusText,
               } as AxiosResponse<TFAIL>),
             debug: { ...debug, duration },
             frame: this,

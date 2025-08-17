@@ -35,7 +35,7 @@ class Test001PostFrame extends JinEitherFrame {
 }
 
 it('object formatters array', async () => {
-  const frame = new Test001PostFrame({
+  const frame = Test001PostFrame.of({
     passing: 'hello',
     ability: {
       name: 'cannon',

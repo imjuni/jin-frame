@@ -3,7 +3,7 @@ import { getFieldMetadata } from '#decorators/fields/handlers/getFieldMetadata';
 import { Param } from '#decorators/fields/Param';
 import { Query } from '#decorators/fields/Query';
 import { Post } from '#decorators/methods/Post';
-import { describe, it } from 'vitest';
+import { describe, expect, it } from 'vitest';
 import { Body } from '#decorators/fields/Body';
 import { ObjectBody } from '#decorators/fields/ObjectBody';
 import { Header } from '#decorators/fields/Header';
@@ -22,13 +22,13 @@ class IamRequest extends JinFrame {
   @ObjectBody()
   readonly ability!: { name: string; desc: string };
 
-  @Header({ replaceAt: 'Authorization' })
+  @Header({ replaceAt: 'Authorization', formatters: { string: (v) => `Authorization ${v}` } })
   readonly authorization!: string;
 }
 
 describe('getFieldMetadata', () => {
-  it('일반적인 경우 데이터 가져오기', () => {
-    const r = new IamRequest({
+  it('should return metadatas when @Param, @Query, @Body, @ObjectBody, @Header passed', () => {
+    const r = IamRequest.of({
       name: 'ironman',
       age: 30,
       affiliations: 'advengers',
@@ -36,6 +36,7 @@ describe('getFieldMetadata', () => {
         name: 'enegy projection',
         desc: 'Repulsor rays and the uni-beam projector allow for focused energy attacks',
       },
+      authorization: 'i-am-key',
     });
 
     const metas = getFieldMetadata(
@@ -43,6 +44,74 @@ describe('getFieldMetadata', () => {
       Object.entries(r).map(([key, value]) => ({ key, value })),
     );
 
-    console.log(metas);
+    expect(metas).toMatchObject({
+      param: [
+        {
+          key: 'name',
+          option: {
+            type: 'param',
+            comma: false,
+            bit: {
+              enable: false,
+              withZero: false,
+            },
+            encode: true,
+            formatters: undefined,
+            replaceAt: undefined,
+          },
+        },
+      ],
+      body: [
+        {
+          key: 'affiliations',
+          option: {
+            type: 'body',
+            replaceAt: undefined,
+            encode: true,
+          },
+        },
+      ],
+      objectBody: [
+        {
+          key: 'ability',
+          option: {
+            type: 'object-body',
+            encode: true,
+            order: 9007199254740991,
+          },
+        },
+      ],
+      header: [
+        {
+          key: 'authorization',
+          option: {
+            type: 'header',
+            bit: {
+              enable: false,
+              withZero: false,
+            },
+            replaceAt: 'Authorization',
+            comma: false,
+            encode: true,
+          },
+        },
+      ],
+      query: [
+        {
+          key: 'age',
+          option: {
+            type: 'query',
+            comma: false,
+            bit: {
+              enable: false,
+              withZero: false,
+            },
+            encode: true,
+            formatters: undefined,
+            replaceAt: undefined,
+          },
+        },
+      ],
+    });
   });
 });
