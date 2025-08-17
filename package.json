@@ -28,7 +28,10 @@
     "dd": "deps-diff md -d dev -d prod -d peer --title-list-type 'm' --deps-list-type 'm' --content-list-type 'm'",
     "httpd": "http-server ./docs -p 19983",
     "prepublishOnly": "node prepublish.cjs",
-    "prepare": "husky install"
+    "prepare": "husky install",
+    "docs:dev": "vitepress dev docs",
+    "docs:build": "vitepress build docs",
+    "docs:preview": "vitepress preview docs"
   },
   "keywords": [
     "axios",
@@ -69,7 +72,6 @@
   ],
   "homepage": "https://imjuni.github.io/jin-frame",
   "dependencies": {
-    "axios": "^1.11.0",
     "dot-prop": "^6.0.1",
     "fast-safe-stringify": "^2.1.1",
     "form-data": "^4.0.0",
@@ -128,7 +130,11 @@
     "typescript": "^5.9.2",
     "typescript-eslint": "^8.39.0",
     "vite-tsconfig-paths": "^5.1.4",
+    "vitepress": "^1.6.4",
     "vitest": "^3.2.4"
+  },
+  "peerDependencies": {
+    "axios": ">=1.4"
   },
   "directories": {
     "test": "test"

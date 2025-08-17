@@ -120,6 +120,7 @@ docs/api
 docs/classes
 docs/interfaces
 docs/media
+docs
 
 # swc
 .swc/
