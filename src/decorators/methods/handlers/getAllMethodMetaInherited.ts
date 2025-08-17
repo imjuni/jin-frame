@@ -1,6 +1,7 @@
-import { REQUEST_METHOD_DECORATOR } from '#tools/decorators/methods/handlers/REQUEST_METHOD_DECORATOR';
-import type { TMethodEntry } from '#tools/decorators/methods/handlers/TMethodEntry';
+import { REQUEST_METHOD_DECORATOR } from '#decorators/methods/handlers/REQUEST_METHOD_DECORATOR';
+import type { TMethodEntry } from '#decorators/methods/handlers/TMethodEntry';
 import type { AbstractConstructor, Constructor } from 'type-fest';
+import 'reflect-metadata';
 
 export function getAllRequestMetaInherited(
   ctor: AbstractConstructor<unknown> | Constructor<unknown>,

@@ -1,16 +1,19 @@
 import { JinEitherFrame } from '#frames/JinEitherFrame';
-import { Get } from '#tools/decorators/methods/Get';
+import { Get } from '#decorators/methods/Get';
 import { expect, it } from 'vitest';
+import { Param } from '#decorators/fields/Param';
+import { Query } from '#decorators/fields/Query';
+import { Header } from '#decorators/fields/Header';
 
 @Get({ host: '/jinframe/:passing/test' })
 class TestGet2Frame extends JinEitherFrame {
-  @JinEitherFrame.param()
+  @Param()
   declare public readonly passing: string;
 
-  @JinEitherFrame.query()
+  @Query()
   declare public readonly name: string;
 
-  @JinEitherFrame.header()
+  @Header()
   declare public readonly ttt: string;
 }
 

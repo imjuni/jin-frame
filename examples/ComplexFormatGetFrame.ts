@@ -19,14 +19,14 @@ interface IFirstBody {
  * Complex date formatting In jin-frame
  */
 export default class ComplexFormatGetFrame extends JinEitherFrame {
-  @JinEitherFrame.param()
-  public declare readonly passing: string;
+  @Param()
+  declare public readonly passing: string;
 
-  @JinEitherFrame.query()
-  public declare readonly name: string;
+  @Query()
+  declare public readonly name: string;
 
-  @JinEitherFrame.query()
-  public declare readonly skill: string[];
+  @Query()
+  declare public readonly skill: string[];
 
   @JinEitherFrame.objectBody({
     formatters: [
@@ -46,7 +46,7 @@ export default class ComplexFormatGetFrame extends JinEitherFrame {
       },
     ],
   })
-  public declare readonly body: IFirstBody;
+  declare public readonly body: IFirstBody;
 
   constructor({ body }: { body: IFirstBody }) {
     super({ $$host: 'http://some.api.google.com', $$path: '/jinframe/:passing', $$method: 'GET' });

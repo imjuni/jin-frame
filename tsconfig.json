@@ -44,6 +44,7 @@
     "rootDir": ".",
     "paths": {
       "#tools/*": ["src/tools/*"],
+      "#decorators/*": ["src/decorators/*"],
       "#processors/*": ["src/processors/*"],
       "#frames/*": ["src/frames/*"],
       "#interfaces/*": ["src/interfaces/*"]

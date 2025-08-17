@@ -1,22 +1,25 @@
 import { JinFile } from '#frames/JinFile';
 import { JinFrame } from '#frames/JinFrame';
-import { Post } from '#tools/decorators/methods/Post';
+import { Post } from '#decorators/methods/Post';
 import MockAdapter from 'axios-mock-adapter';
 import nock from 'nock';
 import { afterEach, describe, expect, it } from 'vitest';
+import { Param } from '#decorators/fields/Param';
+import { Body } from '#decorators/fields/Body';
+import { Query } from '#decorators/fields/Query';
 
 @Post({
   host: 'http://some.api.google.com/jinframe/:passing',
   contentType: 'multipart/form-data',
 })
 class Test001PostFrame extends JinFrame<{ message: string }> {
-  @JinFrame.param()
+  @Param()
   declare public readonly passing: string;
 
-  @JinFrame.body()
+  @Body()
   declare public readonly username: string;
 
-  @JinFrame.body()
+  @Body()
   declare public readonly password: string;
 }
 
@@ -26,13 +29,13 @@ class Test001PostFrame extends JinFrame<{ message: string }> {
   customBody: { sample: 'my-custom-body' },
 })
 class Test002PostFrame extends JinFrame<{ message: string }> {
-  @JinFrame.param()
+  @Param()
   declare public readonly passing: string;
 
-  @JinFrame.body()
+  @Body()
   declare public readonly username: string;
 
-  @JinFrame.body()
+  @Body()
   declare public readonly password: string;
 }
 
@@ -43,34 +46,34 @@ class Test002PostFrame extends JinFrame<{ message: string }> {
   transformRequest: (v) => `tr:${v}`,
 })
 class Test003PostFrame extends JinFrame<{ message: string }> {
-  @JinFrame.param()
+  @Param()
   declare public readonly passing: string;
 
-  @JinFrame.body()
+  @Body()
   declare public readonly username: string;
 
-  @JinFrame.body()
+  @Body()
   declare public readonly password: string;
 }
 
 @Post({ host: 'http://some.api.google.com/jinframe/:passing' })
 class Test004PostFrame extends JinFrame<{ message: string }> {
-  @JinFrame.param()
+  @Param()
   declare public readonly passing: string[];
 
-  @JinFrame.query()
+  @Query()
   declare public readonly name: string[];
 
-  @JinFrame.query()
+  @Query()
   declare public readonly nums: number[];
 }
 
 @Post({ host: 'http://some.api.google.com/jinframe', useInstance: true })
 class Test005PostFrame extends JinFrame<{ message: string }> {
-  @JinFrame.query()
+  @Query()
   declare public readonly name: string[];
 
-  @JinFrame.query()
+  @Query()
   declare public readonly nums: number[];
 }
 

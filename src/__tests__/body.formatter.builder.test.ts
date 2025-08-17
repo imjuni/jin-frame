@@ -1,33 +1,36 @@
-import { JinEitherFrame } from '#frames/JinEitherFrame';
-import { Post } from '#tools/decorators/methods/Post';
-import { lightFormat, parse } from 'date-fns';
 import { describe, expect, it } from 'vitest';
+import { lightFormat, parse } from 'date-fns';
+
+import { JinEitherFrame } from '#frames/JinEitherFrame';
+import { Post } from '#decorators/methods/Post';
+import { Param } from '#decorators/fields/Param';
+import { Body } from '#decorators/fields/Body';
 
 @Post({ host: 'http://some.api.google.com/jinframe/:passing' })
 class Test001PostFrame extends JinEitherFrame {
-  @JinEitherFrame.param()
+  @Param()
   declare public readonly passing: string;
 
-  @JinEitherFrame.body({
+  @Body({
     formatters: {
       string: (value) => `${value}+111`,
     },
   })
   declare public readonly username: string[];
 
-  @JinEitherFrame.body()
+  @Body()
   declare public readonly password: string;
 }
 
 @Post({ host: 'http://some.api.google.com/jinframe/:passing' })
 class Test002PostFrame extends JinEitherFrame {
-  @JinEitherFrame.param()
+  @Param()
   declare public readonly passing: string;
 
-  @JinEitherFrame.body()
+  @Body()
   declare public readonly username: string[];
 
-  @JinEitherFrame.body({
+  @Body({
     formatters: {
       string: (value) => `${value}+111`,
     },
@@ -37,47 +40,47 @@ class Test002PostFrame extends JinEitherFrame {
 
 @Post({ host: 'http://some.api.google.com/jinframe/:passing' })
 class Test003PostFrame extends JinEitherFrame {
-  @JinEitherFrame.param()
+  @Param()
   declare public readonly passing: string;
 
-  @JinEitherFrame.body({
+  @Body({
     formatters: {
       string: (value) => `000+${value}+222`,
     },
   })
   declare public readonly username: string[];
 
-  @JinEitherFrame.body({
+  @Body({
     formatters: {
       string: (value) => `${value}+111`,
     },
   })
   declare public readonly password: string;
 
-  @JinEitherFrame.body()
+  @Body()
   declare public readonly today: Date;
 }
 
 @Post({ host: 'http://some.api.google.com/jinframe/:passing' })
 class Test004PostFrame extends JinEitherFrame {
-  @JinEitherFrame.param()
+  @Param()
   declare public readonly passing: string;
 
-  @JinEitherFrame.body({
+  @Body({
     formatters: {
       string: (value) => `000+${value}+222`,
     },
   })
   declare public readonly username: string[];
 
-  @JinEitherFrame.body({
+  @Body({
     formatters: {
       string: (value) => `${value}+111`,
     },
   })
   declare public readonly password: string;
 
-  @JinEitherFrame.body({
+  @Body({
     formatters: {
       dateTime: (value) => lightFormat(value, 'yyyy-MM-dd HH:mm:ss'),
     },
@@ -87,24 +90,24 @@ class Test004PostFrame extends JinEitherFrame {
 
 @Post({ host: 'http://some.api.google.com/jinframe/:passing' })
 class Test005PostFrame extends JinEitherFrame {
-  @JinEitherFrame.param()
+  @Param()
   declare public readonly passing: string;
 
-  @JinEitherFrame.body({
+  @Body({
     formatters: {
       string: (value) => `000+${value}+222`,
     },
   })
   declare public readonly username: string[];
 
-  @JinEitherFrame.body({
+  @Body({
     formatters: {
       string: (value) => `${value}+111`,
     },
   })
   declare public readonly password: string;
 
-  @JinEitherFrame.body({
+  @Body({
     formatters: {
       string: (value) => parse(value, 'yyyy-MM-dd HH:mm:ss', new Date()),
       dateTime: (value) => lightFormat(value, `yyyy-MM-dd'T'HH:mm:ss`),
@@ -115,17 +118,17 @@ class Test005PostFrame extends JinEitherFrame {
 
 @Post({ host: 'http://some.api.google.com/jinframe/:passing' })
 class Test006PostFrame extends JinEitherFrame {
-  @JinEitherFrame.param()
+  @Param()
   declare public readonly passing: string;
 
-  @JinEitherFrame.body({
+  @Body({
     formatters: {
       string: (value) => `000+${value}+222`,
     },
   })
   declare public readonly username: string[];
 
-  @JinEitherFrame.body({
+  @Body({
     replaceAt: 'pw',
     formatters: {
       string: (value) => `${value}+111`,
@@ -133,7 +136,7 @@ class Test006PostFrame extends JinEitherFrame {
   })
   declare public readonly password: string;
 
-  @JinEitherFrame.body({
+  @Body({
     replaceAt: 'format-day',
     formatters: {
       string: (value) => parse(value, 'yyyy-MM-dd HH:mm:ss', new Date()),

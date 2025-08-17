@@ -6,9 +6,11 @@ import type { IDebugInfo } from '#interfaces/IDebugInfo';
 import type { IFailReplyJinEitherFrame } from '#interfaces/IFailJinEitherFrame';
 import type { TJinFrameResponse, TJinRequestConfig } from '#interfaces/TJinFrameResponse';
 import type { TPassJinEitherFrame } from '#interfaces/TPassJinEitherFrame';
-import { Post } from '#tools/decorators/methods/Post';
+import { Post } from '#decorators/methods/Post';
 import nock from 'nock';
 import { afterEach, describe, expect, it } from 'vitest';
+import { Param } from '#decorators/fields/Param';
+import { Body } from '#decorators/fields/Body';
 
 class CustomError extends Error {
   readonly discriminator = '__CustomError__';
@@ -24,37 +26,37 @@ class CustomError extends Error {
 
 @Post({ host: 'http://some.api.google.com/jinframe/:passing' })
 class Test001PostFrame extends JinFrame<{ message: string }> {
-  @JinFrame.param()
+  @Param()
   declare public readonly passing: string;
 
-  @JinFrame.body()
+  @Body()
   declare public readonly username: string;
 
-  @JinFrame.body()
+  @Body()
   declare public readonly password: string;
 }
 
 @Post({ host: 'http://some.api.google.com/jinframe/:passing/:raiseerr' })
 class Test002PostFrame extends JinFrame<{ message: string }> {
-  @JinFrame.param()
+  @Param()
   declare public readonly passing: string;
 
-  @JinFrame.body()
+  @Body()
   declare public readonly username: string;
 
-  @JinFrame.body()
+  @Body()
   declare public readonly password: string;
 }
 
 @Post({ host: 'http://some.api.google.com/jinframe/:passing' })
 class Test003PostFrame extends JinFrame<{ message: string }> {
-  @JinFrame.param()
+  @Param()
   declare public readonly passing: string;
 
-  @JinFrame.body()
+  @Body()
   declare public readonly username: string;
 
-  @JinFrame.body()
+  @Body()
   declare public readonly password: string;
 
   accessor postHookCount = 0;
@@ -78,13 +80,13 @@ class Test003PostFrame extends JinFrame<{ message: string }> {
 
 @Post({ host: 'http://some.api.google.com/jinframe/:passing' })
 class Test004PostEitherFrame extends JinEitherFrame<{ message: string }> {
-  @JinFrame.param()
+  @Param()
   declare public readonly passing: string;
 
-  @JinFrame.body()
+  @Body()
   declare public readonly username: string;
 
-  @JinFrame.body()
+  @Body()
   declare public readonly password: string;
 
   accessor postHookCount = 0;

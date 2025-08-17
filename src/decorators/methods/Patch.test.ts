@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
-import { getRequestMeta } from '#tools/decorators/methods/handlers/getRequestMeta';
-import { Patch } from '#tools/decorators/methods/Patch';
+import { getRequestMeta } from '#decorators/methods/handlers/getRequestMeta';
+import { Patch } from '#decorators/methods/Patch';
 
 class IamClass {}
 

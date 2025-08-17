@@ -1,29 +1,31 @@
 import { JinEitherFrame } from '#frames/JinEitherFrame';
-import { Post } from '#tools/decorators/methods/Post';
+import { Post } from '#decorators/methods/Post';
 import nock from 'nock';
 import { afterEach, describe, expect, it } from 'vitest';
+import { Param } from '#decorators/fields/Param';
+import { Body } from '#decorators/fields/Body';
 
 @Post({ host: 'http://some.api.google.com/jinframe/:passing' })
 class Test001PostFrame extends JinEitherFrame {
-  @JinEitherFrame.param()
+  @Param()
   declare public readonly passing: string;
 
-  @JinEitherFrame.body()
+  @Body()
   declare public readonly username: string;
 
-  @JinEitherFrame.body()
+  @Body()
   declare public readonly password: string;
 }
 
 @Post({ host: 'http://some.api.google.com/jinframe/:passing/:raiseerr' })
 class Test002PostFrame extends JinEitherFrame {
-  @JinEitherFrame.param()
+  @Param()
   declare public readonly passing: string;
 
-  @JinEitherFrame.body()
+  @Body()
   declare public readonly username: string;
 
-  @JinEitherFrame.body()
+  @Body()
   declare public readonly password: string;
 }
 

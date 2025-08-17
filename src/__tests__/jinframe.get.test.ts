@@ -2,21 +2,24 @@ import { JinEitherFrame } from '#frames/JinEitherFrame';
 import { JinFrame } from '#frames/JinFrame';
 import type { IFailReplyJinEitherFrame } from '#interfaces/IFailJinEitherFrame';
 import type { TPassJinEitherFrame } from '#interfaces/TPassJinEitherFrame';
-import { Get } from '#tools/decorators/methods/Get';
+import { Get } from '#decorators/methods/Get';
 import axios, { type AxiosRequestConfig, type AxiosResponse } from 'axios';
 import { isFail, isPass } from 'my-only-either';
 import nock from 'nock';
 import { afterEach, describe, expect, it } from 'vitest';
+import { Param } from '#decorators/fields/Param';
+import { Query } from '#decorators/fields/Query';
+import { Header } from '#decorators/fields/Header';
 
 @Get({ host: 'http://some.api.google.com/jinframe/:passing' })
 class TestGetFrame extends JinEitherFrame {
-  @JinEitherFrame.P()
+  @Param()
   declare public readonly passing: string;
 
-  @JinEitherFrame.Q({ replaceAt: 'myname' })
+  @Query({ replaceAt: 'myname' })
   declare public readonly name: string;
 
-  @JinEitherFrame.query({ encode: true })
+  @Query({ encode: true })
   declare public readonly skill: string[];
 
   constructor() {
@@ -39,13 +42,13 @@ class TestGetFrame extends JinEitherFrame {
 
 @Get({ host: 'http://some.api.google.com/jinframe/:passing/test' })
 class TestGet2Frame extends JinEitherFrame {
-  @JinEitherFrame.param()
+  @Param()
   declare public readonly passing: string;
 
-  @JinEitherFrame.query()
+  @Query()
   declare public readonly name: string;
 
-  @JinEitherFrame.header()
+  @Header()
   declare public readonly ttt: string;
 
   override async $_preHook(req: AxiosRequestConfig): Promise<void> {
@@ -70,13 +73,13 @@ class TestGet2Frame extends JinEitherFrame {
 
 @Get({ host: 'http://some.api.google.com/jinframe/:passing' })
 class TestGet3Frame extends JinFrame {
-  @JinEitherFrame.param()
+  @Param()
   declare public readonly passing: string;
 
-  @JinEitherFrame.Q()
+  @Query()
   declare public readonly name: string;
 
-  @JinEitherFrame.Q({ encode: true })
+  @Query({ encode: true })
   declare public readonly skill: string[];
 
   constructor() {
@@ -99,13 +102,13 @@ class TestGet3Frame extends JinFrame {
 
 @Get({ host: 'http://some.api.google.com/jinframe/:passing' })
 class TestGet4Frame extends JinFrame {
-  @JinEitherFrame.param()
+  @Param()
   declare public readonly passing: string;
 
-  @JinEitherFrame.query()
+  @Query()
   declare public readonly name: string;
 
-  @JinEitherFrame.query({ encode: true })
+  @Query({ encode: true })
   declare public readonly skill: string[];
 
   constructor() {
@@ -128,13 +131,13 @@ class TestGet4Frame extends JinFrame {
 
 @Get({ host: 'http://some.api.google.com/jinframe/:passing' })
 class TestGet5Frame extends JinFrame {
-  @JinEitherFrame.param()
+  @Param()
   declare public readonly passing: string;
 
-  @JinEitherFrame.query()
+  @Query()
   declare public readonly name: string;
 
-  @JinEitherFrame.query({ encode: true })
+  @Query({ encode: true })
   declare public readonly skill: string[];
 
   constructor() {
@@ -152,13 +155,13 @@ class TestGet5Frame extends JinFrame {
 
 @Get({ host: 'http://some.api.google.com/jinframe/:passing' })
 class TestGet6Frame extends JinFrame {
-  @JinEitherFrame.param()
+  @Param()
   declare public readonly passing: string;
 
-  @JinEitherFrame.query()
+  @Query()
   declare public readonly name: string;
 
-  @JinEitherFrame.query({ encode: true })
+  @Query({ encode: true })
   declare public readonly skill: string[];
 
   constructor() {
@@ -176,13 +179,13 @@ class TestGet6Frame extends JinFrame {
 
 @Get({ host: 'http://some.api.google.com/jinframe/:passing' })
 class TestGet7Frame extends JinEitherFrame {
-  @JinEitherFrame.param()
+  @Param()
   declare public readonly passing: string;
 
-  @JinEitherFrame.query()
+  @Query()
   declare public readonly name: string;
 
-  @JinEitherFrame.query({ encode: true })
+  @Query({ encode: true })
   declare public readonly skill: string[];
 
   constructor() {
@@ -200,13 +203,13 @@ class TestGet7Frame extends JinEitherFrame {
 
 @Get({ host: 'http://some.api.google.com/jinframe/:passing' })
 class TestGet8Frame extends JinEitherFrame {
-  @JinEitherFrame.param()
+  @Param()
   declare public readonly passing: string;
 
-  @JinEitherFrame.query()
+  @Query()
   declare public readonly name: string;
 
-  @JinEitherFrame.query({ encode: true })
+  @Query({ encode: true })
   declare public readonly skill: string[];
 
   constructor() {

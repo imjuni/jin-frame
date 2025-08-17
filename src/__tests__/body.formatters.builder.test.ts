@@ -1,28 +1,31 @@
-import { JinEitherFrame } from '#frames/JinEitherFrame';
-import { Post } from '#tools/decorators/methods/Post';
 import { lightFormat } from 'date-fns';
 import { describe, expect, it } from 'vitest';
 
+import { JinEitherFrame } from '#frames/JinEitherFrame';
+import { Post } from '#decorators/methods/Post';
+import { Param } from '#decorators/fields/Param';
+import { Body } from '#decorators/fields/Body';
+
 @Post({ host: 'http://some.api.google.com/jinframe/:passing' })
 class Test001PostFrame extends JinEitherFrame {
-  @JinEitherFrame.P()
+  @Param()
   declare public readonly passing: string;
 
-  @JinEitherFrame.B({
+  @Body({
     formatters: [{ string: (value) => `${value}+111` }, { string: (value) => `${value}+222` }],
   })
   declare public readonly username: string[];
 
-  @JinEitherFrame.body()
+  @Body()
   declare public readonly password: string;
 }
 
 @Post({ host: 'http://some.api.google.com/jinframe/:passing' })
 class Test002PostFrame extends JinEitherFrame {
-  @JinEitherFrame.param()
+  @Param()
   declare public readonly passing: string;
 
-  @JinEitherFrame.body({
+  @Body({
     formatters: [
       {
         findFrom: 'name',
@@ -42,7 +45,7 @@ class Test002PostFrame extends JinEitherFrame {
     };
   };
 
-  @JinEitherFrame.body()
+  @Body()
   declare public readonly password: string;
 }
 

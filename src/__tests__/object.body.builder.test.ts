@@ -1,48 +1,51 @@
 import { JinEitherFrame } from '#frames/JinEitherFrame';
-import { Post } from '#tools/decorators/methods/Post';
+import { Post } from '#decorators/methods/Post';
 import type { ConstructorType } from '#tools/type-utilities/ConstructorType';
 import { lightFormat } from 'date-fns';
 import { describe, expect, it } from 'vitest';
+import { Param } from '#decorators/fields/Param';
+import { Body } from '#decorators/fields/Body';
+import { ObjectBody } from '#decorators/fields/ObjectBody';
 
 @Post({ host: 'http://some.api.google.com/jinframe/:passing' })
 class Test001PostFrame extends JinEitherFrame {
-  @JinEitherFrame.param()
+  @Param()
   declare public readonly passing: string;
 
-  @JinEitherFrame.body()
+  @Body()
   declare public readonly username: string;
 
-  @JinEitherFrame.body()
+  @Body()
   declare public readonly password: string;
 
-  @JinEitherFrame.O()
+  @ObjectBody()
   declare public readonly hero: { name: string; age: number; bio: { birth: string } };
 }
 
 @Post({ host: 'http://some.api.google.com/jinframe/:passing' })
 class Test002PostFrame extends JinEitherFrame {
-  @JinEitherFrame.param()
+  @Param()
   declare public readonly passing: string;
 
-  @JinEitherFrame.body()
+  @Body()
   declare public readonly username: string;
 
-  @JinEitherFrame.objectBody()
+  @ObjectBody()
   declare public readonly hero: { name: string; age: number; bio: { birth: string } };
 
-  @JinEitherFrame.objectBody()
+  @ObjectBody()
   declare public readonly ability: { skill: string; count: number; category: { name: string } };
 }
 
 @Post({ host: 'http://some.api.google.com/jinframe/:passing' })
 class Test003PostFrame extends JinEitherFrame {
-  @JinEitherFrame.param()
+  @Param()
   declare public readonly passing: string;
 
-  @JinEitherFrame.body()
+  @Body()
   declare public readonly username: string;
 
-  @JinEitherFrame.objectBody({
+  @ObjectBody({
     formatters: {
       findFrom: 'bio.birth',
       dateTime: (value) => lightFormat(value, 'yyyy-MM-dd HH:mm:ss'),
@@ -50,7 +53,7 @@ class Test003PostFrame extends JinEitherFrame {
   })
   declare public readonly hero: { name: string; age: number; bio: { birth: Date } };
 
-  @JinEitherFrame.objectBody({
+  @ObjectBody({
     formatters: {
       findFrom: 'category.developAt',
       dateTime: (value) => lightFormat(value, 'yyyy-MM-dd HH:mm:ss'),
@@ -61,13 +64,13 @@ class Test003PostFrame extends JinEitherFrame {
 
 @Post({ host: 'http://some.api.google.com/jinframe/:passing' })
 class Test004PostFrame extends JinEitherFrame {
-  @JinEitherFrame.param()
+  @Param()
   declare public readonly passing: string;
 
-  @JinEitherFrame.body()
+  @Body()
   declare public readonly username: string;
 
-  @JinEitherFrame.objectBody({
+  @ObjectBody({
     order: 2,
     formatters: {
       findFrom: 'bio.birth',
@@ -76,7 +79,7 @@ class Test004PostFrame extends JinEitherFrame {
   })
   declare public readonly hero: { name: string; age: number; bio: { birth: Date } };
 
-  @JinEitherFrame.objectBody({
+  @ObjectBody({
     order: 1,
     formatters: {
       findFrom: 'category.developAt',

@@ -2,7 +2,7 @@ import { JinEitherFrame } from '../src/frames/JinEitherFrame';
 import type JinConstructorType from '../src/tools/type-utilities/JinConstructorType';
 
 export class PokemonFrame extends JinEitherFrame<any, any> {
-  @JinEitherFrame.param()
+  @Param()
   name: string;
 
   constructor(args: JinConstructorType<PokemonFrame>) {

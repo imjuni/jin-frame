@@ -1,8 +1,8 @@
 import { describe, expect, it } from 'vitest';
-import { getAllRequestMetaInherited } from '#tools/decorators/methods/handlers/getAllMethodMetaInherited';
-import { Get } from '#tools/decorators/methods/Get';
-import { Post } from '#tools/decorators/methods/Post';
-import { Patch } from '#tools/decorators/methods/Patch';
+import { getAllRequestMetaInherited } from '#decorators/methods/handlers/getAllMethodMetaInherited';
+import { Get } from '#decorators/methods/Get';
+import { Post } from '#decorators/methods/Post';
+import { Patch } from '#decorators/methods/Patch';
 
 @Get({ host: 'http://some.host.com' })
 class GetAllRequestMetaInheritedTest001 {}

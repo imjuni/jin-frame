@@ -1,14 +1,16 @@
 import { JinEitherFrame } from '#frames/JinEitherFrame';
-import { Post } from '#tools/decorators/methods/Post';
+import { Post } from '#decorators/methods/Post';
 import { lightFormat } from 'date-fns';
 import { expect, it } from 'vitest';
+import { ObjectBody } from '#decorators/fields/ObjectBody';
+import { Param } from '#decorators/fields/Param';
 
 @Post({ host: 'http://some.api.google.com/jinframe/:passing' })
 class Test001PostFrame extends JinEitherFrame {
-  @JinEitherFrame.param()
+  @Param()
   declare public readonly passing: string;
 
-  @JinEitherFrame.O({
+  @ObjectBody({
     formatters: [
       {
         findFrom: 'name',

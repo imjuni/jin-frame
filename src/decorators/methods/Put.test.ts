@@ -1,13 +1,13 @@
 import { describe, expect, it } from 'vitest';
-import { getRequestMeta } from '#tools/decorators/methods/handlers/getRequestMeta';
-import { Options } from '#tools/decorators/methods/Options';
+import { getRequestMeta } from '#decorators/methods/handlers/getRequestMeta';
+import { Put } from '#decorators/methods/Put';
 
 class IamClass {}
 
-describe('Options', () => {
+describe('Put', () => {
   it('should return configuration when pass custom content-type', () => {
     const contentType = 'custom content type';
-    const hanlde = Options({ contentType });
+    const hanlde = Put({ contentType });
     hanlde(IamClass);
 
     const meta = getRequestMeta(IamClass);

@@ -1,10 +1,10 @@
-import { getFrameInternalData } from '#tools/decorators/getFrameInternalData';
-import { getFrameOption } from '#tools/decorators/getFrameOption';
+import { getFrameInternalData } from '#decorators/getFrameInternalData';
+import { getFrameOption } from '#decorators/getFrameOption';
 import type { IFrameOption } from '#tools/type-utilities/IFrameOption';
 import type { Method } from 'axios';
 import type { Constructor } from 'type-fest';
 import 'reflect-metadata';
-import { pushRequestMeta } from '#tools/decorators/methods/handlers/pushRequestMeta';
+import { pushRequestMeta } from '#decorators/methods/handlers/pushRequestMeta';
 
 export function makeRequestDecorator(method: Method) {
   return function decorate<T = unknown>(_option?: Partial<Omit<IFrameOption, 'method'>>) {
