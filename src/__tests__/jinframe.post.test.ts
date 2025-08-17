@@ -22,12 +22,12 @@ class TestPostFrame extends JinEitherFrame {
   declare public readonly gender: string;
 
   constructor() {
-    super({
-      passing: 'pass',
-      name: 'ironman',
-      skill: 'beam',
-      gender: 'male',
-    });
+    super();
+
+    this.passing = 'pass';
+    this.name = 'ironman';
+    this.skill = 'beam';
+    this.gender = 'male';
   }
 }
 
@@ -46,11 +46,11 @@ class TestUrlencodedPostFrame extends JinEitherFrame {
   declare public readonly password: string;
 
   constructor() {
-    super({
-      passing: 'pass',
-      username: 'ironman',
-      password: 'marvel',
-    });
+    super();
+
+    this.passing = 'pass';
+    this.username = 'ironman';
+    this.password = 'marvel';
   }
 }
 

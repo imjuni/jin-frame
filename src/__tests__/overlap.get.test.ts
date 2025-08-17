@@ -36,6 +36,6 @@ it('overlap-param-query', async () => {
       message: 'hello',
     });
 
-  const frame = new TestGetFrame({ id: 'pass', name: 'ironman', skills: ['beam', 'flying!'] });
+  const frame = TestGetFrame.of({ id: 'pass', name: 'ironman', skills: ['beam', 'flying!'] });
   await frame.execute();
 });

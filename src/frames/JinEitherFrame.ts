@@ -10,7 +10,7 @@ import type { TPassJinEitherFrame } from '#interfaces/TPassJinEitherFrame';
 import { CE_HOOK_APPLY } from '#tools/CE_HOOK_APPLY';
 import { getDuration } from '#tools/getDuration';
 import { isValidateStatusDefault } from '#tools/isValidateStatusDefault';
-import type { ConstructorType } from '#tools/type-utilities/ConstructorType';
+import type { InstanceFields } from '#tools/type-utilities/InstanceFields';
 import { AxiosError, type AxiosRequestConfig, type AxiosResponse } from 'axios';
 // eslint-disable-next-line import-x/no-extraneous-dependencies
 import formatISO from 'date-fns/formatISO';
@@ -33,6 +33,18 @@ export class JinEitherFrame<TPASS = unknown, TFAIL = TPASS>
   extends AbstractJinFrame<TPASS>
   implements IJinFrameFunction<TPASS, TFAIL>
 {
+  // static of factory: 서브클래스에서 this가 “그 서브클래스 생성자”로 잡힘
+  // static of factory: In a subclass, the this keyword refers to the constructor of that subclass.
+  static of<T extends JinEitherFrame<TPASS, TFAIL>, TPASS = unknown, TFAIL = TPASS>(
+    this: new () => T,
+    args: InstanceFields<T>,
+  ): T {
+    const inst = new this();
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    (inst as any).setFields(args);
+    return inst;
+  }
+
   /**
    * Execute before request. If you can change request object that is affected request.
    *
@@ -54,18 +66,6 @@ export class JinEitherFrame<TPASS = unknown, TFAIL = TPASS>
     _req: TJinRequestConfig,
     _reply: IFailReplyJinEitherFrame<TFAIL> | TPassJinEitherFrame<TPASS>,
   ): void | Promise<void> {}
-
-  /**
-   * @param __namedParameters.host - host of API Request endpoint
-   * @param __namedParameters.path - pathname of API Request endpoint
-   * @param __namedParameters.method -  method of API Request endpoint
-   * @param __namedParameters.contentType - content-type of API Request endpoint
-   * @param __namedParameters.customBody - custom object of POST Request body data
-   */
-  constructor(args: ConstructorType<JinEitherFrame<TPASS, TFAIL>>) {
-    super();
-    this.setFields(args as typeof this);
-  }
 
   public requestWrap(
     option?: IJinFrameRequestConfig & IJinFrameCreateConfig,
@@ -135,6 +135,7 @@ export class JinEitherFrame<TPASS = unknown, TFAIL = TPASS>
       try {
         await this.executePreHook(req);
 
+        this.$_data.eachStartAt = new Date();
         const reply = await this.retry(req, isValidateStatus);
         const endAt = new Date();
 
@@ -151,7 +152,7 @@ export class JinEitherFrame<TPASS = unknown, TFAIL = TPASS>
             $frame: this,
           };
 
-          this.executePostHook(req, failInfo);
+          await this.executePostHook(req, failInfo);
           return fail(failInfo);
         }
 
@@ -164,7 +165,7 @@ export class JinEitherFrame<TPASS = unknown, TFAIL = TPASS>
           $frame: this,
         };
 
-        this.executePostHook(req, passInfo);
+        await this.executePostHook(req, passInfo);
         return pass(passInfo);
       } catch (catched) {
         const err = catched instanceof AxiosError ? catched : new AxiosError('unkonwn error raised from jinframe');

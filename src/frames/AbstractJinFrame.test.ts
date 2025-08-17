@@ -56,7 +56,7 @@ class Test003PostFrame extends JinFrame<{ message: string }> {
   declare public readonly password: string;
 }
 
-@Post({ host: 'http://some.api.google.com/jinframe/:passing' })
+@Post({ host: 'http://some.api.google.com/jinframe/:passing', useInstance: true })
 class Test004PostFrame extends JinFrame<{ message: string }> {
   @Param()
   declare public readonly passing: string[];
@@ -82,8 +82,8 @@ describe('AbstractJinFrame', () => {
     nock.cleanAll();
   });
 
-  it('form-data', async () => {
-    const frame = new Test001PostFrame({ username: 'ironman', password: 'avengers', passing: 'pass' });
+  it('show return form-data when using getFormData', async () => {
+    const frame = Test001PostFrame.of({ username: 'ironman', password: 'avengers', passing: 'pass' });
 
     const fd = frame.getFormData({
       first: 'one',
@@ -102,8 +102,8 @@ describe('AbstractJinFrame', () => {
     });
   });
 
-  it('body, param', async () => {
-    const frame = new Test001PostFrame({ username: 'ironman', password: 'avengers', passing: 'pass' });
+  it('should return body, param field when using @Body, @Param decorator', async () => {
+    const frame = Test001PostFrame.of({ username: 'ironman', password: 'avengers', passing: 'pass' });
 
     frame.request();
 
@@ -111,9 +111,26 @@ describe('AbstractJinFrame', () => {
     expect(frame.getData('param')).toMatchObject({ passing: 'pass' });
   });
 
-  it('form-data exception', async () => {
+  it('should return param, query field when using @Param, @Query decorator', async () => {
+    const frame = Test004PostFrame.of({ name: ['ironman', 'captain'], passing: ['pass', 'fail'], nums: [1, 2, 3] });
+    frame.request();
+
+    expect(frame.getData('query')).toMatchObject({ name: ['ironman', 'captain'], nums: ['1', '2', '3'] });
+    expect(frame.getData('param')).toMatchObject({ passing: 'pass,fail' });
+  });
+
+  it('should return array param, array query field when using @Param, @Query decorator', async () => {
+    const frame = Test004PostFrame.of({ name: ['ironman', 'captain'], passing: ['pass', 'fail'], nums: [1, 2, 3] });
+    const r = frame.request();
+
+    expect(r.url).toMatch(
+      'http://some.api.google.com/jinframe/pass%2Cfail?name=ironman&name=captain&nums=1&nums=2&nums=3',
+    );
+  });
+
+  it('should raise error in form-data when invalid type field pass to form-data', async () => {
     try {
-      const frame = new Test001PostFrame({ username: 'ironman', password: 'avengers', passing: 'pass' });
+      const frame = Test001PostFrame.of({ username: 'ironman', password: 'avengers', passing: 'pass' });
 
       const sym = Symbol('ironman');
 
@@ -127,17 +144,17 @@ describe('AbstractJinFrame', () => {
     }
   });
 
-  it('user agent', async () => {
+  it('should return custom user agent when pass user agent in request function', async () => {
     const ua =
       'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/109.0.0.0 Safari/537.36 Edg/109.0.1518.61';
-    const frame = new Test001PostFrame({ username: 'ironman', password: 'avengers', passing: 'pass' });
+    const frame = Test001PostFrame.of({ username: 'ironman', password: 'avengers', passing: 'pass' });
     const req = frame.request({ userAgent: ua });
 
     expect(req.headers?.['User-Agent']).toEqual(ua);
   });
 
-  it('custom body', async () => {
-    const frame = new Test002PostFrame({
+  it('should return custom body when pass custom body from decorator', async () => {
+    const frame = Test002PostFrame.of({
       username: 'ironman',
       password: 'avengers',
       passing: 'pass',
@@ -155,49 +172,29 @@ describe('AbstractJinFrame', () => {
     });
   });
 
-  it('getTransformRequest', async () => {
-    const frame = new Test003PostFrame({
-      username: 'ironman',
-      password: 'avengers',
-      passing: 'pass',
-    });
+  it('should return transformRequest when auto generated transformRequest function', async () => {
+    const frame = Test003PostFrame.of({ username: 'ironman', password: 'avengers', passing: 'pass' });
 
     const t = frame.getTransformRequest();
     expect(frame.getOption('transformRequest')).toBeTruthy();
     expect(t).toBeTruthy();
   });
 
-  it('param, query', async () => {
-    const frame = new Test004PostFrame({ name: ['ironman', 'captain'], passing: ['pass', 'fail'], nums: [1, 2, 3] });
-    frame.request();
-
-    expect(frame.getData('query')).toMatchObject({ name: ['ironman', 'captain'], nums: ['1', '2', '3'] });
-    expect(frame.getData('param')).toMatchObject({ passing: 'pass,fail' });
-  });
-
-  it('array paths, queries', async () => {
-    const frame = new Test004PostFrame({ name: ['ironman', 'captain'], passing: ['pass', 'fail'], nums: [1, 2, 3] });
-    const r = frame.request();
-
-    expect(r.url).toMatch(
-      'http://some.api.google.com/jinframe/pass%2Cfail?name=ironman&name=captain&nums=1&nums=2&nums=3',
-    );
-  });
-
-  it('create instance', async () => {
-    const frame = new Test004PostFrame({
+  it('should create axios instance when useInstance set true', async () => {
+    const frame = Test004PostFrame.of({
       name: ['ironman', 'captain'],
       passing: ['pass', 'fail'],
       nums: [1, 2, 3],
     });
+
     frame.request();
 
     expect(frame.getData('query')).toMatchObject({ name: ['ironman', 'captain'], nums: ['1', '2', '3'] });
     expect(frame.getData('param')).toMatchObject({ passing: 'pass,fail' });
   });
 
-  it('mocking with instance', async () => {
-    const frame = new Test005PostFrame({
+  it('should mocking with instance when useInstance set true and MockAdapter', async () => {
+    const frame = Test005PostFrame.of({
       name: ['ironman', 'captain'],
       nums: [1, 2, 3],
     });

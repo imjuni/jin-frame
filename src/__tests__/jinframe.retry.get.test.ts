@@ -19,11 +19,11 @@ class RetryTestGet01Frame extends JinFrame {
   declare public readonly skill: string[];
 
   constructor() {
-    super({
-      passing: 'pass',
-      name: 'ironman',
-      skill: ['beam', 'flying!'],
-    });
+    super();
+
+    this.passing = 'pass';
+    this.name = 'ironman';
+    this.skill = ['beam', 'flying!'];
   }
 
   get retryData() {
@@ -64,13 +64,12 @@ class RetryTestGet02Frame extends JinFrame {
   }
 
   constructor() {
-    super({
-      passing: 'pass',
-      name: 'ironman',
-      skill: ['beam', 'flying!'],
-    });
+    super();
 
     this.#retryFail = '';
+    this.passing = 'pass';
+    this.name = 'ironman';
+    this.skill = ['beam', 'flying!'];
   }
 }
 
@@ -107,7 +106,7 @@ describe('TestGet9Frame', () => {
 
     const resp = await frame.execute();
     expect(resp.status < 400).toEqual(true);
-    expect(frame.retryData?.try).toEqual(1);
+    expect(frame.retryData?.try).toEqual(3);
   });
 
   it('over retry count', async () => {

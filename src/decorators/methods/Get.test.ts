@@ -50,8 +50,6 @@ describe('Get', () => {
 
     const meta = getRequestMeta(IamDecorateChildGetClass);
 
-    console.log(meta);
-
     expect(meta.option.contentType).toEqual(contentType);
   });
 });

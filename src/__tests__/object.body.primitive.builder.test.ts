@@ -48,7 +48,7 @@ class Test004PostFrame extends JinEitherFrame {
 
 describe('JinEitherFrame ObjectBody using Primitive type', () => {
   it('T001-primitive-number', async () => {
-    const frame = new Test001PostFrame({
+    const frame = Test001PostFrame.of({
       passing: 'hello',
       ability: 1,
     });
@@ -70,7 +70,7 @@ describe('JinEitherFrame ObjectBody using Primitive type', () => {
   });
 
   it('T002-primitive-string', async () => {
-    const frame = new Test002PostFrame({
+    const frame = Test002PostFrame.of({
       passing: 'hello',
       ability: 'Energy repulsor',
     });
@@ -92,7 +92,7 @@ describe('JinEitherFrame ObjectBody using Primitive type', () => {
   });
 
   it('T003-primitive-date-with-format', async () => {
-    const frame = new Test003PostFrame({
+    const frame = Test003PostFrame.of({
       passing: 'hello',
       ability: new Date(2022, 9, 19, 11, 22, 33, 44),
     });
@@ -115,7 +115,7 @@ describe('JinEitherFrame ObjectBody using Primitive type', () => {
   });
 
   it('T004-primitive-boolean', async () => {
-    const frame = new Test004PostFrame({
+    const frame = Test004PostFrame.of({
       passing: 'hello',
       ability: true,
     });

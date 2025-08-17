@@ -22,21 +22,26 @@ class TestGetFrame extends JinEitherFrame {
   @Query({ encode: true })
   declare public readonly skill: string[];
 
+  accessor preHookCount = 0;
+
+  accessor postHookCount = 0;
+
   constructor() {
-    super({
-      passing: 'pass',
-      name: 'ironman',
-      skill: ['beam', 'flying!'],
-    });
+    super();
+
+    this.passing = 'pass';
+    this.name = 'ironman';
+    this.skill = ['beam', 'flying!'];
   }
 
-  override $_preHook(req: AxiosRequestConfig): void {
-    console.log('pre hook trigger: ', req);
+  override $_preHook(_req: AxiosRequestConfig): void {
+    this.preHookCount += 1;
   }
 
-  override $_postHook(req: AxiosRequestConfig, reply: IFailReplyJinEitherFrame | TPassJinEitherFrame<unknown>): void {
-    console.log('post hook trigger: ', req);
-    console.log(reply);
+  override $_postHook(_req: AxiosRequestConfig, _reply: IFailReplyJinEitherFrame | TPassJinEitherFrame<unknown>): void {
+    // console.log('post hook trigger: ', req);
+    // console.log(reply);
+    this.postHookCount += 1;
   }
 }
 
@@ -63,11 +68,11 @@ class TestGet2Frame extends JinEitherFrame {
   }
 
   constructor() {
-    super({
-      passing: 'hello',
-      name: 'ironman',
-      ttt: 'header value',
-    });
+    super();
+
+    this.passing = 'hello';
+    this.name = 'ironman';
+    this.ttt = 'header value';
   }
 }
 
@@ -83,11 +88,11 @@ class TestGet3Frame extends JinFrame {
   declare public readonly skill: string[];
 
   constructor() {
-    super({
-      passing: 'pass',
-      name: 'ironman',
-      skill: ['beam', 'flying!'],
-    });
+    super();
+
+    this.passing = 'pass';
+    this.name = 'ironman';
+    this.skill = ['beam', 'flying!'];
   }
 
   override $_preHook(req: AxiosRequestConfig): void {
@@ -112,11 +117,11 @@ class TestGet4Frame extends JinFrame {
   declare public readonly skill: string[];
 
   constructor() {
-    super({
-      passing: 'pass',
-      name: 'ironman',
-      skill: ['beam', 'flying!'],
-    });
+    super();
+
+    this.passing = 'pass';
+    this.name = 'ironman';
+    this.skill = ['beam', 'flying!'];
   }
 
   override async $_preHook(req: AxiosRequestConfig): Promise<void> {
@@ -141,11 +146,11 @@ class TestGet5Frame extends JinFrame {
   declare public readonly skill: string[];
 
   constructor() {
-    super({
-      passing: 'pass',
-      name: 'ironman',
-      skill: ['beam', 'flying!'],
-    });
+    super();
+
+    this.passing = 'pass';
+    this.name = 'ironman';
+    this.skill = ['beam', 'flying!'];
   }
 
   override $_preHook(req: AxiosRequestConfig): void {
@@ -165,11 +170,11 @@ class TestGet6Frame extends JinFrame {
   declare public readonly skill: string[];
 
   constructor() {
-    super({
-      passing: 'pass',
-      name: 'ironman',
-      skill: ['beam', 'flying!'],
-    });
+    super();
+
+    this.passing = 'pass';
+    this.name = 'ironman';
+    this.skill = ['beam', 'flying!'];
   }
 
   override async $_preHook(req: AxiosRequestConfig): Promise<void> {
@@ -189,11 +194,11 @@ class TestGet7Frame extends JinEitherFrame {
   declare public readonly skill: string[];
 
   constructor() {
-    super({
-      passing: 'pass',
-      name: 'ironman',
-      skill: ['beam', 'flying!'],
-    });
+    super();
+
+    this.passing = 'pass';
+    this.name = 'ironman';
+    this.skill = ['beam', 'flying!'];
   }
 
   override $_preHook(req: AxiosRequestConfig): void {
@@ -213,11 +218,11 @@ class TestGet8Frame extends JinEitherFrame {
   declare public readonly skill: string[];
 
   constructor() {
-    super({
-      passing: 'pass',
-      name: 'ironman',
-      skill: ['beam', 'flying!'],
-    });
+    super();
+
+    this.passing = 'pass';
+    this.name = 'ironman';
+    this.skill = ['beam', 'flying!'];
   }
 
   override async $_preHook(req: AxiosRequestConfig): Promise<void> {

@@ -148,7 +148,7 @@ class Test006PostFrame extends JinEitherFrame {
 
 describe('JinEitherFrame - Body with formatters', () => {
   it('T001-array-type-formatter', async () => {
-    const frame = new Test001PostFrame({
+    const frame = Test001PostFrame.of({
       passing: 'hello',
       username: ['ironman', 'thor'],
       password: 'advengers',
@@ -171,7 +171,7 @@ describe('JinEitherFrame - Body with formatters', () => {
   });
 
   it('T002-string-type-formatter', async () => {
-    const frame = new Test002PostFrame({
+    const frame = Test002PostFrame.of({
       passing: 'hello',
       username: ['ironman', 'thor'],
       password: 'advengers',
@@ -194,7 +194,7 @@ describe('JinEitherFrame - Body with formatters', () => {
   });
 
   it('T003-string-array-and-string-formatter', async () => {
-    const frame = new Test003PostFrame({
+    const frame = Test003PostFrame.of({
       passing: 'hello',
       username: ['ironman', 'thor'],
       password: 'advengers',
@@ -222,7 +222,7 @@ describe('JinEitherFrame - Body with formatters', () => {
   });
 
   it('T004-plain-date-formatter', async () => {
-    const frame = new Test004PostFrame({
+    const frame = Test004PostFrame.of({
       passing: 'hello',
       username: ['ironman', 'thor'],
       password: 'advengers',
@@ -250,7 +250,7 @@ describe('JinEitherFrame - Body with formatters', () => {
   });
 
   it('T005-string-datetime-formatter-sequential', async () => {
-    const frame = new Test005PostFrame({
+    const frame = Test005PostFrame.of({
       passing: 'hello',
       username: ['ironman', 'thor'],
       password: 'advengers',
@@ -278,7 +278,7 @@ describe('JinEitherFrame - Body with formatters', () => {
   });
 
   it('T006-date-type-key-replace', async () => {
-    const frame = new Test006PostFrame({
+    const frame = Test006PostFrame.of({
       passing: 'hello',
       username: ['ironman', 'thor'],
       password: 'advengers',

@@ -10,11 +10,13 @@ export interface IFrameInternal {
 
   param?: Record<string, string>;
 
-  retry?: IFrameRetry & { try: number };
+  retry: IFrameRetry & { try: number };
 
   instance: AxiosInstance;
 
   startAt: Date;
+
+  eachStartAt: Date;
 
   endAt: Date;
 }

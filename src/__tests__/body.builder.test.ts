@@ -59,7 +59,7 @@ class Test004ZeroDepthPostFrame extends JinEitherFrame {
 
 describe('JinEitherFrame - primitive type', () => {
   it('primitive type을 path param과 body에 적용', async () => {
-    const frame = new Test001PostFrame({ passing: 'hello', username: 'ironman', password: 'advengers' });
+    const frame = Test001PostFrame.of({ passing: 'hello', username: 'ironman', password: 'advengers' });
     const req = frame.request();
 
     const excpetation = {
@@ -76,7 +76,7 @@ describe('JinEitherFrame - primitive type', () => {
   });
 
   it('body의 key 필드를 replaceAt으로 다른 key로 적용', async () => {
-    const frame = new Test002PostFrame({ passing: 'hello', username: 'ironman', password: 'advengers' });
+    const frame = Test002PostFrame.of({ passing: 'hello', username: 'ironman', password: 'advengers' });
     const req = frame.request();
 
     const excpetation = {
@@ -93,7 +93,7 @@ describe('JinEitherFrame - primitive type', () => {
   });
 
   it('body의 key 필드를 replaceAt으로 다른 key에 적용할 때 dot notation 사용', async () => {
-    const frame = new Test003PostFrame({ passing: 'hello', username: 'ironman', password: 'advengers' });
+    const frame = Test003PostFrame.of({ passing: 'hello', username: 'ironman', password: 'advengers' });
     const req = frame.request();
 
     const excpetation = {
@@ -112,7 +112,7 @@ describe('JinEitherFrame - primitive type', () => {
   });
 
   it('body 필드를 오브젝트로 설정', async () => {
-    const frame = new Test004ZeroDepthPostFrame({
+    const frame = Test004ZeroDepthPostFrame.of({
       passing: 'hello',
       username: 'ironman',
       hero: { name: 'ironman', ability: 'proto cannon', age: 33 },

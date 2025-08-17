@@ -18,7 +18,7 @@ class TestGet2Frame extends JinEitherFrame {
 }
 
 it('ignore-hostname-axios-request', async () => {
-  const frame = new TestGet2Frame({ passing: 'hello', name: 'ironman', ttt: 'c' });
+  const frame = TestGet2Frame.of({ passing: 'hello', name: 'ironman', ttt: 'c' });
   const req = frame.request();
   expect(req.url).toEqual('/jinframe/hello/test?name=ironman');
 });

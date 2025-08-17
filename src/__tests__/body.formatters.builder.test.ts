@@ -51,7 +51,7 @@ class Test002PostFrame extends JinEitherFrame {
 
 describe('JinEitherFrame', () => {
   it('T001-primitive-type-multiple-formatters', async () => {
-    const frame = new Test001PostFrame({
+    const frame = Test001PostFrame.of({
       passing: 'hello',
       username: ['ironman', 'thor'],
       password: 'advengers',
@@ -74,7 +74,7 @@ describe('JinEitherFrame', () => {
   });
 
   it('T002-zero-depth-post-frame', async () => {
-    const frame = new Test002PostFrame({
+    const frame = Test002PostFrame.of({
       passing: 'hello',
       hero: { name: 'ironman', age: 33, bio: { birth: new Date(1978, 2, 3, 11, 22, 33) } },
       password: 'advengers',

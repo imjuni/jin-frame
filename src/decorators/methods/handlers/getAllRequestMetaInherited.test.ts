@@ -36,7 +36,11 @@ describe('getAllRequestMetaInherited', () => {
           header: {},
           param: {},
           body: undefined,
-          retry: undefined,
+          retry: {
+            interval: 0,
+            max: 1,
+            try: 0,
+          },
         },
       },
       {
@@ -57,7 +61,11 @@ describe('getAllRequestMetaInherited', () => {
           header: {},
           param: {},
           body: undefined,
-          retry: undefined,
+          retry: {
+            interval: 0,
+            max: 1,
+            try: 0,
+          },
         },
       },
       {
@@ -78,7 +86,11 @@ describe('getAllRequestMetaInherited', () => {
           header: {},
           param: {},
           body: undefined,
-          retry: undefined,
+          retry: {
+            interval: 0,
+            max: 1,
+            try: 0,
+          },
         },
       },
     ]);
