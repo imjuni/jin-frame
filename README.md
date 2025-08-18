@@ -17,18 +17,13 @@ A reusable, declarative, type-safe, and extendable HTTP request library.
 Why `jin-frame`?
 
 1. Declarative API Definition
-   - Define URL, Querystring, Path Parameters, Body, and Headers intuitively using classes and decorators.
 2. Type Safety
-   - Leverage TypeScript’s type system to detect type mismatches at compile time.
-3. Support for Retry, Hooks, File Upload, and Mocking
-   - Provides essential features for real-world usage, including Retry, Hooks, File Upload, and Mocking.
-4. Leverage the Axios Ecosystem
+3. Support for Retry, Hooks, File Upload, Timeout and Mocking
+4. Build upon the Axios Ecosystem
 5. Path Parameter Support
-   - Supports path parameter substitution via URLs, e.g., example.com/:id.
 
 ## Table of Contents <!-- omit in toc -->
 
-- [How to works?](#how-to-works)
 - [Comparison of direct usage and jin-frame](#comparison-of-direct-usage-and-jin-frame)
 - [Requirements](#requirements)
 - [Install](#install)
@@ -43,15 +38,11 @@ Why `jin-frame`?
 - [Example](#example)
 - [License](#license)
 
-## How to works?
-
-![jin-frame](assets/jin-frame-how-to-works.png)
-
 ## Comparison of direct usage and jin-frame
 
 | Direct usage                     | Jin-Frame                               |
 | -------------------------------- | --------------------------------------- |
-| ![axios](assets/axios-usage.svg) | ![jin-frame](assets/jinframe-usage.svg) |
+| ![axios](assets/axios-usage.png) | ![jin-frame](assets/jinframe-usage.png) |
 
 ## Requirements
 
@@ -59,7 +50,7 @@ Why `jin-frame`?
 1. Decorator
    - enable experimentalDecorators, emitDecoratorMetadata option in `tsconfig.json`
 
-```json
+```jsonc
 {
   "extends": "@tsconfig/node20/tsconfig.json",
   "compilerOptions": {
@@ -88,13 +79,13 @@ class TestPostQuery extends JinFrame {
   @Param()
   public declare readonly passing: string;
 
-  @Body({ key: 'test.hello.marvel.name' })
+  @Body({ replaceAt: 'test.hello.marvel.name' })
   public declare readonly name: string;
 
-  @Header({ key: 'test.hello.marvel.skill' })
+  @Header({ replaceAt: 'test.hello.marvel.skill' })
   public declare readonly skill: string;
 
-  @Body({ key: 'test.hello.marvel.gender' })
+  @Body({ replaceAt: 'test.hello.marvel.gender' })
   public declare readonly gender: string;
 }
 ```
