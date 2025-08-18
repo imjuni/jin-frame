@@ -115,12 +115,11 @@ tslint-to-eslint-config.log
 src/*.ts.bak
 
 # Automatically generated vuepress
-docs/.vuepress
+docs/.vitepress
 docs/api
 docs/classes
 docs/interfaces
 docs/media
-docs
 
 # swc
 .swc/

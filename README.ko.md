@@ -46,13 +46,13 @@ class TestPostQuery extends JinFrame {
   @Param()
   public declare readonly passing: string;
 
-  @Body({ key: 'test.hello.marvel.name' })
+  @Body({ replaceAt: 'test.hello.marvel.name' })
   public declare readonly name: string;
 
-  @Header({ key: 'test.hello.marvel.skill' })
+  @Header({ replaceAt: 'test.hello.marvel.skill' })
   public declare readonly skill: string;
 
-  @Body({ key: 'test.hello.marvel.gender' })
+  @Body({ replaceAt: 'test.hello.marvel.gender' })
   public declare readonly gender: string;
 }
 ```
