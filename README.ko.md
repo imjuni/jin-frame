@@ -24,11 +24,37 @@ jin-frame은 TypeScript 데코레이터와 클래스를 사용한 API 프레임�
 1. Path Parameter 지원
    - `example.com/:id` 와 같이 URL을 통한 Path Paramter 치환을 지원합니다.
 
+## Table of Contents <!-- omit in toc -->
+
+- [Why jin-frame?](#why-jin-frame)
+- [Comparison of direct usage and jin-frame](#comparison-of-direct-usage-and-jin-frame)
+- [Requirements](#requirements)
+- [Install](#install)
+- [Useage](#useage)
+
+## Comparison of direct usage and jin-frame
+
+| Direct usage                        | Jin-Frame                                  |
+| ----------------------------------- | ------------------------------------------ |
+| ![axios](assets/axios-usage.png)    | ![jin-frame](assets/jinframe-usage.png)    |
+| [axios svg](assets/axios-usage.svg) | [jin-frame svg](assets/jinframe-usage.svg) |
+
 ## Requirements
 
 1. TypeScript
-1. Reflect-Metadata
-   - tsconfig.json > experimentalDecorators, emitDecoratorMetadata 옵션 활성화
+1. Decorator
+   - enable experimentalDecorators, emitDecoratorMetadata option in `tsconfig.json`
+
+```jsonc
+{
+  "extends": "@tsconfig/node20/tsconfig.json",
+  "compilerOptions": {
+    // enable experimentalDecorators, emitDecoratorMetadata for using decorator
+    "experimentalDecorators": true,
+    "emitDecoratorMetadata": true,
+  },
+}
+```
 
 ## Install
 

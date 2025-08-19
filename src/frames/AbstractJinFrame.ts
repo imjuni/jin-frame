@@ -23,8 +23,62 @@ import { getFieldMetadata } from '#decorators/fields/handlers/getFieldMetadata';
 import { getRetryInterval } from '#tools/responses/getRetryInterval';
 import { getDuration } from '#tools/getDuration';
 import { getFrameInternalData } from '#decorators/getFrameInternalData';
+import type { TConstructorFunction } from '#tools/type-utilities/TConstructorFunction';
+import type { TFieldsOf } from '#tools/type-utilities/TFieldsOf';
+import type { TBuilderFor } from '#tools/type-utilities/TBuilderFor';
 
 export abstract class AbstractJinFrame<TPASS> {
+  protected static getDefaultValues(): Partial<TFieldsOf<InstanceType<typeof this>>> {
+    return {};
+  }
+
+  /* eslint-disable @typescript-eslint/no-explicit-any */
+  static builder<T, C extends TConstructorFunction<T>>(this: C): TBuilderFor<T, C> {
+    const store: Partial<TFieldsOf<InstanceType<C>>> = {};
+    const self = this; // assign self for keep generic this
+
+    const api: TBuilderFor<T, C> = {
+      set(k, v) {
+        store[k] = v;
+        return this;
+      },
+      from(v) {
+        for (const [k, e] of Object.entries(v)) {
+          (store as any)[k] = e;
+        }
+        return this;
+      },
+      auto() {
+        Object.assign(store, (self as any).getDefaultValues?.());
+        return this;
+      },
+      get() {
+        return store as Readonly<Partial<TFieldsOf<InstanceType<C>>>>;
+      },
+    };
+    return api;
+  }
+
+  static of<T, C extends TConstructorFunction<T>>(
+    this: C,
+    args: TFieldsOf<InstanceType<C>> | ((b: TBuilderFor<T, C>) => unknown),
+  ): InstanceType<C> {
+    const inst = new this() as InstanceType<C>;
+    const auto = (this as any).getDefaultValues?.() as Partial<TFieldsOf<InstanceType<C>>>;
+
+    if (typeof args === 'function') {
+      const b = (this as any).builder() as TBuilderFor<T, C>;
+      args(b);
+      const built = b.get();
+      (inst as any).setFields({ ...auto, ...built });
+      return inst;
+    }
+
+    (inst as any).setFields({ ...auto, ...args });
+    return inst;
+  }
+  /* eslint-enable @typescript-eslint/no-explicit-any */
+
   // eslint-disable-next-line class-methods-use-this
   protected $_retryFail(_req: AxiosRequestConfig, _res: AxiosResponse<TPASS>): void {}
 
