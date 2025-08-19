@@ -116,6 +116,7 @@ src/*.ts.bak
 
 # Automatically generated vuepress
 docs/.vitepress
+docs/assets
 docs/api
 docs/classes
 docs/interfaces
