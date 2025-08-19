@@ -10,7 +10,6 @@ import { CE_HOOK_APPLY } from '#tools/CE_HOOK_APPLY';
 import { getDuration } from '#tools/getDuration';
 import { isValidateStatusDefault } from '#tools/isValidateStatusDefault';
 import { getStatusFromAxiosError } from '#tools/responses/getStatusFromAxiosError';
-import type { InstanceFields } from '#tools/type-utilities/InstanceFields';
 import { AxiosError, type AxiosRequestConfig, type AxiosResponse } from 'axios';
 // eslint-disable-next-line import-x/no-extraneous-dependencies
 import formatISO from 'date-fns/formatISO';
@@ -32,18 +31,6 @@ export class JinFrame<TPASS = unknown, TFAIL = TPASS>
   extends AbstractJinFrame<TPASS>
   implements IJinFrameFunction<TPASS, TFAIL>
 {
-  // static of factory: 서브클래스에서 this가 “그 서브클래스 생성자”로 잡힘
-  // static of factory: In a subclass, the this keyword refers to the constructor of that subclass.
-  static of<T extends JinFrame<TPASS, TFAIL>, TPASS = unknown, TFAIL = TPASS>(
-    this: new () => T,
-    args: InstanceFields<T>,
-  ): T {
-    const inst = new this();
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    (inst as any).setFields(args);
-    return inst;
-  }
-
   /**
    * Execute before request. If you can change request object that is affected request.
    *

@@ -40,9 +40,10 @@ Why `jin-frame`?
 
 ## Comparison of direct usage and jin-frame
 
-| Direct usage                     | Jin-Frame                               |
-| -------------------------------- | --------------------------------------- |
-| ![axios](assets/axios-usage.png) | ![jin-frame](assets/jinframe-usage.png) |
+| Direct usage                        | Jin-Frame                                  |
+| ----------------------------------- | ------------------------------------------ |
+| ![axios](assets/axios-usage.png)    | ![jin-frame](assets/jinframe-usage.png)    |
+| [axios svg](assets/axios-usage.svg) | [jin-frame svg](assets/jinframe-usage.svg) |
 
 ## Requirements
 
@@ -56,8 +57,8 @@ Why `jin-frame`?
   "compilerOptions": {
     // enable experimentalDecorators, emitDecoratorMetadata for using decorator
     "experimentalDecorators": true,
-    "emitDecoratorMetadata": true, 
-  }
+    "emitDecoratorMetadata": true,
+  },
 }
 ```
 
@@ -70,23 +71,23 @@ npm install jin-frame --save
 ## Useage
 
 This is example of union param, body, header parameter.
-  
+
 ```ts
-import { Post, Param, Body, Header, Query} from 'jin-frame';
+import { Post, Param, Body, Header, Query } from 'jin-frame';
 
 @Post({ host: 'http://some.api.google.com', path: '/jinframe/:passing' })
 class TestPostQuery extends JinFrame {
   @Param()
-  public declare readonly passing: string;
+  declare public readonly passing: string;
 
   @Body({ replaceAt: 'test.hello.marvel.name' })
-  public declare readonly name: string;
+  declare public readonly name: string;
 
   @Header({ replaceAt: 'test.hello.marvel.skill' })
-  public declare readonly skill: string;
+  declare public readonly skill: string;
 
   @Body({ replaceAt: 'test.hello.marvel.gender' })
-  public declare readonly gender: string;
+  declare public readonly gender: string;
 }
 ```
 
@@ -122,7 +123,7 @@ const res = await frame.execute();
 | --------- | --------- |
 | 2.x       | <= 0.27.x |
 | 3.x       | >= 1.1.x  |
-| 4.x       | >= 1.4.x |
+| 4.x       | >= 1.4.x  |
 
 ## Mocking
 
@@ -167,13 +168,13 @@ JinFrame support pre, post hook side of each request.
 @Post({ host: 'http://some.api.google.com', path: '/jinframe/:id' })
 class TestPostFrame extends JinFrame {
   @Param()
-  public declare readonly id: number;
+  declare public readonly id: number;
 
   @Body({ replaceAt: 'test.hello.marvel.name' })
-  public declare readonly name: string;
+  declare public readonly name: string;
 
   @Header({ replaceAt: 'test.hello.marvel.skill' })
-  public declare readonly skill: string;
+  declare public readonly skill: string;
 
   override $_preHook(req: AxiosRequestConfig<unknown>): void {
     console.log('pre hook executed');

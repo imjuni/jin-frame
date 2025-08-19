@@ -16,7 +16,7 @@
     "pub": "pnpm run bundle && cross-env RELEASE_MODE=true pnpm publish --registry http://localhost:8901",
     "unpub": "pnpm unpublish $npm_package_name@$npm_package_version --registry http://localhost:8901 --force",
     "pub:prod": "pnpm run bundle && cross-env RELEASE_MODE=true pnpm publish --access=public",
-    "clean": "rimraf dist docs",
+    "clean": "rimraf dist",
     "lint": "eslint --cache .",
     "lint-staged": "lint-staged",
     "test:only": "vitest run --coverage",

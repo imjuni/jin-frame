@@ -24,11 +24,12 @@ async function getPokemonWithPaging(inp: IReqGetPokemonWithPaging) {
 
 interface IReqGetPokemonInfoByName {
   name: string;
+  tid: string;
 }
 
 async function getPokemonInfoByName(inp: IReqGetPokemonInfoByName) {
   const req: AxiosRequestConfig = {
-    url: `https://pokeapi.co/api/v2/pokemon/${inp.name}?tid=${crypto.randomUUID()}`,
+    url: `https://pokeapi.co/api/v2/pokemon/${inp.name}?tid=${inp.tid}`,
     method: 'get',
   };
 
@@ -67,6 +68,7 @@ describe('Real Request and Response', () => {
   it('getPokemonInfoByName', async () => {
     await getPokemonInfoByName({
       name: 'pikachu',
+      tid: crypto.randomUUID(),
     });
 
     // console.log(reply);
@@ -94,3 +96,49 @@ describe('Real Request and Response', () => {
     console.log(reply);
   });
 });
+
+/*
+
+interface IReqGetPokemonInfoByName {
+  name: string;
+  tid: string;
+}
+
+async function getPokemonInfoByName(inp: IReqGetPokemonInfoByName) {
+  const req: AxiosRequestConfig = {
+    url: `https://pokeapi.co/api/v2/pokemon/${inp.name}?tid=${inp.tid}`,
+    method: 'get',
+  };
+
+  const reply = await axios.request<Record<string, string>>(req);
+  return reply.data;
+}
+
+console.log(
+  await getPokemonInfoByName({
+    name: 'pikachu',
+    tid: crypto.randomUUID(),
+  })
+);
+
+*/
+
+/*
+
+@Get({ host: 'https://pokeapi.co/api/v2/pokemon/:name' })
+export class PokemonFrame extends JinFrame {
+  @Param()
+  declare public readonly name: string;
+
+  @Query()
+  declare public readonly tid: string;
+}
+
+const frame = PokemonFrame.of({
+  name: 'pikachu',
+  tid: crypto.randomUUID(),
+});
+
+console.log(await frame.execute());
+
+*/
