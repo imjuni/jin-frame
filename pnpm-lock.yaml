@@ -166,11 +166,14 @@ importers:
         specifier: ^2.6.2
         version: 2.6.2
       typedoc:
-        specifier: ^0.28.9
-        version: 0.28.9(typescript@5.9.2)
+        specifier: ^0.28.10
+        version: 0.28.10(typescript@5.9.2)
       typedoc-plugin-markdown:
         specifier: ^4.8.0
-        version: 4.8.0(typedoc@0.28.9(typescript@5.9.2))
+        version: 4.8.0(typedoc@0.28.10(typescript@5.9.2))
+      typedoc-vitepress-theme:
+        specifier: ^1.1.2
+        version: 1.1.2(typedoc-plugin-markdown@4.8.0(typedoc@0.28.10(typescript@5.9.2)))
       typescript:
         specifier: ^5.9.2
         version: 5.9.2
@@ -179,7 +182,7 @@ importers:
         version: 8.39.0(eslint@9.32.0)(typescript@5.9.2)
       vite-tsconfig-paths:
         specifier: ^5.1.4
-        version: 5.1.4(typescript@5.9.2)(vite@5.0.0(@types/node@20.9.2))
+        version: 5.1.4(typescript@5.9.2)(vite@5.4.19(@types/node@20.9.2))
       vitepress:
         specifier: ^1.6.4
         version: 1.6.4(@algolia/client-search@5.35.0)(@types/node@20.9.2)(axios@1.11.0(debug@4.3.4))(fuse.js@7.1.0)(postcss@8.5.6)(search-insights@2.17.3)(typescript@5.9.2)
@@ -4497,8 +4500,13 @@ packages:
     peerDependencies:
       typedoc: 0.28.x
 
-  typedoc@0.28.9:
-    resolution: {integrity: sha512-aw45vwtwOl3QkUAmWCnLV9QW1xY+FSX2zzlit4MAfE99wX+Jij4ycnpbAWgBXsRrxmfs9LaYktg/eX5Bpthd3g==}
+  typedoc-vitepress-theme@1.1.2:
+    resolution: {integrity: sha512-hQvCZRr5uKDqY1bRuY1+eNTNn6d4TE4OP5pnw65Y7WGgajkJW9X1/lVJK2UJpcwCmwkdjw1QIO49H9JQlxWhhw==}
+    peerDependencies:
+      typedoc-plugin-markdown: '>=4.4.0'
+
+  typedoc@0.28.10:
+    resolution: {integrity: sha512-zYvpjS2bNJ30SoNYfHSRaFpBMZAsL7uwKbWwqoCNFWjcPnI3e/mPLh2SneH9mX7SJxtDpvDgvd9/iZxGbo7daw==}
     engines: {node: '>= 18', pnpm: '>= 10'}
     hasBin: true
     peerDependencies:
@@ -9440,11 +9448,15 @@ snapshots:
 
   typed-function@4.2.1: {}
 
-  typedoc-plugin-markdown@4.8.0(typedoc@0.28.9(typescript@5.9.2)):
+  typedoc-plugin-markdown@4.8.0(typedoc@0.28.10(typescript@5.9.2)):
     dependencies:
-      typedoc: 0.28.9(typescript@5.9.2)
+      typedoc: 0.28.10(typescript@5.9.2)
 
-  typedoc@0.28.9(typescript@5.9.2):
+  typedoc-vitepress-theme@1.1.2(typedoc-plugin-markdown@4.8.0(typedoc@0.28.10(typescript@5.9.2))):
+    dependencies:
+      typedoc-plugin-markdown: 4.8.0(typedoc@0.28.10(typescript@5.9.2))
+
+  typedoc@0.28.10(typescript@5.9.2):
     dependencies:
       '@gerrit0/mini-shiki': 3.9.1
       lunr: 2.3.9
@@ -9592,13 +9604,13 @@ snapshots:
       - supports-color
       - terser
 
-  vite-tsconfig-paths@5.1.4(typescript@5.9.2)(vite@5.0.0(@types/node@20.9.2)):
+  vite-tsconfig-paths@5.1.4(typescript@5.9.2)(vite@5.4.19(@types/node@20.9.2)):
     dependencies:
       debug: 4.3.4
       globrex: 0.1.2
       tsconfck: 3.1.6(typescript@5.9.2)
     optionalDependencies:
-      vite: 5.0.0(@types/node@20.9.2)
+      vite: 5.4.19(@types/node@20.9.2)
     transitivePeerDependencies:
       - supports-color
       - typescript

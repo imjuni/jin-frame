@@ -4,7 +4,19 @@
   ],
   "tsconfig": "../tsconfig.json",
   "entryPointStrategy": "expand",
+  "plugin": ["typedoc-plugin-markdown", "typedoc-vitepress-theme"],
+  "out": "../docs/api",
+  "excludePrivate": true,
+  "excludeInternal": true,
+  "readme": "none",
   "exclude": [
-    "**/__tests__/*"
-  ]
+    "**/__tests__/*",
+    "**/*.test.ts",
+    "**/*.test.ts",
+    "**/*.test.tsx",
+    "**/*.spec.ts",
+    "**/*.spec.tsx",
+  ],
+  "docsRoot": "../docs",
+  "sidebar": { "autoConfiguration": true }
 }

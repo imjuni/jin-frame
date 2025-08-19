@@ -41,7 +41,7 @@ export interface IQueryParamHeaderCommonFieldOption {
    *
    * header field don't need a findFrom. HTTP protocol header not treat complex type object and array.
    *
-   * @url https://developer.mozilla.org/en-US/docs/Web/API/Headers
+   * @see https://developer.mozilla.org/en-US/docs/Web/API/Headers
    *
    * @example
    * ordered example.
