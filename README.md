@@ -121,7 +121,12 @@ console.log(frame.request());
 You can direct execute jin-frame. Curried request function create after execute it. jin-frame using axios library so using on browser.
 
 ```ts
-const frame = TestPostFrame.of({ passing: 'pass', name: 'ironman', skill: 'beam', gender: 'male' });
+const frame = TestPostFrame.of({ 
+  Authorization: 'Bearer aaa3657e-cd78-4bcd-a311-109a7500b60f', 
+  name: 'ironman', 
+  team: 'advengers', 
+  gender: 'male'
+});
 const res = await frame.execute();
 ```
 
@@ -175,14 +180,17 @@ JinFrame support pre, post hook side of each request.
 ```ts
 @Post({ host: 'http://some.api.google.com', path: '/jinframe/:id' })
 class TestPostFrame extends JinFrame {
-  @Param()
-  declare public readonly id: number;
+  @Header()
+  declare public readonly Authorization: string;
 
-  @Body({ replaceAt: 'test.hello.marvel.name' })
+  @Param()
   declare public readonly name: string;
 
-  @Header({ replaceAt: 'test.hello.marvel.skill' })
-  declare public readonly skill: string;
+  @Body()
+  declare public readonly team: string;
+
+  @Body()
+  declare public readonly gender: string;
 
   override $_preHook(req: AxiosRequestConfig<unknown>): void {
     console.log('pre hook executed');
@@ -193,7 +201,12 @@ class TestPostFrame extends JinFrame {
   }
 }
 
-const frame = TestPostFrame.of({ id: 1, name: 'ironman', skill: 'beam' });
+const frame = TestPostFrame.of({ 
+  Authorization: 'Bearer aaa3657e-cd78-4bcd-a311-109a7500b60f', 
+  name: 'ironman', 
+  team: 'advengers', 
+  gender: 'male'
+});
 
 // 'pre hook executed' display console
 const res = await frame.execute();
