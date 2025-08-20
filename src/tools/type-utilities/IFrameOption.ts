@@ -30,39 +30,18 @@ export interface IFrameOption {
   /** transformRequest function of POST Request */
   transformRequest?: AxiosRequestConfig['transformRequest'];
 
+  /** retry configuration */
   retry?: IFrameRetry;
 
+  /** if set true the field, create axios instance */
   useInstance: boolean;
 
+  /** timeout of the request */
   timeout?: Milliseconds;
 
-  // hook?: {
-  //   /**
-  //    * Execute before request. If you can change request object that is affected request.
-  //    *
-  //    * @param this this instance
-  //    * @param req request object
-  //    * */
-  //   pre?: (req: TJinRequestConfig) => void | Promise<void>;
-
-  //   /**
-  //    * Execute after request.
-  //    *
-  //    * @param this this instance
-  //    * @param req request object
-  //    * @param result [discriminated union](https://www.typescriptlang.org/docs/handbook/typescript-in-5-minutes-func.html#discriminated-unions) pass or fail
-  //    */
-  //   post?: (
-  //     req: TJinRequestConfig,
-  //     reply: IFailReplyJinEitherFrame<TFAIL> | TPassJinEitherFrame<TPASS>,
-  //   ) => void | Promise<void>;
-
-  //   /**
-  //    * Execute before request. If you can change request object that is affected request.
-  //    *
-  //    * @param this this instance
-  //    * @param req request object
-  //    * */
-  //   retryFail?: <TDATA>(req: TJinRequestConfig, res: AxiosResponse<TDATA>) => void | Promise<void>;
-  // };
+  /**
+   * set authorizaiton header
+   * eg. Bearer i-am-authorization-key
+   * */
+  authoriztion?: string | AxiosRequestConfig['auth'];
 }

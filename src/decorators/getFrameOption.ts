@@ -13,6 +13,7 @@ export function getFrameOption(method: Method, option?: Partial<Omit<IFrameOptio
     userAgent: option?.userAgent,
     retry: option?.retry,
     timeout: option?.timeout,
+    authoriztion: option?.authoriztion,
   };
 
   return frameOption;

@@ -13,11 +13,29 @@ class GetAllRequestMetaInheritedTest002 extends GetAllRequestMetaInheritedTest00
 @Patch({ path: 'overwrite/path', contentType: 'custom-content-type' })
 class GetAllRequestMetaInheritedTest003 extends GetAllRequestMetaInheritedTest002 {}
 
+@Patch({ path: 'overwrite/path', authoriztion: 'i-am-authorization-key' })
+class GetAllRequestMetaInheritedTest004 extends GetAllRequestMetaInheritedTest003 {}
+
 describe('getAllRequestMetaInherited', () => {
   it('should return configuration when pass custom content-type', () => {
-    const metas = getAllRequestMetaInherited(GetAllRequestMetaInheritedTest003);
+    const metas = getAllRequestMetaInherited(GetAllRequestMetaInheritedTest004);
 
     expect(metas).toMatchObject([
+      {
+        option: {
+          contentType: 'application/json',
+          customBody: undefined,
+          host: undefined,
+          method: 'PATCH',
+          path: 'overwrite/path',
+          retry: undefined,
+          timeout: undefined,
+          transformRequest: undefined,
+          useInstance: false,
+          userAgent: undefined,
+          authoriztion: 'i-am-authorization-key',
+        },
+      },
       {
         option: {
           host: undefined,
@@ -30,17 +48,6 @@ describe('getAllRequestMetaInherited', () => {
           userAgent: undefined,
           retry: undefined,
           timeout: undefined,
-        },
-        data: {
-          query: {},
-          header: {},
-          param: {},
-          body: undefined,
-          retry: {
-            interval: 0,
-            max: 1,
-            try: 0,
-          },
         },
       },
       {
@@ -56,17 +63,6 @@ describe('getAllRequestMetaInherited', () => {
           retry: undefined,
           timeout: undefined,
         },
-        data: {
-          query: {},
-          header: {},
-          param: {},
-          body: undefined,
-          retry: {
-            interval: 0,
-            max: 1,
-            try: 0,
-          },
-        },
       },
       {
         option: {
@@ -80,17 +76,6 @@ describe('getAllRequestMetaInherited', () => {
           userAgent: undefined,
           retry: undefined,
           timeout: undefined,
-        },
-        data: {
-          query: {},
-          header: {},
-          param: {},
-          body: undefined,
-          retry: {
-            interval: 0,
-            max: 1,
-            try: 0,
-          },
         },
       },
     ]);
