@@ -26,6 +26,7 @@ import { getFrameInternalData } from '#decorators/getFrameInternalData';
 import type { TConstructorFunction } from '#tools/type-utilities/TConstructorFunction';
 import type { TFieldsOf } from '#tools/type-utilities/TFieldsOf';
 import type { TBuilderFor } from '#tools/type-utilities/TBuilderFor';
+import { getAuthorization } from '#tools/auth/getAuthorization';
 
 export abstract class AbstractJinFrame<TPASS> {
   static getEndpoint(): URL {
@@ -242,7 +243,13 @@ export abstract class AbstractJinFrame<TPASS> {
       headers['User-Agent'] = option.userAgent;
     }
 
+    const { authKey, auth } = getAuthorization(headers, this.$_option.authoriztion, option?.auth);
+
     headers['Content-Type'] = this.$_option.contentType;
+
+    if (authKey != null) {
+      headers.Authorization = authKey;
+    }
 
     const transformRequest = this.getTransformRequest();
     const data = this.getFormData(bodies);
@@ -254,6 +261,7 @@ export abstract class AbstractJinFrame<TPASS> {
       ...{
         timeout,
         headers,
+        auth,
         method: this.$_option.method,
         data,
         transformRequest: option?.transformRequest ?? transformRequest,

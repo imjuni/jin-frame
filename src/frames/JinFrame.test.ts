@@ -22,7 +22,10 @@ class CustomError extends Error {
   }
 }
 
-@Post({ host: 'http://some.api.google.com/jinframe/:passing' })
+@Post({
+  host: 'http://some.api.google.com/jinframe/:passing',
+  authoriztion: 'Bearer i-am-bearer-authorization-key',
+})
 class Test001PostFrame extends JinFrame<{ message: string }> {
   @Param()
   declare public readonly passing: string;
@@ -34,7 +37,9 @@ class Test001PostFrame extends JinFrame<{ message: string }> {
   declare public readonly password: string;
 }
 
-@Post({ host: 'http://some.api.google.com/jinframe/:passing/:raiseerr' })
+@Post({
+  host: 'http://some.api.google.com/jinframe/:passing/:raiseerr',
+})
 class Test002PostFrame extends JinFrame<{ message: string }> {
   @Param()
   declare public readonly passing: string;

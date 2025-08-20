@@ -51,6 +51,4 @@ export class PokemonFrame extends JinFrame {
 }
 ```
 
-이러한 설정은 상속이 가능하며 부모 클래스 값을 자식 클래스가 덮어쓰게 됩니다. 덮어쓰기를 할 때는 빈 값은 제외 됩니다.
-
-## Developer Experience
+이러한 설정은 상속이 가능하여 Frame 클래스를 다양하게 확장할 수 있습니다.
