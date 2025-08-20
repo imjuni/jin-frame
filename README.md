@@ -75,18 +75,18 @@ This is example of union param, body, header parameter.
 ```ts
 import { Post, Param, Body, Header, Query } from 'jin-frame';
 
-@Post({ host: 'http://some.api.google.com', path: '/jinframe/:passing' })
+@Post({ host: 'https://api.superhero.com', path: '/:name' })
 class TestPostQuery extends JinFrame {
-  @Param()
-  declare public readonly passing: string;
+  @Header()
+  declare public readonly Authorization: string;
 
-  @Body({ replaceAt: 'test.hello.marvel.name' })
+  @Param()
   declare public readonly name: string;
 
-  @Header({ replaceAt: 'test.hello.marvel.skill' })
-  declare public readonly skill: string;
+  @Body()
+  declare public readonly team: string;
 
-  @Body({ replaceAt: 'test.hello.marvel.gender' })
+  @Body()
   declare public readonly gender: string;
 }
 ```
@@ -94,18 +94,26 @@ class TestPostQuery extends JinFrame {
 TestPostFrame class create AxiosRequestConfig object below.
 
 ```ts
-const frame = TestPostFrame.of({ passing: 'pass', name: 'ironman', skill: 'beam', gender: 'male' });
+const frame = TestPostFrame.of({ 
+  Authorization: 'Bearer aaa3657e-cd78-4bcd-a311-109a7500b60f', 
+  name: 'ironman', 
+  team: 'advengers', 
+  gender: 'male'
+});
 
 console.log(frame.request());
 
 // console.log show below,
 {
   timeout: 2000,
-  headers: { test: { hello: { marvel: { skill: 'beam' } } }, 'Content-Type': 'application/json' },
+  headers: { 
+    Authorization: 'Bearer aaa3657e-cd78-4bcd-a311-109a7500b60f',
+    'Content-Type': 'application/json'
+  },
   method: 'POST',
-  data: { test: { hello: { marvel: { name: 'ironman', gender: 'male' } } } },
+  data: { team: 'advengers', gender: 'male' },
   transformRequest: undefined,
-  url: 'http://some.api.yanolja.com/jinframe/1',
+  url: 'https://api.superhero.com/ironman',
   validateStatus: () => true
 }
 ```

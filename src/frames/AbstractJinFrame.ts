@@ -28,6 +28,12 @@ import type { TFieldsOf } from '#tools/type-utilities/TFieldsOf';
 import type { TBuilderFor } from '#tools/type-utilities/TBuilderFor';
 
 export abstract class AbstractJinFrame<TPASS> {
+  static getEndpoint(): URL {
+    const meta = getRequestMeta(this);
+    const urlMeta = getUrl(meta.option.host, meta.option.path);
+    return urlMeta.url;
+  }
+
   protected static getDefaultValues(): Partial<TFieldsOf<InstanceType<typeof this>>> {
     return {};
   }
