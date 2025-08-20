@@ -9,6 +9,7 @@ export default defineConfig({
         '.eslintrc.cjs',
         'prepublish.cjs',
         '.configs/**',
+        'docs',
         'dist',
         'examples',
         'eslint.config.mjs',

@@ -113,6 +113,38 @@ describe('JinFrame', () => {
     nock.cleanAll();
   });
 
+  it('should return frame URL when using signature', () => {
+    const url = new URL('http://some.api.google.com/jinframe/:passing');
+    expect(Test001PostFrame.getEndpoint()).toEqual(url);
+  });
+
+  it('should return instance when using builder from function', () => {
+    const frame = Test001PostFrame.of((b) => b.from({ username: 'ironman', password: 'marvel', passing: 'pass' }));
+
+    expect(frame.passing).toEqual('pass');
+    expect(frame.password).toEqual('marvel');
+    expect(frame.username).toEqual('ironman');
+  });
+
+  it('should return instance when using builder from function', () => {
+    const frame = Test001PostFrame.of((b) =>
+      b.set('username', 'ironman').set('passing', 'pass').set('password', 'marvel').auto(),
+    );
+
+    expect(frame.passing).toEqual('pass');
+    expect(frame.password).toEqual('marvel');
+    expect(frame.username).toEqual('ironman');
+  });
+
+  it('should return instance when using builder from function', () => {
+    const frame = Test001PostFrame.of((b) =>
+      b.set('username', 'ironman').auto().set('passing', 'pass').set('password', 'marvel'),
+    );
+    expect(frame.passing).toEqual('pass');
+    expect(frame.password).toEqual('marvel');
+    expect(frame.username).toEqual('ironman');
+  });
+
   it('should throw exception when response status code 400', async () => {
     nock('http://some.api.google.com').post('/jinframe/pass', { username: 'ironman', password: 'marvel' }).reply(400, {
       message: 'hello',
