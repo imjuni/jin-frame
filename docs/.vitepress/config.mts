@@ -23,6 +23,23 @@ export default defineConfig({
             items: [
               { text: 'What is jin-frame?', link: '/what-is-jin-frame' },
               { text: 'Getting To Start', link: '/getting-to-start' },
+              {
+                text: 'Query / Body / Param / Header',
+                items: [
+                  {
+                    text: 'Query',
+                    link: 'usage-query.md',
+                  },
+                  {
+                    text: 'Param',
+                    link: 'usage-param.md',
+                  },
+                  {
+                    text: 'Header',
+                    link: 'usage-header.md',
+                  },
+                ],
+              },
             ],
           },
           {

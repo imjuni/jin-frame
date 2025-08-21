@@ -15,7 +15,7 @@ npm install jin-frame --save
 yarn
 
 ```sh
-yarn install jin-frame --save
+yarn add jin-frame --save
 ```
 
 pnpm
@@ -38,5 +38,18 @@ pnpm add jin-frame --save
     "experimentalDecorators": true,
     "emitDecoratorMetadata": true,
   },
+}
+```
+
+## Quick Example
+
+```ts
+@Get({ host: 'https://pokeapi.co/api/v2/pokemon/:name' })
+export class PokemonFrame extends JinFrame {
+  @Param()
+  declare public readonly name: string;
+
+  @Query()
+  declare public readonly tid: string;
 }
 ```
