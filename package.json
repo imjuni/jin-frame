@@ -1,6 +1,6 @@
 {
   "name": "jin-frame",
-  "version": "4.2.1",
+  "version": "4.3.0",
   "description": "Reusable HTTP API request definition library",
   "scripts": {
     "build": "pnpm run clean && tsc --incremental --project tsconfig.prod.json",
