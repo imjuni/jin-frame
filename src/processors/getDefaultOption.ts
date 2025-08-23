@@ -1,8 +1,8 @@
-import type { IBodyFieldOption } from '#interfaces/body/IBodyFieldOption';
-import type { IObjectBodyFieldOption } from '#interfaces/body/IObjectBodyFieldOption';
-import type { IHeaderFieldOption } from '#interfaces/IHeaderFieldOption';
-import type { IParamFieldOption } from '#interfaces/IParamFieldOption';
-import type { IQueryFieldOption } from '#interfaces/IQueryFieldOption';
+import type { IBodyFieldOption } from '#interfaces/field/body/IBodyFieldOption';
+import type { IObjectBodyFieldOption } from '#interfaces/field/body/IObjectBodyFieldOption';
+import type { IHeaderFieldOption } from '#interfaces/field/IHeaderFieldOption';
+import type { IParamFieldOption } from '#interfaces/field/IParamFieldOption';
+import type { IQueryFieldOption } from '#interfaces/field/IQueryFieldOption';
 import type { Except } from 'type-fest';
 
 export function getDefaultQueryFieldOption(

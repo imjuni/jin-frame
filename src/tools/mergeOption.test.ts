@@ -1,5 +1,5 @@
 import { mergeFrameOption } from '#tools/mergeOption';
-import type { IFrameOption } from '#tools/type-utilities/IFrameOption';
+import type { IFrameOption } from '#interfaces/options/IFrameOption';
 import { describe, expect, it } from 'vitest';
 
 describe('mergeFrameOption', () => {

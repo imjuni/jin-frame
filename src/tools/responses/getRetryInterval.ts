@@ -1,4 +1,4 @@
-import type { IFrameInternal } from '#tools/type-utilities/IFrameInternal';
+import type { IFrameInternal } from '#interfaces/options/IFrameInternal';
 
 /**
  * @param retry retry configuration from the internal data

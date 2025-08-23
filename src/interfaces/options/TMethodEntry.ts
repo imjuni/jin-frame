@@ -1,3 +1,3 @@
-import type { IFrameOption } from '#tools/type-utilities/IFrameOption';
+import type { IFrameOption } from '#interfaces/options/IFrameOption';
 
 export type TMethodEntry = Readonly<{ option: Readonly<IFrameOption> }>;

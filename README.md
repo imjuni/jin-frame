@@ -27,7 +27,7 @@ Why `jin-frame`?
 - [Comparison of direct usage and jin-frame](#comparison-of-direct-usage-and-jin-frame)
 - [Requirements](#requirements)
 - [Install](#install)
-- [Useage](#useage)
+- [Usage](#usage)
 - [Axios version](#axios-version)
 - [Mocking](#mocking)
 - [Form](#form)
@@ -68,7 +68,7 @@ Why `jin-frame`?
 npm install jin-frame --save
 ```
 
-## Useage
+## Usage
 
 This is example of union param, body, header parameter.
 

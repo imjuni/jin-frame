@@ -1,4 +1,4 @@
-import type { IHeaderFieldOption } from '#interfaces/IHeaderFieldOption';
+import type { IHeaderFieldOption } from '#interfaces/field/IHeaderFieldOption';
 import { getDefaultHeaderFieldOption } from '#processors/getDefaultOption';
 import { REQUEST_FIELD_DECORATOR } from '#decorators/fields/handlers/REQUEST_FIELD_DECORATOR';
 import 'reflect-metadata';

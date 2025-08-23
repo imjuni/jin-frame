@@ -1,4 +1,4 @@
-import type { TSingleBodyFormatter } from '#interfaces/body/TSingleBodyFormatter';
+import type { TSingleBodyFormatter } from '#interfaces/field/body/TSingleBodyFormatter';
 import { getBodyFormatters } from '#tools/formatters/getBodyFormatters';
 import { describe, expect, it } from 'vitest';
 

@@ -1,4 +1,4 @@
-import type { IQueryFieldOption } from '#interfaces/IQueryFieldOption';
+import type { IQueryFieldOption } from '#interfaces/field/IQueryFieldOption';
 import { getDefaultQueryFieldOption } from '#processors/getDefaultOption';
 import { REQUEST_FIELD_DECORATOR } from '#decorators/fields/handlers/REQUEST_FIELD_DECORATOR';
 import 'reflect-metadata';

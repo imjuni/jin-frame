@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { getRequestMeta } from '#decorators/methods/handlers/getRequestMeta';
 import { pushRequestMeta } from '#decorators/methods/handlers/pushRequestMeta';
-import type { IFrameOption } from '#tools/type-utilities/IFrameOption';
+import type { IFrameOption } from '#interfaces/options/IFrameOption';
 import { getFrameOption } from '#decorators/getFrameOption';
 
 class IamClass {}

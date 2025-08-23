@@ -1,4 +1,4 @@
-import type { TSingleBodyFormatter } from '#interfaces/body/TSingleBodyFormatter';
+import type { TSingleBodyFormatter } from '#interfaces/field/body/TSingleBodyFormatter';
 import type { SetOptional, SetRequired } from 'type-fest';
 
 export function classifyBodyFormatters(formatters?: TSingleBodyFormatter[]): {

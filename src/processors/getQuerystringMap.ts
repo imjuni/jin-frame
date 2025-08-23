@@ -1,6 +1,6 @@
-import type { IHeaderFieldOption } from '#interfaces/IHeaderFieldOption';
-import type { IParamFieldOption } from '#interfaces/IParamFieldOption';
-import type { IQueryFieldOption } from '#interfaces/IQueryFieldOption';
+import type { IHeaderFieldOption } from '#interfaces/field/IHeaderFieldOption';
+import type { IParamFieldOption } from '#interfaces/field/IParamFieldOption';
+import type { IQueryFieldOption } from '#interfaces/field/IQueryFieldOption';
 import { bitwised } from '#tools/bitwised';
 import { encode } from '#tools/encodes/encode';
 import { formatEach } from '#tools/formatters/formatEach';

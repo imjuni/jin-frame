@@ -1,7 +1,7 @@
 import { getAllRequestMetaInherited } from '#decorators/methods/handlers/getAllMethodMetaInherited';
 import type { AbstractConstructor, Constructor } from 'type-fest';
-import type { IFrameOption } from '#tools/type-utilities/IFrameOption';
-import type { TMethodEntry } from '#interfaces/TMethodEntry';
+import type { IFrameOption } from '#interfaces/options/IFrameOption';
+import type { TMethodEntry } from '#interfaces/options/TMethodEntry';
 import { mergeFrameOption } from '#tools/mergeOption';
 
 /**

@@ -1,5 +1,5 @@
-import type { IFrameInternal } from '#tools/type-utilities/IFrameInternal';
-import type { IFrameOption } from '#tools/type-utilities/IFrameOption';
+import type { IFrameInternal } from '#interfaces/options/IFrameInternal';
+import type { IFrameOption } from '#interfaces/options/IFrameOption';
 import axios from 'axios';
 
 export function getFrameInternalData(option?: Partial<Omit<IFrameOption, 'method'>>): IFrameInternal {

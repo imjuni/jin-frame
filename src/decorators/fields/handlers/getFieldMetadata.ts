@@ -1,9 +1,9 @@
 import { REQUEST_FIELD_DECORATOR } from '#decorators/fields/handlers/REQUEST_FIELD_DECORATOR';
-import type { IQueryFieldOption } from '#interfaces/IQueryFieldOption';
-import type { IParamFieldOption } from '#interfaces/IParamFieldOption';
-import type { IObjectBodyFieldOption } from '#interfaces/body/IObjectBodyFieldOption';
-import type { IHeaderFieldOption } from '#interfaces/IHeaderFieldOption';
-import type { IBodyFieldOption } from '#interfaces/body/IBodyFieldOption';
+import type { IQueryFieldOption } from '#interfaces/field/IQueryFieldOption';
+import type { IParamFieldOption } from '#interfaces/field/IParamFieldOption';
+import type { IObjectBodyFieldOption } from '#interfaces/field/body/IObjectBodyFieldOption';
+import type { IHeaderFieldOption } from '#interfaces/field/IHeaderFieldOption';
+import type { IBodyFieldOption } from '#interfaces/field/body/IBodyFieldOption';
 import 'reflect-metadata';
 
 interface IRequestFieldRecord {

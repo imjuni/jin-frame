@@ -1,4 +1,4 @@
-import type { IParamFieldOption } from '#interfaces/IParamFieldOption';
+import type { IParamFieldOption } from '#interfaces/field/IParamFieldOption';
 import { getDefaultParamFieldOption } from '#processors/getDefaultOption';
 import { REQUEST_FIELD_DECORATOR } from '#decorators/fields/handlers/REQUEST_FIELD_DECORATOR';
 import 'reflect-metadata';

@@ -1,4 +1,4 @@
-import type { IFormatter } from '#interfaces/IFormatter';
+import type { IFormatter } from '#interfaces/options/IFormatter';
 import { formattings } from '#tools/formatters/formattings';
 import type { TSupportPrimitiveType } from '#tools/type-utilities/TSupportPrimitiveType';
 

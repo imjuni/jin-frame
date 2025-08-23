@@ -1,5 +1,5 @@
-import type { TSingleBodyFormatter } from '#interfaces/body/TSingleBodyFormatter';
-import type { IObjectBodyFieldOption } from '#interfaces/body/IObjectBodyFieldOption';
+import type { TSingleBodyFormatter } from '#interfaces/field/body/TSingleBodyFormatter';
+import type { IObjectBodyFieldOption } from '#interfaces/field/body/IObjectBodyFieldOption';
 import { classifyBodyFormatters } from '#tools/formatters/classifyBodyFormatters';
 import { getBodyFormatters } from '#tools/formatters/getBodyFormatters';
 import { isValidArrayType } from '#tools/type-narrowing/isValidArrayType';

@@ -1,4 +1,4 @@
-import type { TSingleBodyFormatter } from '#interfaces/body/TSingleBodyFormatter';
+import type { TSingleBodyFormatter } from '#interfaces/field/body/TSingleBodyFormatter';
 import { bodyFormattings } from '#tools/formatters/bodyFormattings';
 
 export function bodyFormatEach(

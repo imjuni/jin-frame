@@ -1,5 +1,5 @@
-import type { TSingleBodyFormatter } from '#interfaces/body/TSingleBodyFormatter';
-import type { IFormatter } from '#interfaces/IFormatter';
+import type { TSingleBodyFormatter } from '#interfaces/field/body/TSingleBodyFormatter';
+import type { IFormatter } from '#interfaces/options/IFormatter';
 import {
   getDefaultBodyFieldOption,
   getDefaultHeaderFieldOption,

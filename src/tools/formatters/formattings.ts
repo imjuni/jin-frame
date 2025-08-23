@@ -1,4 +1,4 @@
-import type { IFormatter } from '#interfaces/IFormatter';
+import type { IFormatter } from '#interfaces/options/IFormatter';
 import { formatting } from '#tools/formatters/formatting';
 import type { TSupportPrimitiveType } from '#tools/type-utilities/TSupportPrimitiveType';
 import { toArray } from 'my-easy-fp';

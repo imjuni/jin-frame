@@ -1,14 +1,13 @@
 import { JinCreateError } from '#frames/JinCreateError';
 import { JinFrame } from '#frames/JinFrame';
 import type { IDebugInfo } from '#interfaces/IDebugInfo';
-import type { IFailReplyJinEitherFrame } from '#interfaces/IFailJinEitherFrame';
 import type { TJinFrameResponse, TJinRequestConfig } from '#interfaces/TJinFrameResponse';
-import type { TPassJinEitherFrame } from '#interfaces/TPassJinEitherFrame';
 import { Post } from '#decorators/methods/Post';
 import nock from 'nock';
 import { afterEach, describe, expect, it } from 'vitest';
 import { Param } from '#decorators/fields/Param';
 import { Body } from '#decorators/fields/Body';
+import { AxiosResponse } from 'axios';
 
 class CustomError extends Error {
   readonly discriminator = '__CustomError__';
@@ -101,7 +100,8 @@ class Test004PostFrame extends JinFrame<{ message: string }> {
 
   override async $_postHook(
     _req: TJinRequestConfig,
-    _reply: IFailReplyJinEitherFrame<{ message: string }> | TPassJinEitherFrame<{ message: string }>,
+    _reply: AxiosResponse<{ message: string }>,
+    _debugInfo: IDebugInfo,
   ): Promise<void> {
     this.postHookCount += 1;
     console.log('post hook executed: ', this.postHookCount);
