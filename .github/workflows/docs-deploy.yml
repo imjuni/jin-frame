@@ -46,7 +46,9 @@ jobs:
       - name: Install dependencies
         run: pnpm install
       - name: Build TypeDoc
-        run: pnpm run docs:typedoc
+        run: |
+          pnpm run docs:typedoc
+          cp -r ./assets ./docs/assets
       - name: Build with VitePress
         run: pnpm run docs:build:prod
       - name: Upload artifact
