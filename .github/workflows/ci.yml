@@ -31,5 +31,6 @@ jobs:
           cache: 'pnpm'
       - run: pnpm i
       - run: pnpm run build
+      - run: pnpm run test
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v3
