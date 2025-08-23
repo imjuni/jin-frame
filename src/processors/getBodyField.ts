@@ -1,5 +1,5 @@
-import type { IBodyFieldOption } from '#interfaces/body/IBodyFieldOption';
-import type { TSingleBodyFormatter } from '#interfaces/body/TSingleBodyFormatter';
+import type { IBodyFieldOption } from '#interfaces/field/body/IBodyFieldOption';
+import type { TSingleBodyFormatter } from '#interfaces/field/body/TSingleBodyFormatter';
 import { classifyBodyFormatters } from '#tools/formatters/classifyBodyFormatters';
 import { formatEach } from '#tools/formatters/formatEach';
 import { getBodyFormatters } from '#tools/formatters/getBodyFormatters';

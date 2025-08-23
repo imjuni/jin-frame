@@ -1,13 +1,13 @@
 import { JinFile } from '#frames/JinFile';
 import { defaultJinFrameTimeout } from '#frames/defaultJinFrameTimeout';
-import type { IJinFrameCreateConfig } from '#interfaces/IJinFrameCreateConfig';
-import type { IJinFrameRequestConfig } from '#interfaces/IJinFrameRequestConfig';
+import type { IJinFrameCreateConfig } from '#interfaces/options/IJinFrameCreateConfig';
+import type { IJinFrameRequestConfig } from '#interfaces/options/IJinFrameRequestConfig';
 import { getBodyMap } from '#processors/getBodyMap';
 import { getQuerystringMap } from '#processors/getQuerystringMap';
 import { removeEndSlash } from '#tools/slash-utils/removeEndSlash';
 import { startWithSlash } from '#tools/slash-utils/startWithSlash';
-import type { IFrameOption } from '#tools/type-utilities/IFrameOption';
-import type { IFrameInternal } from '#tools/type-utilities/IFrameInternal';
+import type { IFrameOption } from '#interfaces/options/IFrameOption';
+import type { IFrameInternal } from '#interfaces/options/IFrameInternal';
 import type { AxiosError, AxiosRequestConfig, AxiosResponse } from 'axios';
 import type axios from 'axios';
 import fastSafeStringify from 'fast-safe-stringify';

@@ -1,4 +1,4 @@
-import type { IFormatter } from '#interfaces/IFormatter';
+import type { IFormatter } from '#interfaces/options/IFormatter';
 import { isValidPrimitiveType } from '#tools/type-narrowing/isValidPrimitiveType';
 
 export function applyFormat(origin: unknown, formatter: IFormatter): unknown {

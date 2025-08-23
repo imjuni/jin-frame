@@ -1,5 +1,5 @@
 import type { AxiosInstance } from 'axios';
-import type { IFrameRetry } from '#interfaces/IFrameRetry';
+import type { IFrameRetry } from '#interfaces/options/IFrameRetry';
 
 export interface IFrameInternal {
   query?: Record<string, string | string[]>;

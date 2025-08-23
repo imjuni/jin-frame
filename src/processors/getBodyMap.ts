@@ -1,6 +1,6 @@
-import type { IBodyField } from '#interfaces/body/IBodyField';
-import type { IBodyFieldOption } from '#interfaces/body/IBodyFieldOption';
-import type { IObjectBodyFieldOption } from '#interfaces/body/IObjectBodyFieldOption';
+import type { IBodyField } from '#interfaces/field/body/IBodyField';
+import type { IBodyFieldOption } from '#interfaces/field/body/IBodyFieldOption';
+import type { IObjectBodyFieldOption } from '#interfaces/field/body/IObjectBodyFieldOption';
 import { getBodyField } from '#processors/getBodyField';
 import { getObjectBodyField } from '#processors/getObjectBodyField';
 import { isValidPrimitiveType } from '#tools/type-narrowing/isValidPrimitiveType';

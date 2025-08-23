@@ -1,5 +1,5 @@
-import type { TSingleBodyFormatter } from '#interfaces/body/TSingleBodyFormatter';
-import type { ICommonFieldOption } from '#interfaces/ICommonFieldOption';
+import type { TSingleBodyFormatter } from '#interfaces/field/body/TSingleBodyFormatter';
+import type { ICommonFieldOption } from '#interfaces/field/ICommonFieldOption';
 
 export interface IObjectBodyFieldOption extends ICommonFieldOption {
   type: 'object-body';

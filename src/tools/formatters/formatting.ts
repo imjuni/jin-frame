@@ -1,4 +1,4 @@
-import type { IFormatter } from '#interfaces/IFormatter';
+import type { IFormatter } from '#interfaces/options/IFormatter';
 import { applyFormat } from '#tools/formatters/applyFormat';
 import { isValidPrimitiveWithDateType } from '#tools/type-narrowing/isValidPrimitiveWithDateType';
 import type { TSupportPrimitiveType } from '#tools/type-utilities/TSupportPrimitiveType';

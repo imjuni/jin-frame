@@ -1,6 +1,6 @@
 import type { IFailCreateJinEitherFrame, IFailReplyJinEitherFrame } from '#interfaces/IFailJinEitherFrame';
-import type { IJinFrameCreateConfig } from '#interfaces/IJinFrameCreateConfig';
-import type { IJinFrameRequestConfig } from '#interfaces/IJinFrameRequestConfig';
+import type { IJinFrameCreateConfig } from '#interfaces/options/IJinFrameCreateConfig';
+import type { IJinFrameRequestConfig } from '#interfaces/options/IJinFrameRequestConfig';
 import type { TPassJinEitherFrame } from '#interfaces/TPassJinEitherFrame';
 import type { AxiosResponse } from 'axios';
 import type { PassFailEither } from 'my-only-either';

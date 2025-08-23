@@ -1,4 +1,4 @@
-import type { IFormatter } from '#interfaces/IFormatter';
+import type { IFormatter } from '#interfaces/options/IFormatter';
 import { bodyFormatting } from '#tools/formatters/bodyFormatting';
 import { toArray } from 'my-easy-fp';
 

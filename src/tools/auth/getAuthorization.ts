@@ -1,4 +1,4 @@
-import type { IFrameOption } from '#tools/type-utilities/IFrameOption';
+import type { IFrameOption } from '#interfaces/options/IFrameOption';
 import type { AxiosRequestConfig } from 'axios';
 
 export function getAuthorization(

@@ -1,4 +1,4 @@
-import type { IObjectBodyFieldOption } from '#interfaces/body/IObjectBodyFieldOption';
+import type { IObjectBodyFieldOption } from '#interfaces/field/body/IObjectBodyFieldOption';
 import { getDefaultObjectBodyFieldOption } from '#processors/getDefaultOption';
 import { REQUEST_FIELD_DECORATOR } from '#decorators/fields/handlers/REQUEST_FIELD_DECORATOR';
 import 'reflect-metadata';

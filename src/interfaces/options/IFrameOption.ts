@@ -1,5 +1,6 @@
-import type { IFrameRetry } from '#interfaces/IFrameRetry';
-import type { AxiosRequestConfig, Method, Milliseconds } from 'axios';
+import type { IFrameRetry } from '#interfaces/options/IFrameRetry';
+import type { TMethod } from '#interfaces/options/TMethod';
+import type { AxiosRequestConfig, Milliseconds } from 'axios';
 
 export interface IFrameOption {
   /**
@@ -16,7 +17,7 @@ export interface IFrameOption {
   path?: string;
 
   /** method of API Request endpoint */
-  method: Method;
+  method: TMethod;
 
   /** content-type of API Request endpoint */
   contentType: string;

@@ -1,4 +1,4 @@
-import type { TSingleBodyFormatter } from '#interfaces/body/TSingleBodyFormatter';
+import type { TSingleBodyFormatter } from '#interfaces/field/body/TSingleBodyFormatter';
 import { applyFormat } from '#tools/formatters/applyFormat';
 import { findFromBody } from '#tools/formatters/findFromBody';
 import { setToBody } from '#tools/formatters/setToBody';

@@ -1,5 +1,5 @@
 import { setFrameOption } from '#tools/setFrameOption';
-import type { IFrameOption } from '#tools/type-utilities/IFrameOption';
+import type { IFrameOption } from '#interfaces/options/IFrameOption';
 import { describe, expect, it } from 'vitest';
 
 describe('setFrameOption', () => {

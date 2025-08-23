@@ -1,4 +1,4 @@
-import type { IFrameOption } from '#tools/type-utilities/IFrameOption';
+import type { IFrameOption } from '#interfaces/options/IFrameOption';
 
 export function setFrameOption<K extends keyof IFrameOption>(target: IFrameOption, key: K, value: unknown): void {
   const forReAssign = target;

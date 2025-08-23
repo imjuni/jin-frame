@@ -1,5 +1,5 @@
 import { REQUEST_METHOD_DECORATOR } from '#decorators/methods/handlers/REQUEST_METHOD_DECORATOR';
-import type { TMethodEntry } from '#interfaces/TMethodEntry';
+import type { TMethodEntry } from '#interfaces/options/TMethodEntry';
 import type { Constructor } from 'type-fest';
 import 'reflect-metadata';
 
