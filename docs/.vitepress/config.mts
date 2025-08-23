@@ -1,6 +1,75 @@
 import { defineConfig } from 'vitepress';
 import typedocSidebar from '../api/typedoc-sidebar.json';
 
+const getDocSidebar = (_locale?: string) => {
+  const locale = _locale != null ? `/${_locale}` : '';
+
+  const sidebar = {
+    text: 'Document',
+    items: [
+      { text: 'What is jin-frame?', link: `${locale}/what-is-jin-frame` },
+      { text: 'Getting To Start', link: `${locale}/getting-to-start` },
+      {
+        text: 'Method',
+        link: `${locale}/usage-method.md`,
+        items: [
+          {
+            text: 'Authorization',
+            link: `${locale}/method/authorization.md`,
+          },
+          {
+            text: 'Inheritance',
+            link: `${locale}/method/inheritance.md`,
+          },
+          {
+            text: 'Retry',
+            link: `${locale}/method/retry.md`,
+          },
+          {
+            text: 'Mocking',
+            link: `${locale}/method/mocking.md`,
+          },
+          {
+            text: 'Form',
+            link: `${locale}/method/form.md`,
+          },
+        ],
+      },
+      {
+        text: 'Field',
+        items: [
+          {
+            text: 'Query',
+            link: `${locale}/field/query.md`,
+          },
+          {
+            text: 'Param',
+            link: `${locale}/field/param.md`,
+          },
+          {
+            text: 'Body',
+            link: `${locale}/field/body.md`,
+          },
+          {
+            text: 'ObjectBody',
+            link: `${locale}/field/objectbody.md`,
+          },
+          {
+            text: 'Header',
+            link: `${locale}/field/header.md`,
+          },
+          {
+            text: 'Formatters',
+            link: `${locale}/field/formatters.md`,
+          },
+        ],
+      },
+    ],
+  };
+
+  return sidebar;
+};
+
 // https://vitepress.dev/reference/site-config
 export default defineConfig({
   title: 'jin-frame',
@@ -15,37 +84,20 @@ export default defineConfig({
         nav: [
           { text: 'Home', link: '/' },
           { text: 'Document', link: '/what-is-jin-frame' },
+          { text: 'Github', link: 'https://github.com/imjuni/jin-frame' },
         ],
 
         sidebar: [
-          {
-            text: 'Document',
-            items: [
-              { text: 'What is jin-frame?', link: '/what-is-jin-frame' },
-              { text: 'Getting To Start', link: '/getting-to-start' },
-              {
-                text: 'Query / Body / Param / Header',
-                items: [
-                  {
-                    text: 'Query',
-                    link: 'usage-query.md',
-                  },
-                  {
-                    text: 'Param',
-                    link: 'usage-param.md',
-                  },
-                  {
-                    text: 'Header',
-                    link: 'usage-header.md',
-                  },
-                ],
-              },
-            ],
-          },
+          getDocSidebar(),
           {
             text: 'API',
             items: typedocSidebar,
           },
+        ],
+
+        socialLinks: [
+          { icon: 'npm', link: 'https://www.npmjs.com/package/jin-frame' },
+          { icon: 'github', link: 'https://github.com/imjuni/jin-frame' },
         ],
       },
     },
@@ -61,17 +113,16 @@ export default defineConfig({
         ],
 
         sidebar: [
-          {
-            text: 'Document',
-            items: [
-              { text: 'What is jin-frame?', link: '/what-is-jin-frame' },
-              { text: 'Getting To Start', link: '/getting-to-start' },
-            ],
-          },
+          getDocSidebar('ko'),
           {
             text: 'API',
             items: typedocSidebar,
           },
+        ],
+
+        socialLinks: [
+          { icon: 'npm', link: 'https://www.npmjs.com/package/jin-frame' },
+          { icon: 'github', link: 'https://github.com/imjuni/jin-frame' },
         ],
       },
     },

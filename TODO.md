@@ -26,3 +26,4 @@
   - cache timeout을 계산해서 timeout이 지나면 또 실행, 그게 아니면 return
   - 캐시 관련 전략을 알아보자 swr처럼 stale-while-revalidate 을 할 수 있을까?
   - 캐시 관련 header도 알아보자
+- [ ] 파일 업로드 등의 테스트를 할 수 있게 fastify로 간단한 서버를 작성해보자

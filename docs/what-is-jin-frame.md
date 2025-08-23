@@ -1,78 +1,65 @@
 # What is jin-frame?
 
-**HTTP Request** = **TypeScript Class**
+**`jin-frame`** is a library that allows you to define **HTTP Requests** as **TypeScript Classes**.
 
-**jin-frame** is a library that allows you to define HTTP requests as TypeScript classes.  
-It not only helps with defining requests but also provides practical features often required in real-world applications. For example, you can configure hooks, timeouts, retries, and more — with the flexibility to set different options per endpoint.  
-All these configurations can also be defined declaratively using TypeScript classes. The goal is to enable efficient API management in enterprise environments.
-
----
+It goes beyond simply defining requests by providing a variety of features frequently required in real-world applications. For example, you can configure hooks, set timeouts, and specify retry counts differently per endpoint. All of these configurations are expressed declaratively through TypeScript classes. The ultimate goal is to help you **manage APIs more effectively**.
 
 ## Why jin-frame?
 
-- **Declarative API Definition**  
-  Define requests using classes and decorators for URL, query string, path parameters, body, and headers in a clear and intuitive way.  
+- 🎩 **Declarative API Definition**  
+  Define URL, Querystring, Path Param, Body, and Header clearly and intuitively using decorators and classes.
 
-- **Type-Safe**  
-  Fully powered by the TypeScript type system, mismatches are caught at compile time.  
+- ⛑️ **Type Safety**  
+  Leverages TypeScript’s type system to catch mismatches at compile time.
 
-- **Production-Ready Features**  
-  Provides retry, hooks, file upload, and mocking support — features frequently required in real-world projects.  
+- 🎢 **Production-Ready Features**  
+  Backed by 290 test cases ensuring reliability, and equipped with features essential for MSA environments such as retry, hooks, file upload, and mocking.
 
-- **Axios Ecosystem**  
-  Built on top of Axios, leveraging its proven ecosystem while extending its capabilities.  
+- 🏭 **Axios Ecosystem**  
+  Built on top of Axios, allowing you to take advantage of its stable ecosystem while extending its functionality.
 
-- **Path Parameter Support**  
-  Replace path parameters like `example.com/:id` with strongly typed values.  
-
----
+- 🎪 **Path Parameter Support**  
+  Safely replace path parameters like `example.com/:id` with strong typing guarantees.
 
 ## Features
 
 - **Retry Configuration**  
-  Flexible retry policies, including maximum attempts, fixed intervals, or dynamic intervals that grow with each attempt.  
+  Flexible retry policies such as maximum attempts, fixed intervals, or exponential backoff.
 
 - **Hook Support**  
-  Define hooks before requests, after responses, or during retries. Apply them globally via inheritance or locally per request.  
+  Define hooks before and after requests, or at retry timing. Hooks can be applied globally through inheritance or customized per endpoint.
 
 - **Timeouts per Endpoint**  
-  Configure different timeout values per endpoint for fine-grained control in microservices environments.  
+  Apply different timeout values for each endpoint, useful in microservices environments.
 
 - **File Upload**  
-  Built-in support for file upload via Axios under the same class-based request definitions.  
+  Handle file uploads seamlessly with Axios under the same class-based request definitions.
 
 - **Mocking Support**  
-  Easily mock API responses for testing and development environments.  
+  Easily mock API responses for testing and development environments.
 
-- **Extensible**  
-  Frame classes can be inherited, making it easy to extend configurations and create reusable building blocks.  
+- **Extensibility**  
+  Frame classes can be inherited, making it easy to extend configurations and build reusable components.
 
----
+## Usage Example
 
-## Use Cases
+Here’s a comparison between using Axios directly and using jin-frame:
 
-Below is a comparison between using Axios directly and using jin-frame:
+| Direct usage                           | Jin-Frame                                     |
+| -------------------------------------- | --------------------------------------------- |
+| ![axios](../assets/axios-usage.png)    | ![jin-frame](../assets/jinframe-usage.png)    |
+| [axios svg](../assets/axios-usage.svg) | [jin-frame svg](../assets/jinframe-usage.svg) |
 
-| Direct usage                        | Jin-Frame                                  |
-| ----------------------------------- | ------------------------------------------ |
-| ![axios](assets/axios-usage.png)    | ![jin-frame](assets/jinframe-usage.png)    |
-| [axios svg](assets/axios-usage.svg) | [jin-frame svg](assets/jinframe-usage.svg) |
+The amount of code is similar, but jin-frame makes it **clear which variables belong to Querystring, Header, Body, or Path Param**.  
+Also, by using the static factory method `of`, you can create and execute requests in a type-safe way.
 
-While the overall amount of code is similar, **jin-frame provides greater clarity**.  
-You can easily see which variables belong to the query string, headers, body, or path parameters.  
-Additionally, by using the static factory function `of`, you can safely and type-check your request creation and execution.
-
-As mentioned earlier, timeouts and retry counts can be configured on a per-endpoint basis.  
-In microservices (MSA) environments, where multiple APIs must be called, configuring timeouts and retry logic differently per endpoint is a common need.  
-With **jin-frame**, this can be done declaratively:
+Additionally, you can configure timeouts and retry counts differently per endpoint. This is a common requirement when working with multiple API servers in an MSA environment, and jin-frame allows you to configure this declaratively.
 
 ```ts
-@Get({ 
+@Get({
   host: 'https://pokeapi.co',
-  // List API
   path: '/api/v2/pokemon',
-  // 10s timeout
-  timeout: 10_000,
+  timeout: 10_000, // 10 seconds
 })
 class PokemonPagingFrame extends JinFrame {
   @Query()
@@ -81,17 +68,12 @@ class PokemonPagingFrame extends JinFrame {
   @Query()
   declare readonly offset: number;
 }
-```
 
-```ts
-@Get({ 
+@Get({
   host: 'https://pokeapi.co',
-  // Detail API
   path: '/api/v2/pokemon/:name',
-  // 2s timeout
-  timeout: 2_000,
-  // Retry up to 3 times, with 1s interval
-  retry: { max: 3, inteval: 1000 }
+  timeout: 2_000, // 2 seconds
+  retry: { max: 3, inteval: 1000 }, // retry up to 3 times, 1s interval
 })
 export class PokemonFrame extends JinFrame {
   @Param()
@@ -102,4 +84,12 @@ export class PokemonFrame extends JinFrame {
 }
 ```
 
-These configurations are also extensible — Frame classes can be inherited and expanded to fit a variety of use cases.
+These configurations can also be reused through inheritance, making it easy to extend for different use cases.
+
+## Conclusion
+
+**`jin-frame`** is not just a utility wrapper around Axios. It is a **type-safe, declarative, and extensible HTTP Request management library** designed to meet the needs of MSA environments.  
+
+With jin-frame, developers can define API requests more clearly and systematically, gaining productivity in both maintenance and scalability.
+
+Moreover, classes defined this way can be separated into a standalone package, allowing the **reuse of common API request logic across multiple projects**. This enables teams or organizations to share a consistent API calling pattern, ensuring both **consistency and reusability**.
