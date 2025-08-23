@@ -1,6 +1,8 @@
 import { defineConfig } from 'vitepress';
 import typedocSidebar from '../api/typedoc-sidebar.json';
 
+const base = process.env.BASE_DIR;
+
 const getDocSidebar = (_locale?: string) => {
   const locale = _locale != null ? `/${_locale}` : '';
 
@@ -74,6 +76,7 @@ const getDocSidebar = (_locale?: string) => {
 export default defineConfig({
   title: 'jin-frame',
   description: 'Declarative API definition',
+  base,
   locales: {
     root: {
       label: 'English',
