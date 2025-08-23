@@ -45,6 +45,8 @@ jobs:
         uses: actions/configure-pages@v4
       - name: Install dependencies
         run: pnpm install
+      - name: Build TypeDoc
+        run: pnpm run docs:typedoc
       - name: Build with VitePress
         run: pnpm run docs:build:prod
       - name: Upload artifact
