@@ -13,6 +13,12 @@
   - Re-run request if cache timeout has expired, otherwise return cached result
   - Investigate cache strategies (e.g. stale-while-revalidate like SWR)
   - Explore cache-related headers
+- [ ] test server made by fastify
+  - test file upload
+  - test form
+- [ ] Querystring square bracket 1 fruit[]=apple&fruit[]=banana
+- [ ] Querystring square bracket 2 fruit[1]=apple&fruit[2]=banana
+- [ ] Retry-After 헤더 처리
 
 ## Korean
 
@@ -27,3 +33,6 @@
   - 캐시 관련 전략을 알아보자 swr처럼 stale-while-revalidate 을 할 수 있을까?
   - 캐시 관련 header도 알아보자
 - [ ] 파일 업로드 등의 테스트를 할 수 있게 fastify로 간단한 서버를 작성해보자
+- [ ] 배열 괄호처리 1 fruit[]=apple&fruit[]=banana
+- [ ] 배열 괄호처리 2 fruit[1]=apple&fruit[2]=banana
+- [ ] Retry-After 헤더 처리
