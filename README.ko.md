@@ -10,6 +10,10 @@
 [![codecov](https://codecov.io/gh/imjuni/jin-frame/branch/master/graph/badge.svg?style=flat-square&token=R7R2PdJcS9)](https://codecov.io/gh/imjuni/jin-frame)
 [![code style: prettier](https://img.shields.io/badge/code_style-prettier-ff69b4.svg?style=flat-square)](https://github.com/prettier/prettier)
 
+<p align="center">
+   <img src="assets/jin-frame-brand.png" alt="brand" width="300"/>
+</p>
+
 jin-frame은 TypeScript 데코레이터와 클래스를 사용한 API 프레임워크로 API 요청을 선언적으로 작성할 수 있게 도와줍니다. 이렇게 작성한 API 요청은 재사용 가능하며 OOP 상속 구조를 사용하여 확장할 수 있습니다. 또한 Axios를 사용하여 안정성과 호환성을 확보하면서 hook, retry, mocking 등 실무에 필요한 다양한 기능을 제공합니다.
 
 ## Why jin-frame?

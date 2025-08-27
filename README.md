@@ -14,6 +14,12 @@
 
 A reusable, declarative, type-safe, and extendable HTTP request library.
 
+<!-- markdownlint-disable MD033 -->
+<p align="center">
+   <img src="assets/jin-frame-brand.png" alt="brand" width="300"/>
+</p>
+<!-- markdownlint-enable MD033 -->
+
 Why `jin-frame`?
 
 1. Declarative API Definition
