@@ -3,4 +3,16 @@ import type { IQueryParamHeaderCommonFieldOption } from '#interfaces/field/IQuer
 
 export interface IQueryFieldOption extends ICommonFieldOption, IQueryParamHeaderCommonFieldOption {
   type: 'query';
+
+  /**
+   * Querystring Array key formatting
+   *
+   * - brackets
+   *  - a[]=x&a[]=y
+   * - indices
+   *  - a[0]=x&a[1]=y
+   * - one-indices
+   *  - a[1]=x&a[2]=y
+   */
+  keyForamt?: 'brackets' | 'indices' | 'one-indices';
 }

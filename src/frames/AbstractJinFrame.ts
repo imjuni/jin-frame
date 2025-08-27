@@ -27,6 +27,8 @@ import type { TConstructorFunction } from '#tools/type-utilities/TConstructorFun
 import type { TFieldsOf } from '#tools/type-utilities/TFieldsOf';
 import type { TBuilderFor } from '#tools/type-utilities/TBuilderFor';
 import { getAuthorization } from '#tools/auth/getAuthorization';
+import { getQuerystringKeyFormat } from '#processors/getQuerystringKeyFormat';
+import { getQuerystringKey } from '#processors/getQuerystringKey';
 
 export abstract class AbstractJinFrame<TPASS> {
   static getEndpoint(): URL {
@@ -184,6 +186,7 @@ export abstract class AbstractJinFrame<TPASS> {
     const fields = getFieldMetadata(this.constructor.prototype, entries);
 
     // stage 02. each request parameter apply option
+    const queryMap = new Map(fields.query.map((query) => [query.key, query.option]));
     const queries = getQuerystringMap(this as Record<string, unknown>, fields.query); // create querystring information
     const headers = flatStringMap(getQuerystringMap(this as Record<string, unknown>, fields.header)); // create header information
     const paths = flatStringMap(getQuerystringMap(this as Record<string, unknown>, fields.param)); // create param information
@@ -229,8 +232,19 @@ export abstract class AbstractJinFrame<TPASS> {
 
     // stage 07. querystring post processing
     Object.entries(queries).forEach(([key, value]) => {
-      if (Array.isArray(value)) {
-        value.forEach((val) => url.searchParams.append(key, val));
+      const queryOption = queryMap.get(key);
+      const keyForamt = getQuerystringKeyFormat(queryOption);
+
+      if (Array.isArray(value) && keyForamt != null) {
+        value.forEach((val, index) => {
+          const formatted = getQuerystringKey({ key, index, format: keyForamt });
+          url.searchParams.append(formatted, val);
+        });
+      } else if (Array.isArray(value)) {
+        value.forEach((val, index) => {
+          const formatted = getQuerystringKey({ key, index, format: keyForamt });
+          url.searchParams.append(formatted, val);
+        });
       } else {
         url.searchParams.set(key, value);
       }
