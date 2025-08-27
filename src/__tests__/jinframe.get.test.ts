@@ -142,7 +142,7 @@ class TestGet5Frame extends JinFrame {
   @Query()
   declare public readonly name: string;
 
-  @Query({ encode: true })
+  @Query({ encode: false, keyForamt: 'indices' })
   declare public readonly skill: string[];
 
   constructor() {
@@ -166,7 +166,7 @@ class TestGet6Frame extends JinFrame {
   @Query()
   declare public readonly name: string;
 
-  @Query({ encode: true })
+  @Query({ encode: false, keyForamt: 'brackets' })
   declare public readonly skill: string[];
 
   constructor() {
@@ -336,7 +336,7 @@ describe('jinframe.test', () => {
   });
 
   it('jin-frame with async pre hook - no return', async () => {
-    nock('http://some.api.google.com').get('/jinframe/pass?name=ironman&skill=beam&skill=flying!').reply(200, {
+    nock('http://some.api.google.com').get('/jinframe/pass?name=ironman&skill[0]=beam&skill[1]=flying!').reply(200, {
       message: 'hello',
     });
 
@@ -347,7 +347,7 @@ describe('jinframe.test', () => {
   });
 
   it('jin-frame with async pre hook - no return', async () => {
-    nock('http://some.api.google.com').get('/jinframe/pass?name=ironman&skill=beam&skill=flying!').reply(200, {
+    nock('http://some.api.google.com').get('/jinframe/pass?name=ironman&skill[]=beam&skill[]=flying!').reply(200, {
       message: 'hello',
     });
 

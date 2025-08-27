@@ -21,6 +21,7 @@ describe('getDefaultQueryFieldOption', () => {
         enable: false,
         withZero: false,
       },
+      keyFormat: undefined,
       encode: true,
     });
   });
