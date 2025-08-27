@@ -36,3 +36,21 @@
 - [ ] 배열 괄호처리 1 fruit[]=apple&fruit[]=banana
 - [ ] 배열 괄호처리 2 fruit[1]=apple&fruit[2]=banana
 - [ ] Retry-After 헤더 처리
+- [ ] 응답 결과에 대해서 validator 처리, 클래스 선언할 때 Method에 validator를 넣어두면 response 받은 후 자동 검증
+  - zod, json-schema(ajv), etc ...
+- [ ] 요청 디듀플/버스팅 방지
+  - 동일 주소, 동일 조건으로 빠르게 수차례 요청한 경우 한 번에 응답
+- [ ] OpenAPI 스펙 기반 자동 생성
+- [ ] 강력한 캐시 계층 (메모리/LRU)
+- [ ] 업/다운로드 프로그레스 이벤트
+
+## 가능성 검토
+
+- [ ] 강력한 캐시 계층 (IndexedDB/AsyncStorage)
+- [ ] 인증 템플릿 (플러그인처럼 끼우기, 가능성 검진 필요함, node + browser 둘 다 가능한지, 그러기 위해서 어떻게 해야 하는지 검토 필요)
+- [ ] 전송 어댑터 다중화 (Edge/Node/Deno/React Native, axios는 adapter를 받는 방향으로 하는데, 가능성 검토 필요, axios 하나로 충분해보이기는 함)
+  - fetch 어댑터 인터페이스를 고정하고, 환경별 구현 주입:
+  - Node: undici
+  - Edge/Cloudflare: Web Fetch
+  - RN: cross-fetch or whatwg-fetch polyfill
+  - Deno: native fetch
