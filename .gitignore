@@ -121,6 +121,7 @@ docs/api
 docs/classes
 docs/interfaces
 docs/media
+docs/public
 
 # swc
 .swc/
