@@ -1,5 +1,11 @@
 # jin-frame이란?
 
+<!-- markdownlint-disable MD033 -->
+<p align="center">
+  <img src="../assets/jin-frame-brand.png" alt="brand" width="300"/>
+</p>
+<!-- markdownlint-enable MD033 -->
+
 **HTTP Request**를 **TypeScript Class**로 정의할 수 있도록 돕는 라이브러리입니다. 단순히 HTTP 요청을 정의하는 것에 그치지 않고, 실무 환경에서 자주 필요한 다양한 기능을 제공합니다. 예를 들어 Hook 정의, timeout 설정, 재시도 횟수 지정 등을 엔드포인트별로 다르게 설정할 수 있으며, 이 모든 것을 TypeScript Class를 기반으로 선언적으로 정의할 수 있습니다. 궁극적으로는 **API를 효율적으로 관리**하는 것이 목표입니다.
 
 ## 왜 jin-frame인가?

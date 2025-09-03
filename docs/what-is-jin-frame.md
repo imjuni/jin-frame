@@ -1,5 +1,11 @@
 # What is jin-frame?
 
+<!-- markdownlint-disable MD033 -->
+<p align="center">
+  <img src="../assets/jin-frame-brand.png" alt="brand" width="300"/>
+</p>
+<!-- markdownlint-enable MD033 -->
+
 **`jin-frame`** is a library that allows you to define **HTTP Requests** as **TypeScript Classes**.
 
 It goes beyond simply defining requests by providing a variety of features frequently required in real-world applications. For example, you can configure hooks, set timeouts, and specify retry counts differently per endpoint. All of these configurations are expressed declaratively through TypeScript classes. The ultimate goal is to help you **manage APIs more effectively**.
