@@ -6,6 +6,9 @@ hero:
   name: 'jin-frame'
   text: 'Declarative API definition'
   tagline: A reusable, declarative, type-safe, and extendable HTTP request library.
+  image:
+    src: /assets/jin-frame-brand.png
+    alt: jin-frame
   actions:
     - theme: brand
       text: What is Jin-Frame?
