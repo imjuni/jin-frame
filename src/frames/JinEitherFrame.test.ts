@@ -159,4 +159,90 @@ describe('JinEitherFrame', () => {
       throw new Error('Cannot reach this line');
     }
   });
+
+  it('should execute async preHook when preHook is async function', async () => {
+    let hookExecuted = false;
+
+    @Post({ host: 'http://some.api.google.com/jinframe/:passing' })
+    class AsyncPreHookFrame extends JinEitherFrame {
+      @Param()
+      declare public readonly passing: string;
+
+      @Body()
+      declare public readonly username: string;
+
+      @Body()
+      declare public readonly password: string;
+
+      async $_preHook() {
+        hookExecuted = true;
+      }
+    }
+
+    server.use(
+      http.post<PathParams<'passing'>, JinEitherFrameTestRequestBody>(
+        'http://some.api.google.com/jinframe/pass',
+        async ({ request }) => {
+          const body = await request.json();
+          if (body.username === 'ironman' && body.password === 'marvel') {
+            return HttpResponse.json<JinEitherFrameTestResponse>({ message: 'hello' });
+          }
+          return new HttpResponse('Bad Request', { status: 400 });
+        },
+      ),
+    );
+
+    const frame = AsyncPreHookFrame.of({ username: 'ironman', password: 'marvel', passing: 'pass' });
+    const reply = await frame.execute({ validateStatus: (status) => status < 400 });
+
+    expect(hookExecuted).toBeTruthy();
+    if (reply.type === 'pass') {
+      expect(reply.pass.status).toEqual(200);
+    } else {
+      throw new Error('Cannot reach this line');
+    }
+  });
+
+  it('should execute async postHook when postHook is async function', async () => {
+    let hookExecuted = false;
+
+    @Post({ host: 'http://some.api.google.com/jinframe/:passing' })
+    class AsyncPostHookFrame extends JinEitherFrame {
+      @Param()
+      declare public readonly passing: string;
+
+      @Body()
+      declare public readonly username: string;
+
+      @Body()
+      declare public readonly password: string;
+
+      async $_postHook() {
+        hookExecuted = true;
+      }
+    }
+
+    server.use(
+      http.post<PathParams<'passing'>, JinEitherFrameTestRequestBody>(
+        'http://some.api.google.com/jinframe/pass',
+        async ({ request }) => {
+          const body = await request.json();
+          if (body.username === 'ironman' && body.password === 'marvel') {
+            return HttpResponse.json<JinEitherFrameTestResponse>({ message: 'hello' });
+          }
+          return new HttpResponse('Bad Request', { status: 400 });
+        },
+      ),
+    );
+
+    const frame = AsyncPostHookFrame.of({ username: 'ironman', password: 'marvel', passing: 'pass' });
+    const reply = await frame.execute({ validateStatus: (status) => status < 400 });
+
+    expect(hookExecuted).toBeTruthy();
+    if (reply.type === 'pass') {
+      expect(reply.pass.status).toEqual(200);
+    } else {
+      throw new Error('Cannot reach this line');
+    }
+  });
 });

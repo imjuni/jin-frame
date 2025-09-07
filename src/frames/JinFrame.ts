@@ -8,6 +8,7 @@ import type { IJinFrameRequestConfig } from '#interfaces/options/IJinFrameReques
 import type { TJinRequestConfig } from '#interfaces/TJinFrameResponse';
 import { CE_HOOK_APPLY } from '#tools/CE_HOOK_APPLY';
 import { getDuration } from '#tools/getDuration';
+import { getError } from '#tools/getError';
 import { isValidateStatusDefault } from '#tools/isValidateStatusDefault';
 import { getStatusFromAxiosError } from '#tools/responses/getStatusFromAxiosError';
 import { AxiosError, type AxiosRequestConfig, type AxiosResponse } from 'axios';
@@ -135,7 +136,7 @@ export class JinFrame<TPASS = unknown, TFAIL = TPASS>
         };
       } catch (caught) {
         if (caught instanceof JinRequestError) {
-          throw option?.getError != null ? option.getError(caught) : caught;
+          throw getError(caught, option?.getError);
         }
 
         if (caught instanceof AxiosError) {
@@ -155,7 +156,7 @@ export class JinFrame<TPASS = unknown, TFAIL = TPASS>
             message: caught.message,
           });
 
-          throw option?.getError != null ? option.getError(jinFrameError) : jinFrameError;
+          throw getError(jinFrameError, option?.getError);
         }
 
         const duration = getDuration(this.$_data.startAt, new Date());
@@ -169,7 +170,7 @@ export class JinFrame<TPASS = unknown, TFAIL = TPASS>
           message: 'unknown error raised',
         });
 
-        throw option?.getError != null ? option.getError(jinFrameError) : jinFrameError;
+        throw getError(jinFrameError, option?.getError);
       }
     };
 

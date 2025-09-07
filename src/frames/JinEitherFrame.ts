@@ -22,6 +22,8 @@ import 'reflect-metadata';
 /**
  * Definition HTTP Request
  *
+ * @deprecated Use JinFrame instead.
+ *
  * @typeParam TPASS AxiosResponse type argument case of valid status.
  * eg. `AxiosResponse<TPASS>`
  *
