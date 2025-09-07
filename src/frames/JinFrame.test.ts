@@ -633,4 +633,122 @@ describe('hook count either frame test', () => {
     expect(frame.postHookCount).toEqual(1);
     expect(reply.status).toEqual(200);
   });
+
+  it('should handle AxiosError when network error occurs', async () => {
+    // MSW 서버를 일시적으로 중지하여 실제 네트워크 에러 발생시키기
+    retryServer.close();
+
+    await expect(async () => {
+      const frame = Test001PostFrame.of({ username: 'ironman', password: 'marvel', passing: 'pass' });
+      await frame.execute();
+    }).rejects.toThrowError();
+
+    // 서버 재시작
+    retryServer.listen({ onUnhandledRequest: 'bypass' });
+    retryServer.use(http.post(/.*some\.api\.google\.com.*/, () => new HttpResponse('Not Found', { status: 404 })));
+  });
+
+  it('should handle AxiosError with custom getError handler', async () => {
+    // MSW 서버를 일시적으로 중지하여 실제 네트워크 에러 발생시키기
+    retryServer.close();
+
+    const customError = new Error('Custom network error');
+
+    await expect(async () => {
+      const frame = Test001PostFrame.of({ username: 'ironman', password: 'marvel', passing: 'pass' });
+      await frame.execute({
+        getError: () => customError, // custom getError handler 제공
+      });
+    }).rejects.toThrow('Custom network error');
+
+    // 서버 재시작
+    retryServer.listen({ onUnhandledRequest: 'bypass' });
+    retryServer.use(http.post(/.*some\.api\.google\.com.*/, () => new HttpResponse('Not Found', { status: 404 })));
+  });
+
+  it('should handle network timeout and trigger catch block retry (334 line)', async () => {
+    let hookCallCount = 0;
+
+    @Post({ host: 'http://10.255.255.1/api/:passing', timeout: 1, retry: { max: 2, interval: 1 } }) // 라우팅되지 않는 IP로 timeout 에러 유발
+    class TimeoutRetryFrame extends JinFrame {
+      @Param()
+      declare public readonly passing: string;
+
+      @Body()
+      declare public readonly username: string;
+
+      @Body()
+      declare public readonly password: string;
+
+      $_retryFail(_req: any, _prevResponse: any) {
+        hookCallCount += 1;
+        console.log(`Network timeout retry hook executed: ${hookCallCount}`);
+      }
+    }
+
+    // MSW 완전 중지
+    retryServer.close();
+
+    await expect(async () => {
+      const frame = TimeoutRetryFrame.of({
+        username: 'ironman',
+        password: 'marvel',
+        passing: 'pass',
+      });
+
+      await frame.execute();
+    }).rejects.toThrowError();
+
+    // AbstractJinFrame catch 블록의 334라인 테스트
+    console.log(`Final hookCallCount: ${hookCallCount}`);
+    expect(hookCallCount).toBeGreaterThan(0); // 적어도 1번은 호출되어야 함
+    expect(hookCallCount).toBeLessThanOrEqual(2);
+
+    // MSW 서버 재시작
+    retryServer.listen({ onUnhandledRequest: 'bypass' });
+    retryServer.use(http.post(/.*some\.api\.google\.com.*/, () => new HttpResponse('Not Found', { status: 404 })));
+  }, 10000); // 10초 timeout
+
+  it('should exhaust retry attempts and trigger error rejection (332 line test)', async () => {
+    let hookExecutions = 0;
+
+    @Post({ host: 'http://10.255.255.2/test/:passing', timeout: 1, retry: { max: 0, interval: 1 } }) // max: 0으로 바로 332라인 테스트
+    class ExhaustRetryFrame extends JinFrame {
+      @Param()
+      declare public readonly passing: string;
+
+      @Body()
+      declare public readonly username: string;
+
+      @Body()
+      declare public readonly password: string;
+
+      $_retryFail(_req: any, _prevResponse: any) {
+        hookExecutions += 1;
+        // 334라인은 실행되지 않아야 함 (max: 0)
+        console.log(`Retry hook executed: ${hookExecutions}`);
+      }
+    }
+
+    // MSW 서버를 중지한 상태에서 테스트
+    retryServer.close();
+
+    await expect(async () => {
+      const frame = ExhaustRetryFrame.of({
+        username: 'ironman',
+        password: 'marvel',
+        passing: 'pass',
+      });
+
+      await frame.execute();
+    }).rejects.toThrowError();
+
+    // 332라인 테스트: max가 0이므로 hook이 실행되지 않아야 함
+    console.log(`Final exhaustRetry hookExecutions: ${hookExecutions}`);
+    expect(hookExecutions).toBe(0); // max: 0이므로 바로 reject되어야 함
+
+    // MSW 서버 재시작
+    retryServer.listen({ onUnhandledRequest: 'bypass' });
+    retryServer.use(http.post(/.*some\.api\.google\.com.*/, () => new HttpResponse('Not Found', { status: 404 })));
+  }, 10000);
 });
