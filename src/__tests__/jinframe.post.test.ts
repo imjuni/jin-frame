@@ -1,8 +1,9 @@
 import { JinEitherFrame } from '#frames/JinEitherFrame';
 import { Post } from '#decorators/methods/Post';
 import { isPass } from 'my-only-either';
-import nock from 'nock';
-import { afterEach, describe, expect, it } from 'vitest';
+import { http, HttpResponse, PathParams } from 'msw';
+import { setupServer } from 'msw/node';
+import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 import { Param } from '#decorators/fields/Param';
 import { Body } from '#decorators/fields/Body';
 import { Header } from '#decorators/fields/Header';
@@ -54,15 +55,49 @@ class TestUrlencodedPostFrame extends JinEitherFrame {
   }
 }
 
+interface TestPostFrameBody {
+  test: {
+    hello: {
+      marvel: { name: string; gender: string };
+    };
+  };
+}
+
+interface TestUrlencodedPostFrameBody {
+  username: string;
+  password: string;
+}
+
 describe('jinframe.test', () => {
+  // MSW server configuration
+  const server = setupServer();
+
+  beforeEach(() => {
+    server.listen();
+  });
+
   afterEach(() => {
-    nock.cleanAll();
+    server.resetHandlers();
+    server.close();
   });
 
-  it('nock-post-with-jinframe', async () => {
-    nock('http://some.api.google.com').post('/jinframe/pass').reply(200, {
-      message: 'hello',
-    });
+  it('msw-post-with-jinframe', async () => {
+    server.use(
+      http.post<PathParams<'passing'>, TestPostFrameBody>(
+        'http://some.api.google.com/jinframe/pass',
+        async ({ request }) => {
+          // JSON body validation
+          const body = await request.json();
+          if (body?.test?.hello?.marvel?.name === 'ironman' && body?.test?.hello?.marvel?.gender === 'male') {
+            return HttpResponse.json({
+              message: 'hello',
+            });
+          }
+
+          return new HttpResponse('Invalid body', { status: 400 });
+        },
+      ),
+    );
 
     const frame = new TestPostFrame();
     const resp = await frame.execute();
@@ -70,10 +105,23 @@ describe('jinframe.test', () => {
     expect(isPass(resp)).toEqual(true);
   });
 
-  it('nock-post-without-eiter-jinframe', async () => {
-    nock('http://some.api.google.com').post('/jinframe/pass').reply(200, {
-      message: 'hello',
-    });
+  it('msw-post-without-eiter-jinframe', async () => {
+    server.use(
+      http.post<PathParams<'passing'>, TestPostFrameBody>(
+        'http://some.api.google.com/jinframe/pass',
+        async ({ request }) => {
+          // JSON body validation
+          const body = await request.json();
+          if (body?.test?.hello?.marvel?.name === 'ironman' && body?.test?.hello?.marvel?.gender === 'male') {
+            return HttpResponse.json({
+              message: 'hello',
+            });
+          }
+
+          return new HttpResponse('Invalid body', { status: 400 });
+        },
+      ),
+    );
 
     const frame = new TestPostFrame();
     const resp = await frame.execute();
@@ -81,10 +129,26 @@ describe('jinframe.test', () => {
     expect(isPass(resp)).toEqual(true);
   });
 
-  it('nock-post-urlencoded', async () => {
-    nock('http://some.api.google.com').post('/jinframe/pass', 'username=ironman&password=marvel').reply(200, {
-      message: 'hello',
-    });
+  it('msw-post-urlencoded', async () => {
+    server.use(
+      http.post<PathParams<'passing'>, TestUrlencodedPostFrameBody>(
+        'http://some.api.google.com/jinframe/pass',
+        async ({ request }) => {
+          // URL-encoded body validation
+          const formData = await request.formData();
+          const username = formData.get('username');
+          const password = formData.get('password');
+
+          if (username === 'ironman' && password === 'marvel') {
+            return HttpResponse.json({
+              message: 'hello',
+            });
+          }
+
+          return new HttpResponse('Invalid form data', { status: 400 });
+        },
+      ),
+    );
 
     const frame = new TestUrlencodedPostFrame();
     const resp = await frame.execute();

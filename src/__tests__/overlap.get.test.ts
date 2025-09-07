@@ -1,7 +1,8 @@
 import { JinEitherFrame } from '#frames/JinEitherFrame';
 import { Post } from '#decorators/methods/Post';
-import nock from 'nock';
-import { afterEach, it } from 'vitest';
+import { http, HttpResponse, PathParams } from 'msw';
+import { setupServer } from 'msw/node';
+import { afterEach, beforeEach, it } from 'vitest';
 import { Param } from '#decorators/fields/Param';
 import { Query } from '#decorators/fields/Query';
 import { Body } from '#decorators/fields/Body';
@@ -9,7 +10,7 @@ import { Header } from '#decorators/fields/Header';
 
 @Post({
   host: 'http://some.api.google.com',
-  path: '/jinframe/:passing',
+  path: '/jinframe/:passing/:id',
 })
 class TestGetFrame extends JinEitherFrame {
   @Param()
@@ -18,6 +19,9 @@ class TestGetFrame extends JinEitherFrame {
   @Header()
   declare public readonly id: string;
 
+  @Param()
+  declare public readonly passing: string;
+
   @Query()
   declare public readonly name: string;
 
@@ -25,17 +29,62 @@ class TestGetFrame extends JinEitherFrame {
   declare public readonly skills: string[];
 }
 
+interface TestOverlapResponse {
+  message: string;
+}
+
+interface TestOverlapRequestBody {
+  id: string;
+}
+
+// MSW server configuration
+const server = setupServer();
+
+beforeEach(() => {
+  server.listen();
+});
+
 afterEach(() => {
-  nock.cleanAll();
+  server.resetHandlers();
+  server.close();
 });
 
 it('overlap-param-query', async () => {
-  nock('http://some.api.google.com')
-    .post('/jinframe/pass?passing=pass&name=ironman&skills=beam%2Cflying%21')
-    .reply(200, {
-      message: 'hello',
-    });
+  server.use(
+    http.post<PathParams<'passing'>, TestOverlapRequestBody>(
+      'http://some.api.google.com/jinframe/pass/3132',
+      async ({ request }) => {
+        const url = new URL(request.url);
+        const body = await request.json();
 
-  const frame = TestGetFrame.of({ id: 'pass', name: 'ironman', skills: ['beam', 'flying!'] });
+        // Check query parameters
+        const passing = url.searchParams.get('passing');
+        const name = url.searchParams.get('name');
+        const skills = url.searchParams.get('skills');
+
+        // Check body
+        const bodyId = body.id;
+
+        // Check headers
+        const headerId = request.headers.get('id');
+
+        if (
+          passing === 'pass' &&
+          name === 'ironman' &&
+          skills === 'beam,flying!' &&
+          bodyId === 'pass' &&
+          headerId === 'pass'
+        ) {
+          return HttpResponse.json<TestOverlapResponse>({
+            message: 'hello',
+          });
+        }
+
+        return new HttpResponse('Invalid request', { status: 400 });
+      },
+    ),
+  );
+
+  const frame = TestGetFrame.of({ id: '3132', passing: 'pass', name: 'ironman', skills: ['beam', 'flying!'] });
   await frame.execute();
 });

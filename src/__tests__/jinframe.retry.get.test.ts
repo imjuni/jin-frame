@@ -2,8 +2,9 @@ import { JinFrame } from '#frames/JinFrame';
 import type { TJinRequestConfig } from '#interfaces/TJinFrameResponse';
 import { Get } from '#decorators/methods/Get';
 import type { AxiosResponse } from 'axios';
-import nock from 'nock';
-import { afterEach, describe, expect, it } from 'vitest';
+import { http, HttpResponse, PathParams } from 'msw';
+import { setupServer } from 'msw/node';
+import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 import { Param } from '#decorators/fields/Param';
 import { Query } from '#decorators/fields/Query';
 
@@ -73,9 +74,21 @@ class RetryTestGet02Frame extends JinFrame {
   }
 }
 
+interface RetryTestSuccessResponse {
+  message: string;
+}
+
 describe('TestGet9Frame', () => {
+  // MSW server configuration
+  const server = setupServer();
+
+  beforeEach(() => {
+    server.listen();
+  });
+
   afterEach(() => {
-    nock.cleanAll();
+    server.resetHandlers();
+    server.close();
   });
 
   it('retry - getter', () => {
@@ -93,14 +106,31 @@ describe('TestGet9Frame', () => {
   });
 
   it('under retry count', async () => {
-    nock('http://some.api.google.com')
-      .get('/jinframe/pass?name=ironman&skill=beam&skill=flying%21')
-      .times(2)
-      .reply(500, 'Internal Server Error')
-      .get('/jinframe/pass?name=ironman&skill=beam&skill=flying%21')
-      .reply(200, {
-        message: 'hello',
-      });
+    let callCount = 0;
+
+    server.use(
+      http.get<PathParams<'passing'>>('http://some.api.google.com/jinframe/pass', ({ request }) => {
+        const url = new URL(request.url);
+        const name = url.searchParams.get('name');
+        const skills = url.searchParams.getAll('skill');
+
+        if (name === 'ironman' && skills.includes('beam') && skills.includes('flying!')) {
+          callCount += 1;
+
+          // First 2 calls return 500 error
+          if (callCount <= 2) {
+            return new HttpResponse('Internal Server Error', { status: 500 });
+          }
+
+          // 3rd call returns success
+          return HttpResponse.json<RetryTestSuccessResponse>({
+            message: 'hello',
+          });
+        }
+
+        return new HttpResponse('Not Found', { status: 404 });
+      }),
+    );
 
     const frame = new RetryTestGet01Frame();
 
@@ -110,14 +140,20 @@ describe('TestGet9Frame', () => {
   });
 
   it('over retry count', async () => {
-    nock('http://some.api.google.com')
-      .get('/jinframe/pass?name=ironman&skill=beam&skill=flying%21')
-      .times(5)
-      .reply(500, 'Internal Server Error')
-      .get('/jinframe/pass?name=ironman&skill=beam&skill=flying%21')
-      .reply(200, {
-        message: 'hello',
-      });
+    server.use(
+      http.get<PathParams<'passing'>>('http://some.api.google.com/jinframe/pass', ({ request }) => {
+        const url = new URL(request.url);
+        const name = url.searchParams.get('name');
+        const skills = url.searchParams.getAll('skill');
+
+        if (name === 'ironman' && skills.includes('beam') && skills.includes('flying!')) {
+          // Always return 500 error (will be called 4 times: initial + 3 retries)
+          return new HttpResponse('Internal Server Error', { status: 500 });
+        }
+
+        return new HttpResponse('Not Found', { status: 404 });
+      }),
+    );
 
     const frame = new RetryTestGet01Frame();
 
@@ -130,14 +166,21 @@ describe('TestGet9Frame', () => {
 
   it('retry with hook', async () => {
     const errorMessage = 'Internal Server Error';
-    nock('http://some.api.google.com')
-      .get('/jinframe/pass?name=ironman&skill=beam&skill=flying%21')
-      .times(4)
-      .reply(500, errorMessage)
-      .get('/jinframe/pass?name=ironman&skill=beam&skill=flying%21')
-      .reply(200, {
-        message: 'hello',
-      });
+
+    server.use(
+      http.get<PathParams<'passing'>>('http://some.api.google.com/jinframe/pass', ({ request }) => {
+        const url = new URL(request.url);
+        const name = url.searchParams.get('name');
+        const skills = url.searchParams.getAll('skill');
+
+        if (name === 'ironman' && skills.includes('beam') && skills.includes('flying!')) {
+          // Always return 500 error (will be called 3 times: initial + 2 retries)
+          return new HttpResponse(errorMessage, { status: 500 });
+        }
+
+        return new HttpResponse('Not Found', { status: 404 });
+      }),
+    );
 
     const frame = new RetryTestGet02Frame();
 

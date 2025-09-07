@@ -58,7 +58,7 @@ class Test004ZeroDepthPostFrame extends JinEitherFrame {
 }
 
 describe('JinEitherFrame - primitive type', () => {
-  it('primitive type을 path param과 body에 적용', async () => {
+  it('should apply primitive type to path param and body', async () => {
     const frame = Test001PostFrame.of({ passing: 'hello', username: 'ironman', password: 'advengers' });
     const req = frame.request();
 
@@ -75,7 +75,7 @@ describe('JinEitherFrame - primitive type', () => {
     expect(req).toEqual(excpetation);
   });
 
-  it('body의 key 필드를 replaceAt으로 다른 key로 적용', async () => {
+  it('should apply body key field to different key using replaceAt', async () => {
     const frame = Test002PostFrame.of({ passing: 'hello', username: 'ironman', password: 'advengers' });
     const req = frame.request();
 
@@ -92,7 +92,7 @@ describe('JinEitherFrame - primitive type', () => {
     expect(req).toEqual(excpetation);
   });
 
-  it('body의 key 필드를 replaceAt으로 다른 key에 적용할 때 dot notation 사용', async () => {
+  it('should apply body key fields to nested objects when using dot notation in replaceAt', async () => {
     const frame = Test003PostFrame.of({ passing: 'hello', username: 'ironman', password: 'advengers' });
     const req = frame.request();
 
@@ -111,7 +111,7 @@ describe('JinEitherFrame - primitive type', () => {
     expect(req).toEqual(excpetation);
   });
 
-  it('body 필드를 오브젝트로 설정', async () => {
+  it('should apply object type to body field when body field is object', async () => {
     const frame = Test004ZeroDepthPostFrame.of({
       passing: 'hello',
       username: 'ironman',

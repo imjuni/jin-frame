@@ -1,7 +1,8 @@
 import { JinEitherFrame } from '#frames/JinEitherFrame';
 import { Post } from '#decorators/methods/Post';
-import nock from 'nock';
-import { afterEach, describe, expect, it } from 'vitest';
+import { http, HttpResponse, PathParams } from 'msw';
+import { setupServer } from 'msw/node';
+import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 import { Param } from '#decorators/fields/Param';
 import { Body } from '#decorators/fields/Body';
 
@@ -29,11 +30,31 @@ class Test002PostFrame extends JinEitherFrame {
   declare public readonly password: string;
 }
 
-afterEach(() => {
-  nock.cleanAll();
-});
+interface JinEitherFrameTestResponse {
+  message: string;
+}
+
+interface JinEitherFrameTestRequestBody {
+  username: string;
+  password: string;
+}
 
 describe('JinEitherFrame', () => {
+  // MSW server configuration
+  const server = setupServer();
+
+  beforeEach(() => {
+    server.listen({ onUnhandledRequest: 'bypass' });
+
+    // 기본 핸들러: 모든 some.api.google.com 요청에 대해 404 반환
+    // base handler: return 404 for all some.api.google.com requests
+    server.use(http.post(/.*some\.api\.google\.com.*/, () => new HttpResponse('Not Found', { status: 404 })));
+  });
+
+  afterEach(() => {
+    server.resetHandlers();
+    server.close();
+  });
   it('should return JinCreateError when request build fail', async () => {
     const frame = Test002PostFrame.of({ username: 'ironman', password: 'marvel', passing: 'pass' });
     const requester = frame.create();
@@ -50,9 +71,18 @@ describe('JinEitherFrame', () => {
   });
 
   it('should return fail either when status is 400', async () => {
-    nock('http://some.api.google.com').post('/jinframe/pass', { username: 'ironman', password: 'marvel' }).reply(400, {
-      message: 'hello',
-    });
+    server.use(
+      http.post<PathParams<'passing'>, JinEitherFrameTestRequestBody>(
+        'http://some.api.google.com/jinframe/pass',
+        async ({ request }) => {
+          const body = await request.json();
+          if (body.username === 'ironman' && body.password === 'marvel') {
+            return HttpResponse.json<JinEitherFrameTestResponse>({ message: 'hello' }, { status: 400 });
+          }
+          return new HttpResponse('Bad Request', { status: 400 });
+        },
+      ),
+    );
 
     const frame = Test001PostFrame.of({ username: 'ironman', password: 'marvel', passing: 'pass' });
     const reply = await frame.execute({ validateStatus: (status) => status < 400 });
@@ -65,9 +95,18 @@ describe('JinEitherFrame', () => {
   });
 
   it('should return pass either when status is 200', async () => {
-    nock('http://some.api.google.com').post('/jinframe/pass', { username: 'ironman', password: 'marvel' }).reply(200, {
-      message: 'hello',
-    });
+    server.use(
+      http.post<PathParams<'passing'>, JinEitherFrameTestRequestBody>(
+        'http://some.api.google.com/jinframe/pass',
+        async ({ request }) => {
+          const body = await request.json();
+          if (body.username === 'ironman' && body.password === 'marvel') {
+            return HttpResponse.json<JinEitherFrameTestResponse>({ message: 'hello' });
+          }
+          return new HttpResponse('Bad Request', { status: 400 });
+        },
+      ),
+    );
 
     const frame = Test001PostFrame.of({ username: 'ironman', password: 'marvel', passing: 'pass' });
     const reply = await frame.execute({ validateStatus: (status) => status < 400 });
@@ -80,9 +119,8 @@ describe('JinEitherFrame', () => {
   });
 
   it('should return fail either when 404 not found', async () => {
-    nock('http://some.api.google.com').post('/jinframe/pass', { username: 'ironman', password: 'marvel' }).reply(200, {
-      message: 'hello',
-    });
+    // 기본 핸들러가 모든 요청에 대해 404를 반환하므로 별도 설정 불필요
+    // passing: 'fail'로 인해 /jinframe/fail을 호출하게 되어 404 발생
 
     const frame = Test001PostFrame.of({ username: 'ironman', password: 'marvel', passing: 'fail' });
     const reply = await frame.execute();
@@ -95,9 +133,18 @@ describe('JinEitherFrame', () => {
   });
 
   it('should return fail either when validate stauts throw exception', async () => {
-    nock('http://some.api.google.com').post('/jinframe/pass', { username: 'ironman', password: 'marvel' }).reply(200, {
-      message: 'hello',
-    });
+    server.use(
+      http.post<PathParams<'passing'>, JinEitherFrameTestRequestBody>(
+        'http://some.api.google.com/jinframe/pass',
+        async ({ request }) => {
+          const body = await request.json();
+          if (body.username === 'ironman' && body.password === 'marvel') {
+            return HttpResponse.json<JinEitherFrameTestResponse>({ message: 'hello' });
+          }
+          return new HttpResponse('Bad Request', { status: 400 });
+        },
+      ),
+    );
 
     const frame = Test001PostFrame.of({ username: 'ironman', password: 'marvel', passing: 'pass' });
     const reply = await frame.execute({

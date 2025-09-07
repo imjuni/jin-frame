@@ -2,8 +2,8 @@ import { JinFile } from '#frames/JinFile';
 import { JinFrame } from '#frames/JinFrame';
 import { Post } from '#decorators/methods/Post';
 import MockAdapter from 'axios-mock-adapter';
-import nock from 'nock';
-import { afterEach, describe, expect, it } from 'vitest';
+import { setupServer } from 'msw/node';
+import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 import { Param } from '#decorators/fields/Param';
 import { Body } from '#decorators/fields/Body';
 import { Query } from '#decorators/fields/Query';
@@ -78,8 +78,16 @@ class Test005PostFrame extends JinFrame<{ message: string }> {
 }
 
 describe('AbstractJinFrame', () => {
+  // MSW server configuration
+  const server = setupServer();
+
+  beforeEach(() => {
+    server.listen();
+  });
+
   afterEach(() => {
-    nock.cleanAll();
+    server.resetHandlers();
+    server.close();
   });
 
   it('show return form-data when using getFormData', async () => {
