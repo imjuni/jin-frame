@@ -3,8 +3,9 @@ import { JinFrame } from '#frames/JinFrame';
 import type { IDebugInfo } from '#interfaces/IDebugInfo';
 import type { TJinFrameResponse, TJinRequestConfig } from '#interfaces/TJinFrameResponse';
 import { Post } from '#decorators/methods/Post';
-import nock from 'nock';
-import { afterEach, describe, expect, it } from 'vitest';
+import { http, HttpResponse, PathParams } from 'msw';
+import { setupServer } from 'msw/node';
+import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 import { Param } from '#decorators/fields/Param';
 import { Body } from '#decorators/fields/Body';
 import { AxiosResponse } from 'axios';
@@ -113,9 +114,29 @@ class Test004PostFrame extends JinFrame<{ message: string }> {
   }
 }
 
+interface JinFrameTestResponse {
+  message: string;
+}
+
+interface JinFrameTestRequestBody {
+  username: string;
+  password: string;
+}
+
 describe('JinFrame', () => {
+  // MSW server configuration
+  const server = setupServer();
+
+  beforeEach(() => {
+    server.listen({ onUnhandledRequest: 'bypass' });
+
+    // 기본 핸들러: 모든 some.api.google.com 요청에 대해 404 반환
+    server.use(http.post(/.*some\.api\.google\.com.*/, () => new HttpResponse('Not Found', { status: 404 })));
+  });
+
   afterEach(() => {
-    nock.cleanAll();
+    server.resetHandlers();
+    server.close();
   });
 
   it('should return frame URL when using signature', () => {
@@ -151,9 +172,18 @@ describe('JinFrame', () => {
   });
 
   it('should throw exception when response status code 400', async () => {
-    nock('http://some.api.google.com').post('/jinframe/pass', { username: 'ironman', password: 'marvel' }).reply(400, {
-      message: 'hello',
-    });
+    server.use(
+      http.post<PathParams<'passing'>, JinFrameTestRequestBody>(
+        'http://some.api.google.com/jinframe/pass',
+        async ({ request }) => {
+          const body = await request.json();
+          if (body.username === 'ironman' && body.password === 'marvel') {
+            return HttpResponse.json<JinFrameTestResponse>({ message: 'hello' }, { status: 400 });
+          }
+          return new HttpResponse('Bad Request', { status: 400 });
+        },
+      ),
+    );
 
     await expect(async () => {
       const frame = Test001PostFrame.of({ username: 'ironman', password: 'marvel', passing: 'pass' });
@@ -162,9 +192,18 @@ describe('JinFrame', () => {
   });
 
   it('should return response object when response status code 200', async () => {
-    nock('http://some.api.google.com').post('/jinframe/pass', { username: 'ironman', password: 'marvel' }).reply(200, {
-      message: 'hello',
-    });
+    server.use(
+      http.post<PathParams<'passing'>, JinFrameTestRequestBody>(
+        'http://some.api.google.com/jinframe/pass',
+        async ({ request }) => {
+          const body = await request.json();
+          if (body.username === 'ironman' && body.password === 'marvel') {
+            return HttpResponse.json<JinFrameTestResponse>({ message: 'hello' });
+          }
+          return new HttpResponse('Bad Request', { status: 400 });
+        },
+      ),
+    );
 
     const frame = Test001PostFrame.of({
       username: 'ironman',
@@ -179,9 +218,18 @@ describe('JinFrame', () => {
   it('shoud return response object when using custom body', async () => {
     const customBody = { name: 'i-am-custom-body' };
 
-    nock('http://some.api.google.com').post('/jinframe/pass', customBody).reply(200, {
-      message: 'hello',
-    });
+    server.use(
+      http.post<PathParams<'passing'>, { name: string }>(
+        'http://some.api.google.com/jinframe/pass',
+        async ({ request }) => {
+          const body = await request.json();
+          if (body.name === 'i-am-custom-body') {
+            return HttpResponse.json<JinFrameTestResponse>({ message: 'hello' });
+          }
+          return new HttpResponse('Bad Request', { status: 400 });
+        },
+      ),
+    );
 
     const frame = Test001PostFrame.of({
       username: 'ironman',
@@ -198,9 +246,18 @@ describe('JinFrame', () => {
   });
 
   it('should throw exception when status 404 response', async () => {
-    nock('http://some.api.google.com')
-      .post('/jinframe/pass', { username: 'ironman', password: 'marvel' })
-      .reply(404, 'not found');
+    server.use(
+      http.post<PathParams<'passing'>, JinFrameTestRequestBody>(
+        'http://some.api.google.com/jinframe/pass',
+        async ({ request }) => {
+          const body = await request.json();
+          if (body.username === 'ironman' && body.password === 'marvel') {
+            return new HttpResponse('not found', { status: 404 });
+          }
+          return new HttpResponse('Bad Request', { status: 400 });
+        },
+      ),
+    );
 
     await expect(async () => {
       const frame = Test001PostFrame.of({ username: 'ironman', password: 'marvel', passing: 'pass' });
@@ -211,9 +268,18 @@ describe('JinFrame', () => {
   });
 
   it('should throw exception from request builder when missing path parameter', async () => {
-    nock('http://some.api.google.com').post('/jinframe/pass', { username: 'ironman', password: 'marvel' }).reply(200, {
-      message: 'hello',
-    });
+    server.use(
+      http.post<PathParams<'passing'>, JinFrameTestRequestBody>(
+        'http://some.api.google.com/jinframe/pass',
+        async ({ request }) => {
+          const body = await request.json();
+          if (body.username === 'ironman' && body.password === 'marvel') {
+            return HttpResponse.json<JinFrameTestResponse>({ message: 'hello' });
+          }
+          return new HttpResponse('Bad Request', { status: 400 });
+        },
+      ),
+    );
 
     const frame = Test002PostFrame.of({ username: 'ironman', password: 'marvel', passing: 'fail' });
 
@@ -225,10 +291,7 @@ describe('JinFrame', () => {
   });
 
   it('should throw 404 not found exception when invalid url', async () => {
-    nock('http://some.api.google.com')
-      .post('/jinframe/pass', { username: 'ironman', password: 'marvel' })
-      .reply(200, { message: 'hello' });
-
+    // 기본 핸들러가 모든 요청에 대해 404를 반환하므로 별도 설정 불필요
     await expect(async () => {
       const frame = Test001PostFrame.of({ username: 'ironman', password: 'marvel', passing: 'fail' });
       await frame.execute();
@@ -236,9 +299,18 @@ describe('JinFrame', () => {
   });
 
   it('exception - invalid exception', async () => {
-    nock('http://some.api.google.com')
-      .post('/jinframe/pass', { username: 'ironman', password: 'marvel' })
-      .reply(200, { message: 'hello' });
+    server.use(
+      http.post<PathParams<'passing'>, JinFrameTestRequestBody>(
+        'http://some.api.google.com/jinframe/pass',
+        async ({ request }) => {
+          const body = await request.json();
+          if (body.username === 'ironman' && body.password === 'marvel') {
+            return HttpResponse.json<JinFrameTestResponse>({ message: 'hello' });
+          }
+          return new HttpResponse('Bad Request', { status: 400 });
+        },
+      ),
+    );
 
     await expect(async () => {
       const frame = Test001PostFrame.of({ username: 'ironman', password: 'marvel', passing: 'pass' });
@@ -252,9 +324,18 @@ describe('JinFrame', () => {
   });
 
   it('should raise error wrap custom error using getError when server response 404', async () => {
-    nock('http://some.api.google.com')
-      .post('/jinframe/pass', { username: 'ironman', password: 'marvel' })
-      .reply(404, 'not found');
+    server.use(
+      http.post<PathParams<'passing'>, JinFrameTestRequestBody>(
+        'http://some.api.google.com/jinframe/pass',
+        async ({ request }) => {
+          const body = await request.json();
+          if (body.username === 'ironman' && body.password === 'marvel') {
+            return new HttpResponse('not found', { status: 404 });
+          }
+          return new HttpResponse('Bad Request', { status: 400 });
+        },
+      ),
+    );
 
     await expect(async () => {
       const frame = Test001PostFrame.of({ username: 'ironman', password: 'marvel', passing: 'pass' });
@@ -271,9 +352,18 @@ describe('JinFrame', () => {
   });
 
   it('should raise error wrap custom error using getError when request building', async () => {
-    nock('http://some.api.google.com')
-      .post('/jinframe/pass', { username: 'ironman', password: 'marvel' })
-      .reply(200, { message: 'hello' });
+    server.use(
+      http.post<PathParams<'passing'>, JinFrameTestRequestBody>(
+        'http://some.api.google.com/jinframe/pass',
+        async ({ request }) => {
+          const body = await request.json();
+          if (body.username === 'ironman' && body.password === 'marvel') {
+            return HttpResponse.json<JinFrameTestResponse>({ message: 'hello' });
+          }
+          return new HttpResponse('Bad Request', { status: 400 });
+        },
+      ),
+    );
 
     await expect(async () => {
       const frame = Test001PostFrame.of({ username: 'ironman', password: 'marvel', passing: 'fail' });
@@ -290,9 +380,18 @@ describe('JinFrame', () => {
   });
 
   it('should custom wrap using getError when unknown error raise on request api', async () => {
-    nock('http://some.api.google.com')
-      .post('/jinframe/pass', { username: 'ironman', password: 'marvel' })
-      .reply(500, { message: 'hello' });
+    server.use(
+      http.post<PathParams<'passing'>, JinFrameTestRequestBody>(
+        'http://some.api.google.com/jinframe/pass',
+        async ({ request }) => {
+          const body = await request.json();
+          if (body.username === 'ironman' && body.password === 'marvel') {
+            return HttpResponse.json<JinFrameTestResponse>({ message: 'hello' }, { status: 500 });
+          }
+          return new HttpResponse('Bad Request', { status: 400 });
+        },
+      ),
+    );
 
     await expect(async () => {
       const frame = Test001PostFrame.of({ username: 'ironman', password: 'marvel', passing: 'pass' });
@@ -311,9 +410,18 @@ describe('JinFrame', () => {
   });
 
   it('should custom wrap using getError when unknown error raise on hook', async () => {
-    nock('http://some.api.google.com').post('/jinframe/pass', { username: 'ironman', password: 'marvel' }).reply(401, {
-      message: 'hello',
-    });
+    server.use(
+      http.post<PathParams<'passing'>, JinFrameTestRequestBody>(
+        'http://some.api.google.com/jinframe/pass',
+        async ({ request }) => {
+          const body = await request.json();
+          if (body.username === 'ironman' && body.password === 'marvel') {
+            return HttpResponse.json<JinFrameTestResponse>({ message: 'hello' }, { status: 401 });
+          }
+          return new HttpResponse('Bad Request', { status: 400 });
+        },
+      ),
+    );
 
     await expect(async () => {
       const frame = Test003PostFrame.of({
@@ -343,14 +451,31 @@ describe('JinFrame', () => {
 });
 
 describe('JinFrame pre, post Hook execution', () => {
+  // MSW server configuration for this test suite
+  const hookServer = setupServer();
+
+  beforeEach(() => {
+    hookServer.listen();
+  });
+
   afterEach(() => {
-    nock.cleanAll();
+    hookServer.resetHandlers();
+    hookServer.close();
   });
 
   it('should throw error when override pre, post hook but dont configured retry configuration', async () => {
-    nock('http://some.api.google.com').post('/jinframe/pass', { username: 'ironman', password: 'marvel' }).reply(400, {
-      message: 'error',
-    });
+    hookServer.use(
+      http.post<PathParams<'passing'>, JinFrameTestRequestBody>(
+        'http://some.api.google.com/jinframe/pass',
+        async ({ request }) => {
+          const body = await request.json();
+          if (body.username === 'ironman' && body.password === 'marvel') {
+            return HttpResponse.json<JinFrameTestResponse>({ message: 'error' }, { status: 400 });
+          }
+          return new HttpResponse('Bad Request', { status: 400 });
+        },
+      ),
+    );
 
     await expect(async () => {
       const frame = Test003PostFrame.of({
@@ -365,9 +490,18 @@ describe('JinFrame pre, post Hook execution', () => {
   });
 
   it('should response reply data when override pre, post hook but dont configured retry configuration', async () => {
-    nock('http://some.api.google.com').post('/jinframe/pass', { username: 'ironman', password: 'marvel' }).reply(200, {
-      message: 'hello',
-    });
+    hookServer.use(
+      http.post<PathParams<'passing'>, JinFrameTestRequestBody>(
+        'http://some.api.google.com/jinframe/pass',
+        async ({ request }) => {
+          const body = await request.json();
+          if (body.username === 'ironman' && body.password === 'marvel') {
+            return HttpResponse.json<JinFrameTestResponse>({ message: 'hello' });
+          }
+          return new HttpResponse('Bad Request', { status: 400 });
+        },
+      ),
+    );
 
     const frame = Test003PostFrame.of({
       username: 'ironman',
@@ -385,17 +519,31 @@ describe('JinFrame pre, post Hook execution', () => {
 });
 
 describe('hook count either frame test', () => {
+  // MSW server configuration for this test suite
+  const retryServer = setupServer();
+
+  beforeEach(() => {
+    retryServer.listen();
+  });
+
   afterEach(() => {
-    nock.cleanAll();
+    retryServer.resetHandlers();
+    retryServer.close();
   });
 
   it('should every retry count but fail when server response 401 every request', async () => {
-    nock('http://some.api.google.com')
-      .post('/jinframe/pass', { username: 'ironman', password: 'marvel' })
-      .times(5)
-      .reply(401, {
-        message: 'error',
-      });
+    retryServer.use(
+      http.post<PathParams<'passing'>, JinFrameTestRequestBody>(
+        'http://some.api.google.com/jinframe/pass',
+        async ({ request }) => {
+          const body = await request.json();
+          if (body.username === 'ironman' && body.password === 'marvel') {
+            return HttpResponse.json<JinFrameTestResponse>({ message: 'error' }, { status: 401 });
+          }
+          return new HttpResponse('Bad Request', { status: 400 });
+        },
+      ),
+    );
 
     const frame = Test004PostFrame.of({
       username: 'ironman',
@@ -416,12 +564,27 @@ describe('hook count either frame test', () => {
   });
 
   it('should every retry count but fail when server response one time after not found url', async () => {
-    nock('http://some.api.google.com')
-      .post('/jinframe/pass', { username: 'ironman', password: 'marvel' })
-      .times(1)
-      .reply(401, {
-        message: 'error',
-      });
+    let callCount = 0;
+
+    retryServer.use(
+      http.post<PathParams<'passing'>, JinFrameTestRequestBody>(
+        'http://some.api.google.com/jinframe/pass',
+        async ({ request }) => {
+          const body = await request.json();
+          if (body.username === 'ironman' && body.password === 'marvel') {
+            callCount += 1;
+
+            if (callCount === 1) {
+              return HttpResponse.json<JinFrameTestResponse>({ message: 'error' }, { status: 401 });
+            }
+
+            // 두 번째 이후 호출에는 404 반환 (URL not found 시뮬레이션)
+            return new HttpResponse('Not Found', { status: 404 });
+          }
+          return new HttpResponse('Bad Request', { status: 400 });
+        },
+      ),
+    );
 
     const frame = Test004PostFrame.of({
       username: 'ironman',
@@ -436,15 +599,24 @@ describe('hook count either frame test', () => {
     } catch (catched) {
       expect(frame.getData('retry')?.try).toEqual(3);
       expect(frame.preHookCount).toEqual(1);
-      expect(frame.postHookCount).toEqual(0);
+      expect(frame.postHookCount).toEqual(1);
       expect(catched).toBeDefined();
     }
   });
 
   it('validateStatus true', async () => {
-    nock('http://some.api.google.com').post('/jinframe/pass', { username: 'ironman', password: 'marvel' }).reply(200, {
-      message: 'success',
-    });
+    retryServer.use(
+      http.post<PathParams<'passing'>, JinFrameTestRequestBody>(
+        'http://some.api.google.com/jinframe/pass',
+        async ({ request }) => {
+          const body = await request.json();
+          if (body.username === 'ironman' && body.password === 'marvel') {
+            return HttpResponse.json<JinFrameTestResponse>({ message: 'success' });
+          }
+          return new HttpResponse('Bad Request', { status: 400 });
+        },
+      ),
+    );
 
     const frame = Test004PostFrame.of({
       username: 'ironman',
