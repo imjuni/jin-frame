@@ -6,15 +6,15 @@ yellow='\033[0;33m'
 no_color='\033[0m'
 
 echo -e "\n ${yellow}* code lint start.${no_color}"
-npm run lint-staged
+pnpm run lint-staged
 echo -e "\n ${yellow}* code lint end.${no_color}"
 
 echo -e "\n ${yellow}* code build start.${no_color}"
-npm run build
+pnpm run build
 echo -e "\n ${yellow}* code build end.${no_color}"
 
 echo -e "\n ${yellow}* code build start.${no_color}"
-npm run test
+pnpm run test
 echo -e "\n ${yellow}* code build end.${no_color}"
 
 echo -e "\n ${green}* pre-commit hook was SUCCESSFUL${no_color} \n"

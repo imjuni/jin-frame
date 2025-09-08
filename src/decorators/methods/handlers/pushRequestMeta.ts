@@ -5,7 +5,7 @@ import 'reflect-metadata';
 
 /**
  * target(생성자)에 메서드 엔트리를 누적(push) 저장
- *  */
+ * */
 export function pushRequestMeta<T>(target: Constructor<T>, entry: TMethodEntry): void {
   const prev = (Reflect.getOwnMetadata(REQUEST_METHOD_DECORATOR, target) as TMethodEntry[] | undefined) ?? [];
   Reflect.defineMetadata(REQUEST_METHOD_DECORATOR, [...prev, entry], target);

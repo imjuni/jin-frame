@@ -1,4 +1,4 @@
-import { mergeFrameOption } from '#tools/mergeOption';
+import { mergeFrameOption } from '#tools/mergeFrameOption';
 import type { IFrameOption } from '#interfaces/options/IFrameOption';
 import { describe, expect, it } from 'vitest';
 
