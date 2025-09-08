@@ -1,0 +1,1 @@
+export type TMilliseconds = number;
