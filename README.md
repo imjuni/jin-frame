@@ -35,11 +35,11 @@ Why `jin-frame`?
 - [Install](#install)
 - [Usage](#usage)
 - [Axios version](#axios-version)
+- [Retry, Timeout](#retry-timeout)
 - [Mocking](#mocking)
 - [Form](#form)
   - [application/x-www-form-urlencoded](#applicationx-www-form-urlencoded)
   - [multipart/form-data](#multipartform-data)
-- [Hook](#hook)
   - [Field for logging, debugging](#field-for-logging-debugging)
 - [Example](#example)
 - [License](#license)
@@ -72,6 +72,14 @@ Why `jin-frame`?
 
 ```sh
 npm install jin-frame --save
+```
+
+```sh
+yarn add jin-frame --save
+```
+
+```sh
+pnpm add jin-frame --save
 ```
 
 ## Usage
@@ -144,6 +152,31 @@ const res = await frame.execute();
 | 3.x       | >= 1.1.x  |
 | 4.x       | >= 1.4.x  |
 
+## Retry, Timeout
+
+Retry and Timeout can be easily applied without installing additional packages.
+
+```ts
+import { Post, Param, Body, Header, Query, Retry } from 'jin-frame';
+
+@Timeout(2000) // Timeout after 2000ms
+@Retry({ max: 5, interval: 1000 }) // Retry up to 5 times with 1000ms interval
+@Post({ host: 'https://api.superhero.com', path: '/:name' })
+class TestPostQuery extends JinFrame {
+  @Header()
+  declare public readonly Authorization: string;
+
+  @Param()
+  declare public readonly name: string;
+
+  @Body()
+  declare public readonly team: string;
+
+  @Body()
+  declare public readonly gender: string;
+}
+```
+
 ## Mocking
 
 jin-frame use axios internally. So you can use [axios-mock-adapter](https://github.com/ctimmerm/axios-mock-adapter).
@@ -178,46 +211,6 @@ The form data is `multipart/form-data` and `application/x-www-form-urlencoded`. 
 ### multipart/form-data
 
 jin-frame uses the [form-data](https://github.com/form-data/form-data) package for form-data processing. If you set the `multipart/form-data` content-type, use the form-data package to generate the AxiosRequestConfig data field value. Alternatively, upload the file by passing the customBody constructor parameter.
-
-## Hook
-
-JinFrame support pre, post hook side of each request.
-
-```ts
-@Post({ host: 'http://some.api.google.com', path: '/jinframe/:id' })
-class TestPostFrame extends JinFrame {
-  @Header()
-  declare public readonly Authorization: string;
-
-  @Param()
-  declare public readonly name: string;
-
-  @Body()
-  declare public readonly team: string;
-
-  @Body()
-  declare public readonly gender: string;
-
-  override $_preHook(req: AxiosRequestConfig<unknown>): void {
-    console.log('pre hook executed');
-  }
-
-  override $_postHook(req: AxiosRequestConfig<unknown>): void {
-    console.log('post hook executed');
-  }
-}
-
-const frame = TestPostFrame.of({ 
-  Authorization: 'Bearer aaa3657e-cd78-4bcd-a311-109a7500b60f', 
-  name: 'ironman', 
-  team: 'advengers', 
-  gender: 'male'
-});
-
-// 'pre hook executed' display console
-const res = await frame.execute();
-// 'post hook executed' display console
-```
 
 ### Field for logging, debugging
 
