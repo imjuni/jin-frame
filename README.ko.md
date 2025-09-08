@@ -66,10 +66,18 @@ jin-frame은 TypeScript 데코레이터와 클래스를 사용한 API 프레임�
 npm install jin-frame --save
 ```
 
+```sh
+yarn add jin-frame --save
+```
+
+```sh
+pnpm add jin-frame --save
+```
+
 ## Useage
 
 ```ts
-import { Post, Param, Body, Header, Query} from 'jin-frame';
+import { Post, Param, Body, Header, Query } from 'jin-frame';
 
 @Post({ host: 'http://some.api.google.com', path: '/jinframe/:passing' })
 class TestPostQuery extends JinFrame {
