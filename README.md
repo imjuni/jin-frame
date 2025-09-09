@@ -16,7 +16,7 @@ A reusable, declarative, type-safe, and extendable HTTP request library.
 
 <!-- markdownlint-disable MD033 -->
 <p align="center">
-   <img src="assets/jin-frame-brand.png" alt="brand" width="400"/>
+   <img src="assets/jin-frame-brand-icon.png" alt="brand" width="500"/>
 </p>
 <!-- markdownlint-enable MD033 -->
 
@@ -31,16 +31,13 @@ Why `jin-frame`?
 ## Table of Contents <!-- omit in toc -->
 
 - [Comparison of direct usage and jin-frame](#comparison-of-direct-usage-and-jin-frame)
-- [Requirements](#requirements)
 - [Install](#install)
 - [Usage](#usage)
-- [Axios version](#axios-version)
 - [Retry, Timeout](#retry-timeout)
-- [Mocking](#mocking)
-- [Form](#form)
-  - [application/x-www-form-urlencoded](#applicationx-www-form-urlencoded)
-  - [multipart/form-data](#multipartform-data)
-  - [Field for logging, debugging](#field-for-logging-debugging)
+- [Authorization](#authorization)
+- [Requirements](#requirements)
+  - [Decorator](#decorator)
+  - [Axios version](#axios-version)
 - [Example](#example)
 - [License](#license)
 
@@ -50,23 +47,6 @@ Why `jin-frame`?
 | ----------------------------------- | ------------------------------------------ |
 | ![axios](assets/axios-usage.png)    | ![jin-frame](assets/jinframe-usage.png)    |
 | [axios svg](assets/axios-usage.svg) | [jin-frame svg](assets/jinframe-usage.svg) |
-
-## Requirements
-
-1. TypeScript
-1. Decorator
-   - enable experimentalDecorators, emitDecoratorMetadata option in `tsconfig.json`
-
-```jsonc
-{
-  "extends": "@tsconfig/node20/tsconfig.json",
-  "compilerOptions": {
-    // enable experimentalDecorators, emitDecoratorMetadata for using decorator
-    "experimentalDecorators": true,
-    "emitDecoratorMetadata": true,
-  },
-}
-```
 
 ## Install
 
@@ -84,149 +64,103 @@ pnpm add jin-frame --save
 
 ## Usage
 
-This is example of union param, body, header parameter.
+This is simple example of pokeapi.co.
 
 ```ts
-import { Post, Param, Body, Header, Query } from 'jin-frame';
+import { Get, Param, Query, JinFrame } from 'jin-frame';
+import { randomUUID } from 'node:crypto';
 
-@Post({ host: 'https://api.superhero.com', path: '/:name' })
-class TestPostQuery extends JinFrame {
-  @Header()
-  declare public readonly Authorization: string;
-
+@Get({ 
+  host: 'https://pokeapi.co',
+  path: '/api/v2/pokemon/:name',
+})
+export class PokemonFrame extends JinFrame {
   @Param()
   declare public readonly name: string;
 
-  @Body()
-  declare public readonly team: string;
-
-  @Body()
-  declare public readonly gender: string;
+  @Query()
+  declare public readonly tid: string;
 }
+
+(async () => {
+  const frame = PokemonFrame.of({ 
+    name: 'pikachu', 
+    tid: randomUUID(),
+  });
+  const reply = await frame.execute();
+  
+  // Show Pikachu Data
+  console.log(reply.data);
+})();
 ```
-
-TestPostFrame class create AxiosRequestConfig object below.
-
-```ts
-const frame = TestPostFrame.of({ 
-  Authorization: 'Bearer aaa3657e-cd78-4bcd-a311-109a7500b60f', 
-  name: 'ironman', 
-  team: 'advengers', 
-  gender: 'male'
-});
-
-console.log(frame.request());
-
-// console.log show below,
-{
-  timeout: 2000,
-  headers: { 
-    Authorization: 'Bearer aaa3657e-cd78-4bcd-a311-109a7500b60f',
-    'Content-Type': 'application/json'
-  },
-  method: 'POST',
-  data: { team: 'advengers', gender: 'male' },
-  transformRequest: undefined,
-  url: 'https://api.superhero.com/ironman',
-  validateStatus: () => true
-}
-```
-
-You can direct execute jin-frame. Curried request function create after execute it. jin-frame using axios library so using on browser.
-
-```ts
-const frame = TestPostFrame.of({ 
-  Authorization: 'Bearer aaa3657e-cd78-4bcd-a311-109a7500b60f', 
-  name: 'ironman', 
-  team: 'advengers', 
-  gender: 'male'
-});
-const res = await frame.execute();
-```
-
-## Axios version
-
-| jin-frame | axios     |
-| --------- | --------- |
-| 2.x       | <= 0.27.x |
-| 3.x       | >= 1.1.x  |
-| 4.x       | >= 1.4.x  |
 
 ## Retry, Timeout
 
 Retry and Timeout can be easily applied without installing additional packages.
 
 ```ts
-import { Post, Param, Body, Header, Query, Retry } from 'jin-frame';
+import { Param, Query, Retry, Timeout, JinFrame } from 'jin-frame';
 
 @Timeout(2000) // Timeout after 2000ms
 @Retry({ max: 5, interval: 1000 }) // Retry up to 5 times with 1000ms interval
-@Post({ host: 'https://api.superhero.com', path: '/:name' })
-class TestPostQuery extends JinFrame {
-  @Header()
-  declare public readonly Authorization: string;
-
+@Get({ 
+  host: 'https://pokeapi.co',
+  path: '/api/v2/pokemon/:name',
+})
+export class PokemonFrame extends JinFrame {
   @Param()
   declare public readonly name: string;
 
-  @Body()
-  declare public readonly team: string;
-
-  @Body()
-  declare public readonly gender: string;
+  @Query()
+  declare public readonly tid: string;
 }
 ```
 
-## Mocking
-
-jin-frame use axios internally. So you can use [axios-mock-adapter](https://github.com/ctimmerm/axios-mock-adapter).
+## Authorization
 
 ```ts
-import axios from 'axios';
-import MockAdapter from 'axios-mock-adpater';
+import { Get, Param, Query } from 'jin-frame';
 
-// This sets the mock adapter on the default instance
-const mock = new MockAdapter(axios);
+@Get({ 
+  host: 'https://pokeapi.co'
+  path: '/api/v2/pokemon/:name'
+  authorization: process.env.YOUR_KEY_HERE
+})
+export class PokemonFrame extends JinFrame {
+  @Param()
+  declare public readonly name: string;
 
-// Mock any GET request to /users
-// arguments for reply are (status, data, headers)
-mock.onGet('/users').reply(200, {
-  users: [{ id: 1, name: 'John Smith' }],
-});
-
-const frame = UserFrame.of({ params: { searchText: 'John' } });
-const reply = await frame.execute();
-
-console.log(response.data);
+  @Query()
+  declare public readonly tid: string;
+}
 ```
 
-## Form
+## Requirements
 
-The form data is `multipart/form-data` and `application/x-www-form-urlencoded`. Use to upload files or submit form fields data.
+### Decorator
 
-### application/x-www-form-urlencoded
+1. TypeScript
+1. Decorator
+   - enable experimentalDecorators, emitDecoratorMetadata option in `tsconfig.json`
 
-`application/x-www-form-urlencoded` converts from data using the `trasformRequest` function in [axios](https://github.com/axios/axios). For jin-frame, if you set the `application/x-www-form-urlencoded` to content-type, use the built-in transformRequest function or pass transformRequest function to constructor.
-
-### multipart/form-data
-
-jin-frame uses the [form-data](https://github.com/form-data/form-data) package for form-data processing. If you set the `multipart/form-data` content-type, use the form-data package to generate the AxiosRequestConfig data field value. Alternatively, upload the file by passing the customBody constructor parameter.
-
-### Field for logging, debugging
-
-query, header, param, body getter function have each request parameter.
-
-```ts
-const frame = TestPostFrame.of({ id: 1, name: 'ironman', skill: 'beam' });
-// jin-frame build body, header, query, param variable
-const res = await frame.execute();
-
-// You can verify body, header, query parameter
-console.log(frame.getData('body'));
-console.log(frame.getData('header'));
-console.log(frame.getData('query'));
-console.log(frame.getData('param'));
+```jsonc
+{
+  "extends": "@tsconfig/node20/tsconfig.json",
+  "compilerOptions": {
+    // enable experimentalDecorators, emitDecoratorMetadata for using decorator
+    "experimentalDecorators": true,
+    "emitDecoratorMetadata": true,
+  },
+}
 ```
+
+### Axios version
+
+| jin-frame | axios     |
+| --------- | --------- |
+| 2.x       | <= 0.27.x |
+| 3.x       | >= 1.1.x  |
+| 4.x       | >= 1.4.x  |
 
 ## Example
 
