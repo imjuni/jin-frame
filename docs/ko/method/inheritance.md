@@ -15,10 +15,8 @@ MSA 아키텍처에서는 여러 서버와 통신해야 하는 경우가 많습�
 ```ts
 import { randomUUID } from 'crypto';
 
-@Get({ 
-  host: 'https://pokeapi.co',
-  timeout: 3_000
-})
+@Timeout(3_000)
+@Get({ host: 'https://pokeapi.co' })
 class PokemonAPI<PASS = unknown, FAIL = unknown> extends JinFrame<PASS, FAIL> {
   @Query()
   public declare readonly tid: string;
@@ -66,21 +64,22 @@ const reply = await frame.execute();
 자식 클래스에서 동일한 설정을 재정의하면 부모의 설정을 덮어씁니다. 이를 통해 엔드포인트별로 별도의 타임아웃이나 재시도 정책을 적용할 수 있습니다.
 
 ```ts
-@Get({ 
-  path: '/api/v2/pokemon/:name',
-  timeout: 10_000,
-  retry: { max: 5, interval: 1000 }
-})
-class PokemonByNameId extends PokemonAPI<IPokemonData> {
+@Timeout(5_000)
+@Get({ host: 'https://pokeapi.co' })
+class PokeBaseFrame<P = unknown, F = unknown> extends JinFrame<P, F> {
+}
+
+@Retry({ max: 5, interval: 1000 }) // 재시도 설정 추가
+@Timeout(10_000) // 타임아웃 변경 5,000 > 10,000
+@Get({ path: '/api/v2/pokemon/:name' })
+class PokemonByNameId extends PokeBaseFrame<IPokemonData> {
   @Param()
   public declare readonly name: string;
 }
 
-@Get({ 
-  path: '/api/v2/pokemon',
-  timeout: 5_000,
-})
-class PokemonPaging extends JinFrame {
+// 부모 객체 타임아웃인 5000ms 적용
+@Get({ path: '/api/v2/pokemon' })
+class PokemonPaging extends PokeBaseFrame {
   @Query()
   declare readonly limit: number;
 
@@ -101,10 +100,8 @@ class PokemonPaging extends JinFrame {
 ### 부모 클래스 Hook 정의
 
 ```ts
-@Get({ 
-  host: 'https://pokeapi.co',
-  timeout: 3_000
-})
+@Timeout(3_000)
+@Get({ host: 'https://pokeapi.co' })
 class PokemonAPI<PASS = unknown, FAIL = unknown> extends JinFrame<PASS, FAIL> {
   @Query()
   public declare readonly tid: string;
@@ -126,9 +123,7 @@ Hook 함수명에 `$_` prefix가 붙는 이유는 `jin-frame` 내부 규칙상 �
 ### 자식 클래스 Hook 확장
 
 ```ts
-@Get({ 
-  path: '/api/v2/pokemon/:name',
-})
+@Get({ path: '/api/v2/pokemon/:name' })
 class PokemonByNameId extends PokemonAPI<IPokemonData> {
   @Param()
   public declare readonly name: string;

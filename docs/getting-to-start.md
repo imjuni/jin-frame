@@ -24,27 +24,16 @@ pnpm
 pnpm add jin-frame --save
 ```
 
-## Requirements
-
-1. TypeScript  
-1. Decorator  
-   - Enable the `experimentalDecorators` and `emitDecoratorMetadata` options in your `tsconfig.json`.
-
-```jsonc
-{
-  "extends": "@tsconfig/node20/tsconfig.json",
-  "compilerOptions": {
-    // enable experimentalDecorators, emitDecoratorMetadata for using decorator
-    "experimentalDecorators": true,
-    "emitDecoratorMetadata": true,
-  },
-}
-```
-
 ## Quick Example
 
 ```ts
-@Get({ host: 'https://pokeapi.co/api/v2/pokemon/:name' })
+import { Get, Param, Query, JinFrame } from 'jin-frame';
+import { randomUUID } from 'node:crypto';
+
+@Get({ 
+  host: 'https://pokeapi.co',
+  path: '/api/v2/pokemon/:name',
+})
 export class PokemonFrame extends JinFrame {
   @Param()
   declare public readonly name: string;
@@ -52,6 +41,17 @@ export class PokemonFrame extends JinFrame {
   @Query()
   declare public readonly tid: string;
 }
+
+(async () => {
+  const frame = PokemonFrame.of({ 
+    name: 'pikachu', 
+    tid: randomUUID(),
+  });
+  const reply = await frame.execute();
+  
+  // Show Pikachu Data
+  console.log(reply.data);
+})();
 ```
 
 ## Customization Examples
@@ -59,10 +59,12 @@ export class PokemonFrame extends JinFrame {
 You can apply different settings for each endpoint.
 
 ```ts
+import { Get, Param, Query, JinFrame, Timeout, Retry } from 'jin-frame';
+
+@Timeout(10_000)  // 10s timeout
 @Get({
   host: 'https://pokeapi.co',
   path: '/api/v2/pokemon',
-  timeout: 10_000, // 10s timeout
 })
 class PokemonPagingFrame extends JinFrame {
   @Query()
@@ -72,11 +74,11 @@ class PokemonPagingFrame extends JinFrame {
   declare public readonly offset: number;
 }
 
+@Retry({ max: 3, interval: 1000 }) // retry up to 3 times, 1s interval
+@Timeout(2_000)  // 2s timeout
 @Get({
   host: 'https://pokeapi.co',
   path: '/api/v2/pokemon/:name',
-  timeout: 2_000, // 2s timeout
-  retry: { max: 3, interval: 1000 }, // retry up to 3 times, 1s interval
 })
 export class PokemonDetailFrame extends JinFrame {
   @Param()
@@ -111,6 +113,33 @@ class PokemonFrame extends JinFrame {
 3. **`readonly`**  
    - Ensures immutability since the value should not change once defined.  
    - Example: `@Param() name` is injected at creation time and will not change during execution.
+
+## Requirements
+
+### Decorator
+
+1. TypeScript
+1. Decorator
+   - Enable the `experimentalDecorators` and `emitDecoratorMetadata` options in your `tsconfig.json`.
+
+```jsonc
+{
+  "extends": "@tsconfig/node20/tsconfig.json",
+  "compilerOptions": {
+    // enable experimentalDecorators, emitDecoratorMetadata for using decorator
+    "experimentalDecorators": true,
+    "emitDecoratorMetadata": true,
+  },
+}
+```
+
+### Axios version
+
+| jin-frame | axios     |
+| --------- | --------- |
+| 2.x       | <= 0.27.x |
+| 3.x       | >= 1.1.x  |
+| 4.x       | >= 1.4.x  |
 
 ### Summary
 

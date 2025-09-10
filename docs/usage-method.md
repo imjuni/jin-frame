@@ -12,40 +12,48 @@ Supported decorators: `@Get`, `@Post`, `@Put`, `@Patch`, `@Delete`, `@Link`, `@U
 
 ## Quick Examples
 
-### GET (Query + Header + Path)
+### GET (Query + Path)
 
 ```ts
+@Timeout(10_000) // 10s timeout
 @Get({
   host: 'https://api.example.com',
   path: '/orgs/:orgId/users',
-  timeout: 10_000, // ms
+  authorization: process.env.YOUR_AUTH_TOKEN
 })
 export class ListUsersFrame extends JinFrame {
-  @Param() declare readonly orgId: string;
-  @Query() declare readonly page?: number;
-  @Header() declare readonly Authorization: string;
+  @Param()
+  declare readonly orgId: string;
+
+  @Query()
+  declare readonly page?: number;
 }
 
 // Execute
-const res = await ListUsersFrame.of({ orgId: 'acme', page: 1, Authorization: 'Bearer token' }).execute();
+const frame = ListUsersFrame.of({ orgId: 'acme', page: 1 });
+const reply = await frame.execute();
 ```
 
 ### POST (JSON Body)
 
 ```ts
+@Timeout(5_000) // 5s timeout
 @Post({
   host: 'https://api.example.com',
   path: '/users',
-  timeout: 5_000,
-  // Default (when contentType is not set) is application/json
+  // Defaults to application/json when contentType is not specified
 })
 export class CreateUserFrame extends JinFrame {
-  @Body('name') declare readonly name: string;
-  @Body('email') declare readonly email: string;
+  @Body()
+  declare readonly name: string;
+
+  @Body()
+  declare readonly email: string;
 }
 
 // Execute
-const res = await CreateUserFrame.of({ name: 'Alice', email: 'alice@acme.com' }).execute();
+const frame = CreateUserFrame.of({ name: 'Alice', email: 'alice@acme.com' });
+const res = await frame.execute();
 ```
 
 ### POST (multipart/form-data, File Upload)
@@ -57,27 +65,41 @@ const res = await CreateUserFrame.of({ name: 'Alice', email: 'alice@acme.com' })
   contentType: 'multipart/form-data',
 })
 export class UploadFrame extends JinFrame {
-  @Body('title') declare readonly title: string;
-  @Body('attachments') declare readonly attachments: JinFile[]; // Supports JinFile or JinFile[]
+  @Body()
+  declare readonly title: string;
+
+  @Body() 
+  declare readonly attachments: JinFile[]; // Supports JinFile or JinFile[]
 }
 
 // Execute
 const file = new JinFile(new File(['hello'], 'hello.txt'), 'hello.txt');
-await UploadFrame.of({ title: 'greeting', attachments: [file] }).execute();
+const frame = UploadFrame.of({ title: 'greeting', attachments: [file] });
+await frame.execute();
 ```
 
 ### PUT / PATCH / DELETE
 
 ```ts
-@Patch({ host: 'https://api.example.com', path: '/users/:id' })
+@Patch({ 
+  host: 'https://api.example.com',
+  path: '/users/:id',
+})
 export class UpdateUserFrame extends JinFrame {
-  @Param() declare readonly id: string;
-  @Body('name') declare readonly name?: string;
+  @Param() 
+  declare readonly id: string;
+
+  @Body() 
+  declare readonly name?: string;
 }
 
-@Delete({ host: 'https://api.example.com', path: '/users/:id' })
+@Delete({
+  host: 'https://api.example.com',
+  path: '/users/:id',
+})
 export class DeleteUserFrame extends JinFrame {
-  @Param() declare readonly id: string;
+  @Param() 
+  declare readonly id: string;
 }
 ```
 
