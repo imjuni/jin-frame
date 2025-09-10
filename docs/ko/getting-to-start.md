@@ -24,27 +24,16 @@ pnpm
 pnpm add jin-frame --save
 ```
 
-## Requirements
-
-1. TypeScript
-1. Decorator
-   - `tsconfig.json` 파일에서 experimentalDecorators, emitDecoratorMetadata option을 활성화 해주세요
-
-```jsonc
-{
-  "extends": "@tsconfig/node20/tsconfig.json",
-  "compilerOptions": {
-    // enable experimentalDecorators, emitDecoratorMetadata for using decorator
-    "experimentalDecorators": true,
-    "emitDecoratorMetadata": true,
-  },
-}
-```
-
 ## Quick Example
 
 ```ts
-@Get({ host: 'https://pokeapi.co/api/v2/pokemon/:name' })
+import { Get, Param, Query, JinFrame } from 'jin-frame';
+import { randomUUID } from 'node:crypto';
+
+@Get({ 
+  host: 'https://pokeapi.co',
+  path: '/api/v2/pokemon/:name',
+})
 export class PokemonFrame extends JinFrame {
   @Param()
   declare public readonly name: string;
@@ -52,6 +41,17 @@ export class PokemonFrame extends JinFrame {
   @Query()
   declare public readonly tid: string;
 }
+
+(async () => {
+  const frame = PokemonFrame.of({ 
+    name: 'pikachu', 
+    tid: randomUUID(),
+  });
+  const reply = await frame.execute();
+  
+  // Show Pikachu Data
+  console.log(reply.data);
+})();
 ```
 
 ## Customization Examples
@@ -59,10 +59,10 @@ export class PokemonFrame extends JinFrame {
 Endpoint 별로 각종 설정을 다르게 적용할 수도 있습니다.
 
 ```ts
+@Timeout(10_000)  // 10s timeout
 @Get({
   host: 'https://pokeapi.co',
   path: '/api/v2/pokemon',
-  timeout: 10_000, // 10s timeout
 })
 class PokemonPagingFrame extends JinFrame {
   @Query()
@@ -72,11 +72,11 @@ class PokemonPagingFrame extends JinFrame {
   declare public readonly offset: number;
 }
 
+@Retry({ max: 3, interval: 1000 }) // 재시도 최대 3번, 1000ms 간격
+@Timeout(2_000)  // 타임아웃 2초
 @Get({
   host: 'https://pokeapi.co',
   path: '/api/v2/pokemon/:name',
-  timeout: 2_000, // 2s timeout
-  retry: { max: 3, interval: 1000 }, // retry up to 3 times, 1s interval
 })
 export class PokemonDetailFrame extends JinFrame {
   @Param()
@@ -111,6 +111,33 @@ class PokemonFrame extends JinFrame {
 3. **`readonly`**
    - 한번 정의된 값은 변경되지 않아야 하는 **불변 데이터**이므로, `readonly`로 지정하여 안전성을 높입니다.
    - 예: `@Param() name`은 생성 시점에만 주입되며, 실행 도중 변경되지 않습니다.
+
+## Requirements
+
+### Decorator
+
+1. TypeScript
+1. Decorator
+   - `tsconfig.json` 파일에서 experimentalDecorators, emitDecoratorMetadata option을 활성화 해주세요
+
+```jsonc
+{
+  "extends": "@tsconfig/node20/tsconfig.json",
+  "compilerOptions": {
+    // enable experimentalDecorators, emitDecoratorMetadata for using decorator
+    "experimentalDecorators": true,
+    "emitDecoratorMetadata": true,
+  },
+}
+```
+
+### Axios version
+
+| jin-frame | axios     |
+| --------- | --------- |
+| 2.x       | <= 0.27.x |
+| 3.x       | >= 1.1.x  |
+| 4.x       | >= 1.4.x  |
 
 ### 정리
 

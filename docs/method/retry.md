@@ -15,9 +15,7 @@ The simplest approach is to retry at a **constant interval**. For example, setti
 When multiple clients retry at the same fixed interval, it may actually increase server load. In such cases, using `getInterval` allows you to apply more flexible retry spacing based on **retry count and total duration**.
 
 ```ts
-@Get({
-  path: '/api/v2/pokemon/:name',
-  retry: {
+@Retry({
     max: 5,
     getInterval: (retry: number, totalDuration: number, eachDuration: number): number => {
       // If total API call time exceeds 10 seconds, retry every 10 seconds
@@ -27,9 +25,9 @@ When multiple clients retry at the same fixed interval, it may actually increase
 
       // Otherwise, retry with (retry count × 1000ms) spacing
       return retry * 1000;
-    },
-  },
+    },  
 })
+@Get({ path: '/api/v2/pokemon/:name' })
 class PokemonByNameId extends PokemonAPI<IPokemonData> {
   @Param()
   declare public readonly name: string;

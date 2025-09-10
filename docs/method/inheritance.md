@@ -15,10 +15,8 @@ In an MSA architecture, you often communicate with multiple servers. Since the s
 ```ts
 import { randomUUID } from 'crypto';
 
-@Get({
-  host: 'https://pokeapi.co',
-  timeout: 3_000,
-})
+@Timeout(3_000)
+@Get({ host: 'https://pokeapi.co' })
 class PokemonAPI<PASS = unknown, FAIL = unknown> extends JinFrame<PASS, FAIL> {
   @Query()
   declare public readonly tid: string;
@@ -66,21 +64,22 @@ const reply = await frame.execute();
 If the child class redefines the same configuration, it overrides the parent’s setting. This allows you to apply different timeouts or retry policies per endpoint.
 
 ```ts
-@Get({
-  path: '/api/v2/pokemon/:name',
-  timeout: 10_000,
-  retry: { max: 5, interval: 1000 },
-})
-class PokemonByNameId extends PokemonAPI<IPokemonData> {
+@Timeout(5_000)
+@Get({ host: 'https://pokeapi.co' })
+class PokeBaseFrame<P = unknown, F = unknown> extends JinFrame<P, F> {
+}
+
+@Retry({ max: 5, interval: 1000 })
+@Timeout(10_000) // timeout overwrite 5,000 > 10,000
+@Get({ path: '/api/v2/pokemon/:name' })
+class PokemonByNameId extends PokeBaseFrame {
   @Param()
   declare public readonly name: string;
 }
 
-@Get({
-  path: '/api/v2/pokemon',
-  timeout: 5_000,
-})
-class PokemonPaging extends JinFrame {
+// timeout use parent configuration: 5,000
+@Get({ path: '/api/v2/pokemon' })
+class PokemonPaging extends PokeBaseFrame {
   @Query()
   declare readonly limit: number;
 
@@ -101,10 +100,8 @@ Hooks can also be extended in an inheritance structure. This allows you to place
 ### Parent Class Hook
 
 ```ts
-@Get({
-  host: 'https://pokeapi.co',
-  timeout: 3_000,
-})
+@Timeout(3_000)
+@Get({ host: 'https://pokeapi.co' })
 class PokemonAPI<PASS = unknown, FAIL = unknown> extends JinFrame<PASS, FAIL> {
   @Query()
   declare public readonly tid: string;
@@ -126,9 +123,7 @@ The reason hook methods use the `$_` prefix is that `jin-frame` reserves this na
 ### Extending Hook in Child Class
 
 ```ts
-@Get({
-  path: '/api/v2/pokemon/:name',
-})
+@Get({ path: '/api/v2/pokemon/:name' })
 class PokemonByNameId extends PokemonAPI<IPokemonData> {
   @Param()
   public declare readonly name: string;

@@ -15,15 +15,9 @@ outline: deep
 여러 클라이언트가 동시에 재시도를 수행하면, 일정한 간격의 재시도가 오히려 서버 부하를 증가시킬 수 있습니다. 이런 경우 `getInterval`을 사용하면 **재시도 횟수, 총 소요 시간** 등을 고려해 보다 유연한 간격을 적용할 수 있습니다.
 
 ```ts
-@Get({ 
-  path: '/api/v2/pokemon/:name',
-  retry: { 
+@Retry({
     max: 5,
-    getInterval: (
-      retry: number,
-      totalDuration: number,
-      eachDuration: number
-    ): number => {
+    getInterval: (retry: number, totalDuration: number, eachDuration: number): number => {
       // 전체 API 호출 시간이 10초를 초과하면 10초마다 재시도
       if (totalDuration > 10000) {
         return 10_000;
@@ -31,8 +25,10 @@ outline: deep
 
       // 그 외에는 (재시도 횟수 × 1000ms) 간격으로 재시도
       return retry * 1000;
-    }
-  }
+    },  
+})
+@Get({ 
+  path: '/api/v2/pokemon/:name',
 })
 class PokemonByNameId extends PokemonAPI<IPokemonData> {
   @Param()
