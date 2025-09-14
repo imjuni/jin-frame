@@ -1,7 +1,7 @@
 {
   "name": "@jin-frame/generator-cli",
   "version": "1.0.0",
-  "description": "TypeScript cli boilerplate",
+  "description": "A CLI tool for generating jin-frame classes from an OpenAPI specification.",
   "engines": {
     "node": ">=20"
   },
