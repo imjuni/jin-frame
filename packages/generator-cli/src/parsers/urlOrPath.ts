@@ -1,6 +1,6 @@
 import type { ValueParser } from '@optique/core';
-import { urlOrPathParser } from '#/cli/parser/urlOrPathParser';
-import { urlOrPathFormat } from '#/cli/parser/urlOrPathFormat';
+import { urlOrPathParser } from '#/parsers/urlOrPathParser';
+import { urlOrPathFormat } from '#/parsers/urlOrPathFormat';
 
 export function urlOrPath(): ValueParser<string | URL> {
   return {

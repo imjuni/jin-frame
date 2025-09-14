@@ -128,3 +128,4 @@ docs/public
 
 # script
 git-short.sh
+**/api-spec/

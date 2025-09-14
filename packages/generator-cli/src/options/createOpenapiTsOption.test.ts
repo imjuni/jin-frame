@@ -1,4 +1,4 @@
-import { createOpenapiTsOption } from '#/modules/openapi-ts/createOpenapiTsOption';
+import { createOpenapiTsOption } from '#/options/createOpenapiTsOption';
 import { describe, expect, it } from 'vitest';
 
 describe('createOpenapiTsOption', () => {
