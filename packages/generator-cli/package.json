@@ -26,7 +26,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/imjuni/typescript-cli-boilerplate.git"
+    "url": "git+https://github.com/imjuni/jin-frame.git"
   },
   "keywords": [],
   "author": "ByungJoon Lee",
@@ -36,9 +36,9 @@
     "jin-frame-generator": "dist/cjs/cli.cjs"
   },
   "bugs": {
-    "url": "https://github.com/imjuni/typescript-cli-boilerplate/issues"
+    "url": "https://github.com/imjuni/jin-frame/issues"
   },
-  "homepage": "https://github.com/imjuni/typescript-cli-boilerplate#readme",
+  "homepage": "https://imjuni.github.io/jin-frame",
   "devDependencies": {
     "@eslint/compat": "^1.3.2",
     "@eslint/js": "^9.35.0",
