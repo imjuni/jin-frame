@@ -1,7 +1,7 @@
 {
   "name": "@jin-frame/generator-core",
   "version": "1.0.0",
-  "description": "jin-frame generator core",
+  "description": "A core module for generating jin-frame classes from an OpenAPI specification.",
   "engines": {
     "node": ">=20"
   },
