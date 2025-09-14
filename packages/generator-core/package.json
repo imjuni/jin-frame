@@ -1,0 +1,120 @@
+{
+  "name": "@jin-frame/generator-core",
+  "version": "1.0.0",
+  "description": "jin-frame generator core",
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "openapi-typescript-example": "pnpm dlx openapi-typescript ./samples/v3.yml -o petstore.d.ts",
+    "clean": "rimraf dist",
+    "dts": "tsc -p tsconfig.dts.json",
+    "dts-alias": "tsc-alias -p tsconfig.dts.json",
+    "dts-gen": "rollup --config .configs/rollup.config.mjs",
+    "dts-pack": "run-s dts dts-alias dts-gen dts-rm",
+    "dts-rm": "rimraf dist/types/origin",
+    "esbuild-cjs": "FORMAT=cjs node .configs/esbuild.mjs",
+    "esbuild-esm": "FORMAT=esm node .configs/esbuild.mjs",
+    "bundle-pack": "run-p esbuild-cjs esbuild-esm dts-pack",
+    "bundle": "run-s clean ctix bundle-pack ctix-rm",
+    "test": "vitest run --coverage",
+    "ctix": "ctix build --config .configs/.ctirc",
+    "ctix-rm": "ctix remove --force-yes --remove-backup",
+    "lint": "eslint --cache .",
+    "lint-staged": "lint-staged",
+    "pub": "pnpm publish --registry http://localhost:8901",
+    "unpub": "pnpm unpublish typescript-cli-boilerplate@$npm_package_version --registry http://localhost:8901 --force",
+    "pub:prod": "RELEASE_MODE=true pnpm publish",
+    "dd": "deps-diff md -d prod -d dev --title-list-type 'm' --deps-list-type 'm' --content-list-type 'm'"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/imjuni/typescript-cli-boilerplate.git"
+  },
+  "keywords": [],
+  "author": "ByungJoon Lee",
+  "license": "MIT",
+  "main": "dist/cjs/index.cjs",
+  "module": "dist/esm/index.mjs",
+  "types": "dist/types/index.d.ts",
+  "exports": {
+    ".": {
+      "require": {
+        "types": "./dist/types/index.d.ts",
+        "default": "./dist/cjs/index.cjs"
+      },
+      "import": {
+        "types": "./dist/types/index.d.ts",
+        "default": "./dist/esm/index.mjs"
+      }
+    }
+  },
+  "bugs": {
+    "url": "https://github.com/imjuni/typescript-cli-boilerplate/issues"
+  },
+  "homepage": "https://github.com/imjuni/typescript-cli-boilerplate#readme",
+  "devDependencies": {
+    "@eslint/compat": "^1.3.1",
+    "@eslint/js": "^9.30.1",
+    "@tsconfig/node20": "^20.1.6",
+    "@types/node": "^20.19.4",
+    "@types/source-map-support": "^0.5.7",
+    "@types/swagger2openapi": "^7.0.4",
+    "@types/traverse": "^0.6.37",
+    "@types/yargs": "^17.0.24",
+    "@vitest/coverage-v8": "3.2.4",
+    "cross-env": "^10.0.0",
+    "ctix": "^2.7.1",
+    "deps-diff": "^1.0.2",
+    "esbuild": "0.25.5",
+    "eslint": "^9.30.1",
+    "eslint-config-airbnb-extended": "^2.1.2",
+    "eslint-config-prettier": "^10.1.5",
+    "eslint-import-resolver-typescript": "^4.4.4",
+    "eslint-plugin-import-x": "^4.16.1",
+    "eslint-plugin-n": "^17.21.0",
+    "eslint-plugin-prettier": "^5.5.1",
+    "lint-staged": "^16.1.4",
+    "npm-run-all": "^4.1.5",
+    "openapi-typescript": "^7.9.1",
+    "prettier": "^3.6.2",
+    "read-pkg": "^5.2.0",
+    "rimraf": "^5.0.1",
+    "ts-node": "^10.9.1",
+    "tslib": "^2.5.2",
+    "tsx": "^4.20.3",
+    "typescript-eslint": "^8.35.1",
+    "vite-tsconfig-paths": "^5.1.4",
+    "vitest": "^3.2.4"
+  },
+  "dependencies": {
+    "@apidevtools/json-schema-ref-parser": "^14.2.0",
+    "@optique/core": "^0.4.2",
+    "@optique/run": "^0.4.2",
+    "axios": "^1.11.0",
+    "change-case": "^5.4.4",
+    "consola": "^3.2.3",
+    "my-easy-fp": "^0.22.0",
+    "my-node-fp": "^0.10.3",
+    "openapi-schema-validator": "^12.1.3",
+    "openapi-types": "^12.1.3",
+    "pathe": "^2.0.3",
+    "source-map-support": "^0.5.21",
+    "swagger2openapi": "^7.0.8",
+    "type-fest": "^4.41.0",
+    "yaml": "^2.8.1"
+  },
+  "peerDependencies": {
+    "openapi-typescript": ">=7",
+    "ts-morph": ">=26",
+    "typescript": ">=5"
+  },
+  "lint-staged": {
+    "*.{js,jsx,ts,tsx}": [
+      "cross-env NODE_ENV=production eslint --cache"
+    ],
+    "*.{js,jsx,ts,tsx},*.json,.{eslintrc.cjs,prettierrc}": [
+      "cross-env NODE_ENV=production prettier --ignore-path .eslintignore --parser json --write"
+    ]
+  }
+}

@@ -2,6 +2,7 @@
   "name": "jin-frame",
   "version": "4.5.0",
   "description": "Reusable HTTP API request definition library",
+  "packageManager": "pnpm@10.16.0",
   "scripts": {
     "build": "pnpm run clean && tsc --incremental --project tsconfig.prod.json",
     "dts": "tsc -p tsconfig.dts.json",
@@ -27,7 +28,6 @@
     "dd": "deps-diff md -d dev -d prod -d peer --title-list-type 'm' --deps-list-type 'm' --content-list-type 'm'",
     "httpd": "http-server ./docs -p 19983",
     "prepublishOnly": "node prepublish.cjs",
-    "prepare": "husky install",
     "docs:typedoc": "typedoc --options .configs/typedoc.json",
     "docs:dev": "vitepress dev docs",
     "docs:build": "vitepress build docs",
@@ -35,6 +35,8 @@
     "docs:preview": "vitepress preview docs"
   },
   "keywords": [
+    "http",
+    "declarative",
     "axios",
     "decorator",
     "http-client",
@@ -111,7 +113,6 @@
     "eslint-plugin-prettier": "^5.5.3",
     "gh-pages": "^6.1.0",
     "http-server": "^14.1.1",
-    "husky": "^8.0.3",
     "jsonc-parser": "^3.2.0",
     "lint-staged": "^15.1.0",
     "msw": "^2.11.1",
