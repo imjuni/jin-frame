@@ -1,6 +1,6 @@
 import { message, type ValueParserResult } from '@optique/core';
 import { existsSync } from 'my-node-fp';
-import { safeUrl } from '#/modules/safe-tools/safeUrl';
+import { safeUrl } from '@jin-frame/generator-core';
 
 export function urlOrPathParser(value: string): ValueParserResult<string | URL> {
   // eslint-disable-next-line n/no-sync

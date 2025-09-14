@@ -1,21 +1,21 @@
 /* eslint-disable n/no-sync */
-import { urlOrPathParser } from '#/cli/parser/urlOrPathParser';
+import { urlOrPathParser } from '#/parsers/urlOrPathParser';
 import { message } from '@optique/core';
 import { existsSync } from 'my-node-fp';
 import { beforeEach } from 'node:test';
-import { describe, expect, it, vitest } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 
-vitest.mock('my-node-fp', () => ({
-  existsSync: vitest.fn(),
+vi.mock('my-node-fp', () => ({
+  existsSync: vi.fn(),
 }));
 
 describe('urlOrPathParser', () => {
   beforeEach(() => {
-    vitest.clearAllMocks();
+    vi.clearAllMocks();
   });
 
   it('should return file path when given valid existing file path', () => {
-    vitest.mocked(existsSync).mockReturnValue(true);
+    vi.mocked(existsSync).mockReturnValue(true);
 
     const filePath = '/a/b/csuper-file.yaml';
     const result = urlOrPathParser(filePath);
@@ -23,7 +23,7 @@ describe('urlOrPathParser', () => {
   });
 
   it('should return URL object when given valid URL and file does not exist', () => {
-    vitest.mocked(existsSync).mockReturnValue(false);
+    vi.mocked(existsSync).mockReturnValue(false);
 
     const url = 'https://api.example.com';
     const result = urlOrPathParser(url);
@@ -31,7 +31,7 @@ describe('urlOrPathParser', () => {
   });
 
   it('should return error when given invalid URL and file does not exist', () => {
-    vitest.mocked(existsSync).mockReturnValue(false);
+    vi.mocked(existsSync).mockReturnValue(false);
 
     const url = 'invalid-url';
     const result = urlOrPathParser(url);

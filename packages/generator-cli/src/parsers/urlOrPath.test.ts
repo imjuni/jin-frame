@@ -1,6 +1,6 @@
-import { urlOrPath } from '#/cli/parser/urlOrPath';
-import { urlOrPathFormat } from '#/cli/parser/urlOrPathFormat';
-import { urlOrPathParser } from '#/cli/parser/urlOrPathParser';
+import { urlOrPath } from '#/parsers/urlOrPath';
+import { urlOrPathFormat } from '#/parsers/urlOrPathFormat';
+import { urlOrPathParser } from '#/parsers/urlOrPathParser';
 import { describe, expect, it } from 'vitest';
 
 describe('urlOrPath', () => {

@@ -1,4 +1,4 @@
-import { urlOrPathFormat } from '#/cli/parser/urlOrPathFormat';
+import { urlOrPathFormat } from '#/parsers/urlOrPathFormat';
 import { describe, expect, it } from 'vitest';
 
 describe('urlOrPathFormat', () => {

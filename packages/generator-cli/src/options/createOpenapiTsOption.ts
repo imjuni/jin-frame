@@ -1,8 +1,11 @@
 import type { createCommand } from '#/commands/createCommand';
+import { frameCommand } from '#/commands/frameCommand';
 import type { InferValue } from '@optique/core';
 import type { OpenAPITSOptions } from 'openapi-typescript';
 
-export function createOpenapiTsOption(params: InferValue<typeof createCommand>): OpenAPITSOptions {
+export function createOpenapiTsOption(
+  params: InferValue<typeof createCommand> | InferValue<typeof frameCommand>,
+): OpenAPITSOptions {
   return {
     additionalProperties: params['oat-additional-properties'],
     alphabetize: params['oat-alphabetize'],

@@ -1,20 +1,22 @@
 #!/usr/bin/env sh
-. "$(dirname -- "$0")/_/husky.sh"
 
 green='\033[0;32m'
 yellow='\033[0;33m'
 no_color='\033[0m'
 
 echo -e "\n ${yellow}* code lint start.${no_color}"
-pnpm run lint-staged
+pnpm --filter @jin-frame/* run lint-staged
+pnpm --filter jin-frame run lint-staged
 echo -e "\n ${yellow}* code lint end.${no_color}"
 
 echo -e "\n ${yellow}* code build start.${no_color}"
-pnpm run build
+pnpm --filter @jin-frame/* run build
+pnpm --filter jin-frame run build
 echo -e "\n ${yellow}* code build end.${no_color}"
 
-echo -e "\n ${yellow}* code build start.${no_color}"
-pnpm run test
-echo -e "\n ${yellow}* code build end.${no_color}"
+echo -e "\n ${yellow}* code test start.${no_color}"
+pnpm --filter @jin-frame/generator-core run test
+pnpm --filter jin-frame run test
+echo -e "\n ${yellow}* code test end.${no_color}"
 
 echo -e "\n ${green}* pre-commit hook was SUCCESSFUL${no_color} \n"
