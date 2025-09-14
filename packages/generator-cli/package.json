@@ -33,7 +33,7 @@
   "license": "MIT",
   "main": "dist/cjs/cli.cjs",
   "bin": {
-    "tcb": "dist/cjs/cli.cjs"
+    "jin-frame-generator": "dist/cjs/cli.cjs"
   },
   "bugs": {
     "url": "https://github.com/imjuni/typescript-cli-boilerplate/issues"
