@@ -1,18 +1,19 @@
-import type { createCommand } from '#/commands/createCommand';
-import { createOpenapiTs } from '@jin-frame/generator-core';
-import { convertor } from '@jin-frame/generator-core';
-import { load } from '@jin-frame/generator-core';
-import { validate } from '@jin-frame/generator-core';
-import type { InferValue } from '@optique/core';
+import type { TCreateCommandArgv } from '#/interfaces/ICreateCommandArgv';
+import { transformArgvToOpenapiTsOptions } from '#/transforms/transformArgvToOpenapiTsOptions';
+import {
+  safePathJoin,
+  createFrames,
+  validate,
+  load,
+  convertor,
+  createOpenapiTs,
+  printOpenapiTs,
+} from '@jin-frame/generator-core';
 import consola, { type LogType, LogLevels } from 'consola';
 import fs from 'node:fs';
 import pathe from 'pathe';
-import { printOpenapiTs } from '@jin-frame/generator-core';
-import { createFrames } from '@jin-frame/generator-core';
-import { safePathJoin } from '@jin-frame/generator-core';
-import { createOpenapiTsOption } from '#/options/createOpenapiTsOption';
 
-export async function create(params: InferValue<typeof createCommand>): Promise<void> {
+export async function createCommandHandler(params: TCreateCommandArgv): Promise<void> {
   consola.level = LogLevels[params.logLevel as LogType];
   const specPath = params.spec.toString();
 
@@ -36,7 +37,7 @@ export async function create(params: InferValue<typeof createCommand>): Promise<
 
   const converted = await convertor(validated);
 
-  const nodes = await createOpenapiTs(converted.document, createOpenapiTsOption(params));
+  const nodes = await createOpenapiTs(converted.document, transformArgvToOpenapiTsOptions(params));
   consola.debug(`API endpoints: ${nodes.length}`);
 
   const specSourceCode = printOpenapiTs(nodes);

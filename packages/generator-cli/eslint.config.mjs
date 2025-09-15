@@ -22,7 +22,7 @@ import {
   customTypescriptRule,
 } from './eslint.config.custom.mjs';
 
-const gitignorePath = path.resolve('.', '.gitignore');
+const gitignorePath = path.resolve('..', '..', '.gitignore');
 
 const jsConfig = [
   // ESLint Recommended Rules

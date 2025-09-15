@@ -4,7 +4,7 @@ import { describe, it } from 'vitest';
 
 describe('createFrames', async () => {
   // @ts-expect-error
-  const document = await import('../../../samples/v3.json');
+  const document = await import('../../../../examples/openapi/v3.json');
 
   it('should return variety frame when pass v3 document', async () => {
     const frames = await createFrames({

@@ -1,16 +1,10 @@
-import { createOpenapiTs } from '@jin-frame/generator-core';
-import { convertor } from '@jin-frame/generator-core';
-import { load } from '@jin-frame/generator-core';
-import { validate } from '@jin-frame/generator-core';
-import type { InferValue } from '@optique/core';
+import { convertor, load, validate, createFrames, safePathJoin } from '@jin-frame/generator-core';
 import consola, { type LogType, LogLevels } from 'consola';
 import fs from 'node:fs';
 import pathe from 'pathe';
-import { createFrames } from '@jin-frame/generator-core';
-import { safePathJoin } from '@jin-frame/generator-core';
-import { frameCommand } from '#/commands/frameCommand';
+import type { TFrameCommandArgv } from '#/interfaces/IFrameCommandArgv';
 
-export async function frame(params: InferValue<typeof frameCommand>): Promise<void> {
+export async function frameCommandHandler(params: TFrameCommandArgv): Promise<void> {
   consola.level = LogLevels[params.logLevel as LogType];
   const specPath = params.spec.toString();
 
