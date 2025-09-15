@@ -9,8 +9,19 @@ const pattern2 = /^([A-Za-z0-9-]+\.[A-Za-z]{2,})(\/.*)?$/i;
 // 3) only path (case-sensitive)
 const pattern3 = /^(\/.*)$/;
 
-export function getUrl(host?: string, path?: string): { url: URL; str: string; pathname: string; isOnlyPath: boolean } {
-  const concatted = [host ?? '', path ?? '']
+export function getUrl(
+  host?: string,
+  pathPrefix?: string,
+  path?: string,
+): { url: URL; str: string; pathname: string; isOnlyPath: boolean } {
+  const withPathPrefix =
+    pathPrefix == null && path == null
+      ? undefined
+      : [pathPrefix ?? '', path ?? '']
+          .map((part) => part.trim())
+          .map((part) => removeBothSlash(part))
+          .join('/');
+  const concatted = [host ?? '', withPathPrefix ?? '']
     .map((part) => part.trim())
     .map((part) => removeBothSlash(part))
     .join('/');
@@ -23,13 +34,13 @@ export function getUrl(host?: string, path?: string): { url: URL; str: string; p
   }
 
   // hostname + empty path
-  if (host != null && path == null && pattern2.test(str)) {
+  if (host != null && withPathPrefix == null && pattern2.test(str)) {
     const url = new URL(`http://${str}`);
     return { url, str, pathname: url.pathname, isOnlyPath: false };
   }
 
   // path
-  if (host == null && path != null && pattern3.test(`/${str}`)) {
+  if (host == null && withPathPrefix != null && pattern3.test(`/${str}`)) {
     const url = new URL(`http://localhost/${str}`);
     return { url, str, pathname: url.pathname, isOnlyPath: true };
   }

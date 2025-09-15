@@ -4,6 +4,7 @@ import type { IFrameOption } from '#interfaces/options/IFrameOption';
 export function getFrameOption(method: TMethod, option?: Partial<Omit<IFrameOption, 'method'>>): IFrameOption {
   const frameOption: IFrameOption = {
     host: option?.host,
+    pathPrefix: option?.pathPrefix,
     path: option?.path,
     method,
     customBody: option?.customBody,

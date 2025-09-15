@@ -30,6 +30,36 @@ describe('getUrl', () => {
     });
   });
 
+  it('should return concatenated URL when host, pathPrefix and path are all provided', () => {
+    const result = getUrl('http://example.com', '/api', '/:name');
+    expect(result).toEqual({
+      url: new URL('http://example.com/api/:name'),
+      str: 'http://example.com/api/:name',
+      pathname: '/api/:name',
+      isOnlyPath: false,
+    });
+  });
+
+  it('should return concatenated URL when host is undefined and pathPrefix and path are provided', () => {
+    const result = getUrl(undefined, '/api');
+    expect(result).toEqual({
+      url: new URL('http://localhost/api'),
+      str: 'api',
+      pathname: '/api',
+      isOnlyPath: true,
+    });
+  });
+
+  it('should return url when pass path using path argument slot', () => {
+    const result = getUrl(undefined, undefined, '/:name');
+    expect(result).toEqual({
+      url: new URL('http://localhost/:name'),
+      str: ':name',
+      pathname: '/:name',
+      isOnlyPath: true,
+    });
+  });
+
   it('should return url when pass hostname and path without protocol', () => {
     const result = getUrl('example.com/:name');
     expect(result).toEqual({
