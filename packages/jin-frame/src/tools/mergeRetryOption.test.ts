@@ -39,4 +39,13 @@ describe('mergeRetryOption', () => {
 
     expect(merged).toEqual({ max: 2, interval: 1000, getInterval });
   });
+
+  it('should merge useRetryAfter when next provides useRetryAfter', () => {
+    const prev: IFrameRetry = { max: 1, interval: 1000 };
+    const next: IFrameRetry = { max: 2, useRetryAfter: false };
+
+    const merged = mergeRetryOption(prev, next);
+
+    expect(merged).toEqual({ max: 2, interval: 1000, useRetryAfter: false });
+  });
 });

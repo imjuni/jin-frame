@@ -23,4 +23,11 @@ export interface IFrameRetry {
    * Specify a fixed retry interval (in ms). Ignored if getInterval is configured.
    * */
   interval?: number;
+
+  /**
+   * 기본 값은 true, retry-after 헤더를 사용하고 싶을 때 사용, interval, getInterval보다 우선 동작
+   *
+   * Specify to use retry-after header. Prioritized over interval and getInterval.
+   * */
+  useRetryAfter?: boolean;
 }
