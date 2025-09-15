@@ -4,11 +4,12 @@ import type { OpenAPIV3 } from 'openapi-types';
 import { createFrame } from '#/generators/createFrame';
 import { Project } from 'ts-morph';
 import { createBaseFrame } from '#/generators/createBaseFrame';
+import { getHost } from '#/generators/hosts/getHost';
 
 export interface IProps {
   specTypeFilePath: string;
   baseFrame?: string;
-  host: string;
+  host?: string;
   output: string;
   useCodeFence: boolean;
   timeout?: number;
@@ -27,11 +28,13 @@ export async function createFrames(params: IProps): Promise<
   const project = new Project();
   const methods: THttpMethod[] = ['get', 'post', 'put', 'delete', 'patch', 'head', 'options'];
 
+  const host = getHost({ host: params.host, specTypeFilePath: params.specTypeFilePath, document });
+
   const baseFrame =
     params.baseFrame != null
       ? createBaseFrame(project, {
           output: params.output,
-          host: params.host,
+          host,
           name: params.baseFrame,
           timeout: params.timeout,
         })
@@ -50,7 +53,7 @@ export async function createFrames(params: IProps): Promise<
               : createFrame(project, {
                   specTypeFilePath: params.specTypeFilePath,
                   output: params.output,
-                  host: params.host,
+                  host,
                   baseFrame: params.baseFrame,
                   pathKey,
                   method,
