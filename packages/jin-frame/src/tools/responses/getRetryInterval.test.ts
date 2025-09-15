@@ -48,4 +48,52 @@ describe('getRetryInterval', () => {
 
     expect(result).toEqual(1000);
   });
+
+  it('should return retry-after value in milliseconds when provided and useRetryAfter is true', () => {
+    const result = getRetryInterval(
+      {
+        max: 10,
+        try: 1,
+        interval: 500,
+        useRetryAfter: true,
+      },
+      1000,
+      1000,
+      120, // 120 seconds
+    );
+
+    expect(result).toEqual(120000); // 120 * 1000 = 120000ms
+  });
+
+  it('should prioritize retry-after over getInterval when useRetryAfter is true', () => {
+    const result = getRetryInterval(
+      {
+        max: 10,
+        try: 2,
+        getInterval: (retry) => retry * 100,
+        useRetryAfter: true,
+      },
+      1000,
+      1000,
+      60,
+    );
+
+    expect(result).toEqual(60000); // Retry-After takes priority
+  });
+
+  it('should use getInterval when retry-after is null and useRetryAfter is true', () => {
+    const result = getRetryInterval(
+      {
+        max: 10,
+        try: 2,
+        getInterval: (retry) => retry * 100,
+        useRetryAfter: true,
+      },
+      1000,
+      1000,
+      undefined,
+    );
+
+    expect(result).toEqual(200); // falls back to getInterval
+  });
 });

@@ -29,6 +29,7 @@ import type { TBuilderFor } from '#tools/type-utilities/TBuilderFor';
 import { getAuthorization } from '#tools/auth/getAuthorization';
 import { getQuerystringKeyFormat } from '#processors/getQuerystringKeyFormat';
 import { getQuerystringKey } from '#processors/getQuerystringKey';
+import { getRetryAfter } from '#tools/getRetryAfter';
 
 export abstract class AbstractJinFrame<TPASS> {
   static getEndpoint(): URL {
@@ -304,6 +305,8 @@ export abstract class AbstractJinFrame<TPASS> {
             // then 블록에 진입하면 retry.try에 1을 더해준다.
             prevResponse = retryResponse;
             retry.try += 1;
+            const retryAfterValue = retryResponse.headers['retry-after'] ?? retryResponse.headers['Retry-After'];
+            const retryAfter = getRetryAfter(retry, retryAfterValue);
 
             if (isValidateStatus(retryResponse.status)) {
               resolve(retryResponse);
@@ -316,6 +319,7 @@ export abstract class AbstractJinFrame<TPASS> {
                 retry,
                 getDuration(this.$_data.startAt, new Date()),
                 getDuration(this.$_data.eachStartAt, new Date()),
+                retryAfter,
               );
 
               setTimeout(() => attempt(), interval);
@@ -323,6 +327,8 @@ export abstract class AbstractJinFrame<TPASS> {
           })
           // 보통의 경우 requestWrap에서 validateStatus: () => true 를 설정하기 때문에
           // 내부 오류로 인해서 이 catch에 도달하는 경우는 발생할 수 없으나, 알 수 없는 오류 방지를 위해 추가함
+          // 이 블록에 도착하는 것은 주로 네트워크 연결이 불완전하여 서버랑 연결된 직후 끊어지는 등의
+          // 네트워크 오류가 발생했을 때 이 블록에 진입한다
           //
           // In normal cases, the requestWrap function sets validateStatus: () => true,
           // so this catch block will not be reached. However, it is added to handle any unexpected errors
@@ -335,10 +341,14 @@ export abstract class AbstractJinFrame<TPASS> {
             } else {
               hook(req, prevResponse);
 
+              // For error cases, we don't have a response with headers, so retryAfter is undefined
+              const retryAfter = undefined;
+
               const interval = getRetryInterval(
                 retry,
                 getDuration(this.$_data.startAt, new Date()),
                 getDuration(this.$_data.eachStartAt, new Date()),
+                retryAfter,
               );
 
               setTimeout(() => attempt(), interval);

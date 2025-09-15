@@ -5,6 +5,7 @@ export function mergeRetryOption(prev: IFrameRetry, next: IFrameRetry): IFrameRe
     ...prev,
     ...(next.max != null && { max: next.max }),
     ...(next.interval != null && { interval: next.interval }),
+    ...(next.useRetryAfter != null && { useRetryAfter: next.useRetryAfter }),
     ...(next.getInterval != null && { getInterval: next.getInterval }),
   };
 }
