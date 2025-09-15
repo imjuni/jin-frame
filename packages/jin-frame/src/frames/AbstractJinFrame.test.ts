@@ -9,7 +9,9 @@ import { Body } from '#decorators/fields/Body';
 import { Query } from '#decorators/fields/Query';
 
 @Post({
-  host: 'http://some.api.google.com/jinframe/:passing',
+  host: 'http://some.api.google.com',
+  pathPrefix: '/jinframe',
+  path: '/:passing',
   contentType: 'multipart/form-data',
 })
 class Test001PostFrame extends JinFrame<{ message: string }> {

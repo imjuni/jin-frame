@@ -13,6 +13,27 @@ export interface IFrameOption {
    * */
   host?: string;
 
+  /**
+   * Path prefix of API Request endpoint
+   *
+   * For example, you can set the relative path defined in the OpenAPI Spec's servers field to pathPrefix.
+   * When set, this path will be prepended to the pathname when generating the Request URL.
+   *
+   * @example
+   * ```typescript
+   * // OpenAPI servers configuration:
+   * // servers: [{ "url": "/api/v3" }]
+   * pathPrefix: '/api/v3'
+   * path: '/users/{id}'
+   * // Final URL: https://example.com/api/v3/users/123
+   *
+   * // Multiple path prefixes for different services
+   * pathPrefix: '/user-service/v1'  // User API
+   * pathPrefix: '/order-service/v2' // Order API
+   * ```
+   */
+  pathPrefix?: string;
+
   /** path of API Request endpoint */
   path?: string;
 

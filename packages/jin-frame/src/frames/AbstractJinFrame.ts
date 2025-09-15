@@ -223,7 +223,9 @@ export abstract class AbstractJinFrame<TPASS> {
 
     // stage 05. url endpoint build
     const { url, isOnlyPath } =
-      option?.url != null ? getUrl(option.url) : getUrl(this.$_option.host, this.$_option.path);
+      option?.url != null
+        ? getUrl(option.url)
+        : getUrl(this.$_option.host, this.$_option.pathPrefix, this.$_option.path);
 
     // stage 06. path parameter evaluation
     const pathfunc = compile(url.pathname);
