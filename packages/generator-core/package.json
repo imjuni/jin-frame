@@ -93,11 +93,8 @@
   },
   "dependencies": {
     "@apidevtools/json-schema-ref-parser": "^14.2.0",
-    "@optique/core": "^0.4.2",
-    "@optique/run": "^0.4.2",
     "axios": "^1.11.0",
     "change-case": "^5.4.4",
-    "consola": "^3.2.3",
     "my-easy-fp": "^0.22.0",
     "my-node-fp": "^0.10.3",
     "openapi-schema-validator": "^12.1.3",
