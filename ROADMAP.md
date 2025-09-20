@@ -1,56 +1,42 @@
-# Todo
+# Roadmap
 
-## English
+## jin-frame
 
-- [ ] Mocking (provide built-in mocking without using axios-mock-adapter)
+- [ ] Mocking (Provide built-in mock functionality without using axios-mock-adapter)
   - Support registering mocks as an array
-  - Each item: `{ url: string; params: self; reply: unknown }`
-    - `params` is matched against the declared class member variables;  
-      if they match, the cached mock response is returned  
-  - When `execute` or `request` runs, it iterates through the array and returns the matching response
-- [ ] Add BigInt (Long type) serialization support
-- [ ] Add caching functionality using endpoint + query
-  - Re-run request if cache timeout has expired, otherwise return cached result
-  - Investigate cache strategies (e.g. stale-while-revalidate like SWR)
-  - Explore cache-related headers
-- [ ] test server made by fastify
-  - test file upload
-  - test form
-- [x] Querystring square bracket 1 fruit[]=apple&fruit[]=banana
-- [x] Querystring square bracket 2 fruit[1]=apple&fruit[2]=banana
-- [ ] Retry-After 헤더 처리
+  - Each array element follows the format: { url: string; params: self, reply: unknown }
+    - params refers to the type. When checking cache matches, passing member variables will also match those values
+  - When executing or making requests, iterate through the array to return responses
+- [ ] Add BigInt type (Long type) serialization functionality
+- [ ] Implement caching functionality using endpoint and query
+  - Calculate cache timeout and re-execute when timeout expires, otherwise return cached result
+  - Explore cache strategies like stale-while-revalidate (similar to SWR)
+  - Research cache-related headers
+- [ ] Create a simple server with fastify for testing file uploads and other features
+- [x] Array bracket handling 1: fruit[]=apple&fruit[]=banana
+- [x] Array bracket handling 2: fruit[1]=apple&fruit[2]=banana
+- [x] Retry-After header processing
+- [ ] Response validation processing - automatically validate responses when validators are added to methods during class declaration
+  - Support for zod, json-schema (ajv), etc.
+- [ ] Request deduplication/burst prevention
+  - Single response for multiple rapid requests to the same address with identical conditions
+- [ ] Powerful cache layer (memory/LRU)
+- [ ] Upload/download progress events
+- [ ] Add functionality to change Authorization and host after Server Component configuration for convenient use in Next.js
 
-## Korean
+### Feasibility Study
 
-- [ ] Mocking (axios-mock-adapter를 사용하지 않고 자체 mock 제공)
-  - 배열로 Mocking을 등록할 수 있다
-  - 각 배열은 { url: string; params: self, reply: unknown } 형식으로 등록된다
-    - params는 타입을 의미한다. 캐시가 매칭되는지 확인할 때 자신의 멤버 변수를 전달하면 그 값도 매칭한다
-  - execute를 하거나 request를 실행했을 때 배열을 순회하면서 응답을 반환한다
-- [ ] BigInt 타입(Long 타입) 직렬화 기능 추가
-- [ ] endpoint, query를 사용해서 cache를 하는 기능을 둘 수 있을 듯
-  - cache timeout을 계산해서 timeout이 지나면 또 실행, 그게 아니면 return
-  - 캐시 관련 전략을 알아보자 swr처럼 stale-while-revalidate 을 할 수 있을까?
-  - 캐시 관련 header도 알아보자
-- [ ] 파일 업로드 등의 테스트를 할 수 있게 fastify로 간단한 서버를 작성해보자
-- [x] 배열 괄호처리 1 fruit[]=apple&fruit[]=banana
-- [x] 배열 괄호처리 2 fruit[1]=apple&fruit[2]=banana
-- [ ] Retry-After 헤더 처리
-- [ ] 응답 결과에 대해서 validator 처리, 클래스 선언할 때 Method에 validator를 넣어두면 response 받은 후 자동 검증
-  - zod, json-schema(ajv), etc ...
-- [ ] 요청 디듀플/버스팅 방지
-  - 동일 주소, 동일 조건으로 빠르게 수차례 요청한 경우 한 번에 응답
-- [ ] OpenAPI 스펙 기반 자동 생성
-- [ ] 강력한 캐시 계층 (메모리/LRU)
-- [ ] 업/다운로드 프로그레스 이벤트
-
-## 가능성 검토
-
-- [ ] 강력한 캐시 계층 (IndexedDB/AsyncStorage)
-- [ ] 인증 템플릿 (플러그인처럼 끼우기, 가능성 검진 필요함, node + browser 둘 다 가능한지, 그러기 위해서 어떻게 해야 하는지 검토 필요)
-- [ ] 전송 어댑터 다중화 (Edge/Node/Deno/React Native, axios는 adapter를 받는 방향으로 하는데, 가능성 검토 필요, axios 하나로 충분해보이기는 함)
-  - fetch 어댑터 인터페이스를 고정하고, 환경별 구현 주입:
+- [ ] Powerful cache layer (IndexedDB/AsyncStorage)
+- [ ] Authentication templates (plugin-like integration, feasibility assessment needed for both node + browser compatibility)
+- [ ] Multi-transport adapters (Edge/Node/Deno/React Native, axios uses adapter approach, feasibility study needed, though axios alone seems sufficient)
+  - Fix fetch adapter interface and inject environment-specific implementations:
   - Node: undici
   - Edge/Cloudflare: Web Fetch
   - RN: cross-fetch or whatwg-fetch polyfill
   - Deno: native fetch
+
+### jin-frame generator
+
+- Generate jin-frame based on Authorization configuration
+- Generate multiple BaseFrames when there are multiple servers
+  - Properly add host and path when BaseFrame is not used
