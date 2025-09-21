@@ -1,14 +1,22 @@
-import { JinCreateError } from '#frames/JinCreateError';
+import { setupServer } from 'msw/node';
+import { AxiosResponse } from 'axios';
+import z from 'zod';
+
+import { JinCreateError } from '#exceptions/JinCreateError';
 import { JinFrame } from '#frames/JinFrame';
 import type { IDebugInfo } from '#interfaces/IDebugInfo';
 import type { TJinFrameResponse, TJinRequestConfig } from '#interfaces/TJinFrameResponse';
 import { Post } from '#decorators/methods/Post';
 import { http, HttpResponse, PathParams } from 'msw';
-import { setupServer } from 'msw/node';
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 import { Param } from '#decorators/fields/Param';
 import { Body } from '#decorators/fields/Body';
-import { AxiosResponse } from 'axios';
+import type { TValidationResult, TValidationResultType } from '#interfaces/TValidationResult';
+import { Validator } from '#validators/Validator';
+
+const messageSchema = z.object({
+  message: z.string(),
+});
 
 class CustomError extends Error {
   readonly discriminator = '__CustomError__';
@@ -112,6 +120,60 @@ class Test004PostFrame extends JinFrame<{ message: string }> {
     this.preHookCount += 1;
     console.log('pre hook executed: ', this.preHookCount);
   }
+}
+
+class Test005PostFrameValidator extends Validator<
+  AxiosResponse<{ message: string }>,
+  { message: string },
+  z.core.$ZodIssue
+> {
+  constructor(type: TValidationResultType) {
+    super({ type });
+  }
+
+  override getData(reply: AxiosResponse<{ message: string }>): { message: string } {
+    return reply.data;
+  }
+
+  override validator(_data: { message: string }): TValidationResult<z.core.$ZodIssue> {
+    const result = messageSchema.safeParse(_data);
+
+    if (result.success) {
+      return { valid: true };
+    }
+
+    return { valid: false, error: result.error.issues };
+  }
+}
+
+@Post({
+  host: 'http://some.api.google.com/jinframe/:passing',
+  validator: new Test005PostFrameValidator('exception'),
+})
+class Test005PostFrame extends JinFrame<{ message: string }> {
+  @Param()
+  declare public readonly passing: string;
+
+  @Body()
+  declare public readonly username: string;
+
+  @Body()
+  declare public readonly password: string;
+}
+
+@Post({
+  host: 'http://some.api.google.com/jinframe/:passing',
+  validator: new Test005PostFrameValidator('value'),
+})
+class Test006PostFrame extends JinFrame<{ message: string }> {
+  @Param()
+  declare public readonly passing: string;
+
+  @Body()
+  declare public readonly username: string;
+
+  @Body()
+  declare public readonly password: string;
 }
 
 interface JinFrameTestResponse {
@@ -751,4 +813,79 @@ describe('hook count either frame test', () => {
     retryServer.listen({ onUnhandledRequest: 'bypass' });
     retryServer.use(http.post(/.*some\.api\.google\.com.*/, () => new HttpResponse('Not Found', { status: 404 })));
   }, 10000);
+});
+
+describe('JinFrame validation test', () => {
+  // MSW server configuration for this test suite
+  const hookServer = setupServer();
+
+  beforeEach(() => {
+    hookServer.listen();
+  });
+
+  afterEach(() => {
+    hookServer.resetHandlers();
+    hookServer.close();
+  });
+
+  it('should throw error when validation error', async () => {
+    hookServer.use(
+      http.post<PathParams<'passing'>, JinFrameTestRequestBody>(
+        'http://some.api.google.com/jinframe/pass',
+        async ({ request }) => {
+          const body = await request.json();
+          if (body.username === 'ironman' && body.password === 'marvel') {
+            return HttpResponse.json<{ message: number }>({ message: 123 });
+          }
+          return new HttpResponse('Bad Request', { status: 400 });
+        },
+      ),
+    );
+
+    const frame = Test005PostFrame.of({ username: 'ironman', password: 'marvel', passing: 'pass' });
+    await expect(async () => {
+      await frame.execute();
+    }).rejects.toThrowError();
+  });
+
+  it('should throw error when validation error with getError', async () => {
+    hookServer.use(
+      http.post<PathParams<'passing'>, JinFrameTestRequestBody>(
+        'http://some.api.google.com/jinframe/pass',
+        async ({ request }) => {
+          const body = await request.json();
+          if (body.username === 'ironman' && body.password === 'marvel') {
+            return HttpResponse.json<{ message: number }>({ message: 123 });
+          }
+          return new HttpResponse('Bad Request', { status: 400 });
+        },
+      ),
+    );
+
+    const frame = Test005PostFrame.of({ username: 'ironman', password: 'marvel', passing: 'pass' });
+    await expect(async () => {
+      await frame.execute({ getError: (err) => new Error(err.message) });
+    }).rejects.toThrowError();
+  });
+
+  it('should throw error when validation error', async () => {
+    hookServer.use(
+      http.post<PathParams<'passing'>, JinFrameTestRequestBody>(
+        'http://some.api.google.com/jinframe/pass',
+        async ({ request }) => {
+          const body = await request.json();
+          if (body.username === 'ironman' && body.password === 'marvel') {
+            return HttpResponse.json<{ message: number }>({ message: 123 });
+          }
+          return new HttpResponse('Bad Request', { status: 400 });
+        },
+      ),
+    );
+
+    const frame = Test006PostFrame.of({ username: 'ironman', password: 'marvel', passing: 'pass' });
+    const reply = await frame.execute();
+
+    expect(reply.status).toEqual(200);
+    expect(reply.data.message).toEqual(123);
+  });
 });

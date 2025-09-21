@@ -1,6 +1,7 @@
 import type { IFrameRetry } from '#interfaces/options/IFrameRetry';
 import type { TMethod } from '#interfaces/options/TMethod';
 import type { AxiosRequestConfig, Milliseconds } from 'axios';
+import type { Validator } from '#validators/Validator';
 
 export interface IFrameOption {
   /**
@@ -66,4 +67,9 @@ export interface IFrameOption {
    * eg. Bearer i-am-authorization-key
    * */
   authoriztion?: string | AxiosRequestConfig['auth'];
+
+  /**
+   * validation configuration
+   */
+  validator?: Validator;
 }

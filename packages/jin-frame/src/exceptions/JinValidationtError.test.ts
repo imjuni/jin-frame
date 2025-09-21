@@ -1,41 +1,11 @@
-import { JinCreateError } from '#frames/JinCreateError';
-import { JinRequestError } from '#frames/JinRequestError';
 import { getDuration } from '#tools/getDuration';
 import { getReasonPhrase } from 'http-status-codes';
 import { describe, expect, it } from 'vitest';
+import { JinValidationtError } from '#exceptions/JinValidationtError';
 
-describe('JinCreateError', () => {
+describe('JinValidationtError', () => {
   it('gettter/setter', () => {
-    const jf = new JinCreateError({
-      debug: {
-        ts: {
-          unix: '1674349200',
-          iso: '1674349200',
-        },
-        duration: getDuration(new Date(2023, 0, 1, 0, 0, 1), new Date(2023, 0, 1, 0, 0, 2)),
-      },
-      frame: {} as any,
-      message: 'error',
-    });
-
-    expect(jf.debug).toMatchObject({
-      ts: {
-        unix: '1674349200',
-        iso: '1674349200',
-      },
-      duration: 1000,
-    });
-
-    expect(jf.frame).toMatchObject({});
-    expect(jf.status).toEqual(500);
-    expect(jf.statusText).toEqual(getReasonPhrase(500));
-    expect(jf.message).toEqual('error');
-  });
-});
-
-describe('JinRequestError', () => {
-  it('gettter/setter', () => {
-    const jf = new JinRequestError({
+    const jf = new JinValidationtError({
       debug: {
         ts: {
           unix: '1674349200',
@@ -50,6 +20,8 @@ describe('JinRequestError', () => {
       } as any,
       frame: {} as any,
       message: 'error',
+      validator: {} as any,
+      validated: { valid: false, error: [] },
     });
 
     expect(jf.debug).toMatchObject({
@@ -66,5 +38,7 @@ describe('JinRequestError', () => {
     expect(jf.status).toEqual(500);
     expect(jf.statusText).toEqual(getReasonPhrase(500));
     expect(jf.message).toEqual('error');
+    expect(jf.validated).toEqual({ valid: false, error: [] });
+    expect(jf.validator).toEqual({});
   });
 });

@@ -15,6 +15,7 @@ export function getFrameOption(method: TMethod, option?: Partial<Omit<IFrameOpti
     retry: option?.retry,
     timeout: option?.timeout,
     authoriztion: option?.authoriztion,
+    validator: option?.validator,
   };
 
   return frameOption;
