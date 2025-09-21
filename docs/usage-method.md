@@ -111,6 +111,7 @@ All method decorators (`@Get`, `@Post`, …) accept common options:
 | ------------------ | ------------------------------------------------------------------------------------ | --------------------------------------------------------------------------- |
 | `host`             | `string`                                                                             | Base URL (including protocol). Example: `https://api.example.com`           |
 | `path`             | `string`                                                                             | Path. Supports **Path Param** placeholders like `:id`                       |
+| `pathPrefix`       | `string`                                                                             | Path prefix to prepend to the path, such as `/api`                         |
 | `timeout`          | `number`                                                                             | Request timeout (ms). Uses library default if not set                       |
 | `retry`            | `{ max: number; interval?: number }` \*                                              | Retry policy. `max` is max attempts, `interval` is delay between retries(ms)|
 | `method`           | `string`                                                                             | Normally set internally, but can be overridden for custom methods           |
@@ -120,6 +121,7 @@ All method decorators (`@Get`, `@Post`, …) accept common options:
 | `validateStatus`   | `(status: number) => boolean`                                                        | Axios status validator. Works with retry conditions                         |
 | `userAgent`        | `string`                                                                             | Sets User-Agent. May be ignored due to browser security restrictions        |
 | `authorization`    | `string` or `{ username: string; password: string }`                                 | Configure `Authorization` header directly or with Basic Auth                |
+| `validator`        | `Validator`                                                                          | Pass a custom `Validator` instance by extending the `Validator` class       |
 
 ## Body Transmission Rules & Content-Type
 
