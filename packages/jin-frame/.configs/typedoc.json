@@ -5,7 +5,7 @@
   "tsconfig": "../tsconfig.json",
   "entryPointStrategy": "expand",
   "plugin": ["typedoc-plugin-markdown", "typedoc-vitepress-theme"],
-  "out": "../../docs/api",
+  "out": "../docs/api",
   "excludePrivate": true,
   "excludeInternal": true,
   "readme": "none",
