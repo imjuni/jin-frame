@@ -8,8 +8,8 @@ on:
   push:
     branches: [master]
     paths:
-      - 'docs/**'
-      - 'assets/**'
+      - 'packages/jin-frame/docs/**'
+      - 'packages/jin-frame/assets/**'
 
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
@@ -50,10 +50,12 @@ jobs:
         run: pnpm install
       - name: Build TypeDoc
         run: |
-          pnpm --filter jin-frame run docs:typedoc
-          cp -r ./assets ./docs/assets
+          mkdir ./docs
           mkdir ./docs/public
+          mkdir ./docs/assets
+          cp -r ./assets ./docs/assets
           cp -r ./assets ./docs/public/assets
+          pnpm --filter jin-frame run docs:typedoc
       - name: Build with VitePress
         run: |
           pnpm --filter jin-frame run docs:build:prod
