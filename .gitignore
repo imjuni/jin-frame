@@ -115,13 +115,13 @@ tslint-to-eslint-config.log
 src/*.ts.bak
 
 # Automatically generated vuepress
-docs/.vitepress
-docs/assets
-docs/api
-docs/classes
-docs/interfaces
-docs/media
-docs/public
+packages/jin-frame/docs/.vitepress
+packages/jin-frame/docs/assets
+packages/jin-frame/docs/api
+packages/jin-frame/docs/classes
+packages/jin-frame/docs/interfaces
+packages/jin-frame/docs/media
+packages/jin-frame/docs/public
 
 # swc
 .swc/
