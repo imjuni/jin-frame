@@ -2,7 +2,7 @@
 
 <!-- markdownlint-disable MD033 -->
 <p align="center">
-  <img src="../assets/jin-frame-brand.png" alt="brand" width="300"/>
+  <img src="./assets/jin-frame-brand.png" alt="brand" width="300"/>
 </p>
 <!-- markdownlint-enable MD033 -->
 
@@ -53,8 +53,8 @@ Here’s a comparison between using Axios directly and using jin-frame:
 
 | Direct usage                           | Jin-Frame                                     |
 | -------------------------------------- | --------------------------------------------- |
-| ![axios](../assets/axios-usage.png)    | ![jin-frame](../assets/jinframe-usage.png)    |
-| [axios svg](../assets/axios-usage.svg) | [jin-frame svg](../assets/jinframe-usage.svg) |
+| ![axios](./assets/axios-usage.png)    | ![jin-frame](./assets/jinframe-usage.png)    |
+| [axios svg](./assets/axios-usage.svg) | [jin-frame svg](./assets/jinframe-usage.svg) |
 
 The amount of code is similar, but jin-frame makes it **clear which variables belong to Querystring, Header, Body, or Path Param**.  
 Also, by using the static factory method `of`, you can create and execute requests in a type-safe way.
