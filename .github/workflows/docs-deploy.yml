@@ -57,7 +57,7 @@ jobs:
       - name: Build with VitePress
         run: |
           pnpm --filter jin-frame run docs:build:prod
-          mv ./packages/jin-frame/docs/.vitepress/dist ./docs/.vitepress
+          mv ./packages/jin-frame/docs .
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
