@@ -55,7 +55,9 @@ jobs:
           mkdir ./docs/public
           cp -r ./assets ./docs/public/assets
       - name: Build with VitePress
-        run: pnpm --filter jin-frame run docs:build:prod
+        run: |
+          pnpm --filter jin-frame run docs:build:prod
+          mv ./packages/jin-frame/docs/.vitepress/dist ./docs/.vitepress
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
