@@ -50,12 +50,12 @@ jobs:
         run: pnpm install
       - name: Build TypeDoc
         run: |
-          pnpm run docs:typedoc
+          pnpm --filter jin-frame run docs:typedoc
           cp -r ./assets ./docs/assets
           mkdir ./docs/public
           cp -r ./assets ./docs/public/assets
       - name: Build with VitePress
-        run: pnpm run docs:build:prod
+        run: pnpm --filter jin-frame run docs:build:prod
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
