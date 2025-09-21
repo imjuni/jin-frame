@@ -94,6 +94,34 @@ const reply = await BitwiseQueryFrame.of({ flags: [1, 2, 4] }).execute();
 
 > Useful when the API expects bitmask values.
 
+### Array Key Formatting
+
+Use the `@Query({ keyFormat: '...' })` option to specify the **key format** for array queries.
+
+```ts
+@Get({ host: 'https://api.example.com', path: '/items' })
+export class KeyFormatFrame extends JinFrame {
+  @Query({ keyFormat: 'brackets' })
+  declare readonly tags?: string[];
+  
+  @Query({ keyFormat: 'indices' })
+  declare readonly ids?: number[];
+}
+
+const reply = await KeyFormatFrame.of({ 
+  tags: ['red', 'blue'], 
+  ids: [10, 20] 
+}).execute();
+// → ?tags[]=red&tags[]=blue&ids[0]=10&ids[1]=20
+```
+
+Supported key formats:
+
+- **Default**: `?tags=red&tags=blue` (repeated keys)
+- **`brackets`**: `?tags[]=red&tags[]=blue`
+- **`indices`**: `?tags[0]=red&tags[1]=blue`
+- **`one-indices`**: `?tags[1]=red&tags[2]=blue` (starts from 1)
+
 ## URL Encoding
 
 All keys and values are safely **URL encoded** before being added to the URL.
