@@ -7,8 +7,8 @@ const getThemeConfig = (_locale?: string) => {
   const locale = _locale != null ? `/${_locale}` : '';
 
   const logo = {
-    light: 'assets/jin-frame-brand-icon.png',
-    dark: 'assets/jin-frame-brand-icon.png',
+    light: './docs/assets/jin-frame-brand-icon.png',
+    dark: './docs/assets/jin-frame-brand-icon.png',
   };
 
   const nav = [
@@ -51,6 +51,10 @@ const getThemeConfig = (_locale?: string) => {
             {
               text: 'Form',
               link: `${locale}/method/form.md`,
+            },
+            {
+              text: 'Validation',
+              link: `${locale}/method/validation.md`,
             },
           ],
         },
