@@ -92,9 +92,9 @@ export abstract class AbstractJinFrame<TPASS> {
   // eslint-disable-next-line class-methods-use-this
   protected $_retryFail(_req: AxiosRequestConfig, _res: AxiosResponse<TPASS>): void {}
 
-  protected $_option!: IFrameOption;
+  protected $_option: IFrameOption;
 
-  protected $_data!: IFrameInternal;
+  protected $_data: IFrameInternal;
 
   constructor() {
     const fromDecorator = getRequestMeta(this.constructor as Constructor<unknown>);
@@ -110,6 +110,8 @@ export abstract class AbstractJinFrame<TPASS> {
   }
 
   public getOption<K extends keyof IFrameOption>(kind: K): IFrameOption[K] {
+    // TypeScript inference limitation with complex interface types
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-return
     return this.$_option[kind];
   }
 

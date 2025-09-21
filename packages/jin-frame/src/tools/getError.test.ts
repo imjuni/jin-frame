@@ -1,4 +1,4 @@
-import { JinCreateError } from '#frames/JinCreateError';
+import { JinCreateError } from '#exceptions/JinCreateError';
 import { getError } from '#tools/getError';
 import { describe, expect, it } from 'vitest';
 

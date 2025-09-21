@@ -1,5 +1,6 @@
 import type { JinEitherFrame } from '#frames/JinEitherFrame';
 import type { IDebugInfo } from '#interfaces/IDebugInfo';
+import type { TValidationResult } from '#interfaces/TValidationResult';
 import type { AxiosResponse } from 'axios';
 import type { IFail } from 'my-only-either';
 
@@ -25,6 +26,8 @@ export interface IFailReplyJinEitherFrame<T = unknown> extends AxiosResponse<T>,
 
   /** debugging information */
   $debug: IDebugInfo;
+
+  $validated: TValidationResult;
 }
 
 export type TJinFail<T> = IFail<IFailCreateJinEitherFrame<T> | IFailReplyJinEitherFrame<T>>;

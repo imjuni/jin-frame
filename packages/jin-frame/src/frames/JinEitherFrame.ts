@@ -1,5 +1,5 @@
 import { AbstractJinFrame } from '#frames/AbstractJinFrame';
-import { JinCreateError } from '#frames/JinCreateError';
+import { JinCreateError } from '#exceptions/JinCreateError';
 import type { IDebugInfo } from '#interfaces/IDebugInfo';
 import type { IFailCreateJinEitherFrame, IFailReplyJinEitherFrame } from '#interfaces/IFailJinEitherFrame';
 import type { IJinFrameCreateConfig } from '#interfaces/options/IJinFrameCreateConfig';
@@ -7,7 +7,6 @@ import type { IJinFrameFunction } from '#interfaces/options/IJinFrameFunction';
 import type { IJinFrameRequestConfig } from '#interfaces/options/IJinFrameRequestConfig';
 import type { TJinRequestConfig } from '#interfaces/TJinFrameResponse';
 import type { TPassJinEitherFrame } from '#interfaces/TPassJinEitherFrame';
-import { CE_HOOK_APPLY } from '#tools/CE_HOOK_APPLY';
 import { getDuration } from '#tools/getDuration';
 import { isValidateStatusDefault } from '#tools/isValidateStatusDefault';
 import { AxiosError, type AxiosRequestConfig, type AxiosResponse } from 'axios';
@@ -18,6 +17,7 @@ import getUnixTime from 'date-fns/getUnixTime';
 import httpStatusCodes, { getReasonPhrase } from 'http-status-codes';
 import { fail, pass, type PassFailEither } from 'my-only-either';
 import 'reflect-metadata';
+import { runAndUnwrap } from '#tools/runAndUnwrap';
 
 /**
  * Definition HTTP Request
@@ -122,7 +122,7 @@ export class JinEitherFrame<TPASS = unknown, TFAIL = TPASS>
       };
 
       try {
-        await this.executePreHook(req);
+        await runAndUnwrap(this.$_preHook.bind(this), req);
 
         this.$_data.eachStartAt = new Date();
         const reply = await this.retry(req, isValidateStatus);
@@ -139,13 +139,32 @@ export class JinEitherFrame<TPASS = unknown, TFAIL = TPASS>
             $err: err,
             $debug: { ...debugInfo, duration },
             $frame: this,
+            $validated: { valid: false, error: [] },
           };
 
-          await this.executePostHook(req, failInfo);
+          await runAndUnwrap(this.$_postHook.bind(this), req, failInfo);
           return fail(failInfo);
         }
 
         const duration = getDuration(startAt, endAt);
+
+        const { validator } = this.$_option;
+        const validated = await validator?.validate(reply);
+
+        if (validator != null && validated != null && !validated.valid) {
+          const err = new Error('Validation error');
+          const failInfo: IFailReplyJinEitherFrame<TFAIL> = {
+            ...(reply as unknown as AxiosResponse<TFAIL>),
+            $progress: 'fail',
+            $err: err,
+            $debug: { ...debugInfo, duration },
+            $frame: this,
+            $validated: validated,
+          };
+
+          await runAndUnwrap(this.$_postHook.bind(this), req, failInfo);
+          return fail(failInfo);
+        }
 
         const passInfo: TPassJinEitherFrame<TPASS> = {
           ...reply,
@@ -154,7 +173,7 @@ export class JinEitherFrame<TPASS = unknown, TFAIL = TPASS>
           $frame: this,
         };
 
-        await this.executePostHook(req, passInfo);
+        await runAndUnwrap(this.$_postHook.bind(this), req, passInfo);
         return pass(passInfo);
       } catch (catched) {
         const err = catched instanceof AxiosError ? catched : new AxiosError('unkonwn error raised from jinframe');
@@ -184,34 +203,12 @@ export class JinEitherFrame<TPASS = unknown, TFAIL = TPASS>
    * @returns AxiosResponse With PassFailEither
    */
   public async execute(
+    this: this,
     option?: IJinFrameRequestConfig & IJinFrameCreateConfig,
   ): Promise<
     PassFailEither<IFailReplyJinEitherFrame<TFAIL> | IFailCreateJinEitherFrame<TFAIL>, TPassJinEitherFrame<TPASS>>
   > {
     const requester = this.create(option);
     return requester();
-  }
-
-  public async executePreHook(req: AxiosRequestConfig<unknown>): Promise<CE_HOOK_APPLY> {
-    if (this.$_preHook != null && this.$_preHook.constructor.name === 'AsyncFunction') {
-      await this.$_preHook(req);
-      return CE_HOOK_APPLY.ASYNC_HOOK_APPLIED;
-    }
-
-    this.$_preHook(req);
-    return CE_HOOK_APPLY.SYNC_HOOK_APPLIED;
-  }
-
-  public async executePostHook(
-    req: AxiosRequestConfig<unknown>,
-    reply: IFailReplyJinEitherFrame<TFAIL> | TPassJinEitherFrame<TPASS>,
-  ): Promise<CE_HOOK_APPLY> {
-    if (this.$_postHook != null && this.$_postHook.constructor.name === 'AsyncFunction') {
-      await this.$_postHook(req, reply);
-      return CE_HOOK_APPLY.ASYNC_HOOK_APPLIED;
-    }
-
-    this.$_postHook(req, reply);
-    return CE_HOOK_APPLY.SYNC_HOOK_APPLIED;
   }
 }

@@ -43,11 +43,13 @@
     "baseUrl": ".",
     "rootDir": ".",
     "paths": {
-      "#tools/*": ["src/tools/*"],
       "#decorators/*": ["src/decorators/*"],
-      "#processors/*": ["src/processors/*"],
+      "#exceptions/*": ["src/exceptions/*"],
       "#frames/*": ["src/frames/*"],
-      "#interfaces/*": ["src/interfaces/*"]
+      "#interfaces/*": ["src/interfaces/*"],
+      "#processors/*": ["src/processors/*"],
+      "#tools/*": ["src/tools/*"],
+      "#validators/*": ["src/validators/*"]
     }
   },
   "include": ["src/**/*.ts"],

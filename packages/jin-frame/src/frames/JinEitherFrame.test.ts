@@ -5,6 +5,14 @@ import { setupServer } from 'msw/node';
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 import { Param } from '#decorators/fields/Param';
 import { Body } from '#decorators/fields/Body';
+import { Validator } from '#validators/Validator';
+import type { AxiosResponse } from 'axios';
+import type { TValidationResult } from '#interfaces/TValidationResult';
+import z from 'zod';
+
+const messageSchema = z.object({
+  message: z.string(),
+});
 
 @Post({ host: 'http://some.api.google.com/jinframe/:passing' })
 class Test001PostFrame extends JinEitherFrame {
@@ -20,6 +28,45 @@ class Test001PostFrame extends JinEitherFrame {
 
 @Post({ host: 'http://some.api.google.com/jinframe/:passing/:raiseerr' })
 class Test002PostFrame extends JinEitherFrame {
+  @Param()
+  declare public readonly passing: string;
+
+  @Body()
+  declare public readonly username: string;
+
+  @Body()
+  declare public readonly password: string;
+}
+
+class TestPostFrameValidator extends Validator<
+  AxiosResponse<{ message: string }>,
+  { message: string },
+  z.core.$ZodIssue
+> {
+  constructor() {
+    super({ type: 'value' });
+  }
+
+  override getData(reply: AxiosResponse<{ message: string }>): { message: string } {
+    return reply.data;
+  }
+
+  override validator(_data: { message: string }): TValidationResult<z.core.$ZodIssue> {
+    const result = messageSchema.safeParse(_data);
+
+    if (result.success) {
+      return { valid: true };
+    }
+
+    return { valid: false, error: result.error.issues };
+  }
+}
+
+@Post({
+  host: 'http://some.api.google.com/jinframe/:passing',
+  validator: new TestPostFrameValidator(),
+})
+class Test003PostFrame extends JinEitherFrame {
   @Param()
   declare public readonly passing: string;
 
@@ -55,6 +102,7 @@ describe('JinEitherFrame', () => {
     server.resetHandlers();
     server.close();
   });
+
   it('should return JinCreateError when request build fail', async () => {
     const frame = Test002PostFrame.of({ username: 'ironman', password: 'marvel', passing: 'pass' });
     const requester = frame.create();
@@ -244,5 +292,48 @@ describe('JinEitherFrame', () => {
     } else {
       throw new Error('Cannot reach this line');
     }
+  });
+});
+
+describe('JinEitherFrame with validator', () => {
+  // MSW server configuration
+  const server = setupServer();
+
+  beforeEach(() => {
+    server.listen({ onUnhandledRequest: 'bypass' });
+
+    // 기본 핸들러: 모든 some.api.google.com 요청에 대해 404 반환
+    // base handler: return 404 for all some.api.google.com requests
+    server.use(http.post(/.*some\.api\.google\.com.*/, () => new HttpResponse('Not Found', { status: 404 })));
+  });
+
+  afterEach(() => {
+    server.resetHandlers();
+    server.close();
+  });
+
+  it('should return JinCreateError when request build fail', async () => {
+    server.use(
+      http.post<PathParams<'passing'>, JinEitherFrameTestRequestBody>(
+        'http://some.api.google.com/jinframe/pass',
+        async ({ request }) => {
+          const body = await request.json();
+          if (body.username === 'ironman' && body.password === 'marvel') {
+            return HttpResponse.json<{ message: number }>({ message: 1234 });
+          }
+          return new HttpResponse('Bad Request', { status: 400 });
+        },
+      ),
+    );
+
+    const frame = Test003PostFrame.of({ username: 'ironman', password: 'marvel', passing: 'pass' });
+    const reply = await frame.execute();
+
+    expect(reply).toMatchObject({
+      type: 'fail',
+      fail: {
+        $validated: { valid: false },
+      },
+    });
   });
 });
