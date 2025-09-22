@@ -2,7 +2,7 @@ import type { JinFrame } from '#frames/JinFrame';
 import type { IDebugInfo } from '#interfaces/IDebugInfo';
 import type { TValidationResult } from '#interfaces/TValidationResult';
 import type { AxiosError, AxiosResponse } from 'axios';
-import type { Validator } from '#validators/Validator';
+import type { BaseValidator } from '#validators/BaseValidator';
 
 export class JinValidationtError<TPASS, TFAIL = unknown, TValidationError = unknown> extends Error {
   __discriminator = 'JinValidationtError';
@@ -17,7 +17,7 @@ export class JinValidationtError<TPASS, TFAIL = unknown, TValidationError = unkn
 
   #statusText: string;
 
-  #validator: Validator;
+  #validator: BaseValidator;
 
   #validated: TValidationResult<TValidationError>;
 
@@ -33,7 +33,7 @@ export class JinValidationtError<TPASS, TFAIL = unknown, TValidationError = unkn
     frame: JinFrame<TPASS, TFAIL>;
     resp: AxiosResponse<TPASS>;
     message: string;
-    validator: Validator;
+    validator: BaseValidator;
     validated: TValidationResult<TValidationError>;
   }) {
     super(message);
@@ -67,7 +67,7 @@ export class JinValidationtError<TPASS, TFAIL = unknown, TValidationError = unkn
     return this.#statusText;
   }
 
-  get validator(): Validator {
+  get validator(): BaseValidator {
     return this.#validator;
   }
 

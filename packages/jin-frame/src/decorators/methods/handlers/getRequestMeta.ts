@@ -27,6 +27,7 @@ export function getRequestMeta(ctor: AbstractConstructor<unknown> | Constructor<
   const methods = [...metas.methods].reverse();
   const retries = [...metas.retries].reverse();
   const timeouts = [...metas.timeouts].reverse();
+  const validators = [...metas.validators].reverse();
 
   const mergedOption = methods.reduce<IFrameOption>(
     (merged, meta) => mergeFrameOption(merged, meta.option),
@@ -41,6 +42,8 @@ export function getRequestMeta(ctor: AbstractConstructor<unknown> | Constructor<
     return mergeRetryOption(merged, meta);
   }, undefined);
 
+  const mergedValidator = validators.at(-1);
+
   const mergedTimeout = timeouts.at(-1);
 
   if (mergedRetry != null) {
@@ -49,6 +52,10 @@ export function getRequestMeta(ctor: AbstractConstructor<unknown> | Constructor<
 
   if (mergedTimeout != null) {
     mergedOption.timeout = mergedTimeout;
+  }
+
+  if (mergedValidator != null) {
+    mergedOption.validator = mergedValidator;
   }
 
   if (Object.keys(mergedOption).length <= 0) {

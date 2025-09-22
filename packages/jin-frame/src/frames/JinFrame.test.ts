@@ -12,7 +12,8 @@ import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 import { Param } from '#decorators/fields/Param';
 import { Body } from '#decorators/fields/Body';
 import type { TValidationResult, TValidationResultType } from '#interfaces/TValidationResult';
-import { Validator } from '#validators/Validator';
+import { BaseValidator } from '#validators/BaseValidator';
+import { Validator } from '#decorators/methods/options/Validator';
 
 const messageSchema = z.object({
   message: z.string(),
@@ -122,7 +123,7 @@ class Test004PostFrame extends JinFrame<{ message: string }> {
   }
 }
 
-class Test005PostFrameValidator extends Validator<
+class Test005PostFrameValidator extends BaseValidator<
   AxiosResponse<{ message: string }>,
   { message: string },
   z.core.$ZodIssue
@@ -166,6 +167,21 @@ class Test005PostFrame extends JinFrame<{ message: string }> {
   validator: new Test005PostFrameValidator('value'),
 })
 class Test006PostFrame extends JinFrame<{ message: string }> {
+  @Param()
+  declare public readonly passing: string;
+
+  @Body()
+  declare public readonly username: string;
+
+  @Body()
+  declare public readonly password: string;
+}
+
+@Validator(new Test005PostFrameValidator('exception'))
+@Post({
+  host: 'http://some.api.google.com/jinframe/:passing',
+})
+class Test007PostFrame extends JinFrame<{ message: string }> {
   @Param()
   declare public readonly passing: string;
 
@@ -887,5 +903,26 @@ describe('JinFrame validation test', () => {
 
     expect(reply.status).toEqual(200);
     expect(reply.data.message).toEqual(123);
+  });
+
+  it('should throw error when validation error with validator decorator', async () => {
+    hookServer.use(
+      http.post<PathParams<'passing'>, JinFrameTestRequestBody>(
+        'http://some.api.google.com/jinframe/pass',
+        async ({ request }) => {
+          const body = await request.json();
+          if (body.username === 'ironman' && body.password === 'marvel') {
+            return HttpResponse.json<{ message: number }>({ message: 123 });
+          }
+          return new HttpResponse('Bad Request', { status: 400 });
+        },
+      ),
+    );
+
+    const frame = Test007PostFrame.of({ username: 'ironman', password: 'marvel', passing: 'pass' });
+
+    await expect(async () => {
+      await frame.execute();
+    }).rejects.toThrowError();
   });
 });
