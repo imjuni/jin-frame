@@ -19,13 +19,13 @@ outline: deep
 @Get({
   host: 'https://api.example.com',
   path: '/orgs/:orgId/users',
-  authorization: process.env.YOUR_AUTH_TOKEN
+  authorization: process.env.YOUR_AUTH_TOKEN,
 })
 export class ListUsersFrame extends JinFrame {
-  @Param() 
+  @Param()
   declare readonly orgId: string;
 
-  @Query() 
+  @Query()
   declare readonly page?: number;
 }
 
@@ -62,10 +62,10 @@ const res = await frame.execute();
   contentType: 'multipart/form-data',
 })
 export class UploadFrame extends JinFrame {
-  @Body() 
+  @Body()
   declare readonly title: string;
-  
-  @Body() 
+
+  @Body()
   declare readonly attachments: JinFile[]; // JinFile 또는 JinFile[] 지원
 }
 
@@ -78,15 +78,15 @@ await frame.execute();
 ### PUT / PATCH / DELETE
 
 ```ts
-@Patch({ 
-  host: 'https://api.example.com', 
+@Patch({
+  host: 'https://api.example.com',
   path: '/users/:id',
 })
 export class UpdateUserFrame extends JinFrame {
-  @Param() 
+  @Param()
   declare readonly id: string;
-  
-  @Body() 
+
+  @Body()
   declare readonly name?: string;
 }
 
@@ -95,7 +95,7 @@ export class UpdateUserFrame extends JinFrame {
   path: '/users/:id',
 })
 export class DeleteUserFrame extends JinFrame {
-  @Param() 
+  @Param()
   declare readonly id: string;
 }
 ```
@@ -108,6 +108,7 @@ export class DeleteUserFrame extends JinFrame {
 | ------------------ | ------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------- |
 | `host`             | `string`                                                                             | 베이스 URL(프로토콜 포함). 예: `https://api.example.com`                        |
 | `path`             | `string`                                                                             | 경로. `:id` 처럼 **Path Param** 플레이스홀더 지원                               |
+| `pathPrefix`       | `string`                                                                             | `/api` 와 같이 path에 추가할 prefix를 설정할 수 있습니다.                       |
 | `timeout`          | `number`                                                                             | 요청 타임아웃(ms). 미설정 시 라이브러리 기본값 사용                             |
 | `retry`            | `{ max: number; interval?: number }` \*                                              | 재시도 설정. `max`는 최대 시도 횟수, `interval`은 시도 간 대기(ms)              |
 | `method`           | `string`                                                                             | 내부적으로 설정되지만, 커스텀 메서드가 필요하면 명시 가능                       |
@@ -117,6 +118,7 @@ export class DeleteUserFrame extends JinFrame {
 | `validateStatus`   | `(status: number) => boolean`                                                        | axios 상태 검증기. 재시도 조건과 함께 사용 가능                                 |
 | `userAgent`        | `string`                                                                             | User-Agent 지정. 브라우저 보안 제약으로 무시될 수 있음(옵션으로는 설정 가능)    |
 | `authorization`    | `string` or `{ usename: string; password: string }`                                  | Header Authorization 필드 값을 설정하거나 Basic Auth 설정을 설정                |
+| `validator`        | `Validator`                                                                          | `Validator` 클래스를 상속하여 Validator를 전달합니다                            |
 
 ## Body 전송 규칙 & Content-Type
 
