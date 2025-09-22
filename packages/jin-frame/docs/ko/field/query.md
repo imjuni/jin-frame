@@ -94,6 +94,34 @@ const reply = await BitwiseQueryFrame.of({ flags: [1, 2, 4] }).execute();
 
 > API 서버가 비트 마스크 값을 기대할 때 유용합니다.
 
+### 배열 키 포맷 지정
+
+`@Query({ keyFormat: '...' })` 옵션으로 배열 쿼리의 **키 형식**을 지정할 수 있습니다.
+
+```ts
+@Get({ host: 'https://api.example.com', path: '/items' })
+export class KeyFormatFrame extends JinFrame {
+  @Query({ keyFormat: 'brackets' })
+  declare readonly tags?: string[];
+  
+  @Query({ keyFormat: 'indices' })
+  declare readonly ids?: number[];
+}
+
+const reply = await KeyFormatFrame.of({ 
+  tags: ['red', 'blue'], 
+  ids: [10, 20] 
+}).execute();
+// → ?tags[]=red&tags[]=blue&ids[0]=10&ids[1]=20
+```
+
+지원하는 키 포맷:
+
+- **기본값**: `?tags=red&tags=blue` (반복 키)
+- **`brackets`**: `?tags[]=red&tags[]=blue`
+- **`indices`**: `?tags[0]=red&tags[1]=blue`
+- **`one-indices`**: `?tags[1]=red&tags[2]=blue` (1부터 시작)
+
 ## URL 인코딩
 
 모든 키와 값은 URL에 추가되기 전에 안전하게 **URL 인코딩**됩니다.
