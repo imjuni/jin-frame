@@ -1,5 +1,60 @@
 # Changed
 
+## 4.7.0
+
+### New Features in 4.7.0
+
+- **Enhanced Validation System**: Major improvements to validation architecture and error handling
+  - `BaseValidator` class: New validation framework with customizable validation logic and data transformation
+  - New exception classes: `JinCreateError`, `JinRequestError`, and `JinValidationtError` for better error categorization
+  - `@Validator` decorator: Declarative validation configuration for request methods
+  - `runAndUnwrap` utility: Complete TypeScript migration with enhanced type safety and generic support
+  - Integration with JinFrame validation pipeline for automatic response validation
+- **Project Documentation**: Added comprehensive roadmap and planning documentation
+  - Korean roadmap: `ROADMAP.ko.md` with detailed feature planning and future enhancements
+  - English roadmap: `ROADMAP.md` with internationalized development plans
+
+### Documentation Improvements in 4.7.0
+
+- **Comprehensive Validation Documentation**: Added detailed validation guides and examples
+  - Korean documentation: `docs/ko/method/validation.md` with BaseValidator class implementation guide
+  - English documentation: `docs/method/validation.md` with complete translation and examples
+  - Enhanced usage documentation with `pathPrefix` and `validator` options in method decorators
+- **Enhanced Field Documentation**: Updated query parameter documentation
+  - Added `keyFormat` option usage and examples in both Korean and English
+  - Comprehensive array formatting examples with practical use cases
+  - Updated all field documentation for consistency and clarity
+- **Documentation Infrastructure**: Fixed TypeDoc and VitePress build processes
+  - Updated build commands and configuration for better documentation generation
+  - Enhanced documentation deployment workflow and CI/CD integration
+
+### Developer Experience in 4.7.0
+
+- **Enhanced Type Safety**: Complete type safety improvements across validation and utility systems
+  - `runAndUnwrap` function with full TypeScript type inference and generic constraints
+  - Automatic parameter and return value type inference for all function calls
+  - Eliminated `any` types in favor of proper generic type constraints
+  - Reduced runtime errors through comprehensive compile-time type checking
+- **Better Error Handling**: Improved error handling and semantic naming conventions
+  - `JinValidationtError`: Renamed `validation` property to `validated` for semantic clarity
+  - Self-type pattern implementation for correct type inference in inherited classes
+  - Enhanced error categorization with specific exception types for different failure scenarios
+
+### Infrastructure in 4.7.0
+
+- **Code Quality Improvements**: Enhanced codebase quality and maintainability
+  - Complete TypeScript migration for utility functions with strict type checking
+  - Strict adherence to `@typescript-eslint` rules for improved code quality
+  - Eliminated unsafe type assertions and improved type inference throughout
+- **Architecture Refinements**: Improved API design and separation of concerns
+  - Resolved class naming conflicts between validation classes and decorators
+  - Enhanced type inference for complex generic scenarios and inheritance patterns
+  - Better separation of concerns between validation logic and request handling
+- **Documentation Infrastructure**: Enhanced documentation build and deployment processes
+  - Fixed VitePress configuration and TypeDoc integration
+  - Improved documentation deployment workflow with better error handling
+  - Enhanced multi-language documentation support and consistency
+
 ## 4.6.0
 
 ### Major Architecture Changes in 4.6.0

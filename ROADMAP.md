@@ -16,7 +16,7 @@
 - [x] Array bracket handling 1: fruit[]=apple&fruit[]=banana
 - [x] Array bracket handling 2: fruit[1]=apple&fruit[2]=banana
 - [x] Retry-After header processing
-- [ ] Response validation processing - automatically validate responses when validators are added to methods during class declaration
+- [x] Response validation processing - automatically validate responses when validators are added to methods during class declaration
   - Support for zod, json-schema (ajv), etc.
 - [ ] Request deduplication/burst prevention
   - Single response for multiple rapid requests to the same address with identical conditions

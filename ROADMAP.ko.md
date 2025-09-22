@@ -16,7 +16,7 @@
 - [x] 배열 괄호처리 1 fruit[]=apple&fruit[]=banana
 - [x] 배열 괄호처리 2 fruit[1]=apple&fruit[2]=banana
 - [x] Retry-After 헤더 처리
-- [ ] 응답 결과에 대해서 validator 처리, 클래스 선언할 때 Method에 validator를 넣어두면 response 받은 후 자동 검증
+- [x] 응답 결과에 대해서 validator 처리, 클래스 선언할 때 Method에 validator를 넣어두면 response 받은 후 자동 검증
   - zod, json-schema(ajv), etc ...
 - [ ] 요청 디듀플/버스팅 방지
   - 동일 주소, 동일 조건으로 빠르게 수차례 요청한 경우 한 번에 응답
