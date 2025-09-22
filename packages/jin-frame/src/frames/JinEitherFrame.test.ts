@@ -5,7 +5,7 @@ import { setupServer } from 'msw/node';
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 import { Param } from '#decorators/fields/Param';
 import { Body } from '#decorators/fields/Body';
-import { Validator } from '#validators/Validator';
+import { BaseValidator } from '#validators/BaseValidator';
 import type { AxiosResponse } from 'axios';
 import type { TValidationResult } from '#interfaces/TValidationResult';
 import z from 'zod';
@@ -38,7 +38,7 @@ class Test002PostFrame extends JinEitherFrame {
   declare public readonly password: string;
 }
 
-class TestPostFrameValidator extends Validator<
+class TestPostFrameValidator extends BaseValidator<
   AxiosResponse<{ message: string }>,
   { message: string },
   z.core.$ZodIssue

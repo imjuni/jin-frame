@@ -2,7 +2,7 @@
 import type { TValidationResult, TValidationResultType } from '#interfaces/TValidationResult';
 import { runAndUnwrap } from '#tools/runAndUnwrap';
 
-export class Validator<TOrigin = unknown, TData = TOrigin, TError = unknown> {
+export class BaseValidator<TOrigin = unknown, TData = TOrigin, TError = unknown> {
   /**
    * exception 인 경우 validation error 발생하면 JinValidationtError 예외 발생
    * value 인 경우 validation error 발생하면 validation error 결과를 reply 데이터에 추가

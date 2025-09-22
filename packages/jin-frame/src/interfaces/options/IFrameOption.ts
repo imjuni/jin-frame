@@ -1,7 +1,7 @@
 import type { IFrameRetry } from '#interfaces/options/IFrameRetry';
 import type { TMethod } from '#interfaces/options/TMethod';
 import type { AxiosRequestConfig, Milliseconds } from 'axios';
-import type { Validator } from '#validators/Validator';
+import type { BaseValidator } from '#validators/BaseValidator';
 
 export interface IFrameOption {
   /**
@@ -71,5 +71,5 @@ export interface IFrameOption {
   /**
    * validation configuration
    */
-  validator?: Validator;
+  validator?: BaseValidator;
 }

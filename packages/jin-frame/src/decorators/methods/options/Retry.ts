@@ -2,8 +2,6 @@ import { REQUEST_RETRY_DECORATOR } from '#decorators/methods/handlers/REQUEST_RE
 import type { IFrameRetry } from '#interfaces/options/IFrameRetry';
 import 'reflect-metadata';
 
-/**
- */
 export function Retry(_option: IFrameRetry) {
   return function retryHandle(target: object): void {
     const option = Object.freeze(_option);

@@ -1,5 +1,5 @@
 import axios, { type AxiosRequestConfig } from 'axios';
-import { describe, it } from 'vitest';
+import { describe, expect, it } from 'vitest';
 import crypto from 'node:crypto';
 
 import { Get } from '#decorators/methods/Get';
@@ -66,11 +66,12 @@ describe('Real Request and Response', () => {
   });
 
   it('getPokemonInfoByName', async () => {
-    await getPokemonInfoByName({
+    const reply = await getPokemonInfoByName({
       name: 'pikachu',
       tid: crypto.randomUUID(),
     });
 
+    expect(reply).toBeDefined();
     // console.log(reply);
   });
 
@@ -80,9 +81,10 @@ describe('Real Request and Response', () => {
       offset: 0,
     });
 
-    await frame.execute();
+    const reply = await frame.execute();
 
     // console.log(reply.pass.data);
+    expect(reply).toBeDefined();
   });
 
   it('PokemonFrame', async () => {
@@ -93,52 +95,7 @@ describe('Real Request and Response', () => {
 
     const reply = await frame.execute();
 
-    console.log(reply);
+    // console.log(reply);
+    expect(reply).toBeDefined();
   });
 });
-
-/*
-
-interface IReqGetPokemonInfoByName {
-  name: string;
-  tid: string;
-}
-
-async function getPokemonInfoByName(inp: IReqGetPokemonInfoByName) {
-  const req: AxiosRequestConfig = {
-    url: `https://pokeapi.co/api/v2/pokemon/${inp.name}?tid=${inp.tid}`,
-    method: 'get',
-  };
-
-  const reply = await axios.request<Record<string, string>>(req);
-  return reply.data;
-}
-
-console.log(
-  await getPokemonInfoByName({
-    name: 'pikachu',
-    tid: crypto.randomUUID(),
-  })
-);
-
-*/
-
-/*
-
-@Get({ host: 'https://pokeapi.co/api/v2/pokemon/:name' })
-export class PokemonFrame extends JinFrame {
-  @Param()
-  declare public readonly name: string;
-
-  @Query()
-  declare public readonly tid: string;
-}
-
-const frame = PokemonFrame.of({
-  name: 'pikachu',
-  tid: crypto.randomUUID(),
-});
-
-console.log(await frame.execute());
-
-*/

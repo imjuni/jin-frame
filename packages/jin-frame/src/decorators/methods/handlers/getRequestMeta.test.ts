@@ -2,8 +2,8 @@ import { describe, expect, it } from 'vitest';
 import { Post } from '#decorators/methods/Post';
 import { JinFrame } from '#frames/JinFrame';
 import { getRequestMeta } from '#decorators/methods/handlers/getRequestMeta';
-import { Retry } from '#decorators/methods/Retry';
-import { Timeout } from '#decorators/methods/Timeout';
+import { Retry } from '#decorators/methods/options/Retry';
+import { Timeout } from '#decorators/methods/options/Timeout';
 
 const getInterval = () => 500;
 

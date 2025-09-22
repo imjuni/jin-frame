@@ -3,6 +3,11 @@ import { getAllRequestMetaInherited } from '#decorators/methods/handlers/getAllM
 import { Get } from '#decorators/methods/Get';
 import { Post } from '#decorators/methods/Post';
 import { Patch } from '#decorators/methods/Patch';
+import { Timeout } from '#decorators/methods/options/Timeout';
+import { Retry } from '#decorators/methods/options/Retry';
+import { Validator } from '#decorators/methods/options/Validator';
+import { BaseValidator } from '#validators/BaseValidator';
+import { Put } from '#decorators/methods/Put';
 
 @Get({ host: 'http://some.host.com' })
 class GetAllRequestMetaInheritedTest001 {}
@@ -10,15 +15,26 @@ class GetAllRequestMetaInheritedTest001 {}
 @Post({ path: 'some/path' })
 class GetAllRequestMetaInheritedTest002 extends GetAllRequestMetaInheritedTest001 {}
 
-@Patch({ path: 'overwrite/path', contentType: 'custom-content-type' })
+@Timeout(1000)
+@Patch({
+  contentType: 'custom-content-type',
+  path: 'overwrite/path',
+})
 class GetAllRequestMetaInheritedTest003 extends GetAllRequestMetaInheritedTest002 {}
 
-@Patch({ path: 'overwrite/path', authoriztion: 'i-am-authorization-key' })
+@Retry({ max: 2, interval: 500 })
+@Timeout(3000)
+@Put({ authoriztion: 'i-am-authorization-key' })
 class GetAllRequestMetaInheritedTest004 extends GetAllRequestMetaInheritedTest003 {}
+
+@Timeout(2000)
+@Validator(new BaseValidator({ type: 'exception' }))
+@Get({ path: 'overwrite/double/path', authoriztion: 'i-am-authorization-key' })
+class GetAllRequestMetaInheritedTest005 extends GetAllRequestMetaInheritedTest004 {}
 
 describe('getAllRequestMetaInherited', () => {
   it('should return configuration when pass custom content-type', () => {
-    const metas = getAllRequestMetaInherited(GetAllRequestMetaInheritedTest004);
+    const metas = getAllRequestMetaInherited(GetAllRequestMetaInheritedTest005);
 
     expect(metas).toMatchObject({
       methods: [
@@ -27,14 +43,32 @@ describe('getAllRequestMetaInherited', () => {
             contentType: 'application/json',
             customBody: undefined,
             host: undefined,
-            method: 'PATCH',
-            path: 'overwrite/path',
+            method: 'GET',
+            path: 'overwrite/double/path',
             retry: undefined,
             timeout: undefined,
             transformRequest: undefined,
             useInstance: false,
             userAgent: undefined,
             authoriztion: 'i-am-authorization-key',
+            pathPrefix: undefined,
+            validator: undefined,
+          },
+        },
+        {
+          option: {
+            contentType: 'application/json',
+            customBody: undefined,
+            host: undefined,
+            method: 'PUT',
+            path: undefined,
+            pathPrefix: undefined,
+            retry: undefined,
+            timeout: undefined,
+            transformRequest: undefined,
+            useInstance: false,
+            userAgent: undefined,
+            validator: undefined,
           },
         },
         {
@@ -49,6 +83,9 @@ describe('getAllRequestMetaInherited', () => {
             userAgent: undefined,
             retry: undefined,
             timeout: undefined,
+            authoriztion: undefined,
+            pathPrefix: undefined,
+            validator: undefined,
           },
         },
         {
@@ -63,6 +100,9 @@ describe('getAllRequestMetaInherited', () => {
             userAgent: undefined,
             retry: undefined,
             timeout: undefined,
+            authoriztion: undefined,
+            pathPrefix: undefined,
+            validator: undefined,
           },
         },
         {
@@ -77,9 +117,15 @@ describe('getAllRequestMetaInherited', () => {
             userAgent: undefined,
             retry: undefined,
             timeout: undefined,
+            authoriztion: undefined,
+            pathPrefix: undefined,
+            validator: undefined,
           },
         },
       ],
+      retries: [{ max: 2, interval: 500 }],
+      timeouts: [2000, 3000, 1000],
+      validators: [new BaseValidator({ type: 'exception' })],
     });
   });
 });
