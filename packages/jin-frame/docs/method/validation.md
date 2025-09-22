@@ -88,10 +88,10 @@ class UserValidator extends Validator<
 ### Usage with JinFrame
 
 ```typescript
+@Validator(new UserValidator()) // Register validator
 @Post({
   host: 'https://api.example.com',
   path: '/users',
-  validator: new UserValidator(), // Register validator
 })
 class CreateUserFrame extends JinFrame<UserData> {
   @Body()
@@ -192,10 +192,10 @@ class ProductValidator extends Validator<
 }
 
 // 2. Apply to Frame
+@Validator(new ProductValidator()) // Register validator
 @Get({
   host: 'https://api.shop.com',
   path: '/products/:id',
-  validator: new ProductValidator(),
 })
 class GetProductFrame extends JinFrame<Product> {
   @Param()

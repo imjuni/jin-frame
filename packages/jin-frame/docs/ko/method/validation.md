@@ -88,10 +88,10 @@ class UserValidator extends Validator<
 ### JinFrame과 함께 사용
 
 ```typescript
+@Validator(new UserValidator()) // 검증기 등록
 @Post({
   host: 'https://api.example.com',
   path: '/users',
-  validator: new UserValidator(), // 검증기 등록
 })
 class CreateUserFrame extends JinFrame<UserData> {
   @Body()
@@ -192,10 +192,10 @@ class ProductValidator extends Validator<
 }
 
 // 2. Frame에 적용
+@Validator(new ProductValidator()) // 검증기 등록
 @Get({
   host: 'https://api.shop.com',
   path: '/products/:id',
-  validator: new ProductValidator(),
 })
 class GetProductFrame extends JinFrame<Product> {
   @Param()
