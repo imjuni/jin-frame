@@ -52,6 +52,10 @@ const getThemeConfig = (_locale?: string) => {
               text: 'Form',
               link: `${locale}/method/form.md`,
             },
+            {
+              text: 'Validation',
+              link: `${locale}/method/validation.md`,
+            },
           ],
         },
         {
