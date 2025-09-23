@@ -7,8 +7,8 @@ const getThemeConfig = (_locale?: string) => {
   const locale = _locale != null ? `/${_locale}` : '';
 
   const logo = {
-    light: `${base}/assets/jin-frame-brand-icon.png`,
-    dark: `${base}/assets/jin-frame-brand-icon.png`,
+    light: '/assets/jin-frame-brand-icon.png',
+    dark: '/assets/jin-frame-brand-icon.png',
   };
 
   const nav = [
