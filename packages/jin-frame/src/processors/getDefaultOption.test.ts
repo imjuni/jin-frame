@@ -22,7 +22,7 @@ describe('getDefaultQueryFieldOption', () => {
         enable: false,
         withZero: false,
       },
-      keyForamt: undefined,
+      keyFormat: undefined,
       encode: true,
     });
   });

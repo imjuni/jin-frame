@@ -228,16 +228,16 @@ export abstract class AbstractJinFrame<TPASS> {
     // stage 07. querystring post processing
     Object.entries(queries).forEach(([key, value]) => {
       const queryOption = queryMap.get(key);
-      const keyForamt = getQuerystringKeyFormat(queryOption);
+      const keyFormat = getQuerystringKeyFormat(queryOption);
 
-      if (Array.isArray(value) && keyForamt != null) {
+      if (Array.isArray(value) && keyFormat != null) {
         value.forEach((val, index) => {
-          const formatted = getQuerystringKey({ key, index, format: keyForamt });
+          const formatted = getQuerystringKey({ key, index, format: keyFormat });
           url.searchParams.append(formatted, val);
         });
       } else if (Array.isArray(value)) {
         value.forEach((val, index) => {
-          const formatted = getQuerystringKey({ key, index, format: keyForamt });
+          const formatted = getQuerystringKey({ key, index, format: keyFormat });
           url.searchParams.append(formatted, val);
         });
       } else {

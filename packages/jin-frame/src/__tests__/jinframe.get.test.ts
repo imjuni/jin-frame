@@ -143,7 +143,7 @@ class TestGet5Frame extends JinFrame {
   @Query()
   declare public readonly name: string;
 
-  @Query({ encode: false, keyForamt: 'indices' })
+  @Query({ encode: false, keyFormat: 'indices' })
   declare public readonly skill: string[];
 
   constructor() {
@@ -167,7 +167,7 @@ class TestGet6Frame extends JinFrame {
   @Query()
   declare public readonly name: string;
 
-  @Query({ encode: false, keyForamt: 'brackets' })
+  @Query({ encode: false, keyFormat: 'brackets' })
   declare public readonly skill: string[];
 
   constructor() {

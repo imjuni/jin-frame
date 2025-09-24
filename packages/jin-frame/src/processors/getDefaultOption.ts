@@ -17,7 +17,7 @@ export function getDefaultQueryFieldOption(
       enable: option?.bit?.enable ?? false,
       withZero: option?.bit?.withZero ?? false,
     },
-    keyForamt: option?.keyForamt,
+    keyFormat: option?.keyFormat,
     replaceAt: option?.replaceAt,
     encode: option?.encode ?? true,
   };

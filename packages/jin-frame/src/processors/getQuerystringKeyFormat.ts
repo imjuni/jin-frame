@@ -4,13 +4,13 @@ import type { IQueryFieldOption } from '#interfaces/field/IQueryFieldOption';
 
 export function getQuerystringKeyFormat(
   option?: IQueryFieldOption | IParamFieldOption | IHeaderFieldOption,
-): IQueryFieldOption['keyForamt'] {
+): IQueryFieldOption['keyFormat'] {
   if (option == null) {
     return undefined;
   }
 
   if (option.type === 'query') {
-    return option.keyForamt;
+    return option.keyFormat;
   }
 
   return undefined;
