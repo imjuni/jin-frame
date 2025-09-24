@@ -111,7 +111,6 @@ export abstract class AbstractJinFrame<TPASS> {
 
   public getOption<K extends keyof IFrameOption>(kind: K): IFrameOption[K] {
     // TypeScript inference limitation with complex interface types
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-return
     return this.$_option[kind];
   }
 
@@ -189,7 +188,7 @@ export abstract class AbstractJinFrame<TPASS> {
     const fields = getFieldMetadata(this.constructor.prototype, entries);
 
     // stage 02. each request parameter apply option
-    const queryMap = new Map(fields.query.map((query) => [query.key, query.option]));
+    const queryMap = new Map(fields.query.map((query) => [query.key, query]));
     const queries = getQuerystringMap(this as Record<string, unknown>, fields.query); // create querystring information
     const headers = flatStringMap(getQuerystringMap(this as Record<string, unknown>, fields.header)); // create header information
     const paths = flatStringMap(getQuerystringMap(this as Record<string, unknown>, fields.param)); // create param information
@@ -206,16 +205,7 @@ export abstract class AbstractJinFrame<TPASS> {
         return undefined;
       }
 
-      return getBodyMap(this as Record<string, unknown>, [
-        ...fields.body.map((body) => ({
-          key: body.key,
-          option: body.option,
-        })),
-        ...fields.objectBody.map((body) => ({
-          key: body.key,
-          option: body.option,
-        })),
-      ]);
+      return getBodyMap(this as Record<string, unknown>, [...fields.body, ...fields.objectBody]);
     })();
 
     // stage 04. set debuggint variable

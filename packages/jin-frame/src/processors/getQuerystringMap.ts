@@ -13,12 +13,12 @@ import * as dotProp from 'dot-prop';
 
 export function getQuerystringMap<T extends Record<string, unknown>>(
   thisFrame: T,
-  fields: { key: string; option: IQueryFieldOption | IParamFieldOption | IHeaderFieldOption }[],
+  fields: (IQueryFieldOption | IParamFieldOption | IHeaderFieldOption)[],
 ): Record<string, string | string[]> {
   const queries: Record<string, string | string[]> = {};
 
-  for (const field of fields) {
-    const { key: thisFrameAccessKey, option } = field;
+  for (const option of fields) {
+    const thisFrameAccessKey = option.key;
     const value: unknown = dotProp.get<unknown>(thisFrame, thisFrameAccessKey);
     const fieldKey = option.replaceAt ?? thisFrameAccessKey;
     const { formatters } = option;

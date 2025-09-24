@@ -1,4 +1,3 @@
-import type { IBodyField } from '#interfaces/field/body/IBodyField';
 import type { IBodyFieldOption } from '#interfaces/field/body/IBodyFieldOption';
 import type { IObjectBodyFieldOption } from '#interfaces/field/body/IObjectBodyFieldOption';
 import { getBodyField } from '#processors/getBodyField';
@@ -11,7 +10,7 @@ import { atOrThrow } from 'my-easy-fp';
 
 export function getBodyMap<T extends Record<string, unknown>>(
   thisFrame: T,
-  fields: IBodyField[],
+  fields: (IBodyFieldOption | IObjectBodyFieldOption)[],
 ): Record<string, unknown> | TSupportPrimitiveType | TSupportArrayType | unknown[] {
   const bodies: unknown[] = [];
   const objectBodies: unknown[] = [];
@@ -20,13 +19,11 @@ export function getBodyMap<T extends Record<string, unknown>>(
     bodies: { key: string; option: IBodyFieldOption }[];
     objectBodies: { key: string; option: IObjectBodyFieldOption }[];
   }>(
-    (aggregated, field) => {
-      const { option } = field;
-
+    (aggregated, option) => {
       if (option.type === 'body') {
-        aggregated.bodies.push({ key: field.key, option });
+        aggregated.bodies.push({ key: option.key, option });
       } else {
-        aggregated.objectBodies.push({ key: field.key, option });
+        aggregated.objectBodies.push({ key: option.key, option });
       }
 
       return aggregated;

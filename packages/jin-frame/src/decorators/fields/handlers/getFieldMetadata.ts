@@ -7,11 +7,11 @@ import type { IBodyFieldOption } from '#interfaces/field/body/IBodyFieldOption';
 import 'reflect-metadata';
 
 interface IRequestFieldRecord {
-  param: { key: string; option: IParamFieldOption }[];
-  query: { key: string; option: IQueryFieldOption }[];
-  body: { key: string; option: IBodyFieldOption }[];
-  objectBody: { key: string; option: IObjectBodyFieldOption }[];
-  header: { key: string; option: IHeaderFieldOption }[];
+  param: IParamFieldOption[];
+  query: IQueryFieldOption[];
+  body: IBodyFieldOption[];
+  objectBody: IObjectBodyFieldOption[];
+  header: IHeaderFieldOption[];
 }
 
 export function getFieldMetadata(type: object, keys: { key: string; value: unknown }[]): IRequestFieldRecord {
@@ -25,29 +25,25 @@ export function getFieldMetadata(type: object, keys: { key: string; value: unkno
         | { key: string; option: IHeaderFieldOption };
       return { key: key.key, meta };
     })
-    .filter((field) => field.meta != null);
+    .filter((field) => field.meta != null)
+    .map((field) => ({ key: field.key, meta: { ...field.meta, option: { ...field.meta.option, key: field.key } } }));
 
   const fieldMap = fields.reduce<IRequestFieldRecord>(
     (aggregate, field) => {
       const { option } = field.meta;
 
-      if (option.type === 'body') {
-        return { ...aggregate, body: [...aggregate.body, { key: field.key, option }] };
+      switch (option.type) {
+        case 'body':
+          return { ...aggregate, body: [...aggregate.body, option] };
+        case 'object-body':
+          return { ...aggregate, objectBody: [...aggregate.objectBody, option] };
+        case 'param':
+          return { ...aggregate, param: [...aggregate.param, option] };
+        case 'header':
+          return { ...aggregate, header: [...aggregate.header, option] };
+        default:
+          return { ...aggregate, query: [...aggregate.query, option] };
       }
-
-      if (option.type === 'object-body') {
-        return { ...aggregate, objectBody: [...aggregate.objectBody, { key: field.key, option }] };
-      }
-
-      if (option.type === 'param') {
-        return { ...aggregate, param: [...aggregate.param, { key: field.key, option }] };
-      }
-
-      if (option.type === 'header') {
-        return { ...aggregate, header: [...aggregate.header, { key: field.key, option }] };
-      }
-
-      return { ...aggregate, query: [...aggregate.query, { key: field.key, option }] };
     },
     {
       param: [],

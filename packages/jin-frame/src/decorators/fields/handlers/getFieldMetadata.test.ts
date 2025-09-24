@@ -47,69 +47,59 @@ describe('getFieldMetadata', () => {
     expect(metas).toMatchObject({
       param: [
         {
+          type: 'param',
           key: 'name',
-          option: {
-            type: 'param',
-            comma: false,
-            bit: {
-              enable: false,
-              withZero: false,
-            },
-            encode: true,
-            formatters: undefined,
-            replaceAt: undefined,
+          comma: false,
+          bit: {
+            enable: false,
+            withZero: false,
           },
+          encode: true,
+          formatters: undefined,
+          replaceAt: undefined,
         },
       ],
       body: [
         {
+          type: 'body',
           key: 'affiliations',
-          option: {
-            type: 'body',
-            replaceAt: undefined,
-            encode: true,
-          },
+          replaceAt: undefined,
+          encode: true,
         },
       ],
       objectBody: [
         {
+          type: 'object-body',
           key: 'ability',
-          option: {
-            type: 'object-body',
-            encode: true,
-            order: 9007199254740991,
-          },
+          encode: true,
+          order: 9007199254740991,
         },
       ],
       header: [
         {
+          type: 'header',
           key: 'authorization',
-          option: {
-            type: 'header',
-            bit: {
-              enable: false,
-              withZero: false,
-            },
-            replaceAt: 'Authorization',
-            comma: false,
-            encode: true,
+          bit: {
+            enable: false,
+            withZero: false,
           },
+          replaceAt: 'Authorization',
+          comma: false,
+          encode: true,
         },
       ],
       query: [
         {
           key: 'age',
-          option: {
-            type: 'query',
-            comma: false,
-            bit: {
-              enable: false,
-              withZero: false,
-            },
-            encode: true,
-            formatters: undefined,
-            replaceAt: undefined,
+          type: 'query',
+          comma: false,
+          bit: {
+            enable: false,
+            withZero: false,
           },
+          encode: true,
+          formatters: undefined,
+          replaceAt: undefined,
         },
       ],
     });

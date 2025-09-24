@@ -9,6 +9,7 @@ export function getDefaultQueryFieldOption(
   option?: Partial<IQueryFieldOption> | Omit<Partial<IQueryFieldOption>, 'type'>,
 ): IQueryFieldOption {
   return {
+    key: '',
     type: 'query',
     formatters: option?.formatters ?? undefined,
     comma: option?.comma ?? false,
@@ -26,6 +27,7 @@ export function getDefaultParamFieldOption(
   option?: Partial<IParamFieldOption> | Omit<Partial<IParamFieldOption>, 'type'>,
 ): IParamFieldOption {
   return {
+    key: '',
     type: 'param',
     formatters: option?.formatters ?? undefined,
     comma: option?.comma ?? false,
@@ -43,6 +45,7 @@ export function getDefaultBodyFieldOption(
 ): IBodyFieldOption {
   if (option == null) {
     return {
+      key: '',
       type: 'body',
       replaceAt: undefined,
       encode: true,
@@ -51,6 +54,7 @@ export function getDefaultBodyFieldOption(
 
   if ('formatters' in option) {
     return {
+      key: '',
       type: 'body',
       formatters: option.formatters ?? undefined,
       replaceAt: option.replaceAt ?? undefined,
@@ -59,6 +63,7 @@ export function getDefaultBodyFieldOption(
   }
 
   return {
+    key: '',
     type: 'body',
     replaceAt: option.replaceAt ?? undefined,
     encode: option.encode ?? true,
@@ -70,6 +75,7 @@ export function getDefaultObjectBodyFieldOption(
 ): IObjectBodyFieldOption {
   if (option == null) {
     return {
+      key: '',
       type: 'object-body',
       encode: true,
       order: Number.MAX_SAFE_INTEGER,
@@ -78,6 +84,7 @@ export function getDefaultObjectBodyFieldOption(
 
   if ('formatters' in option) {
     return {
+      key: '',
       type: 'object-body',
       formatters: option.formatters ?? undefined,
       encode: option.encode ?? true,
@@ -86,6 +93,7 @@ export function getDefaultObjectBodyFieldOption(
   }
 
   return {
+    key: '',
     type: 'object-body',
     encode: option.encode ?? true,
     order: option.order ?? Number.MAX_SAFE_INTEGER,
@@ -97,6 +105,7 @@ export function getDefaultHeaderFieldOption(
 ): IHeaderFieldOption {
   if (option == null) {
     return {
+      key: '',
       type: 'header',
       bit: { enable: false, withZero: false },
       encode: true,
@@ -106,6 +115,7 @@ export function getDefaultHeaderFieldOption(
 
   if ('formatters' in option) {
     return {
+      key: '',
       type: 'header',
       bit: { enable: false, withZero: false },
       formatters: option.formatters ?? undefined,
@@ -116,6 +126,7 @@ export function getDefaultHeaderFieldOption(
   }
 
   return {
+    key: '',
     type: 'header',
     replaceAt: option.replaceAt ?? undefined,
     bit: { enable: false, withZero: false },
