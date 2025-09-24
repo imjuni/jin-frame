@@ -7,7 +7,7 @@ export function getQuerystringKey({
 }: {
   key: string;
   index: number;
-  format?: IQueryFieldOption['keyForamt'];
+  format?: IQueryFieldOption['keyFormat'];
 }): string {
   if (format === 'brackets') {
     return `${key}[]`;

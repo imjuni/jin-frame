@@ -14,5 +14,5 @@ export interface IQueryFieldOption extends ICommonFieldOption, IQueryParamHeader
    * - one-indices
    *  - a[1]=x&a[2]=y
    */
-  keyForamt?: 'brackets' | 'indices' | 'one-indices';
+  keyFormat?: 'brackets' | 'indices' | 'one-indices';
 }

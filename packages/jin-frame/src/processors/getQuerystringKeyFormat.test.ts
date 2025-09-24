@@ -11,7 +11,7 @@ describe('getQuerystringBrackets', () => {
   it('should return brackets when pass type querystring', () => {
     const result = getQuerystringKeyFormat({
       type: 'query',
-      keyForamt: 'brackets',
+      keyFormat: 'brackets',
       comma: false,
       bit: {
         enable: false,
