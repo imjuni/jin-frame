@@ -14,6 +14,7 @@ describe('getDefaultQueryFieldOption', () => {
     const option = getDefaultQueryFieldOption();
 
     expect(option).toEqual({
+      key: '',
       type: 'query',
       formatters: undefined,
       comma: false,
@@ -21,7 +22,7 @@ describe('getDefaultQueryFieldOption', () => {
         enable: false,
         withZero: false,
       },
-      keyFormat: undefined,
+      keyForamt: undefined,
       encode: true,
     });
   });
@@ -31,6 +32,7 @@ describe('getDefaultQueryFieldOption', () => {
     const option = getDefaultQueryFieldOption({ formatters: f });
 
     expect(option).toMatchObject({
+      key: '',
       type: 'query',
       formatters: f,
       comma: false,
@@ -45,6 +47,7 @@ describe('getDefaultQueryFieldOption', () => {
   it('comma', () => {
     const r01 = getDefaultQueryFieldOption({ comma: true });
     expect(r01).toMatchObject({
+      key: '',
       type: 'query',
       formatters: undefined,
       comma: true,
@@ -59,6 +62,7 @@ describe('getDefaultQueryFieldOption', () => {
   it('comma', () => {
     const r01 = getDefaultQueryFieldOption({ encode: false });
     expect(r01).toMatchObject({
+      key: '',
       type: 'query',
       formatters: undefined,
       comma: false,
@@ -102,6 +106,7 @@ describe('getDefaultParamFieldOption', () => {
     const option = getDefaultParamFieldOption();
 
     expect(option).toEqual({
+      key: '',
       type: 'param',
       formatters: undefined,
       comma: false,
@@ -189,6 +194,7 @@ describe('getDefaultBodyFieldOption', () => {
     const option = getDefaultBodyFieldOption();
 
     expect(option).toEqual({
+      key: '',
       type: 'body',
       replaceAt: undefined,
       encode: true,
@@ -242,6 +248,7 @@ describe('getDefaultObjectBodyFieldOption', () => {
     const option = getDefaultObjectBodyFieldOption();
 
     expect(option).toEqual({
+      key: '',
       type: 'object-body',
       encode: true,
       order: Number.MAX_SAFE_INTEGER,
@@ -295,6 +302,7 @@ describe('getDefaultHeaderFieldOption', () => {
     const option = getDefaultHeaderFieldOption();
 
     expect(option).toEqual({
+      key: '',
       type: 'header',
       bit: {
         enable: false,
