@@ -8,13 +8,13 @@ import { removeEndSlash } from '#tools/slash-utils/removeEndSlash';
 import { startWithSlash } from '#tools/slash-utils/startWithSlash';
 import type { IFrameOption } from '#interfaces/options/IFrameOption';
 import type { IFrameInternal } from '#interfaces/options/IFrameInternal';
-import type { AxiosError, AxiosRequestConfig, AxiosResponse } from 'axios';
+import type { AxiosRequestConfig, AxiosResponse } from 'axios';
 import type axios from 'axios';
+import { AxiosError } from 'axios';
 import fastSafeStringify from 'fast-safe-stringify';
 import FormData from 'form-data';
 import { first } from 'my-easy-fp';
 import { compile } from 'path-to-regexp';
-import 'reflect-metadata';
 import type { Constructor } from 'type-fest';
 import { flatStringMap } from '#processors/flatStringMap';
 import { getUrl } from '#tools/slash-utils/getUrl';
@@ -30,6 +30,12 @@ import { getAuthorization } from '#tools/auth/getAuthorization';
 import { getQuerystringKeyFormat } from '#processors/getQuerystringKeyFormat';
 import { getQuerystringKey } from '#processors/getQuerystringKey';
 import { getRetryAfter } from '#tools/getRetryAfter';
+import { getCachePath } from '#tools/getCachePath';
+import { get, set } from 'dot-prop';
+import { safeStringify } from '#tools/json/safeStringify';
+import { runAndUnwrap } from '#tools/runAndUnwrap';
+import 'reflect-metadata';
+import { RequestDedupeManager } from '#frames/RequestDedupeManager';
 
 export abstract class AbstractJinFrame<TPASS> {
   static getEndpoint(): URL {
@@ -90,7 +96,10 @@ export abstract class AbstractJinFrame<TPASS> {
   /* eslint-enable @typescript-eslint/no-explicit-any */
 
   // eslint-disable-next-line class-methods-use-this
-  protected $_retryFail(_req: AxiosRequestConfig, _res: AxiosResponse<TPASS>): void {}
+  protected $_retryFail(_req: AxiosRequestConfig, _res: AxiosResponse<TPASS>): void | Promise<void> {}
+
+  // eslint-disable-next-line class-methods-use-this
+  protected $_retryException(_req: AxiosRequestConfig, _err: Error): void | Promise<void> {}
 
   protected $_option: IFrameOption;
 
@@ -173,6 +182,37 @@ export abstract class AbstractJinFrame<TPASS> {
     }
 
     return bodies;
+  }
+
+  public getCacheKey(): string | undefined {
+    const entries = Object.entries(this).map(([key, value]) => ({ key, value }));
+
+    // stage 01. extract request parameter and option
+    const fields = getFieldMetadata(this.constructor.prototype, entries);
+    const data: Record<'query' | 'param' | 'header' | 'body', unknown> = { query: {}, param: {}, header: {}, body: {} };
+
+    [...fields.query, ...fields.param, ...fields.header]
+      .filter((input) => !input.cacheKeyExclude)
+      .forEach((input) => {
+        const value = get(this, input.key);
+        set(data, getCachePath({ ...input }), value);
+      });
+
+    // 순서 중요하다, body를 objectBody가 overwrite 하지 않도록 주의하자
+    [...fields.objectBody, ...fields.body].forEach((input) => {
+      const value = get(this, input.key);
+      set(data, getCachePath({ ...input }), value);
+
+      input.cacheKeyExcludePath?.forEach((cacheKeyExcludePath) => {
+        set(data, ['body', cacheKeyExcludePath].join('.'), undefined);
+      });
+    });
+
+    set(data, 'endpoint.host', this.$_option.host);
+    set(data, 'endpoint.pathPrefix', this.$_option.pathPrefix);
+    set(data, 'endpoint.path', this.$_option.path);
+
+    return safeStringify(data);
   }
 
   /**
@@ -285,71 +325,73 @@ export abstract class AbstractJinFrame<TPASS> {
   async retry(req: AxiosRequestConfig, isValidateStatus: (status: number) => boolean): Promise<AxiosResponse<TPASS>> {
     const { retry } = this.$_data;
 
-    let prevResponse: AxiosResponse<TPASS, unknown>;
-    const hook = this.$_retryFail.bind(this);
+    const handle = async () => {
+      let returnValue: AxiosResponse<TPASS> | AxiosError = new AxiosError();
 
-    const retried = await new Promise<AxiosResponse<TPASS>>((resolve, reject) => {
-      const attempt = () => {
-        this.$_data.instance
-          .request<TPASS, AxiosResponse<TPASS>>(req)
-          .then((retryResponse) => {
-            // 헷깔리는 부분이라 자세히 기록해둔다. then 블록은 이미 1회 시도를 하고, 응답을 받는 것에 성공했기 때문에
-            // then 블록에 진입하면 retry.try에 1을 더해준다.
-            prevResponse = retryResponse;
-            retry.try += 1;
-            const retryAfterValue = retryResponse.headers['retry-after'] ?? retryResponse.headers['Retry-After'];
-            const retryAfter = getRetryAfter(retry, retryAfterValue);
+      /* eslint-disable no-await-in-loop, no-restricted-syntax */
+      for (let i = 0; i < retry.max; i += 1) {
+        try {
+          retry.try += 1;
 
-            if (isValidateStatus(retryResponse.status)) {
-              resolve(retryResponse);
-            } else if (retry.max < retry.try + 1) {
-              resolve(retryResponse);
-            } else {
-              hook(req, prevResponse);
+          const cacheKey = this.$_option.dedupe ? this.getCacheKey() : undefined;
+          const promised =
+            cacheKey != null
+              ? RequestDedupeManager.dedupe<TPASS>(cacheKey, async () => this.$_data.instance.request<TPASS>(req))
+              : (async () => ({ response: await this.$_data.instance.request<TPASS>(req), isDeduped: false }))();
 
-              const interval = getRetryInterval(
-                retry,
-                getDuration(this.$_data.startAt, new Date()),
-                getDuration(this.$_data.eachStartAt, new Date()),
-                retryAfter,
-              );
+          const deduped = await promised;
+          const reply = deduped.response;
+          const retryAfterValue = reply.headers['retry-after'] ?? reply.headers['Retry-After'];
+          const retryAfter = getRetryAfter(retry, retryAfterValue);
 
-              setTimeout(() => attempt(), interval);
-            }
-          })
-          // 보통의 경우 requestWrap에서 validateStatus: () => true 를 설정하기 때문에
-          // 내부 오류로 인해서 이 catch에 도달하는 경우는 발생할 수 없으나, 알 수 없는 오류 방지를 위해 추가함
-          // 이 블록에 도착하는 것은 주로 네트워크 연결이 불완전하여 서버랑 연결된 직후 끊어지는 등의
-          // 네트워크 오류가 발생했을 때 이 블록에 진입한다
-          //
-          // In normal cases, the requestWrap function sets validateStatus: () => true,
-          // so this catch block will not be reached. However, it is added to handle any unexpected errors
-          // that may arise from Axios.
-          .catch((error: AxiosError) => {
-            retry.try += 1;
+          returnValue = reply;
 
-            if (retry.max < retry.try + 1) {
-              reject(error);
-            } else {
-              hook(req, prevResponse);
+          if (isValidateStatus(reply.status)) {
+            return reply;
+          }
 
-              // For error cases, we don't have a response with headers, so retryAfter is undefined
-              const retryAfter = undefined;
+          await runAndUnwrap(this.$_retryFail.bind(this), req, reply);
 
-              const interval = getRetryInterval(
-                retry,
-                getDuration(this.$_data.startAt, new Date()),
-                getDuration(this.$_data.eachStartAt, new Date()),
-                retryAfter,
-              );
+          const current = new Date();
+          const interval = getRetryInterval(
+            retry,
+            getDuration(this.$_data.startAt, current),
+            getDuration(this.$_data.eachStartAt, current),
+            retryAfter,
+          );
 
-              setTimeout(() => attempt(), interval);
-            }
+          await new Promise<void>((resolve) => {
+            setTimeout(() => resolve(), interval);
           });
-      };
+        } catch (err) {
+          returnValue = err as AxiosError;
 
-      attempt();
-    });
+          await runAndUnwrap(this.$_retryException.bind(this), req, returnValue);
+
+          const current = new Date();
+          const interval = getRetryInterval(
+            retry,
+            getDuration(this.$_data.startAt, current),
+            getDuration(this.$_data.eachStartAt, current),
+            undefined,
+          );
+
+          await new Promise<void>((resolve) => {
+            setTimeout(() => resolve(), interval);
+          });
+        }
+      }
+      /* eslint-enable no-await-in-loop, no-restricted-syntax */
+
+      // Return Value
+      if (returnValue instanceof AxiosError) {
+        throw returnValue;
+      }
+
+      return returnValue;
+    };
+
+    const retried = await handle();
 
     return retried;
   }

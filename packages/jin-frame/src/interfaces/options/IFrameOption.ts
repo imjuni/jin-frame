@@ -72,4 +72,9 @@ export interface IFrameOption {
    * validation configuration
    */
   validator?: BaseValidator;
+
+  /**
+   * 이 값을 활성화 하는 경우 동일 요청이 반복되는 경우 dedupe 처리를 합니다
+   */
+  dedupe?: boolean;
 }

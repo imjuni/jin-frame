@@ -14,6 +14,10 @@ import { Body } from '#decorators/fields/Body';
 import type { TValidationResult, TValidationResultType } from '#interfaces/TValidationResult';
 import { BaseValidator } from '#validators/BaseValidator';
 import { Validator } from '#decorators/methods/options/Validator';
+import { ObjectBody } from '#decorators/fields/ObjectBody';
+import { Header } from '#decorators/fields/Header';
+import { Query } from '#decorators/fields/Query';
+import { Dedupe } from '#decorators/methods/options/Dedupe';
 
 const messageSchema = z.object({
   message: z.string(),
@@ -190,6 +194,34 @@ class Test007PostFrame extends JinFrame<{ message: string }> {
 
   @Body()
   declare public readonly password: string;
+}
+
+@Dedupe()
+@Post({
+  host: 'http://some.api.google.com',
+  path: '/jinframe/:pass_key',
+})
+class Test008PostFrame extends JinFrame<{ message: string }> {
+  @Query({ cacheKeyExclude: true })
+  declare public readonly q: string;
+
+  @Header()
+  declare public readonly Authorization: string;
+
+  @Param({ replaceAt: 'pass_key' })
+  declare public readonly passing: string;
+
+  @Body()
+  declare public readonly username: string;
+
+  @Body()
+  declare public readonly password: string;
+
+  @ObjectBody({ cacheKeyExcludePath: ['code'] })
+  declare public readonly body: {
+    team: string;
+    code: number;
+  };
 }
 
 interface JinFrameTestResponse {
@@ -746,6 +778,7 @@ describe('hook count either frame test', () => {
 
   it('should handle network timeout and trigger catch block retry (334 line)', async () => {
     let hookCallCount = 0;
+    let hookExcpetionCount = 0;
 
     @Post({ host: 'http://10.255.255.1/api/:passing', timeout: 1, retry: { max: 2, interval: 1 } }) // 라우팅되지 않는 IP로 timeout 에러 유발
     class TimeoutRetryFrame extends JinFrame {
@@ -758,9 +791,14 @@ describe('hook count either frame test', () => {
       @Body()
       declare public readonly password: string;
 
-      $_retryFail(_req: any, _prevResponse: any) {
+      override $_retryFail(_req: any, _prevResponse: any) {
         hookCallCount += 1;
         console.log(`Network timeout retry hook executed: ${hookCallCount}`);
+      }
+
+      override $_retryException(_req: any, _prevResponse: any) {
+        hookExcpetionCount += 1;
+        console.log(`Network timeout retry hook executed: ${hookExcpetionCount}`);
       }
     }
 
@@ -778,9 +816,9 @@ describe('hook count either frame test', () => {
     }).rejects.toThrowError();
 
     // AbstractJinFrame catch 블록의 334라인 테스트
-    console.log(`Final hookCallCount: ${hookCallCount}`);
-    expect(hookCallCount).toBeGreaterThan(0); // 적어도 1번은 호출되어야 함
-    expect(hookCallCount).toBeLessThanOrEqual(2);
+    console.log(`Final hookExcpetionCount: ${hookExcpetionCount}`);
+    expect(hookExcpetionCount).toBeGreaterThan(0); // 적어도 1번은 호출되어야 함
+    expect(hookExcpetionCount).toBeLessThanOrEqual(2);
 
     // MSW 서버 재시작
     retryServer.listen({ onUnhandledRequest: 'bypass' });
@@ -924,5 +962,81 @@ describe('JinFrame validation test', () => {
     await expect(async () => {
       await frame.execute();
     }).rejects.toThrowError();
+  });
+});
+
+describe('Dedupe Request', () => {
+  // MSW server configuration for this test suite
+  const hookServer = setupServer();
+
+  beforeEach(() => {
+    hookServer.listen();
+  });
+
+  afterEach(() => {
+    hookServer.resetHandlers();
+    hookServer.close();
+  });
+
+  it('should generate correct cache key when frame has query excluded from cache', () => {
+    const frame = Test008PostFrame.of({
+      username: 'ironman',
+      passing: 'pass',
+      password: 'marvel',
+      q: '123-123-123-123',
+      Authorization: 'Bearer k',
+      body: { team: 'advengers', code: 1234 },
+    });
+
+    const result = frame.getCacheKey();
+    const expectation = `{"query":{},"param":{"pass_key":"pass"},"header":{"Authorization":"Bearer k"},"body":{"team":"advengers","username":"ironman","password":"marvel"},"endpoint":{"host":"http://some.api.google.com","path":"/jinframe/:pass_key"}}`;
+    expect(result).toEqual(expectation);
+  });
+
+  it('should increment response count when multiple requests are made', async () => {
+    let count = 0;
+
+    hookServer.use(
+      http.post<PathParams<'passing'>, JinFrameTestRequestBody>(
+        'http://some.api.google.com/jinframe/pass',
+        async () => {
+          count += 1;
+          return HttpResponse.json<{ message: number }>({ message: count });
+        },
+      ),
+    );
+
+    const frame01 = Test008PostFrame.of({
+      username: 'ironman',
+      passing: 'pass',
+      password: 'marvel',
+      q: '111-111-111-111',
+      Authorization: 'Bearer k',
+      body: { team: 'advengers', code: 1234 },
+    });
+
+    const frame02 = Test008PostFrame.of({
+      username: 'ironman',
+      passing: 'pass',
+      password: 'marvel',
+      q: '111-111-111-222',
+      Authorization: 'Bearer k',
+      body: { team: 'advengers', code: 1234 },
+    });
+
+    const frame03 = Test008PostFrame.of({
+      username: 'ironman',
+      passing: 'pass',
+      password: 'marvel',
+      q: '111-111-111-333',
+      Authorization: 'Bearer k',
+      body: { team: 'advengers', code: 1234 },
+    });
+
+    const [reply01, reply02, reply03] = await Promise.all([frame01.execute(), frame02.execute(), frame03.execute()]);
+
+    console.log(reply01.data.message);
+    console.log(reply02.data.message);
+    console.log(reply03.data.message);
   });
 });

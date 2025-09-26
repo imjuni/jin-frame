@@ -16,6 +16,7 @@ export function getFrameOption(method: TMethod, option?: Partial<Omit<IFrameOpti
     timeout: option?.timeout,
     authoriztion: option?.authoriztion,
     validator: option?.validator,
+    dedupe: option?.dedupe,
   };
 
   return frameOption;
