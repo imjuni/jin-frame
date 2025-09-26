@@ -1,6 +1,6 @@
 import type { IBodyFieldOption } from '#interfaces/field/body/IBodyFieldOption';
-import { getDefaultBodyFieldOption } from '#processors/getDefaultOption';
 import { REQUEST_FIELD_DECORATOR } from '#decorators/fields/handlers/REQUEST_FIELD_DECORATOR';
+import { getDefaultBodyFieldOption } from '#processors/default-option/getDefaultBodyFieldOption';
 import 'reflect-metadata';
 
 /**

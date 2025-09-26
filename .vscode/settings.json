@@ -31,14 +31,7 @@
     "**/.ctiignore": "jsonc",
     ".ctirc": "jsonc"
   },
-  "jest.autoRun": {
-    "watch": false
-    // "onStartup": ["all-tests"],
-    // "onSave": "test-src-file"
-  },
-  "jest.nodeEnv": {
-    "DEBUG": "jinframe:*"
-  },
+  "github.copilot.nextEditSuggestions.enabled": false,
   "prettier.prettierPath": "./node_modules/prettier/index.cjs",
   "markdown.extension.toc.levels": "2..6"
 }

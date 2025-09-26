@@ -1,7 +1,8 @@
 import type { TSingleBodyFormatter } from '#interfaces/field/body/TSingleBodyFormatter';
+import type { ICommonCacheKeyExcludePathOption } from '#interfaces/field/ICommonCacheKeyExcludePathOption';
 import type { ICommonFieldOption } from '#interfaces/field/ICommonFieldOption';
 
-export interface IBodyFieldOption extends ICommonFieldOption {
+export interface IBodyFieldOption extends ICommonFieldOption, ICommonCacheKeyExcludePathOption {
   type: 'body';
 
   /**

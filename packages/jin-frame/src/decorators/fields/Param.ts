@@ -1,5 +1,5 @@
 import type { IParamFieldOption } from '#interfaces/field/IParamFieldOption';
-import { getDefaultParamFieldOption } from '#processors/getDefaultOption';
+import { getDefaultParamFieldOption } from '#processors/default-option/getDefaultParamFieldOption';
 import { REQUEST_FIELD_DECORATOR } from '#decorators/fields/handlers/REQUEST_FIELD_DECORATOR';
 import 'reflect-metadata';
 

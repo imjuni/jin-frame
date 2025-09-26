@@ -129,3 +129,4 @@ packages/jin-frame/docs/public
 # script
 git-short.sh
 **/api-spec/
+**/CLAUDE_LOCAL.md

@@ -1,5 +1,5 @@
 import type { IObjectBodyFieldOption } from '#interfaces/field/body/IObjectBodyFieldOption';
-import { getDefaultObjectBodyFieldOption } from '#processors/getDefaultOption';
+import { getDefaultObjectBodyFieldOption } from '#processors/default-option/getDefaultObjectBodyFieldOption';
 import { REQUEST_FIELD_DECORATOR } from '#decorators/fields/handlers/REQUEST_FIELD_DECORATOR';
 import 'reflect-metadata';
 
