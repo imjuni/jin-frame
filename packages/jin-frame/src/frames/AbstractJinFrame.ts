@@ -204,8 +204,8 @@ export abstract class AbstractJinFrame<TPASS> {
       const value = get(this, input.key);
       set(data, getCachePath({ ...input }), value);
 
-      input?.cacheKeyExcludePaths?.forEach((cacheKeyExcludePath) => {
-        set(data, ['body', cacheKeyExcludePath].join('.'), undefined);
+      input?.cacheKeyExcludePaths?.forEach((cacheKeyExcludePathItem) => {
+        set(data, ['body', cacheKeyExcludePathItem].join('.'), undefined);
       });
     });
 
