@@ -8,10 +8,7 @@ import type { TSupportPrimitiveType } from '#tools/type-utilities/TSupportPrimit
 import { bodyFormatEach } from '#tools/formatters/bodyFormatEach';
 import { formatEach } from '#tools/formatters/formatEach';
 
-export function getObjectBodyField(
-  thisFrame: unknown,
-  field: { key: string; option: IObjectBodyFieldOption },
-): unknown {
+export function getObjectBodyField(thisFrame: unknown, field: IObjectBodyFieldOption): unknown {
   if (
     isValidPrimitiveWithDateType(thisFrame) ||
     typeof thisFrame === 'bigint' ||
@@ -22,9 +19,9 @@ export function getObjectBodyField(
     return thisFrame;
   }
 
-  const { key: accessKey } = field;
+  const accessKey = field.key;
   const value: unknown = (thisFrame as Record<string, unknown>)[accessKey];
-  const formatters: TSingleBodyFormatter[] = getBodyFormatters(field.option.formatters);
+  const formatters: TSingleBodyFormatter[] = getBodyFormatters(field.formatters);
 
   // case 02. nullable value
   if (value == null) {

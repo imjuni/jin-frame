@@ -10,6 +10,7 @@ describe('getQuerystringBrackets', () => {
 
   it('should return brackets when pass type querystring', () => {
     const result = getQuerystringKeyFormat({
+      key: 'test',
       type: 'query',
       keyFormat: 'brackets',
       comma: false,
@@ -17,6 +18,7 @@ describe('getQuerystringBrackets', () => {
         enable: false,
         withZero: false,
       },
+      cacheKeyExclude: false,
     });
 
     expect(result).toEqual('brackets');
@@ -24,12 +26,14 @@ describe('getQuerystringBrackets', () => {
 
   it('should return brackets when pass type param', () => {
     const result = getQuerystringKeyFormat({
+      key: 'test',
       type: 'param',
       comma: false,
       bit: {
         enable: false,
         withZero: false,
       },
+      cacheKeyExclude: false,
     });
 
     expect(result).toBeUndefined();

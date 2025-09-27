@@ -8,7 +8,7 @@ describe('getQuerystringMap', () => {
       {
         val: { name: 'ironman' },
       },
-      [{ key: 'val', type: 'query', bit: { enable: false, withZero: false }, comma: false }],
+      [{ key: 'val', type: 'query', bit: { enable: false, withZero: false }, comma: false, cacheKeyExclude: false }],
     );
 
     expect(map).toEqual({ val: '{"name":"ironman"}' });
@@ -16,7 +16,7 @@ describe('getQuerystringMap', () => {
 
   it('should return bitwized when array number', () => {
     const result = getQuerystringMap({ bit: [0b1, 0b10, 0b1000] }, [
-      { key: 'bit', type: 'query', bit: { enable: true, withZero: false }, comma: false },
+      { key: 'bit', type: 'query', bit: { enable: true, withZero: false }, comma: false, cacheKeyExclude: false },
     ]);
 
     expect(result).toMatchObject({ bit: '11' });
@@ -24,7 +24,7 @@ describe('getQuerystringMap', () => {
 
   it('should return bitwized 0 when array number', () => {
     const result = getQuerystringMap({ bit: [0] }, [
-      { key: 'bit', type: 'query', bit: { enable: true, withZero: true }, comma: false },
+      { key: 'bit', type: 'query', bit: { enable: true, withZero: true }, comma: false, cacheKeyExclude: false },
     ]);
 
     expect(result).toMatchObject({ bit: '0' });
@@ -32,7 +32,7 @@ describe('getQuerystringMap', () => {
 
   it('should return empty map when zero number and withZero set false', () => {
     const result = getQuerystringMap({ bit: [0] }, [
-      { key: 'bit', type: 'query', bit: { enable: true, withZero: false }, comma: false },
+      { key: 'bit', type: 'query', bit: { enable: true, withZero: false }, comma: false, cacheKeyExclude: false },
     ]);
 
     expect(result).toMatchObject({});
@@ -45,6 +45,7 @@ describe('getQuerystringMap', () => {
         type: 'query',
         bit: { enable: false, withZero: false },
         comma: false,
+        cacheKeyExclude: false,
         formatters: {
           string: (v) => parse(v, 'yyyy-MM-dd', new Date()),
           dateTime: (dt) => format(dt, 'dd/MMM/yyyy'),
@@ -62,6 +63,7 @@ describe('getQuerystringMap', () => {
         type: 'query',
         bit: { enable: false, withZero: false },
         comma: true,
+        cacheKeyExclude: false,
         formatters: {
           string: (v) => parse(v, 'yyyy-MM-dd', new Date()),
           dateTime: (dt) => format(dt, 'dd/MMM/yyyy'),
@@ -79,6 +81,7 @@ describe('getQuerystringMap', () => {
         type: 'query',
         bit: { enable: false, withZero: false },
         comma: true,
+        cacheKeyExclude: false,
       },
     ]);
 
