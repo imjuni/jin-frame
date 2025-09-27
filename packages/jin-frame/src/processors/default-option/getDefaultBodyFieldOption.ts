@@ -7,7 +7,7 @@ export function getDefaultBodyFieldOption(
   return {
     key: '',
     type: 'body',
-    cacheKeyExcludePath: option?.cacheKeyExcludePath ?? undefined,
+    cacheKeyExcludePaths: option?.cacheKeyExcludePaths ?? undefined,
     replaceAt: option?.replaceAt ?? undefined,
     formatters: option?.formatters ?? undefined,
     encode: option?.encode ?? true,

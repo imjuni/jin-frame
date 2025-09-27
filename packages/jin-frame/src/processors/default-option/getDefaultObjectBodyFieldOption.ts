@@ -7,7 +7,7 @@ export function getDefaultObjectBodyFieldOption(
   return {
     key: '',
     type: 'object-body',
-    cacheKeyExcludePath: option?.cacheKeyExcludePath ?? undefined,
+    cacheKeyExcludePaths: option?.cacheKeyExcludePaths ?? undefined,
     formatters: option?.formatters ?? undefined,
     encode: option?.encode ?? true,
     order: option?.order ?? Number.MAX_SAFE_INTEGER,

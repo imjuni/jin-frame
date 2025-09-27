@@ -100,7 +100,7 @@ feat(dedupe): add request deduplication system
 
 - Add @Dedupe decorator for method-level request deduplication
 - Implement RequestDedupeManager with wrapper-based result tracking
-- Add cacheKeyExclude and cacheKeyExcludePath options for cache control
+- Add cacheKeyExclude and cacheKeyExcludePaths options for cache control
 - Refactor field option processors into modular structure
 - Add comprehensive test coverage for new features
 - Create utility functions for cache key generation and JSON handling
