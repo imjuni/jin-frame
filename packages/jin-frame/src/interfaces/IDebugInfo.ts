@@ -1,23 +1,26 @@
 import type { AxiosRequestConfig } from 'axios';
 
 /**
- * Debugging information
+ * Debug information for HTTP requests
  */
 export interface IDebugInfo {
-  /** timestamp information at request start at */
+  /** Timestamp information when the request started */
   ts: {
-    /** unix timestamp style timestamp with milliseconds */
+    /** Unix timestamp with milliseconds as string */
     unix: string;
     /**
-     * iso timestamp style without hypen, only contain T character and dot
-     * ex> 20210721T112233.444
-     * */
+     * ISO timestamp without hyphens, containing only T character and dot
+     * @example "20210721T112233.444"
+     */
     iso: string;
   };
 
-  /** reqeust execute duration */
+  /** Request execution duration in milliseconds */
   duration: number;
 
-  /** AxiosRequestConfig */
+  /** Whether the request was deduplicated */
+  isDeduped: boolean;
+
+  /** Axios request configuration object */
   req: AxiosRequestConfig;
 }

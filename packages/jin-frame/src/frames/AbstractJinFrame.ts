@@ -34,9 +34,10 @@ import { getCachePath } from '#tools/getCachePath';
 import { get, set } from 'dot-prop';
 import { safeStringify } from '#tools/json/safeStringify';
 import { runAndUnwrap } from '#tools/runAndUnwrap';
-import 'reflect-metadata';
 import { RequestDedupeManager } from '#frames/RequestDedupeManager';
 import { sleep } from '#tools/sleep';
+import type { DedupeResult } from '#interfaces/DedupeResult';
+import 'reflect-metadata';
 
 export abstract class AbstractJinFrame<TPASS> {
   static getEndpoint(): URL {
@@ -323,11 +324,11 @@ export abstract class AbstractJinFrame<TPASS> {
     return req;
   }
 
-  async retry(req: AxiosRequestConfig, isValidateStatus: (status: number) => boolean): Promise<AxiosResponse<TPASS>> {
+  async retry(req: AxiosRequestConfig, isValidateStatus: (status: number) => boolean): Promise<DedupeResult<TPASS>> {
     const { retry } = this.$_data;
 
     const handle = async () => {
-      let returnValue: AxiosResponse<TPASS> | AxiosError = new AxiosError();
+      let returnValue: DedupeResult<TPASS> | AxiosError = new AxiosError();
 
       /* eslint-disable no-await-in-loop, no-restricted-syntax */
       for (let i = 0; i < retry.max; i += 1) {
@@ -338,17 +339,17 @@ export abstract class AbstractJinFrame<TPASS> {
           const promised =
             cacheKey != null
               ? RequestDedupeManager.dedupe<TPASS>(cacheKey, async () => this.$_data.instance.request<TPASS>(req))
-              : (async () => ({ response: await this.$_data.instance.request<TPASS>(req), isDeduped: false }))();
+              : (async () => ({ reply: await this.$_data.instance.request<TPASS>(req), isDeduped: false }))();
 
           const deduped = await promised;
-          const reply = deduped.response;
+          const { reply } = deduped;
           const retryAfterValue = reply.headers['retry-after'] ?? reply.headers['Retry-After'];
           const retryAfter = getRetryAfter(retry, retryAfterValue);
 
-          returnValue = reply;
+          returnValue = deduped;
 
           if (isValidateStatus(reply.status)) {
-            return reply;
+            return deduped;
           }
 
           await runAndUnwrap(this.$_retryFail.bind(this), req, reply);

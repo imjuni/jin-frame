@@ -70,6 +70,7 @@ export class JinEitherFrame<TPASS = unknown, TFAIL = TPASS>
           unix: `${getUnixTime(this.$_data.startAt)}.${this.$_data.startAt.getMilliseconds()}`,
           iso: formatISO(this.$_data.startAt),
         },
+        isDeduped: false,
         duration,
       };
       const err = new JinCreateError<JinEitherFrame<TPASS, TFAIL>, TPASS, TFAIL>({
@@ -119,13 +120,15 @@ export class JinEitherFrame<TPASS = unknown, TFAIL = TPASS>
           iso: formatISO(startAt),
         },
         req: { ...req, validateStatus: isValidateStatus },
+        isDeduped: false,
       };
 
       try {
         await runAndUnwrap(this.$_preHook.bind(this), req);
 
         this.$_data.eachStartAt = new Date();
-        const reply = await this.retry(req, isValidateStatus);
+        const deduped = await this.retry(req, isValidateStatus);
+        const { reply } = deduped;
         const endAt = new Date();
 
         if (!isValidateStatus(reply.status)) {
@@ -137,7 +140,7 @@ export class JinEitherFrame<TPASS = unknown, TFAIL = TPASS>
             ...failReply,
             $progress: 'fail',
             $err: err,
-            $debug: { ...debugInfo, duration },
+            $debug: { ...debugInfo, duration, isDeduped: deduped.isDeduped },
             $frame: this,
             $validated: { valid: false, error: [] },
           };
@@ -157,7 +160,7 @@ export class JinEitherFrame<TPASS = unknown, TFAIL = TPASS>
             ...(reply as unknown as AxiosResponse<TFAIL>),
             $progress: 'fail',
             $err: err,
-            $debug: { ...debugInfo, duration },
+            $debug: { ...debugInfo, duration, isDeduped: deduped.isDeduped },
             $frame: this,
             $validated: validated,
           };

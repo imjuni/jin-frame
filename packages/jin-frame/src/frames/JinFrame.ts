@@ -69,6 +69,7 @@ export class JinFrame<TPass = unknown, TFail = TPass>
           unix: `${getUnixTime(this.$_data.startAt)}.${this.$_data.startAt.getMilliseconds()}`,
           iso: formatISO(this.$_data.startAt),
         },
+        isDeduped: false,
         duration,
       };
       const err = new JinCreateError<typeof this, TPass, TFail>({ debug, frame: this, message: source.message });
@@ -110,19 +111,21 @@ export class JinFrame<TPass = unknown, TFail = TPass>
           unix: `${getUnixTime(startAt)}.${startAt.getMilliseconds()}`,
           iso: formatISO(startAt),
         },
+        isDeduped: false,
         req: { ...req, validateStatus: isValidateStatus },
       };
 
       try {
         await runAndUnwrap(this.$_preHook.bind(this), req);
 
-        const reply = await this.retry(req, isValidateStatus);
+        const deduped = await this.retry(req, isValidateStatus);
+        const { reply } = deduped;
 
         if (!isValidateStatus(reply.status)) {
           const failReply = reply as unknown as AxiosResponse<TFail>;
           const duration = getDuration(this.$_data.startAt, new Date());
 
-          const debugInfo = { ...debug, duration };
+          const debugInfo = { ...debug, duration, isDeduped: deduped.isDeduped };
           const err = new JinRequestError<TPass, TFail>({
             resp: failReply,
             debug: debugInfo,
@@ -136,7 +139,7 @@ export class JinFrame<TPass = unknown, TFail = TPass>
         }
 
         const duration = getDuration(this.$_data.startAt, new Date());
-        const debugInfo = { ...debug, duration };
+        const debugInfo = { ...debug, duration, isDeduped: deduped.isDeduped };
 
         await runAndUnwrap(this.$_postHook.bind(this), req, reply, debugInfo);
 
