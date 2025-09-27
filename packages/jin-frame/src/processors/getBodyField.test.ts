@@ -7,12 +7,12 @@ describe('getBodyField', () => {
     const b = () => {};
     const c = Symbol(1);
 
-    const r01 = getBodyField(1, { key: 'name', option: { type: 'body' } });
-    const r02 = getBodyField(BigInt(1), { key: 'name', option: { type: 'body' } });
-    const r03 = getBodyField(c, { key: 'name', option: { type: 'body' } });
-    const r04 = getBodyField(a, { key: 'name', option: { type: 'body' } });
-    const r05 = getBodyField(b, { key: 'name', option: { type: 'body' } });
-    const r06 = getBodyField([1], { key: 'name', option: { type: 'body' } });
+    const r01 = getBodyField(1, { key: 'name', type: 'body' });
+    const r02 = getBodyField(BigInt(1), { key: 'name', type: 'body' });
+    const r03 = getBodyField(c, { key: 'name', type: 'body' });
+    const r04 = getBodyField(a, { key: 'name', type: 'body' });
+    const r05 = getBodyField(b, { key: 'name', type: 'body' });
+    const r06 = getBodyField([1], { key: 'name', type: 'body' });
 
     expect(r01).toEqual(1);
     expect(r02).toEqual(BigInt(1));
@@ -26,11 +26,9 @@ describe('getBodyField', () => {
     const data = { name: null };
     const results = getBodyField(data, {
       key: 'name',
-      option: {
-        type: 'body',
-        formatters: {
-          number: (v) => `${v}`,
-        },
+      type: 'body',
+      formatters: {
+        number: (v) => `${v}`,
       },
     });
 
@@ -42,11 +40,9 @@ describe('getBodyField', () => {
       { name: 1 },
       {
         key: 'name',
-        option: {
-          type: 'body',
-          formatters: {
-            number: (v) => `${v}`,
-          },
+        type: 'body',
+        formatters: {
+          number: (v) => `${v}`,
         },
       },
     );
@@ -59,11 +55,9 @@ describe('getBodyField', () => {
       { name: [1] },
       {
         key: 'name',
-        option: {
-          type: 'body',
-          formatters: {
-            number: (v) => `${v}`,
-          },
+        type: 'body',
+        formatters: {
+          number: (v) => `${v}`,
         },
       },
     );
@@ -76,11 +70,9 @@ describe('getBodyField', () => {
       { name: [1] },
       {
         key: 'name',
-        option: {
-          type: 'body',
-          formatters: {
-            number: (v) => `${v}`,
-          },
+        type: 'body',
+        formatters: {
+          number: (v) => `${v}`,
         },
       },
     );
@@ -93,12 +85,10 @@ describe('getBodyField', () => {
       { name: { age: 10 } },
       {
         key: 'name',
-        option: {
-          type: 'body',
-          formatters: {
-            findFrom: 'age',
-            number: (v) => `${v}`,
-          },
+        type: 'body',
+        formatters: {
+          findFrom: 'age',
+          number: (v) => `${v}`,
         },
       },
     );
@@ -111,12 +101,10 @@ describe('getBodyField', () => {
       { name: { age: 10 } },
       {
         key: 'name',
-        option: {
-          type: 'body',
-          formatters: {
-            findFrom: 'age',
-            number: (v) => `${v}`,
-          },
+        type: 'body',
+        formatters: {
+          findFrom: 'age',
+          number: (v) => `${v}`,
         },
       },
     );

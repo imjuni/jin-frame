@@ -16,14 +16,14 @@ export function getBodyMap<T extends Record<string, unknown>>(
   const objectBodies: unknown[] = [];
 
   const classifed = fields.reduce<{
-    bodies: { key: string; option: IBodyFieldOption }[];
-    objectBodies: { key: string; option: IObjectBodyFieldOption }[];
+    bodies: IBodyFieldOption[];
+    objectBodies: IObjectBodyFieldOption[];
   }>(
     (aggregated, option) => {
       if (option.type === 'body') {
-        aggregated.bodies.push({ key: option.key, option });
+        aggregated.bodies.push(option);
       } else {
-        aggregated.objectBodies.push({ key: option.key, option });
+        aggregated.objectBodies.push(option);
       }
 
       return aggregated;
@@ -34,14 +34,14 @@ export function getBodyMap<T extends Record<string, unknown>>(
     },
   );
 
-  classifed.objectBodies = classifed.objectBodies.sort((l, r) => l.option.order - r.option.order);
+  classifed.objectBodies = classifed.objectBodies.sort((l, r) => l.order - r.order);
 
   for (const field of classifed.bodies) {
-    bodies.push(getBodyField(thisFrame, { key: field.key, option: field.option }));
+    bodies.push(getBodyField(thisFrame, field));
   }
 
   for (const field of classifed.objectBodies) {
-    objectBodies.push(getObjectBodyField(thisFrame, { key: field.key, option: field.option }));
+    objectBodies.push(getObjectBodyField(thisFrame, field));
   }
 
   // ------------------------------------------------------------------------------------

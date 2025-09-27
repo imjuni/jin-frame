@@ -9,7 +9,7 @@ import type { TSupportArrayType } from '#tools/type-utilities/TSupportArrayType'
 import type { TSupportPrimitiveType } from '#tools/type-utilities/TSupportPrimitiveType';
 import * as dotProp from 'dot-prop';
 
-export function getBodyField(thisFrame: unknown, field: { key: string; option: IBodyFieldOption }): unknown {
+export function getBodyField(thisFrame: unknown, field: IBodyFieldOption): unknown {
   if (
     isValidPrimitiveWithDateType(thisFrame) ||
     typeof thisFrame === 'bigint' ||
@@ -20,10 +20,10 @@ export function getBodyField(thisFrame: unknown, field: { key: string; option: I
     return thisFrame;
   }
 
-  const { key: accessKey, option } = field;
+  const accessKey = field.key;
   const value: unknown = (thisFrame as Record<string, unknown>)[accessKey];
-  const formatters: TSingleBodyFormatter[] = getBodyFormatters(field.option.formatters);
-  const replaceKey = option.replaceAt ?? accessKey;
+  const formatters: TSingleBodyFormatter[] = getBodyFormatters(field.formatters);
+  const replaceKey = field.replaceAt ?? accessKey;
 
   // case 02. nullable value
   if (value == null) {

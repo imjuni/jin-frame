@@ -6,12 +6,10 @@ describe('getObjectBodyField', () => {
     const data = BigInt(1);
     const results = getObjectBodyField(data, {
       key: 'name',
-      option: {
-        type: 'object-body',
-        order: Number.MAX_SAFE_INTEGER,
-        formatters: {
-          number: (v) => `primitive:${v}`,
-        },
+      type: 'object-body',
+      order: Number.MAX_SAFE_INTEGER,
+      formatters: {
+        number: (v) => `primitive:${v}`,
       },
     });
 
@@ -22,12 +20,10 @@ describe('getObjectBodyField', () => {
     const data = { name: null };
     const results = getObjectBodyField(data, {
       key: 'name',
-      option: {
-        type: 'object-body',
-        order: Number.MAX_SAFE_INTEGER,
-        formatters: {
-          number: (v) => `${v}`,
-        },
+      type: 'object-body',
+      order: Number.MAX_SAFE_INTEGER,
+      formatters: {
+        number: (v) => `${v}`,
       },
     });
 
