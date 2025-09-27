@@ -217,7 +217,7 @@ class Test008PostFrame extends JinFrame<{ message: string }> {
   @Body()
   declare public readonly password: string;
 
-  @ObjectBody({ cacheKeyExcludePath: ['code'] })
+  @ObjectBody({ cacheKeyExcludePaths: ['code'] })
   declare public readonly body: {
     team: string;
     code: number;

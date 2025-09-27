@@ -36,6 +36,7 @@ import { safeStringify } from '#tools/json/safeStringify';
 import { runAndUnwrap } from '#tools/runAndUnwrap';
 import 'reflect-metadata';
 import { RequestDedupeManager } from '#frames/RequestDedupeManager';
+import { sleep } from '#tools/sleep';
 
 export abstract class AbstractJinFrame<TPASS> {
   static getEndpoint(): URL {
@@ -203,7 +204,7 @@ export abstract class AbstractJinFrame<TPASS> {
       const value = get(this, input.key);
       set(data, getCachePath({ ...input }), value);
 
-      input.cacheKeyExcludePath?.forEach((cacheKeyExcludePath) => {
+      input?.cacheKeyExcludePaths?.forEach((cacheKeyExcludePath) => {
         set(data, ['body', cacheKeyExcludePath].join('.'), undefined);
       });
     });
@@ -360,9 +361,7 @@ export abstract class AbstractJinFrame<TPASS> {
             retryAfter,
           );
 
-          await new Promise<void>((resolve) => {
-            setTimeout(() => resolve(), interval);
-          });
+          await sleep(interval);
         } catch (err) {
           returnValue = err as AxiosError;
 
@@ -376,9 +375,7 @@ export abstract class AbstractJinFrame<TPASS> {
             undefined,
           );
 
-          await new Promise<void>((resolve) => {
-            setTimeout(() => resolve(), interval);
-          });
+          await sleep(interval);
         }
       }
       /* eslint-enable no-await-in-loop, no-restricted-syntax */
