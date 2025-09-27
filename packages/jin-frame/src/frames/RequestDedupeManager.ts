@@ -1,15 +1,5 @@
+import type { DedupeResult } from '#interfaces/DedupeResult';
 import type { AxiosResponse } from 'axios';
-
-/**
- * Result interface for deduplicated requests
- * @template T - The response data type
- */
-export interface DedupeResult<T> {
-  /** The response from the HTTP request */
-  response: AxiosResponse<T>;
-  /** Whether this request was deduplicated (true) or was the original request (false) */
-  isDeduped: boolean;
-}
 
 /**
  * Manages request deduplication to prevent multiple identical HTTP requests
@@ -51,15 +41,15 @@ export class RequestDedupeManager {
     const existingPromise = this.pendingRequests.get(cacheKey);
     if (existingPromise) {
       const response = (await existingPromise) as AxiosResponse<T>;
-      return { response, isDeduped: true };
+      return { reply: response, isDeduped: true };
     }
 
     // Create new request and register it in pendingRequests first
     const promise = requesterFn()
-      .then((response) => {
+      .then((reply) => {
         // Safely remove from pending on success
         this.pendingRequests.delete(cacheKey);
-        return response;
+        return reply;
       })
       .catch((error) => {
         // Safely remove from pending on failure as well
@@ -70,8 +60,8 @@ export class RequestDedupeManager {
     // Prevent race condition: register promise immediately after creation
     this.pendingRequests.set(cacheKey, promise);
 
-    const response = await promise;
-    return { response, isDeduped: false };
+    const reply = await promise;
+    return { reply, isDeduped: false };
   }
 
   /**
