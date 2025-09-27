@@ -115,7 +115,8 @@ tslint-to-eslint-config.log
 src/*.ts.bak
 
 # Automatically generated vuepress
-packages/jin-frame/docs/.vitepress
+packages/jin-frame/docs/.vitepress/cache
+packages/jin-frame/docs/.vitepress/dist
 packages/jin-frame/docs/assets
 packages/jin-frame/docs/api
 packages/jin-frame/docs/classes

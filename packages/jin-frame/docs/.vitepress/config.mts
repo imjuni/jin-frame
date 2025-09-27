@@ -56,6 +56,10 @@ const getThemeConfig = (_locale?: string) => {
               text: 'Validation',
               link: `${locale}/method/validation.md`,
             },
+            {
+              text: 'Dedupe',
+              link: `${locale}/method/dedupe.md`,
+            },
           ],
         },
         {
@@ -108,6 +112,19 @@ export default defineConfig({
   title: 'jin-frame',
   description: 'Declarative API definition',
   base,
+  markdown: {
+    config: (md) => {
+      const fence = md.renderer.rules.fence!
+      md.renderer.rules.fence = (...args) => {
+        const [tokens, idx] = args
+        const token = tokens[idx]
+        if (token.info === 'mermaid') {
+          return `<Mermaid code="${encodeURIComponent(token.content)}" />`
+        }
+        return fence(...args)
+      }
+    }
+  },
   locales: {
     root: {
       label: 'English',
