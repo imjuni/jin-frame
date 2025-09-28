@@ -48,6 +48,7 @@
       "#frames/*": ["src/frames/*"],
       "#interfaces/*": ["src/interfaces/*"],
       "#processors/*": ["src/processors/*"],
+      "#providers/*": ["src/providers/*"],
       "#tools/*": ["src/tools/*"],
       "#validators/*": ["src/validators/*"]
     }

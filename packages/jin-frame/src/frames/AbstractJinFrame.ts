@@ -294,12 +294,29 @@ export abstract class AbstractJinFrame<TPASS> {
       headers['User-Agent'] = option.userAgent;
     }
 
-    const { authKey, auth } = getAuthorization(headers, this.$_option.authoriztion, option?.auth);
+    const { authKey, auth, securityHeaders, securityQueries } = getAuthorization(
+      headers,
+      this.$_option,
+      option?.auth,
+      option?.dynamicAuth,
+    );
 
     headers['Content-Type'] = this.$_option.contentType;
 
     if (authKey != null) {
       headers.Authorization = authKey;
+    }
+
+    // Apply security provider query parameters
+    if (securityQueries != null) {
+      Object.entries(securityQueries).forEach(([key, value]) => {
+        url.searchParams.append(key, value);
+      });
+    }
+
+    // Apply security provider headers (includes Authorization, Cookie, etc.)
+    if (securityHeaders != null) {
+      Object.assign(headers, securityHeaders);
     }
 
     const transformRequest = this.getTransformRequest();

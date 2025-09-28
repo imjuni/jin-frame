@@ -37,7 +37,6 @@ class CustomError extends Error {
 
 @Post({
   host: 'http://some.api.google.com/jinframe/:passing',
-  authoriztion: 'Bearer i-am-bearer-authorization-key',
 })
 class Test001PostFrame extends JinFrame<{ message: string }> {
   @Param()

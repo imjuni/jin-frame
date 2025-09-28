@@ -2,6 +2,8 @@ import type { IFrameRetry } from '#interfaces/options/IFrameRetry';
 import type { TMethod } from '#interfaces/options/TMethod';
 import type { AxiosRequestConfig, Milliseconds } from 'axios';
 import type { BaseValidator } from '#validators/BaseValidator';
+import type { ISecurityProvider } from '#interfaces/security/ISecurityProvider';
+import type { AuthorizationData } from '#interfaces/security/AuthorizationData';
 
 export interface IFrameOption {
   /**
@@ -63,10 +65,16 @@ export interface IFrameOption {
   timeout?: Milliseconds;
 
   /**
-   * set authorizaiton header
-   * eg. Bearer i-am-authorization-key
+   * Security providers for authentication
+   * Can be a single provider or array of providers for multiple authentication schemes
    * */
-  authoriztion?: string | AxiosRequestConfig['auth'];
+  security?: ISecurityProvider | ISecurityProvider[];
+
+  /**
+   * Authorization data that will be passed to security providers
+   * This data can be used by providers to generate authentication information
+   * */
+  authorization?: AuthorizationData;
 
   /**
    * validation configuration
