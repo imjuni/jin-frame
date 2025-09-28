@@ -8,7 +8,7 @@ Jin-Frame supports various authentication methods and introduces a powerful new 
 
 ## 🆕 New Decorator-Based Authentication System (Recommended)
 
-Starting from v4.7.0, the new **`@Security`** and **`@Authorization`** decorators provide clearer and type-safe authentication configuration.
+Starting from v4.8.0, the new **`@Security`** and **`@Authorization`** decorators provide clearer and type-safe authentication configuration.
 
 ### 1. Security Providers System
 
