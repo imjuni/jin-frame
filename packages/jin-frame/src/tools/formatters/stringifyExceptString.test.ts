@@ -14,7 +14,7 @@ describe('stringifyExceptString', () => {
     vitest.useRealTimers();
   });
 
-  it('should stringified when primitive type which excpet string type', () => {
+  it('should stringified when primitive type which except string type', () => {
     const result = stringifyExceptString(1);
     expect(result).toEqual('1');
   });

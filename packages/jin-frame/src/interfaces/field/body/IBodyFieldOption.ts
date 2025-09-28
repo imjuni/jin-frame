@@ -7,7 +7,7 @@ export interface IBodyFieldOption extends ICommonFieldOption, ICommonCacheKeyExc
 
   /**
    * If you want to create depth or rename on field of body
-   * set this option dot seperated string. See below,
+   * set this option dot separated string. See below,
    *
    * @example
    * `data.test.ironman` convert to `{ data: { test: { ironman: "value here" } } }`

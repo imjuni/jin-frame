@@ -18,6 +18,7 @@ export function getFrameOption(method: TMethod, option?: Partial<Omit<IFrameOpti
     dedupe: option?.dedupe,
     security: option?.security,
     authorization: option?.authorization,
+    authoriztion: option?.authoriztion,
   };
 
   return frameOption;

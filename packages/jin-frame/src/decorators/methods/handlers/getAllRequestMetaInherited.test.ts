@@ -24,12 +24,12 @@ class GetAllRequestMetaInheritedTest003 extends GetAllRequestMetaInheritedTest00
 
 @Retry({ max: 2, interval: 500 })
 @Timeout(3000)
-@Put()
+@Put({ authoriztion: 'i-am-authorization-key' })
 class GetAllRequestMetaInheritedTest004 extends GetAllRequestMetaInheritedTest003 {}
 
 @Timeout(2000)
 @Validator(new BaseValidator({ type: 'exception' }))
-@Get({ path: 'overwrite/double/path' })
+@Get({ path: 'overwrite/double/path', authoriztion: 'i-am-authorization-key' })
 class GetAllRequestMetaInheritedTest005 extends GetAllRequestMetaInheritedTest004 {}
 
 describe('getAllRequestMetaInherited', () => {
@@ -50,6 +50,7 @@ describe('getAllRequestMetaInherited', () => {
             transformRequest: undefined,
             useInstance: false,
             userAgent: undefined,
+            authoriztion: 'i-am-authorization-key',
             pathPrefix: undefined,
             validator: undefined,
           },
@@ -82,6 +83,7 @@ describe('getAllRequestMetaInherited', () => {
             userAgent: undefined,
             retry: undefined,
             timeout: undefined,
+            authoriztion: undefined,
             pathPrefix: undefined,
             validator: undefined,
           },
@@ -98,6 +100,7 @@ describe('getAllRequestMetaInherited', () => {
             userAgent: undefined,
             retry: undefined,
             timeout: undefined,
+            authoriztion: undefined,
             pathPrefix: undefined,
             validator: undefined,
           },
@@ -114,6 +117,7 @@ describe('getAllRequestMetaInherited', () => {
             userAgent: undefined,
             retry: undefined,
             timeout: undefined,
+            authoriztion: undefined,
             pathPrefix: undefined,
             validator: undefined,
           },
