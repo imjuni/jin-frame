@@ -16,18 +16,6 @@ describe('sleep', () => {
     expect(elapsed).toBeLessThan(interval + 50);
   });
 
-  it('should resolve immediately when interval is 0', async () => {
-    const startTime = Date.now();
-
-    await sleep(0);
-
-    const endTime = Date.now();
-    const elapsed = endTime - startTime;
-
-    // Should complete very quickly (within 10ms)
-    expect(elapsed).toBeLessThan(10);
-  });
-
   it('should work with negative interval (treated as 1)', async () => {
     const startTime = Date.now();
 

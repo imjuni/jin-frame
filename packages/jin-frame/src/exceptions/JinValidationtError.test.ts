@@ -11,6 +11,7 @@ describe('JinValidationtError', () => {
           unix: '1674349200',
           iso: '1674349200',
         },
+        isDeduped: false,
         duration: getDuration(new Date(2023, 0, 1, 0, 0, 1), new Date(2023, 0, 1, 0, 0, 2)),
         req: {} as any,
       },
