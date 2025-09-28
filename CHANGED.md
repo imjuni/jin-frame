@@ -1,5 +1,119 @@
 # Changed
 
+## 4.8.0
+
+### New Features in 4.8.0
+
+- **Request Deduplication System**: Advanced request deduplication functionality
+  - `@Dedupe` decorator: Automatic detection and prevention of duplicate requests
+  - `RequestDedupeManager`: Centralized management of concurrent request deduplication
+  - Configurable cache key generation with flexible exclude options
+  - `DedupeResult` interface with `isDeduped` property for enhanced debugging and monitoring
+  - Comprehensive deduplication documentation and internationalization support
+- **Security and Authorization System**: Comprehensive security framework implementation
+  - `@Security` decorator: Declarative security configuration for request methods
+  - `@Authorization` decorator: Enhanced authorization handling with flexible configuration
+  - Security provider system: Pluggable security providers for various authentication schemes
+  - Authorization field support: Backward compatible authorization field configuration
+  - Comprehensive security documentation in both Korean and English
+- **Enhanced Documentation Infrastructure**: Major improvements to documentation system
+  - Mermaid diagram support in VitePress documentation for better visual explanations
+  - Git hooks initialization script for improved development workflow
+  - Enhanced project structure documentation with detailed package descriptions
+
+### Request Deduplication in 4.8.0
+
+- **Cache Key Generation**: Core mechanism for identifying duplicate requests
+  - Generates unique cache keys by combining endpoint and parameters to determine request identity
+  - Duplicate requests with identical cache keys share the first request's response
+  - `cacheKeyExclude` option for excluding specific fields from cache key generation
+  - `cacheKeyExcludePaths` option for excluding nested object paths
+  - Support for excluding dynamic fields like timestamps, UUIDs, and request IDs that change per request but shouldn't affect deduplication
+- **Advanced Deduplication Logic**: Sophisticated duplicate request handling
+  - Wrapper-based result tracking with `DedupeResult` interface
+  - Automatic cleanup of completed requests from pending cache
+  - Error handling with independent retry logic for failed requests
+  - Memory-based deduplication with application lifecycle management
+- **Developer Tools**: Enhanced debugging and monitoring capabilities
+  - `RequestDedupeManager` utility methods for monitoring pending requests
+  - Debug information with `isDeduped` property in response objects
+  - Comprehensive test coverage for deduplication scenarios
+  - Performance monitoring and network traffic reduction analytics
+
+### Security Framework in 4.8.0
+
+- **Security Provider Architecture**: Flexible and extensible security system
+  - Abstract security provider base class for custom implementations
+  - Built-in support for common authentication schemes
+  - Type-safe security configuration with TypeScript integration
+  - Runtime security validation and error handling
+- **Authorization Enhancements**: Improved authorization handling
+  - Enhanced `@Authorization` decorator with comprehensive options
+  - Backward compatibility with existing authorization field configurations
+  - Flexible authorization value resolution and processing
+  - Integration with security provider system for unified authentication
+
+### Developer Experience in 4.8.0
+
+- **Enhanced Type Safety**: Improved type definitions and error corrections
+  - Fixed `keyForamt` typo to `keyFormat` in `IQueryFieldOption` interface
+  - Type-safe security provider interfaces and implementations
+  - Better TypeScript inference for authorization configurations
+  - Enhanced error test cases with `isDeduped` property for better debugging
+- **Code Quality Improvements**: Enhanced codebase maintainability
+  - Fixed spelling errors throughout the codebase (`excpetation` to `expectation`)
+  - Simplified field option structure by removing nested option wrappers
+  - Extracted `DedupeResult` interface for better type organization
+  - Enhanced debug information for deduplication and security processes
+- **Documentation Enhancements**: Comprehensive documentation improvements
+  - Updated `cacheKeyExcludePath` references to `cacheKeyExcludePaths` for consistency
+  - Fixed logo paths in VitePress configuration for better asset management
+  - Enhanced validator registration comments for improved code clarity
+
+### Infrastructure in 4.8.0
+
+- **Testing Framework**: Comprehensive testing improvements
+  - Complete test coverage for deduplication system with various scenarios
+  - Integration tests for security provider system and authorization decorators
+  - Enhanced error handling test cases with proper type definitions
+  - Performance testing for request deduplication efficiency
+- **Development Workflow**: Enhanced development processes
+  - Git hooks initialization script (`init-hooks`) for automated development setup
+  - Improved project documentation with detailed agent guidelines
+  - Better organization of documentation assets and configuration files
+- **Architecture Refinements**: Improved code organization and structure
+  - Modular field option processor structure for better maintainability
+  - Enhanced processor architecture with simplified field options
+  - Cleaner deduplication logic with extracted interfaces and improved debugging
+  - Streamlined cache key generation utilities with JSON handling improvements
+
+### Documentation in 4.8.0
+
+- **Request Deduplication Documentation**: Comprehensive deduplication guides
+  - Korean documentation: `docs/ko/method/dedupe.md` with complete implementation guide
+  - English documentation: `docs/method/dedupe.md` with examples and best practices
+  - Cache key customization examples and exclude option configurations
+  - Performance benefits and debugging techniques documentation
+- **Security Documentation**: Added comprehensive security and authorization guides
+  - Korean documentation: `docs/ko/method/authorization.md` with complete implementation guide
+  - English documentation: `docs/method/authorization.md` with examples and best practices
+  - Security provider implementation examples and configuration patterns
+- **Visual Documentation**: Enhanced documentation with better visual elements
+  - Mermaid sequence diagrams for deduplication workflow visualization
+  - Improved logo and asset management across documentation platforms
+  - Better structured examples with visual flow diagrams for complex scenarios
+
+### Performance Improvements in 4.8.0
+
+- **Network Optimization**: Significant improvements in network efficiency
+  - Automatic duplicate request elimination reducing network traffic
+  - Faster response times for deduplicated requests through shared responses
+  - Reduced server load through intelligent request consolidation
+- **Memory Management**: Enhanced memory usage optimization
+  - Automatic cleanup of completed requests from deduplication cache
+  - Efficient cache key generation with minimal memory footprint
+  - Smart garbage collection for pending request management
+
 ## 4.7.0
 
 ### New Features in 4.7.0
