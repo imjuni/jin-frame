@@ -77,6 +77,13 @@ export interface IFrameOption {
   authorization?: AuthorizationData;
 
   /**
+   * @deprecated Use `security` and `authorization` instead. This field will be removed in v5.0.0
+   * Legacy authorization field for backward compatibility
+   * eg. Bearer i-am-authorization-key
+   * */
+  authoriztion?: string | AxiosRequestConfig['auth'];
+
+  /**
    * validation configuration
    */
   validator?: BaseValidator;

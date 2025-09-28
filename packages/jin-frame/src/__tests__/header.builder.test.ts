@@ -157,7 +157,7 @@ describe('JinEitherFrame - Header', () => {
     expect(req).toEqual(excpetation);
   });
 
-  it('T005-plain-object-type-array-comma-seperated', async () => {
+  it('T005-plain-object-type-array-comma-separated', async () => {
     const frame = Test005PostFrame.of({
       passing: 'hello',
       username: 'ironman',

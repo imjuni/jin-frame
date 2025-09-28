@@ -88,4 +88,37 @@ describe('getAuthorization', () => {
     expect(result.authKey).toBe('Bearer dynamic-token');
     expect(result.securityHeaders).toEqual({ Authorization: 'Bearer dynamic-token' });
   });
+
+  // Backward compatibility tests for deprecated authoriztion field
+  it('should handle legacy authoriztion string field', () => {
+    const result = getAuthorization({}, { authoriztion: 'Bearer legacy-token' }, undefined);
+
+    expect(result.authKey).toBe('Bearer legacy-token');
+    expect(result.auth).toBeUndefined();
+  });
+
+  it('should handle legacy authoriztion auth object field', () => {
+    const auth = { username: 'legacy-user', password: 'legacy-pass' };
+    const result = getAuthorization({}, { authoriztion: auth }, undefined);
+
+    expect(result.authKey).toBeUndefined();
+    expect(result.auth).toEqual(auth);
+  });
+
+  it('should prioritize new security field over legacy authoriztion field', () => {
+    const provider = new BearerTokenProvider();
+    const result = getAuthorization(
+      {},
+      {
+        security: provider,
+        authorization: 'new-token',
+        authoriztion: 'legacy-token',
+      },
+      undefined,
+    );
+
+    // Should use new security system, not legacy
+    expect(result.authKey).toBe('Bearer new-token');
+    expect(result.securityHeaders).toEqual({ Authorization: 'Bearer new-token' });
+  });
 });

@@ -52,7 +52,7 @@ import { applySecurityProviders } from '#tools/auth/applySecurityProviders';
  */
 export function getAuthorization(
   headers: Record<string, string>,
-  frameOption: Pick<IFrameOption, 'security' | 'authorization'>,
+  frameOption: Pick<IFrameOption, 'security' | 'authorization' | 'authoriztion'>,
   auth?: AxiosRequestConfig['auth'],
   dynamicAuth?: AuthorizationData,
 ): {
@@ -80,6 +80,15 @@ export function getAuthorization(
       securityHeaders: securityContext.headers,
       securityQueries: securityContext.queries,
     };
+  }
+
+  // Handle legacy authoriztion field (deprecated)
+  if (frameOption.authoriztion != null) {
+    if (typeof frameOption.authoriztion === 'string') {
+      return { authKey: frameOption.authoriztion, auth: undefined };
+    }
+
+    return { authKey: undefined, auth: frameOption.authoriztion };
   }
 
   return { authKey: undefined, auth: undefined };

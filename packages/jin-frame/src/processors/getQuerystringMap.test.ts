@@ -74,7 +74,7 @@ describe('getQuerystringMap', () => {
     expect(r01).toMatchObject({ fm: '19/Jan/2023,20/Jan/2023' });
   });
 
-  it('should return comma seperate string map when string array', () => {
+  it('should return comma separated string map when string array', () => {
     const r01 = getQuerystringMap({ heroes: ['ironman', 'captain'] }, [
       {
         key: 'heroes',

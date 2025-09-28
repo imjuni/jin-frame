@@ -3,7 +3,7 @@ import type { IFormatter } from '#interfaces/options/IFormatter';
 export interface IQueryParamHeaderCommonFieldOption {
   /**
    * If you want to create depth or rename on field of body
-   * set this option dot seperated string. See below,
+   * set this option dot separated string. See below,
    *
    * @example
    * `data.test.ironman` convert to `{ "data.test.ironman": "value here" }`
@@ -12,9 +12,9 @@ export interface IQueryParamHeaderCommonFieldOption {
 
   /**
    * "comma" option only working querystring. If you want to process array parameter of querystring
-   * using by comma seperated string, set this option
+   * using by comma separated string, set this option
    *
-   * Comma seperated array parameter on querystring
+   * Comma separated array parameter on querystring
    */
   comma: boolean;
 
