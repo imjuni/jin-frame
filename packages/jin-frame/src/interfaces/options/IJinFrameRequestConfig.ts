@@ -1,4 +1,5 @@
 import type { AxiosRequestConfig } from 'axios';
+import type { AuthorizationData } from '#interfaces/security/AuthorizationData';
 
 /**
  * Configuration for AxiosRequestConfig. Exclude headers, method, data, url, validateStatus.
@@ -15,4 +16,10 @@ export interface IJinFrameRequestConfig
   url?: string;
 
   customBody?: unknown;
+
+  /**
+   * Dynamic authorization data that will be passed to security providers
+   * This will override the authorization data configured in the frame
+   */
+  dynamicAuth?: AuthorizationData;
 }

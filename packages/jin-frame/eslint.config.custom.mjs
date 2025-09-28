@@ -147,6 +147,8 @@ export const customIgnore = [
   {
     ignores: [
       './.configs/**',
+      './docs/.vitepress/config.mts',
+      './docs/.vitepress/theme/index.ts',
       '**/dist/**/*',
       'examples/*',
       'eslint.config.mjs',
