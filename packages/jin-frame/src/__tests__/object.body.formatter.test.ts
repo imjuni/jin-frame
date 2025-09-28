@@ -46,7 +46,7 @@ it('object formatters array', async () => {
 
   const req = frame.request();
 
-  const excpetation = {
+  const expectation = {
     timeout: 120000,
     headers: { 'Content-Type': 'application/json' },
     method: 'POST',
@@ -62,5 +62,5 @@ it('object formatters array', async () => {
 
   // console.log(req.data);
 
-  expect(req).toEqual(excpetation);
+  expect(req).toEqual(expectation);
 });

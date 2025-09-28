@@ -94,7 +94,7 @@ describe('JinEitherFrame - Header with formatters', () => {
     });
     const req = frame.request();
 
-    const excpetation = {
+    const expectation = {
       timeout: 120000,
       headers: { 'Content-Type': 'application/json', username: 'ironman', 'send-at': '20220810T112233' },
       method: 'POST',
@@ -105,7 +105,7 @@ describe('JinEitherFrame - Header with formatters', () => {
 
     // console.log(req.headers);
 
-    expect(req).toEqual(excpetation);
+    expect(req).toEqual(expectation);
   });
 
   it('T002-datetime-array-formatter', async () => {
@@ -116,7 +116,7 @@ describe('JinEitherFrame - Header with formatters', () => {
     });
     const req = frame.request();
 
-    const excpetation = {
+    const expectation = {
       timeout: 120000,
       headers: {
         'Content-Type': 'application/json',
@@ -129,7 +129,7 @@ describe('JinEitherFrame - Header with formatters', () => {
       validateStatus: undefined,
     };
 
-    expect(req).toEqual(excpetation);
+    expect(req).toEqual(expectation);
   });
 
   it('T003-primitive-type-key-replace-at-not-support-dot-props', async () => {
@@ -140,7 +140,7 @@ describe('JinEitherFrame - Header with formatters', () => {
     });
     const req = frame.request();
 
-    const excpetation = {
+    const expectation = {
       timeout: 120000,
       headers: {
         'Content-Type': 'application/json',
@@ -155,7 +155,7 @@ describe('JinEitherFrame - Header with formatters', () => {
 
     // console.log(req.headers);
 
-    expect(req).toEqual(excpetation);
+    expect(req).toEqual(expectation);
   });
 
   it('T005-plain-object-type-json-serialization', async () => {
@@ -167,7 +167,7 @@ describe('JinEitherFrame - Header with formatters', () => {
 
     const req = frame.request();
 
-    const excpetation = {
+    const expectation = {
       timeout: 120000,
       headers: {
         'Content-Type': 'application/json',
@@ -182,6 +182,6 @@ describe('JinEitherFrame - Header with formatters', () => {
 
     // console.log(req.headers);
 
-    expect(req).toEqual(excpetation);
+    expect(req).toEqual(expectation);
   });
 });

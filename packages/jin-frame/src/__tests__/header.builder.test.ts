@@ -73,7 +73,7 @@ describe('JinEitherFrame - Header', () => {
     const frame = Test001PostFrame.of({ passing: 'hello', username: 'ironman', password: 'advengers' });
     const req = frame.request();
 
-    const excpetation = {
+    const expectation = {
       timeout: 120000,
       headers: { 'Content-Type': 'application/json', username: 'ironman', password: 'advengers' },
       method: 'POST',
@@ -82,7 +82,7 @@ describe('JinEitherFrame - Header', () => {
       validateStatus: undefined,
     };
 
-    expect(req).toEqual(excpetation);
+    expect(req).toEqual(expectation);
   });
 
   it('T001-header', async () => {
@@ -100,7 +100,7 @@ describe('JinEitherFrame - Header', () => {
     const frame = Test002PostFrame.of({ passing: 'hello', username: 'ironman', password: 'advengers' });
     const req = frame.request();
 
-    const excpetation = {
+    const expectation = {
       timeout: 120000,
       headers: { 'Content-Type': 'application/json', uuu: 'ironman', ppp: 'advengers' },
       method: 'POST',
@@ -109,14 +109,14 @@ describe('JinEitherFrame - Header', () => {
       validateStatus: undefined,
     };
 
-    expect(req).toEqual(excpetation);
+    expect(req).toEqual(expectation);
   });
 
   it('T003-primitive-type-key-replace-at-not-support-dot-props', async () => {
     const frame = Test003PostFrame.of({ passing: 'hello', username: 'ironman', password: 'advengers' });
     const req = frame.request();
 
-    const excpetation = {
+    const expectation = {
       timeout: 120000,
       headers: { 'Content-Type': 'application/json', 'ppp.password': 'advengers', 'uuu.username': 'ironman' },
       method: 'POST',
@@ -127,7 +127,7 @@ describe('JinEitherFrame - Header', () => {
 
     // console.log(req.headers);
 
-    expect(req).toEqual(excpetation);
+    expect(req).toEqual(expectation);
   });
 
   it('T004-plain-object-type-json-serialization', async () => {
@@ -139,7 +139,7 @@ describe('JinEitherFrame - Header', () => {
 
     const req = frame.request();
 
-    const excpetation = {
+    const expectation = {
       timeout: 120000,
       headers: {
         'Content-Type': 'application/json',
@@ -154,7 +154,7 @@ describe('JinEitherFrame - Header', () => {
 
     // console.log(req.headers);
 
-    expect(req).toEqual(excpetation);
+    expect(req).toEqual(expectation);
   });
 
   it('T005-plain-object-type-array-comma-separated', async () => {
@@ -166,7 +166,7 @@ describe('JinEitherFrame - Header', () => {
 
     const req = frame.request();
 
-    const excpetation = {
+    const expectation = {
       timeout: 120000,
       headers: {
         'Content-Type': 'application/json',
@@ -181,6 +181,6 @@ describe('JinEitherFrame - Header', () => {
 
     // console.log(req.headers);
 
-    expect(req).toEqual(excpetation);
+    expect(req).toEqual(expectation);
   });
 });

@@ -103,7 +103,7 @@ describe('JinEitherFrame ObjectBody using Object', () => {
     });
     const req = frame.request();
 
-    const excpetation = {
+    const expectation = {
       timeout: 120000,
       headers: { 'Content-Type': 'application/json' },
       method: 'POST',
@@ -123,7 +123,7 @@ describe('JinEitherFrame ObjectBody using Object', () => {
 
     // console.log(req.data);
 
-    expect(req).toEqual(excpetation);
+    expect(req).toEqual(expectation);
   });
 
   it('T002-merge-two-object', async () => {
@@ -135,7 +135,7 @@ describe('JinEitherFrame ObjectBody using Object', () => {
     });
     const req = frame.request();
 
-    const excpetation = {
+    const expectation = {
       timeout: 120000,
       headers: { 'Content-Type': 'application/json' },
       method: 'POST',
@@ -157,7 +157,7 @@ describe('JinEitherFrame ObjectBody using Object', () => {
 
     // console.log(req.data);
 
-    expect(req).toEqual(excpetation);
+    expect(req).toEqual(expectation);
   });
 
   it('T003-merge-and-formatting', async () => {
@@ -173,7 +173,7 @@ describe('JinEitherFrame ObjectBody using Object', () => {
     });
     const req = frame.request();
 
-    const excpetation = {
+    const expectation = {
       timeout: 120000,
       headers: { 'Content-Type': 'application/json' },
       method: 'POST',
@@ -195,7 +195,7 @@ describe('JinEitherFrame ObjectBody using Object', () => {
 
     // console.log(req.data);
 
-    expect(req).toEqual(excpetation);
+    expect(req).toEqual(expectation);
   });
 
   it('T004-merge-and-formatting', async () => {
@@ -212,7 +212,7 @@ describe('JinEitherFrame ObjectBody using Object', () => {
     });
     const req = frame.request();
 
-    const excpetation = {
+    const expectation = {
       timeout: 120000,
       headers: { 'Content-Type': 'application/json' },
       method: 'POST',
@@ -234,6 +234,6 @@ describe('JinEitherFrame ObjectBody using Object', () => {
 
     // console.log(req.data);
 
-    expect(req).toEqual(excpetation);
+    expect(req).toEqual(expectation);
   });
 });

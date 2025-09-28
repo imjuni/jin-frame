@@ -155,7 +155,7 @@ describe('JinEitherFrame - Body with formatters', () => {
     });
     const req = frame.request();
 
-    const excpetation = {
+    const expectation = {
       timeout: 120000,
       headers: { 'Content-Type': 'application/json' },
       method: 'POST',
@@ -167,7 +167,7 @@ describe('JinEitherFrame - Body with formatters', () => {
 
     // console.log(req);
 
-    expect(req).toEqual(excpetation);
+    expect(req).toEqual(expectation);
   });
 
   it('T002-string-type-formatter', async () => {
@@ -178,7 +178,7 @@ describe('JinEitherFrame - Body with formatters', () => {
     });
     const req = frame.request();
 
-    const excpetation = {
+    const expectation = {
       timeout: 120000,
       headers: { 'Content-Type': 'application/json' },
       method: 'POST',
@@ -190,7 +190,7 @@ describe('JinEitherFrame - Body with formatters', () => {
 
     // console.log(req);
 
-    expect(req).toEqual(excpetation);
+    expect(req).toEqual(expectation);
   });
 
   it('T003-string-array-and-string-formatter', async () => {
@@ -202,7 +202,7 @@ describe('JinEitherFrame - Body with formatters', () => {
     });
     const req = frame.request();
 
-    const excpetation = {
+    const expectation = {
       timeout: 120000,
       headers: { 'Content-Type': 'application/json' },
       method: 'POST',
@@ -218,7 +218,7 @@ describe('JinEitherFrame - Body with formatters', () => {
 
     // console.log(req);
 
-    expect(req).toEqual(excpetation);
+    expect(req).toEqual(expectation);
   });
 
   it('T004-plain-date-formatter', async () => {
@@ -230,7 +230,7 @@ describe('JinEitherFrame - Body with formatters', () => {
     });
     const req = frame.request();
 
-    const excpetation = {
+    const expectation = {
       timeout: 120000,
       headers: { 'Content-Type': 'application/json' },
       method: 'POST',
@@ -246,7 +246,7 @@ describe('JinEitherFrame - Body with formatters', () => {
 
     // console.log(req);
 
-    expect(req).toEqual(excpetation);
+    expect(req).toEqual(expectation);
   });
 
   it('T005-string-datetime-formatter-sequential', async () => {
@@ -258,7 +258,7 @@ describe('JinEitherFrame - Body with formatters', () => {
     });
     const req = frame.request();
 
-    const excpetation = {
+    const expectation = {
       timeout: 120000,
       headers: { 'Content-Type': 'application/json' },
       method: 'POST',
@@ -274,7 +274,7 @@ describe('JinEitherFrame - Body with formatters', () => {
 
     // console.log(req);
 
-    expect(req).toEqual(excpetation);
+    expect(req).toEqual(expectation);
   });
 
   it('T006-date-type-key-replace', async () => {
@@ -286,7 +286,7 @@ describe('JinEitherFrame - Body with formatters', () => {
     });
     const req = frame.request();
 
-    const excpetation = {
+    const expectation = {
       timeout: 120000,
       headers: { 'Content-Type': 'application/json' },
       method: 'POST',
@@ -302,6 +302,6 @@ describe('JinEitherFrame - Body with formatters', () => {
 
     // console.log(req);
 
-    expect(req).toEqual(excpetation);
+    expect(req).toEqual(expectation);
   });
 });
