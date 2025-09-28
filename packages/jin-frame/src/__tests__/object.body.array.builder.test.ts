@@ -155,7 +155,7 @@ describe('JinEitherFrame ObjectBody using Array', () => {
     });
     const req = frame.request();
 
-    const excpetation = {
+    const expectation = {
       timeout: 120000,
       headers: { 'Content-Type': 'application/json' },
       method: 'POST',
@@ -180,7 +180,7 @@ describe('JinEitherFrame ObjectBody using Array', () => {
 
     // console.log(req.data);
 
-    expect(req).toEqual(excpetation);
+    expect(req).toEqual(expectation);
   });
 
   it('T002-plain-array-with-formatters', async () => {
@@ -204,7 +204,7 @@ describe('JinEitherFrame ObjectBody using Array', () => {
 
     const req = frame.request();
 
-    const excpetation = {
+    const expectation = {
       timeout: 120000,
       headers: { 'Content-Type': 'application/json' },
       method: 'POST',
@@ -229,7 +229,7 @@ describe('JinEitherFrame ObjectBody using Array', () => {
 
     // console.log(req.data);
 
-    expect(req).toEqual(excpetation);
+    expect(req).toEqual(expectation);
   });
 
   it('T003-primitive-array', async () => {
@@ -240,7 +240,7 @@ describe('JinEitherFrame ObjectBody using Array', () => {
 
     const req = frame.request();
 
-    const excpetation = {
+    const expectation = {
       timeout: 120000,
       headers: { 'Content-Type': 'application/json' },
       method: 'POST',
@@ -252,7 +252,7 @@ describe('JinEitherFrame ObjectBody using Array', () => {
 
     // console.log(req.data);
 
-    expect(req).toEqual(excpetation);
+    expect(req).toEqual(expectation);
   });
 
   it('T004-primitive-date-array', async () => {
@@ -263,7 +263,7 @@ describe('JinEitherFrame ObjectBody using Array', () => {
 
     const req = frame.request();
 
-    const excpetation = {
+    const expectation = {
       timeout: 120000,
       headers: { 'Content-Type': 'application/json' },
       method: 'POST',
@@ -275,7 +275,7 @@ describe('JinEitherFrame ObjectBody using Array', () => {
 
     // console.log(req.data);
 
-    expect(req).toEqual(excpetation);
+    expect(req).toEqual(expectation);
   });
 
   it('T005-primitive-date-array-ordered-merge', async () => {
@@ -287,7 +287,7 @@ describe('JinEitherFrame ObjectBody using Array', () => {
 
     const req = frame.request();
 
-    const excpetation = {
+    const expectation = {
       timeout: 120000,
       headers: { 'Content-Type': 'application/json' },
       method: 'POST',
@@ -299,7 +299,7 @@ describe('JinEitherFrame ObjectBody using Array', () => {
 
     // console.log(req.data);
 
-    expect(req).toEqual(excpetation);
+    expect(req).toEqual(expectation);
   });
 
   it('T006-primitive-date-complex-type-merge', async () => {
@@ -311,7 +311,7 @@ describe('JinEitherFrame ObjectBody using Array', () => {
 
     const req = frame.request();
 
-    const excpetation = {
+    const expectation = {
       timeout: 120000,
       headers: { 'Content-Type': 'application/json' },
       method: 'POST',
@@ -323,7 +323,7 @@ describe('JinEitherFrame ObjectBody using Array', () => {
 
     // console.log(req.data);
 
-    expect(req).toEqual(excpetation);
+    expect(req).toEqual(expectation);
   });
 
   it('T007-primitive-date-complex-type-merge', async () => {
@@ -348,7 +348,7 @@ describe('JinEitherFrame ObjectBody using Array', () => {
 
     const req = frame.request();
 
-    const excpetation = {
+    const expectation = {
       timeout: 120000,
       headers: { 'Content-Type': 'application/json' },
       method: 'POST',
@@ -375,6 +375,6 @@ describe('JinEitherFrame ObjectBody using Array', () => {
 
     // console.log(req.data);
 
-    expect(req).toEqual(excpetation);
+    expect(req).toEqual(expectation);
   });
 });

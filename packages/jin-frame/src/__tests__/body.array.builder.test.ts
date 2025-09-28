@@ -42,7 +42,7 @@ describe('JinEitherFrame - Body', () => {
 
     const req = frame.request();
 
-    const excpetation = {
+    const expectation = {
       timeout: 120000,
       headers: { 'Content-Type': 'application/json' },
       method: 'POST',
@@ -54,7 +54,7 @@ describe('JinEitherFrame - Body', () => {
 
     // console.log(req);
 
-    expect(req).toEqual(excpetation);
+    expect(req).toEqual(expectation);
   });
 
   it('should overrite body field when pass multiple body field', async () => {
@@ -66,7 +66,7 @@ describe('JinEitherFrame - Body', () => {
     });
     const req = frame.request();
 
-    const excpetation = {
+    const expectation = {
       timeout: 120000,
       headers: { 'Content-Type': 'application/json' },
       method: 'POST',
@@ -78,6 +78,6 @@ describe('JinEitherFrame - Body', () => {
 
     // console.log(req);
 
-    expect(req).toEqual(excpetation);
+    expect(req).toEqual(expectation);
   });
 });

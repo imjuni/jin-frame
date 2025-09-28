@@ -54,7 +54,7 @@ describe('JinEitherFrame ObjectBody using Primitive type', () => {
     });
     const req = frame.request();
 
-    const excpetation = {
+    const expectation = {
       timeout: 120000,
       headers: { 'Content-Type': 'application/json' },
       method: 'POST',
@@ -66,7 +66,7 @@ describe('JinEitherFrame ObjectBody using Primitive type', () => {
 
     // console.log(req.data);
 
-    expect(req).toEqual(excpetation);
+    expect(req).toEqual(expectation);
   });
 
   it('T002-primitive-string', async () => {
@@ -76,7 +76,7 @@ describe('JinEitherFrame ObjectBody using Primitive type', () => {
     });
     const req = frame.request();
 
-    const excpetation = {
+    const expectation = {
       timeout: 120000,
       headers: { 'Content-Type': 'application/json' },
       method: 'POST',
@@ -88,7 +88,7 @@ describe('JinEitherFrame ObjectBody using Primitive type', () => {
 
     // console.log(req.data);
 
-    expect(req).toEqual(excpetation);
+    expect(req).toEqual(expectation);
   });
 
   it('T003-primitive-date-with-format', async () => {
@@ -99,7 +99,7 @@ describe('JinEitherFrame ObjectBody using Primitive type', () => {
 
     const req = frame.request();
 
-    const excpetation = {
+    const expectation = {
       timeout: 120000,
       headers: { 'Content-Type': 'application/json' },
       method: 'POST',
@@ -111,7 +111,7 @@ describe('JinEitherFrame ObjectBody using Primitive type', () => {
 
     // console.log(req.data);
 
-    expect(req).toEqual(excpetation);
+    expect(req).toEqual(expectation);
   });
 
   it('T004-primitive-boolean', async () => {
@@ -122,7 +122,7 @@ describe('JinEitherFrame ObjectBody using Primitive type', () => {
 
     const req = frame.request();
 
-    const excpetation = {
+    const expectation = {
       timeout: 120000,
       headers: { 'Content-Type': 'application/json' },
       method: 'POST',
@@ -134,6 +134,6 @@ describe('JinEitherFrame ObjectBody using Primitive type', () => {
 
     // console.log(req.data);
 
-    expect(req).toEqual(excpetation);
+    expect(req).toEqual(expectation);
   });
 });

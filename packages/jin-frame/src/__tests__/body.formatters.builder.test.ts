@@ -58,7 +58,7 @@ describe('JinEitherFrame', () => {
     });
     const req = frame.request();
 
-    const excpetation = {
+    const expectation = {
       timeout: 120000,
       headers: { 'Content-Type': 'application/json' },
       method: 'POST',
@@ -70,7 +70,7 @@ describe('JinEitherFrame', () => {
 
     // console.log(req);
 
-    expect(req).toEqual(excpetation);
+    expect(req).toEqual(expectation);
   });
 
   it('T002-zero-depth-post-frame', async () => {
@@ -81,7 +81,7 @@ describe('JinEitherFrame', () => {
     });
     const req = frame.request();
 
-    const excpetation = {
+    const expectation = {
       timeout: 120000,
       headers: { 'Content-Type': 'application/json' },
       method: 'POST',
@@ -102,6 +102,6 @@ describe('JinEitherFrame', () => {
 
     // console.log(req);
 
-    expect(req).toEqual(excpetation);
+    expect(req).toEqual(expectation);
   });
 });

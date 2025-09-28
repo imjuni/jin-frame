@@ -62,7 +62,7 @@ describe('JinEitherFrame - primitive type', () => {
     const frame = Test001PostFrame.of({ passing: 'hello', username: 'ironman', password: 'advengers' });
     const req = frame.request();
 
-    const excpetation = {
+    const expectation = {
       timeout: 120000,
       headers: { 'Content-Type': 'application/json' },
       method: 'POST',
@@ -72,14 +72,14 @@ describe('JinEitherFrame - primitive type', () => {
       validateStatus: undefined,
     };
 
-    expect(req).toEqual(excpetation);
+    expect(req).toEqual(expectation);
   });
 
   it('should apply body key field to different key using replaceAt', async () => {
     const frame = Test002PostFrame.of({ passing: 'hello', username: 'ironman', password: 'advengers' });
     const req = frame.request();
 
-    const excpetation = {
+    const expectation = {
       timeout: 120000,
       headers: { 'Content-Type': 'application/json' },
       method: 'POST',
@@ -89,14 +89,14 @@ describe('JinEitherFrame - primitive type', () => {
       validateStatus: undefined,
     };
 
-    expect(req).toEqual(excpetation);
+    expect(req).toEqual(expectation);
   });
 
   it('should apply body key fields to nested objects when using dot notation in replaceAt', async () => {
     const frame = Test003PostFrame.of({ passing: 'hello', username: 'ironman', password: 'advengers' });
     const req = frame.request();
 
-    const excpetation = {
+    const expectation = {
       timeout: 120000,
       headers: { 'Content-Type': 'application/json' },
       method: 'POST',
@@ -108,7 +108,7 @@ describe('JinEitherFrame - primitive type', () => {
 
     // console.log(req.data);
 
-    expect(req).toEqual(excpetation);
+    expect(req).toEqual(expectation);
   });
 
   it('should apply object type to body field when body field is object', async () => {
@@ -120,7 +120,7 @@ describe('JinEitherFrame - primitive type', () => {
 
     const req = frame.request();
 
-    const excpetation = {
+    const expectation = {
       timeout: 120000,
       headers: { 'Content-Type': 'application/json' },
       method: 'POST',
@@ -132,6 +132,6 @@ describe('JinEitherFrame - primitive type', () => {
 
     // console.log(req);
 
-    expect(req).toEqual(excpetation);
+    expect(req).toEqual(expectation);
   });
 });
