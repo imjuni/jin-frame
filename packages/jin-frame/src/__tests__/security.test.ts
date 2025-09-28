@@ -11,12 +11,15 @@ import { OAuth2Provider } from '#providers/security/OAuth2Provider';
 import { http, HttpResponse } from 'msw';
 import { setupServer } from 'msw/node';
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
+import { Authorization } from '#decorators/methods/options/Authorization';
+import { Security } from '#decorators/methods/options/Security';
 
 // Bearer Token Authentication Frame
+
+@Authorization('user-token-12345')
 @Get({
   host: 'http://api.example.com/user/:id',
   security: new BearerTokenProvider(),
-  authorization: 'user-token-12345',
 })
 class UserProfileFrame extends JinFrame {
   @Param()
@@ -29,10 +32,10 @@ class UserProfileFrame extends JinFrame {
 }
 
 // API Key in Header Authentication Frame
+@Security(new ApiKeyProvider('api-key', 'X-API-Key', 'header'))
+@Authorization('secret-api-key-value')
 @Get({
   host: 'http://api.example.com/data',
-  security: new ApiKeyProvider('api-key', 'X-API-Key', 'header'),
-  authorization: 'secret-api-key-value',
 })
 class DataFrame extends JinFrame {
   @Query()
@@ -77,18 +80,18 @@ class AdminUserFrame extends JinFrame {
 }
 
 // OAuth2 Authentication Frame
+@Security(new OAuth2Provider('oauth2', 'Bearer'))
+@Authorization({ accessToken: 'oauth-access-token-xyz', tokenType: 'Bearer' })
 @Get({
   host: 'http://api.example.com/oauth/profile',
-  security: new OAuth2Provider('oauth2', 'Bearer'),
-  authorization: { accessToken: 'oauth-access-token-xyz', tokenType: 'Bearer' },
 })
 class OAuthProfileFrame extends JinFrame {}
 
 // Multiple Security Providers Frame
+@Security([new BearerTokenProvider(), new ApiKeyProvider('client-id', 'X-Client-ID', 'header')])
+@Authorization('multi-auth-token')
 @Get({
   host: 'http://api.example.com/secure',
-  security: [new BearerTokenProvider(), new ApiKeyProvider('client-id', 'X-Client-ID', 'header')],
-  authorization: 'multi-auth-token',
 })
 class MultiSecurityFrame extends JinFrame {}
 
