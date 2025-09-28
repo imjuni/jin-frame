@@ -12,6 +12,7 @@ describe('JinRequestError', () => {
           iso: '1674349200',
         },
         duration: getDuration(new Date(2023, 0, 1, 0, 0, 1), new Date(2023, 0, 1, 0, 0, 2)),
+        isDeduped: false,
         req: {} as any,
       },
       resp: {
