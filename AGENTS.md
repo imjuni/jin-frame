@@ -12,6 +12,4 @@ See: [CLAUDE_LOCAL.md](./CLAUDE_LOCAL.md)
 
 **Important Notes**:
 
-- Follow conversation language preferences specified in CLAUDE_LOCAL.md
-- Use English for code comments and test names
-- Write tests in BDD style as specified in AGENTS.md
+- CLAUDE_LOCAL.md contains developer custom rules and should be read for initialization even if it's included in .gitignore
