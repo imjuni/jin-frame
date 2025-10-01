@@ -38,11 +38,12 @@ import { RequestDedupeManager } from '#frames/RequestDedupeManager';
 import { sleep } from '#tools/sleep';
 import type { DedupeResult } from '#interfaces/DedupeResult';
 import 'reflect-metadata';
+import { getUrlValue } from '#tools/getUrlValue';
 
 export abstract class AbstractJinFrame<TPASS> {
   static getEndpoint(): URL {
     const meta = getRequestMeta(this);
-    const urlMeta = getUrl(meta.option.host, meta.option.path);
+    const urlMeta = getUrl(getUrlValue(meta.option.host), getUrlValue(meta.option.path));
     return urlMeta.url;
   }
 
@@ -260,7 +261,11 @@ export abstract class AbstractJinFrame<TPASS> {
     const { url, isOnlyPath } =
       option?.url != null
         ? getUrl(option.url)
-        : getUrl(this.$_option.host, this.$_option.pathPrefix, this.$_option.path);
+        : getUrl(
+            getUrlValue(this.$_option.host),
+            getUrlValue(this.$_option.pathPrefix),
+            getUrlValue(this.$_option.path),
+          );
 
     // stage 06. path parameter evaluation
     const pathfunc = compile(url.pathname);
