@@ -18,7 +18,7 @@
 - [x] Retry-After header processing
 - [x] Response validation processing - automatically validate responses when validators are added to methods during class declaration
   - Support for zod, json-schema (ajv), etc.
-- [ ] Request deduplication/burst prevention
+- [x] Request deduplication/burst prevention
   - Single response for multiple rapid requests to the same address with identical conditions
 - [ ] Powerful cache layer (memory/LRU)
 - [ ] Upload/download progress events
