@@ -14,7 +14,7 @@ export interface IFrameOption {
    * 사용하는 방식으로 확장하는 경우, Child Class에서는 path만 설정할 수 있어야 하기 때문에
    * 둘을 분리해서 처리할 수도 있어야 한다.
    * */
-  host?: string;
+  host?: string | (() => string);
 
   /**
    * Path prefix of API Request endpoint
@@ -35,10 +35,10 @@ export interface IFrameOption {
    * pathPrefix: '/order-service/v2' // Order API
    * ```
    */
-  pathPrefix?: string;
+  pathPrefix?: string | (() => string);
 
   /** path of API Request endpoint */
-  path?: string;
+  path?: string | (() => string);
 
   /** method of API Request endpoint */
   method: TMethod;
