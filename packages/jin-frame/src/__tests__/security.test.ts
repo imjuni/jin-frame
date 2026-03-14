@@ -18,7 +18,7 @@ import { Security } from '#decorators/methods/options/Security';
 
 @Authorization('user-token-12345')
 @Get({
-  host: 'http://api.example.com/user/:id',
+  host: 'http://api.example.com/user/{id}',
   security: new BearerTokenProvider(),
 })
 class UserProfileFrame extends JinFrame {
@@ -104,7 +104,7 @@ class MultiSecurityFrame extends JinFrame {}
 class DynamicAuthFrame extends JinFrame {}
 
 const server = setupServer(
-  http.get('http://api.example.com/user/:id', ({ request }) => {
+  http.get('http://api.example.com/user/{id}', ({ request }) => {
     const authHeader = request.headers.get('Authorization');
     if (authHeader === 'Bearer user-token-12345') {
       return HttpResponse.json({ id: 'user123', name: 'Test User' });
@@ -180,6 +180,7 @@ describe('Security Integration Tests', () => {
 
   it('should authenticate with Bearer token provider successfully', async () => {
     const frame = new UserProfileFrame();
+    frame.id = 'user123';
     const result = await frame.execute();
 
     expect(result.status).toBe(200);

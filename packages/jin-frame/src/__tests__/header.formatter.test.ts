@@ -1,4 +1,4 @@
-import { JinEitherFrame } from '#frames/JinEitherFrame';
+import { JinFrame } from '#frames/JinFrame';
 import { Post } from '#decorators/methods/Post';
 import { lightFormat, parse } from 'date-fns';
 import { format } from 'date-fns-tz';
@@ -6,8 +6,8 @@ import { describe, expect, it } from 'vitest';
 import { Param } from '#decorators/fields/Param';
 import { Header } from '#decorators/fields/Header';
 
-@Post({ host: 'http://some.api.google.com/jinframe/:passing' })
-class Test001PostFrame extends JinEitherFrame {
+@Post({ host: 'http://some.api.google.com/jinframe/{passing}' })
+class Test001PostFrame extends JinFrame {
   @Param()
   declare public readonly passing: string;
 
@@ -23,8 +23,8 @@ class Test001PostFrame extends JinEitherFrame {
   declare public readonly sendAt: Date;
 }
 
-@Post({ host: 'http://some.api.google.com/jinframe/:passing' })
-class Test002PostFrame extends JinEitherFrame {
+@Post({ host: 'http://some.api.google.com/jinframe/{passing}' })
+class Test002PostFrame extends JinFrame {
   @Param()
   declare public readonly passing: string;
 
@@ -42,8 +42,8 @@ class Test002PostFrame extends JinEitherFrame {
   declare public readonly sendAt: Date[];
 }
 
-@Post({ host: 'http://some.api.google.com/jinframe/:passing' })
-class Test003PostFrame extends JinEitherFrame {
+@Post({ host: 'http://some.api.google.com/jinframe/{passing}' })
+class Test003PostFrame extends JinFrame {
   @Param()
   declare public readonly passing: string;
 
@@ -62,8 +62,8 @@ class Test003PostFrame extends JinEitherFrame {
   declare public readonly sendAt: string[];
 }
 
-@Post({ host: 'http://some.api.google.com/jinframe/:passing' })
-class Test004PostFrame extends JinEitherFrame {
+@Post({ host: 'http://some.api.google.com/jinframe/{passing}' })
+class Test004PostFrame extends JinFrame {
   @Param()
   declare public readonly passing: string;
 
@@ -85,7 +85,7 @@ class Test004PostFrame extends JinEitherFrame {
   declare public readonly sendAt: number[];
 }
 
-describe('JinEitherFrame - Header with formatters', () => {
+describe('JinFrame - Header with formatters', () => {
   it('T001-datetime-formatter', async () => {
     const frame = Test001PostFrame.of({
       passing: 'hello',

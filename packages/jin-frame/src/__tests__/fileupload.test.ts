@@ -1,4 +1,4 @@
-import { JinEitherFrame } from '#frames/JinEitherFrame';
+import { JinFrame } from '#frames/JinFrame';
 import { JinFile } from '#frames/JinFile';
 import fs from 'node:fs';
 import { http, HttpResponse } from 'msw';
@@ -10,7 +10,7 @@ import { Body } from '#decorators/fields/Body';
 import { beforeEach } from 'node:test';
 
 @Post({ host: 'http://some.api.google.com/fileupload-case04', contentType: 'multipart/form-data' })
-class TestGetFrame extends JinEitherFrame {
+class TestGetFrame extends JinFrame {
   @Body()
   declare public readonly description: string;
 

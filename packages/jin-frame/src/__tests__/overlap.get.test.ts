@@ -1,4 +1,4 @@
-import { JinEitherFrame } from '#frames/JinEitherFrame';
+import { JinFrame } from '#frames/JinFrame';
 import { Post } from '#decorators/methods/Post';
 import { http, HttpResponse, PathParams } from 'msw';
 import { setupServer } from 'msw/node';
@@ -10,9 +10,9 @@ import { Header } from '#decorators/fields/Header';
 
 @Post({
   host: 'http://some.api.google.com',
-  path: '/jinframe/:passing/:id',
+  path: '/jinframe/{passing}/{id}',
 })
-class TestGetFrame extends JinEitherFrame {
+class TestGetFrame extends JinFrame {
   @Param()
   @Query()
   @Body()

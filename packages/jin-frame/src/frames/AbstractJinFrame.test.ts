@@ -11,7 +11,7 @@ import { Query } from '#decorators/fields/Query';
 @Post({
   host: 'http://some.api.google.com',
   pathPrefix: '/jinframe',
-  path: '/:passing',
+  path: '/{passing}',
   contentType: 'multipart/form-data',
 })
 class Test001PostFrame extends JinFrame<{ message: string }> {
@@ -27,7 +27,7 @@ class Test001PostFrame extends JinFrame<{ message: string }> {
 
 @Post({
   host: 'http://some.api.google.com',
-  path: '/jinframe/:passing',
+  path: '/jinframe/{passing}',
   customBody: { sample: 'my-custom-body' },
 })
 class Test002PostFrame extends JinFrame<{ message: string }> {
@@ -43,7 +43,7 @@ class Test002PostFrame extends JinFrame<{ message: string }> {
 
 @Post({
   host: 'http://some.api.google.com',
-  path: '/jinframe/:passing',
+  path: '/jinframe/{passing}',
   contentType: 'application/x-www-form-urlencoded',
   transformRequest: (v) => `tr:${v}`,
 })
@@ -58,7 +58,7 @@ class Test003PostFrame extends JinFrame<{ message: string }> {
   declare public readonly password: string;
 }
 
-@Post({ host: 'http://some.api.google.com/jinframe/:passing', useInstance: true })
+@Post({ host: 'http://some.api.google.com/jinframe/{passing}', useInstance: true })
 class Test004PostFrame extends JinFrame<{ message: string }> {
   @Param()
   declare public readonly passing: string[];
@@ -173,7 +173,7 @@ describe('AbstractJinFrame', () => {
     const r = frame.request();
 
     expect(frame.getOption('host')).toEqual('http://some.api.google.com');
-    expect(frame.getOption('path')).toEqual('/jinframe/:passing');
+    expect(frame.getOption('path')).toEqual('/jinframe/{passing}');
     expect(frame.getOption('method')).toEqual('POST');
     expect(frame.getOption('customBody')).toMatchObject({ sample: 'my-custom-body' });
     expect(frame.getOption('contentType')).toEqual('application/json');

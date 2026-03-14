@@ -1,4 +1,4 @@
-import { JinEitherFrame } from '#frames/JinEitherFrame';
+import { JinFrame } from '#frames/JinFrame';
 import { Post } from '#decorators/methods/Post';
 import { format, parse } from 'date-fns';
 import { expect, it } from 'vitest';
@@ -66,8 +66,8 @@ const share: { first: IFirstBody; second: ISecondBody; third: IThirdBody } = {
   },
 };
 
-@Post({ host: 'http://some.api.google.com/jinframe/:passing' })
-class Test001PostFrame extends JinEitherFrame {
+@Post({ host: 'http://some.api.google.com/jinframe/{passing}' })
+class Test001PostFrame extends JinFrame {
   @Param()
   declare public readonly passing: string;
 
@@ -128,8 +128,8 @@ it('T001-object-type-field-multiple-formatting', async () => {
   expect(req.data).toEqual(expectation);
 });
 
-@Post({ host: 'http://some.api.google.com/jinframe/:passing' })
-class Test002PostFrame extends JinEitherFrame {
+@Post({ host: 'http://some.api.google.com/jinframe/{passing}' })
+class Test002PostFrame extends JinFrame {
   @Param()
   declare public readonly passing: string;
 
