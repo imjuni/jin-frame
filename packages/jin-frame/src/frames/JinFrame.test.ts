@@ -36,7 +36,7 @@ class CustomError extends Error {
 }
 
 @Post({
-  host: 'http://some.api.google.com/jinframe/:passing',
+  host: 'http://some.api.google.com/jinframe/{passing}',
   authoriztion: 'Bearer i-am-bearer-authorization-key',
 })
 class Test001PostFrame extends JinFrame<{ message: string }> {
@@ -51,7 +51,7 @@ class Test001PostFrame extends JinFrame<{ message: string }> {
 }
 
 @Post({
-  host: 'http://some.api.google.com/jinframe/:passing/:raiseerr',
+  host: 'http://some.api.google.com/jinframe/{passing}/:raiseerr',
 })
 class Test002PostFrame extends JinFrame<{ message: string }> {
   @Param()
@@ -64,7 +64,7 @@ class Test002PostFrame extends JinFrame<{ message: string }> {
   declare public readonly password: string;
 }
 
-@Post({ host: 'http://some.api.google.com/jinframe/:passing' })
+@Post({ host: 'http://some.api.google.com/jinframe/{passing}' })
 class Test003PostFrame extends JinFrame<{ message: string }> {
   @Param()
   declare public readonly passing: string;
@@ -95,7 +95,7 @@ class Test003PostFrame extends JinFrame<{ message: string }> {
 }
 
 @Post({
-  host: 'http://some.api.google.com/jinframe/:passing',
+  host: 'http://some.api.google.com/jinframe/{passing}',
   retry: { max: 3, interval: 100 },
 })
 class Test004PostFrame extends JinFrame<{ message: string }> {
@@ -152,7 +152,7 @@ class Test005PostFrameValidator extends BaseValidator<
 }
 
 @Post({
-  host: 'http://some.api.google.com/jinframe/:passing',
+  host: 'http://some.api.google.com/jinframe/{passing}',
   validator: new Test005PostFrameValidator('exception'),
 })
 class Test005PostFrame extends JinFrame<{ message: string }> {
@@ -167,7 +167,7 @@ class Test005PostFrame extends JinFrame<{ message: string }> {
 }
 
 @Post({
-  host: 'http://some.api.google.com/jinframe/:passing',
+  host: 'http://some.api.google.com/jinframe/{passing}',
   validator: new Test005PostFrameValidator('value'),
 })
 class Test006PostFrame extends JinFrame<{ message: string }> {
@@ -183,7 +183,7 @@ class Test006PostFrame extends JinFrame<{ message: string }> {
 
 @Validator(new Test005PostFrameValidator('exception'))
 @Post({
-  host: 'http://some.api.google.com/jinframe/:passing',
+  host: 'http://some.api.google.com/jinframe/{passing}',
 })
 class Test007PostFrame extends JinFrame<{ message: string }> {
   @Param()
@@ -250,7 +250,7 @@ describe('JinFrame', () => {
   });
 
   it('should return frame URL when using signature', () => {
-    const url = new URL('http://some.api.google.com/jinframe/:passing');
+    const url = new URL('http://some.api.google.com/jinframe/{passing}');
     expect(Test001PostFrame.getEndpoint()).toEqual(url);
   });
 
@@ -780,7 +780,7 @@ describe('hook count either frame test', () => {
     let hookCallCount = 0;
     let hookExcpetionCount = 0;
 
-    @Post({ host: 'http://10.255.255.1/api/:passing', timeout: 1, retry: { max: 2, interval: 1 } }) // 라우팅되지 않는 IP로 timeout 에러 유발
+    @Post({ host: 'http://10.255.255.1/api/{passing}', timeout: 1, retry: { max: 2, interval: 1 } }) // 라우팅되지 않는 IP로 timeout 에러 유발
     class TimeoutRetryFrame extends JinFrame {
       @Param()
       declare public readonly passing: string;
@@ -828,7 +828,7 @@ describe('hook count either frame test', () => {
   it('should exhaust retry attempts and trigger error rejection (332 line test)', async () => {
     let hookExecutions = 0;
 
-    @Post({ host: 'http://10.255.255.2/test/:passing', timeout: 1, retry: { max: 0, interval: 1 } }) // max: 0으로 바로 332라인 테스트
+    @Post({ host: 'http://10.255.255.2/test/{passing}', timeout: 1, retry: { max: 0, interval: 1 } }) // max: 0으로 바로 332라인 테스트
     class ExhaustRetryFrame extends JinFrame {
       @Param()
       declare public readonly passing: string;

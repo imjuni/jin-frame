@@ -1,13 +1,13 @@
 import { describe, expect, it } from 'vitest';
 import { lightFormat, parse } from 'date-fns';
 
-import { JinEitherFrame } from '#frames/JinEitherFrame';
+import { JinFrame } from '#frames/JinFrame';
 import { Post } from '#decorators/methods/Post';
 import { Param } from '#decorators/fields/Param';
 import { Body } from '#decorators/fields/Body';
 
-@Post({ host: 'http://some.api.google.com/jinframe/:passing' })
-class Test001PostFrame extends JinEitherFrame {
+@Post({ host: 'http://some.api.google.com/jinframe/{passing}' })
+class Test001PostFrame extends JinFrame {
   @Param()
   declare public readonly passing: string;
 
@@ -22,8 +22,8 @@ class Test001PostFrame extends JinEitherFrame {
   declare public readonly password: string;
 }
 
-@Post({ host: 'http://some.api.google.com/jinframe/:passing' })
-class Test002PostFrame extends JinEitherFrame {
+@Post({ host: 'http://some.api.google.com/jinframe/{passing}' })
+class Test002PostFrame extends JinFrame {
   @Param()
   declare public readonly passing: string;
 
@@ -38,8 +38,8 @@ class Test002PostFrame extends JinEitherFrame {
   declare public readonly password: string;
 }
 
-@Post({ host: 'http://some.api.google.com/jinframe/:passing' })
-class Test003PostFrame extends JinEitherFrame {
+@Post({ host: 'http://some.api.google.com/jinframe/{passing}' })
+class Test003PostFrame extends JinFrame {
   @Param()
   declare public readonly passing: string;
 
@@ -61,8 +61,8 @@ class Test003PostFrame extends JinEitherFrame {
   declare public readonly today: Date;
 }
 
-@Post({ host: 'http://some.api.google.com/jinframe/:passing' })
-class Test004PostFrame extends JinEitherFrame {
+@Post({ host: 'http://some.api.google.com/jinframe/{passing}' })
+class Test004PostFrame extends JinFrame {
   @Param()
   declare public readonly passing: string;
 
@@ -88,8 +88,8 @@ class Test004PostFrame extends JinEitherFrame {
   declare public readonly today: Date;
 }
 
-@Post({ host: 'http://some.api.google.com/jinframe/:passing' })
-class Test005PostFrame extends JinEitherFrame {
+@Post({ host: 'http://some.api.google.com/jinframe/{passing}' })
+class Test005PostFrame extends JinFrame {
   @Param()
   declare public readonly passing: string;
 
@@ -116,8 +116,8 @@ class Test005PostFrame extends JinEitherFrame {
   declare public readonly today: string;
 }
 
-@Post({ host: 'http://some.api.google.com/jinframe/:passing' })
-class Test006PostFrame extends JinEitherFrame {
+@Post({ host: 'http://some.api.google.com/jinframe/{passing}' })
+class Test006PostFrame extends JinFrame {
   @Param()
   declare public readonly passing: string;
 
@@ -146,7 +146,7 @@ class Test006PostFrame extends JinEitherFrame {
   declare public readonly today: string;
 }
 
-describe('JinEitherFrame - Body with formatters', () => {
+describe('JinFrame - Body with formatters', () => {
   it('T001-array-type-formatter', async () => {
     const frame = Test001PostFrame.of({
       passing: 'hello',

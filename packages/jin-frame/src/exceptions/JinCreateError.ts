@@ -1,11 +1,10 @@
-import type { JinEitherFrame } from '#frames/JinEitherFrame';
 import type { JinFrame } from '#frames/JinFrame';
 import type { IDebugInfo } from '#interfaces/IDebugInfo';
 import type { AxiosError } from 'axios';
 import httpStatusCodes, { getReasonPhrase } from 'http-status-codes';
 
 export class JinCreateError<
-  T extends JinFrame<TPASS, TFAIL> | JinEitherFrame<TPASS, TFAIL>,
+  T extends JinFrame<TPASS, TFAIL>,
   TPASS,
   TFAIL = TPASS,
 > extends Error {

@@ -4,7 +4,6 @@ import type { IJinFrameCreateConfig } from '#interfaces/options/IJinFrameCreateC
 import type { IJinFrameRequestConfig } from '#interfaces/options/IJinFrameRequestConfig';
 import { getBodyMap } from '#processors/getBodyMap';
 import { getQuerystringMap } from '#processors/getQuerystringMap';
-import { removeEndSlash } from '#tools/slash-utils/removeEndSlash';
 import { startWithSlash } from '#tools/slash-utils/startWithSlash';
 import type { IFrameOption } from '#interfaces/options/IFrameOption';
 import type { IFrameInternal } from '#interfaces/options/IFrameInternal';
@@ -14,7 +13,7 @@ import { AxiosError } from 'axios';
 import fastSafeStringify from 'fast-safe-stringify';
 import FormData from 'form-data';
 import { first } from 'my-easy-fp';
-import { compile } from 'path-to-regexp';
+import { expandUriTemplate } from '#tools/uri-template/expandUriTemplate';
 import type { Constructor } from 'type-fest';
 import { flatStringMap } from '#processors/flatStringMap';
 import { getUrl } from '#tools/slash-utils/getUrl';
@@ -257,20 +256,26 @@ export abstract class AbstractJinFrame<TPASS> {
     this.$_data.header = headers;
     this.$_data.param = paths;
 
-    // stage 05. url endpoint build
-    const { url, isOnlyPath } =
-      option?.url != null
-        ? getUrl(option.url)
-        : getUrl(
-            getUrlValue(this.$_option.host),
-            getUrlValue(this.$_option.pathPrefix),
-            getUrlValue(this.$_option.path),
-          );
+    // stage 05. url endpoint build and path parameter evaluation
+    const baseUrlString =
+      option?.url ??
+      (() => {
+        const host = getUrlValue(this.$_option.host);
+        const pathPrefix = getUrlValue(this.$_option.pathPrefix);
+        const path = getUrlValue(this.$_option.path);
 
-    // stage 06. path parameter evaluation
-    const pathfunc = compile(url.pathname);
-    const buildPath = pathfunc(paths);
-    url.pathname = removeEndSlash(buildPath);
+        // Expand URI templates before creating URL object to avoid encoding
+        const expandedHost = host ? expandUriTemplate(host, paths) : host;
+        const expandedPathPrefix = pathPrefix ? expandUriTemplate(pathPrefix, paths) : pathPrefix;
+        const expandedPath = path ? expandUriTemplate(path, paths) : path;
+
+        const urlMeta = getUrl(expandedHost, expandedPathPrefix, expandedPath);
+        return urlMeta.isOnlyPath ? urlMeta.str : urlMeta.url.href;
+      })();
+
+    // Expand URI template for option.url case
+    const expandedUrlString = option?.url != null ? expandUriTemplate(baseUrlString, paths) : baseUrlString;
+    const { url, isOnlyPath } = getUrl(expandedUrlString);
 
     // stage 07. querystring post processing
     Object.entries(queries).forEach(([key, value]) => {
