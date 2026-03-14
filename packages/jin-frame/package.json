@@ -1,6 +1,6 @@
 {
   "name": "jin-frame",
-  "version": "4.8.0",
+  "version": "5.0.0",
   "description": "Reusable HTTP API request definition library",
   "packageManager": "pnpm@10.16.0",
   "scripts": {
@@ -82,7 +82,6 @@
     "merge": "^2.1.1",
     "my-easy-fp": "^0.22.0",
     "my-only-either": "^1.3.0",
-    "path-to-regexp": "^8.2.0",
     "reflect-metadata": "^0.2.2",
     "type-fest": "^4.41.0"
   },

@@ -1,4 +1,4 @@
-import { JinEitherFrame } from '#frames/JinEitherFrame';
+import { JinFrame } from '#frames/JinFrame';
 import { Post } from '#decorators/methods/Post';
 import { lightFormat } from 'date-fns';
 import { describe, expect, it } from 'vitest';
@@ -6,8 +6,8 @@ import { Param } from '#decorators/fields/Param';
 import { Body } from '#decorators/fields/Body';
 import { ObjectBody } from '#decorators/fields/ObjectBody';
 
-@Post({ host: 'http://some.api.google.com/jinframe/:passing' })
-class Test001PostFrame extends JinEitherFrame {
+@Post({ host: 'http://some.api.google.com/jinframe/{passing}' })
+class Test001PostFrame extends JinFrame {
   @Param()
   declare public readonly passing: string;
 
@@ -21,8 +21,8 @@ class Test001PostFrame extends JinEitherFrame {
   declare public readonly hero: { name: string; age: number; bio: { birth: string } };
 }
 
-@Post({ host: 'http://some.api.google.com/jinframe/:passing' })
-class Test002PostFrame extends JinEitherFrame {
+@Post({ host: 'http://some.api.google.com/jinframe/{passing}' })
+class Test002PostFrame extends JinFrame {
   @Param()
   declare public readonly passing: string;
 
@@ -36,8 +36,8 @@ class Test002PostFrame extends JinEitherFrame {
   declare public readonly ability: { skill: string; count: number; category: { name: string } };
 }
 
-@Post({ host: 'http://some.api.google.com/jinframe/:passing' })
-class Test003PostFrame extends JinEitherFrame {
+@Post({ host: 'http://some.api.google.com/jinframe/{passing}' })
+class Test003PostFrame extends JinFrame {
   @Param()
   declare public readonly passing: string;
 
@@ -61,8 +61,8 @@ class Test003PostFrame extends JinEitherFrame {
   declare public readonly ability: { skill: string; count: number; category: { name: string; developAt: Date } };
 }
 
-@Post({ host: 'http://some.api.google.com/jinframe/:passing' })
-class Test004PostFrame extends JinEitherFrame {
+@Post({ host: 'http://some.api.google.com/jinframe/{passing}' })
+class Test004PostFrame extends JinFrame {
   @Param()
   declare public readonly passing: string;
 
@@ -93,7 +93,7 @@ class Test004PostFrame extends JinEitherFrame {
   };
 }
 
-describe('JinEitherFrame ObjectBody using Object', () => {
+describe('JinFrame ObjectBody using Object', () => {
   it('T001-plain-object-type', async () => {
     const frame = Test001PostFrame.of({
       passing: 'hello',

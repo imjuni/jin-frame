@@ -1,12 +1,12 @@
-import { JinEitherFrame } from '#frames/JinEitherFrame';
+import { JinFrame } from '#frames/JinFrame';
 import { Post } from '#decorators/methods/Post';
 import { lightFormat } from 'date-fns';
 import { expect, it } from 'vitest';
 import { ObjectBody } from '#decorators/fields/ObjectBody';
 import { Param } from '#decorators/fields/Param';
 
-@Post({ host: 'http://some.api.google.com/jinframe/:passing' })
-class Test001PostFrame extends JinEitherFrame {
+@Post({ host: 'http://some.api.google.com/jinframe/{passing}' })
+class Test001PostFrame extends JinFrame {
   @Param()
   declare public readonly passing: string;
 

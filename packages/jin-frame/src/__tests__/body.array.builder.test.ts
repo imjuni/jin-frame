@@ -1,11 +1,11 @@
 import { describe, expect, it } from 'vitest';
-import { JinEitherFrame } from '#frames/JinEitherFrame';
+import { JinFrame } from '#frames/JinFrame';
 import { Post } from '#decorators/methods/Post';
 import { Param } from '#decorators/fields/Param';
 import { Body } from '#decorators/fields/Body';
 
-@Post({ host: 'http://some.api.google.com/jinframe/:passing' })
-class Test001PostFrame extends JinEitherFrame {
+@Post({ host: 'http://some.api.google.com/jinframe/{passing}' })
+class Test001PostFrame extends JinFrame {
   @Param()
   declare public readonly passing: string;
 
@@ -16,8 +16,8 @@ class Test001PostFrame extends JinEitherFrame {
   declare public readonly password: string;
 }
 
-@Post({ host: 'http://some.api.google.com/jinframe/:passing' })
-class Test002PostFrame extends JinEitherFrame {
+@Post({ host: 'http://some.api.google.com/jinframe/{passing}' })
+class Test002PostFrame extends JinFrame {
   @Param()
   declare public readonly passing: string;
 
@@ -32,7 +32,7 @@ class Test002PostFrame extends JinEitherFrame {
   declare public readonly password: string;
 }
 
-describe('JinEitherFrame - Body', () => {
+describe('JinFrame - Body', () => {
   it('should process array when pass plain array body field', async () => {
     const frame = Test001PostFrame.of({
       passing: 'hello',

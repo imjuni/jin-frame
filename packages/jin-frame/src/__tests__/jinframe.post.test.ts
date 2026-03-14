@@ -1,6 +1,5 @@
-import { JinEitherFrame } from '#frames/JinEitherFrame';
+import { JinFrame } from '#frames/JinFrame';
 import { Post } from '#decorators/methods/Post';
-import { isPass } from 'my-only-either';
 import { http, HttpResponse, PathParams } from 'msw';
 import { setupServer } from 'msw/node';
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
@@ -8,8 +7,8 @@ import { Param } from '#decorators/fields/Param';
 import { Body } from '#decorators/fields/Body';
 import { Header } from '#decorators/fields/Header';
 
-@Post({ host: 'http://some.api.google.com/jinframe/:passing' })
-class TestPostFrame extends JinEitherFrame {
+@Post({ host: 'http://some.api.google.com/jinframe/{passing}' })
+class TestPostFrame extends JinFrame {
   @Param()
   declare public readonly passing: string;
 
@@ -33,10 +32,10 @@ class TestPostFrame extends JinEitherFrame {
 }
 
 @Post({
-  host: 'http://some.api.google.com/jinframe/:passing',
+  host: 'http://some.api.google.com/jinframe/{passing}',
   contentType: 'application/x-www-form-urlencoded',
 })
-class TestUrlencodedPostFrame extends JinEitherFrame {
+class TestUrlencodedPostFrame extends JinFrame {
   @Param()
   declare public readonly passing: string;
 
@@ -100,12 +99,16 @@ describe('jinframe.test', () => {
     );
 
     const frame = new TestPostFrame();
+    frame.passing = 'pass';
+    frame.name = 'ironman';
+    frame.gender = 'male';
+    frame.skill = 'beam';
     const resp = await frame.execute();
 
-    expect(isPass(resp)).toEqual(true);
+    expect(resp.status).toEqual(200);
   });
 
-  it('msw-post-without-eiter-jinframe', async () => {
+  it('msw-post-without-either-jinframe', async () => {
     server.use(
       http.post<PathParams<'passing'>, TestPostFrameBody>(
         'http://some.api.google.com/jinframe/pass',
@@ -124,9 +127,13 @@ describe('jinframe.test', () => {
     );
 
     const frame = new TestPostFrame();
+    frame.passing = 'pass';
+    frame.name = 'ironman';
+    frame.gender = 'male';
+    frame.skill = 'beam';
     const resp = await frame.execute();
 
-    expect(isPass(resp)).toEqual(true);
+    expect(resp.status).toEqual(200);
   });
 
   it('msw-post-urlencoded', async () => {
@@ -151,8 +158,11 @@ describe('jinframe.test', () => {
     );
 
     const frame = new TestUrlencodedPostFrame();
+    frame.passing = 'pass';
+    frame.username = 'ironman';
+    frame.password = 'marvel';
     const resp = await frame.execute();
 
-    expect(isPass(resp)).toEqual(true);
+    expect(resp.status).toEqual(200);
   });
 });

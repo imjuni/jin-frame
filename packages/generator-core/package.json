@@ -92,6 +92,7 @@
     "vitest": "^3.2.4"
   },
   "dependencies": {
+    "jin-frame": "workspace:*",
     "@apidevtools/json-schema-ref-parser": "^14.2.0",
     "axios": "^1.11.0",
     "change-case": "^5.4.4",

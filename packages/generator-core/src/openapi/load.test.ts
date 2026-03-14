@@ -1,7 +1,8 @@
 import { load } from '#/openapi/load';
 import { describe, it, expect, vi, afterEach } from 'vitest';
-import fs from 'fs';
-import { exists } from 'my-node-fp';
+import fs from 'node:fs';
+import path from 'node:path';
+import { exists, existsSync } from 'my-node-fp';
 import axios from 'axios';
 
 vi.mock('my-node-fp', () => ({
@@ -11,6 +12,13 @@ vi.mock('my-node-fp', () => ({
 describe('load', () => {
   afterEach(() => {
     vi.restoreAllMocks();
+  });
+
+  it('', async () => {
+    // const result = await load('./samples/v3.yml');
+    const p = path.join(process.cwd(), '..', '..', 'examples', 'openapi', 'v3.json');
+    const e = await load(p);
+    console.log(e);
   });
 
   it('', async () => {

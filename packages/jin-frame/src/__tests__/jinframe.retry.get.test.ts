@@ -8,7 +8,7 @@ import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 import { Param } from '#decorators/fields/Param';
 import { Query } from '#decorators/fields/Query';
 
-@Get({ host: 'http://some.api.google.com/jinframe/:passing', retry: { max: 3, interval: 20 } })
+@Get({ host: 'http://some.api.google.com/jinframe/{passing}', retry: { max: 3, interval: 20 } })
 class RetryTestGet01Frame extends JinFrame {
   @Param()
   declare public readonly passing: string;
@@ -36,7 +36,7 @@ class RetryTestGet01Frame extends JinFrame {
   }
 }
 
-@Get({ host: 'http://some.api.google.com/jinframe/:passing', retry: { max: 2 } })
+@Get({ host: 'http://some.api.google.com/jinframe/{passing}', retry: { max: 2 } })
 class RetryTestGet02Frame extends JinFrame {
   @Param()
   declare public readonly passing: string;
