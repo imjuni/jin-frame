@@ -1,7 +1,7 @@
 import type { IDebugInfo } from '#interfaces/IDebugInfo';
-import type { IFailReplyJinEitherFrame } from '#interfaces/IFailJinEitherFrame';
+import type { IFailReplyJinFrame } from '#interfaces/IFailJinEitherFrame';
 import type { TJinRequestConfig } from '#interfaces/TJinFrameResponse';
-import type { TPassJinEitherFrame } from '#interfaces/TPassJinEitherFrame';
+import type { TPassJinFrame } from '#interfaces/TPassJinEitherFrame';
 import type { AxiosResponse } from 'axios';
 
 /**
@@ -19,7 +19,7 @@ export type TPreEitherHook = (req: TJinRequestConfig) => void | Promise<void>;
  */
 export type TPostEitherHook<TPASS, TFAIL> = (
   req: TJinRequestConfig,
-  reply: IFailReplyJinEitherFrame<TFAIL> | TPassJinEitherFrame<TPASS>,
+  reply: IFailReplyJinFrame<TFAIL> | TPassJinFrame<TPASS>,
 ) => void | Promise<void>;
 
 /**
