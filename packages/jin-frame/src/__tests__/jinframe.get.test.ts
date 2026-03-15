@@ -6,7 +6,6 @@ import { setupServer } from 'msw/node';
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 import { Param } from '#decorators/fields/Param';
 import { Query } from '#decorators/fields/Query';
-import { Header } from '#decorators/fields/Header';
 
 @Get({ host: 'http://some.api.google.com/jinframe/{passing}' })
 class TestGet3Frame extends JinFrame {

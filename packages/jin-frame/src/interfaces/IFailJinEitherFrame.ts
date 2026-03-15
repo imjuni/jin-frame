@@ -1,10 +1,10 @@
-import type { JinEitherFrame } from '#frames/JinEitherFrame';
+import type { JinFrame } from '#frames/JinFrame';
 import type { IDebugInfo } from '#interfaces/IDebugInfo';
 import type { TValidationResult } from '#interfaces/TValidationResult';
 import type { AxiosResponse } from 'axios';
 import type { IFail } from 'my-only-either';
 
-export interface IFailJinEitherFrame<T = unknown> extends Pick<AxiosResponse, 'status' | 'statusText'> {
+export interface IFailJinFrame<T = unknown> extends Pick<AxiosResponse, 'status' | 'statusText'> {
   /** exception class, $err representative message, stacktrace */
   $err: Error;
 
@@ -12,15 +12,15 @@ export interface IFailJinEitherFrame<T = unknown> extends Pick<AxiosResponse, 's
   $debug: Omit<IDebugInfo, 'req'>;
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  $frame: JinEitherFrame<any, T>;
+  $frame: JinFrame<any, T>;
 }
 
-export interface IFailCreateJinEitherFrame<T = unknown> extends IFailJinEitherFrame<T> {
+export interface IFailCreateJinFrame<T = unknown> extends IFailJinFrame<T> {
   /** progress of jin-frame, error representative mostly raise exception from axios.request */
   $progress: 'error';
 }
 
-export interface IFailReplyJinEitherFrame<T = unknown> extends AxiosResponse<T>, IFailJinEitherFrame<T> {
+export interface IFailReplyJinFrame<T = unknown> extends AxiosResponse<T>, IFailJinFrame<T> {
   /** progress of jin-frame, fail representative success communication but result is fail */
   $progress: 'fail';
 
@@ -30,4 +30,4 @@ export interface IFailReplyJinEitherFrame<T = unknown> extends AxiosResponse<T>,
   $validated: TValidationResult;
 }
 
-export type TJinFail<T> = IFail<IFailCreateJinEitherFrame<T> | IFailReplyJinEitherFrame<T>>;
+export type TJinFail<T> = IFail<IFailCreateJinFrame<T> | IFailReplyJinFrame<T>>;
