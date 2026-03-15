@@ -3,11 +3,7 @@ import type { IDebugInfo } from '#interfaces/IDebugInfo';
 import type { AxiosError } from 'axios';
 import httpStatusCodes, { getReasonPhrase } from 'http-status-codes';
 
-export class JinCreateError<
-  T extends JinFrame<TPASS, TFAIL>,
-  TPASS,
-  TFAIL = TPASS,
-> extends Error {
+export class JinCreateError<T extends JinFrame<TPASS, TFAIL>, TPASS, TFAIL = TPASS> extends Error {
   __discriminator = 'JinCreateError';
 
   #debug: Omit<IDebugInfo, 'req'>;
