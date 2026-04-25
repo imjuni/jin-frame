@@ -980,9 +980,9 @@ describe('JinFrame fail validation test', () => {
 
   it('should set $validated on JinFailResp when validator is present and fail response received', async () => {
     failValidationServer.use(
-      http.post('http://some.api.google.com/jinframe/pass', async () => {
-        return HttpResponse.json({ code: 'NOT_FOUND' }, { status: 404 });
-      }),
+      http.post('http://some.api.google.com/jinframe/pass', () =>
+        HttpResponse.json({ code: 'NOT_FOUND' }, { status: 404 }),
+      ),
     );
 
     class FailValidator extends BaseValidator<unknown, unknown, string> {
@@ -1014,9 +1014,7 @@ describe('JinFrame fail validation test', () => {
 
   it('should set $validated to valid:true on JinFailResp when no validator is configured', async () => {
     failValidationServer.use(
-      http.post('http://some.api.google.com/jinframe/pass', async () => {
-        return new HttpResponse('Not Found', { status: 404 });
-      }),
+      http.post('http://some.api.google.com/jinframe/pass', () => new HttpResponse('Not Found', { status: 404 })),
     );
 
     @Post({ host: 'http://some.api.google.com/jinframe/{passing}' })
@@ -1034,9 +1032,9 @@ describe('JinFrame fail validation test', () => {
 
   it('should not throw JinValidationtError for fail response even when validator type is exception', async () => {
     failValidationServer.use(
-      http.post('http://some.api.google.com/jinframe/pass', async () => {
-        return HttpResponse.json({ error: 'Forbidden' }, { status: 403 });
-      }),
+      http.post('http://some.api.google.com/jinframe/pass', () =>
+        HttpResponse.json({ error: 'Forbidden' }, { status: 403 }),
+      ),
     );
 
     class StrictValidator extends BaseValidator<unknown, unknown, string> {
