@@ -36,15 +36,8 @@ describe('getRequestMeta', () => {
 
     expect(meta.option).toEqual({
       host: 'https://api.someapi.com',
-      path: undefined,
       method: 'POST',
-      customBody: undefined,
-      transformRequest: undefined,
-      useInstance: false,
       contentType: 'application/json',
-      userAgent: undefined,
-      retry: undefined,
-      timeout: undefined,
     });
   });
 
@@ -53,15 +46,9 @@ describe('getRequestMeta', () => {
 
     expect(meta.option).toEqual({
       host: 'https://api.someapi.com',
-      path: undefined,
       method: 'POST',
-      customBody: undefined,
-      transformRequest: undefined,
-      useInstance: false,
       contentType: 'application/json',
-      userAgent: undefined,
       retry: { max: 2, interval: 1000 },
-      timeout: undefined,
     });
   });
 
@@ -70,15 +57,9 @@ describe('getRequestMeta', () => {
 
     expect(meta.option).toEqual({
       host: 'https://api.someapi.com',
-      path: undefined,
       method: 'POST',
-      customBody: undefined,
-      transformRequest: undefined,
-      useInstance: false,
       contentType: 'application/json',
-      userAgent: undefined,
       retry: { max: 3, interval: 500 },
-      timeout: undefined,
     });
   });
 
@@ -87,13 +68,8 @@ describe('getRequestMeta', () => {
 
     expect(meta.option).toEqual({
       host: 'https://api.someapi.com',
-      path: undefined,
       method: 'POST',
-      customBody: undefined,
-      transformRequest: undefined,
-      useInstance: false,
       contentType: 'application/json',
-      userAgent: undefined,
       retry: { max: 3, interval: 500, getInterval },
       timeout: 1000,
     });
@@ -104,13 +80,8 @@ describe('getRequestMeta', () => {
 
     expect(meta.option).toEqual({
       host: 'https://api.someapi.com',
-      path: undefined,
       method: 'POST',
-      customBody: undefined,
-      transformRequest: undefined,
-      useInstance: false,
       contentType: 'application/json',
-      userAgent: undefined,
       retry: { max: 2, interval: 500, getInterval },
       timeout: 3000,
     });

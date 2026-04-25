@@ -57,23 +57,23 @@ it('overlap-param-query', async () => {
         const url = new URL(request.url);
         const body = await request.json();
 
-        // Check query parameters
-        const passing = url.searchParams.get('passing');
+        // Check query parameters (id is both @Param and @Query)
+        const idQuery = url.searchParams.get('id');
         const name = url.searchParams.get('name');
         const skills = url.searchParams.get('skills');
 
-        // Check body
+        // Check body (id is @Body)
         const bodyId = body.id;
 
-        // Check headers
+        // Check headers (id is @Header)
         const headerId = request.headers.get('id');
 
         if (
-          passing === 'pass' &&
+          idQuery === '3132' &&
           name === 'ironman' &&
           skills === 'beam,flying!' &&
-          bodyId === 'pass' &&
-          headerId === 'pass'
+          bodyId === '3132' &&
+          headerId === '3132'
         ) {
           return HttpResponse.json<TestOverlapResponse>({
             message: 'hello',

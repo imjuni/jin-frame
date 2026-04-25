@@ -23,6 +23,7 @@ import 'reflect-metadata';
 import type { JinPassResp } from '#interfaces/JinPassResp';
 import { getStatusFromError } from '#tools/responses/getStatusFromError';
 import { getHeaderObject } from '#tools/getHeaderObject';
+import { safeParse } from '#tools/json/safeParse';
 
 /**
  * Definition HTTP Request
@@ -121,8 +122,8 @@ export class JinFrame<Pass = unknown, Fail = Pass> extends AbstractJinFrame impl
         const raw = isCloneRaw ? resp.clone() : resp;
         const headers = getHeaderObject(resp.headers);
         const text = await resp.text();
-        const deserialize = option?.deserialize ?? this.$_option.deserialize ?? JSON.parse;
-        const data = text.length > 0 ? deserialize(text) : undefined;
+        const deserialize = option?.deserialize ?? this.$_option.deserialize;
+        const data = text.length > 0 ? (deserialize != null ? deserialize(text) : safeParse(text)) : undefined;
 
         if (!isValidateStatus(resp.status)) {
           const failResp: JinFailResp<Fail> = {

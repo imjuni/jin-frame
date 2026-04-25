@@ -10,6 +10,7 @@ import 'reflect-metadata';
 export function Param(_option?: Partial<Omit<IParamFieldOption, 'type'>>) {
   return function paramHandle(target: object, propertyKey: string | symbol): void {
     const option = getDefaultParamFieldOption(_option);
-    Reflect.defineMetadata(REQUEST_FIELD_DECORATOR, { key: propertyKey, option }, target, propertyKey);
+    const existing: unknown[] = Reflect.getOwnMetadata(REQUEST_FIELD_DECORATOR, target, propertyKey) ?? [];
+    Reflect.defineMetadata(REQUEST_FIELD_DECORATOR, [...existing, { key: propertyKey, option }], target, propertyKey);
   };
 }

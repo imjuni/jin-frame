@@ -151,9 +151,13 @@ export abstract class AbstractJinFrame {
 
       Object.entries(bodies).forEach(([key, value]) => {
         if (Array.isArray(value) && first(value) instanceof JinFile) {
-          value.forEach((jinFile: JinFile) => formData.append(key, jinFile.file, jinFile.name));
+          value.forEach((jinFile: JinFile) => {
+            const fileData = jinFile.file instanceof Buffer ? new Blob([jinFile.file]) : jinFile.file;
+            formData.append(key, fileData as Blob, jinFile.name);
+          });
         } else if (value instanceof JinFile) {
-          formData.append(key, value.file, value.name);
+          const fileData = value.file instanceof Buffer ? new Blob([value.file]) : value.file;
+          formData.append(key, fileData as Blob, value.name);
         } else if (typeof value === 'string') {
           formData.append(key, value);
         } else if (typeof value === 'number') {
@@ -301,7 +305,10 @@ export abstract class AbstractJinFrame {
       option?.dynamicAuth,
     );
 
-    headers['Content-Type'] = this.$_option.contentType;
+    // For multipart/form-data, omit Content-Type so fetch can auto-generate it with the boundary
+    if (this.$_option.contentType !== 'multipart/form-data') {
+      headers['Content-Type'] = this.$_option.contentType;
+    }
 
     if (authKey != null) {
       headers.Authorization = authKey;
@@ -309,7 +316,7 @@ export abstract class AbstractJinFrame {
 
     if (auth != null) {
       const encoded = btoa(`${auth.username}:${auth.password}`);
-      headers.Authorization = encoded;
+      headers.Authorization = `Basic ${encoded}`;
     }
 
     // Apply security provider query parameters
@@ -350,11 +357,15 @@ export abstract class AbstractJinFrame {
         try {
           retry.try += 1;
 
+          const timeoutSignal = req.timeout != null ? AbortSignal.timeout(req.timeout) : undefined;
+          const signal = req.signal != null && timeoutSignal != null
+            ? AbortSignal.any([req.signal, timeoutSignal])
+            : req.signal ?? timeoutSignal;
           const fetchReq = new Request(req.url, {
             method: req.method,
             headers: req.headers,
             body: req.body,
-            signal: req.signal,
+            signal,
           });
 
           const cacheKey = this.$_option.dedupe ? this.getCacheKey() : undefined;

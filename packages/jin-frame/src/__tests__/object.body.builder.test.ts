@@ -103,27 +103,27 @@ describe('JinFrame ObjectBody using Object', () => {
     });
     const req = frame.request();
 
+    const expectedBody = {
+      username: 'ironman',
+      password: 'advengers',
+      name: 'ironman',
+      age: 33,
+      bio: {
+        birth: '2022-11-22 11:22:33',
+      },
+    };
+
     const expectation = {
       timeout: 120000,
       headers: { 'Content-Type': 'application/json' },
       method: 'POST',
-      data: {
-        username: 'ironman',
-        password: 'advengers',
-        age: 33,
-        bio: {
-          birth: '2022-11-22 11:22:33',
-        },
-        name: 'ironman',
-      },
-      transformRequest: undefined,
+      body: expectedBody,
       url: 'http://some.api.google.com/jinframe/hello',
-      validateStatus: undefined,
     };
 
     // console.log(req.data);
 
-    expect(req).toEqual(expectation);
+    expect({ ...req, body: JSON.parse(req.body as string) }).toEqual(expectation);
   });
 
   it('T002-merge-two-object', async () => {
@@ -135,29 +135,29 @@ describe('JinFrame ObjectBody using Object', () => {
     });
     const req = frame.request();
 
+    const expectedBody = {
+      username: 'ironman',
+      name: 'ironman',
+      age: 33,
+      bio: {
+        birth: '2022-11-22 11:22:33',
+      },
+      skill: 'Energy repulsor',
+      count: 5,
+      category: { name: 'laser' },
+    };
+
     const expectation = {
       timeout: 120000,
       headers: { 'Content-Type': 'application/json' },
       method: 'POST',
-      data: {
-        username: 'ironman',
-        age: 33,
-        bio: {
-          birth: '2022-11-22 11:22:33',
-        },
-        name: 'ironman',
-        skill: 'Energy repulsor',
-        count: 5,
-        category: { name: 'laser' },
-      },
-      transformRequest: undefined,
+      body: expectedBody,
       url: 'http://some.api.google.com/jinframe/hello',
-      validateStatus: undefined,
     };
 
     // console.log(req.data);
 
-    expect(req).toEqual(expectation);
+    expect({ ...req, body: JSON.parse(req.body as string) }).toEqual(expectation);
   });
 
   it('T003-merge-and-formatting', async () => {
@@ -173,29 +173,29 @@ describe('JinFrame ObjectBody using Object', () => {
     });
     const req = frame.request();
 
+    const expectedBody = {
+      username: 'ironman',
+      name: 'ironman',
+      age: 33,
+      bio: {
+        birth: '1970-03-11 01:33:00',
+      },
+      skill: 'Energy repulsor',
+      count: 5,
+      category: { name: 'laser', developAt: '1980-03-11 01:33:00' },
+    };
+
     const expectation = {
       timeout: 120000,
       headers: { 'Content-Type': 'application/json' },
       method: 'POST',
-      data: {
-        username: 'ironman',
-        age: 33,
-        bio: {
-          birth: '1970-03-11 01:33:00',
-        },
-        name: 'ironman',
-        skill: 'Energy repulsor',
-        count: 5,
-        category: { name: 'laser', developAt: '1980-03-11 01:33:00' },
-      },
-      transformRequest: undefined,
+      body: expectedBody,
       url: 'http://some.api.google.com/jinframe/hello',
-      validateStatus: undefined,
     };
 
     // console.log(req.data);
 
-    expect(req).toEqual(expectation);
+    expect({ ...req, body: JSON.parse(req.body as string) }).toEqual(expectation);
   });
 
   it('T004-merge-and-formatting', async () => {
@@ -212,28 +212,28 @@ describe('JinFrame ObjectBody using Object', () => {
     });
     const req = frame.request();
 
+    const expectedBody = {
+      username: 'ironman',
+      name: 'ironman',
+      age: 33,
+      bio: {
+        birth: '1970-03-11 01:33:00',
+      },
+      skill: 'Energy repulsor',
+      count: 5,
+      category: { name: 'laser', developAt: '1980-03-11 01:33:00' },
+    };
+
     const expectation = {
       timeout: 120000,
       headers: { 'Content-Type': 'application/json' },
       method: 'POST',
-      data: {
-        username: 'ironman',
-        age: 33,
-        bio: {
-          birth: '1970-03-11 01:33:00',
-        },
-        name: 'ironman',
-        skill: 'Energy repulsor',
-        count: 5,
-        category: { name: 'laser', developAt: '1980-03-11 01:33:00' },
-      },
-      transformRequest: undefined,
+      body: expectedBody,
       url: 'http://some.api.google.com/jinframe/hello',
-      validateStatus: undefined,
     };
 
     // console.log(req.data);
 
-    expect(req).toEqual(expectation);
+    expect({ ...req, body: JSON.parse(req.body as string) }).toEqual(expectation);
   });
 });
