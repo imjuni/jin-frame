@@ -1,9 +1,10 @@
 import type { IFrameRetry } from '#interfaces/options/IFrameRetry';
 import type { TMethod } from '#interfaces/options/TMethod';
-import type { AxiosRequestConfig, Milliseconds } from 'axios';
 import type { BaseValidator } from '#validators/BaseValidator';
 import type { ISecurityProvider } from '#interfaces/security/ISecurityProvider';
 import type { AuthorizationData } from '#interfaces/security/AuthorizationData';
+import type { TMilliseconds } from '#interfaces/options/TMilliseconds';
+import type { JinBasicAtuh } from '#interfaces/JinBasicAuth';
 
 export interface IFrameOption {
   /**
@@ -52,17 +53,11 @@ export interface IFrameOption {
   /** custom object of POST Request body data */
   customBody?: unknown;
 
-  /** transformRequest function of POST Request */
-  transformRequest?: AxiosRequestConfig['transformRequest'];
-
   /** retry configuration */
   retry?: IFrameRetry;
 
-  /** if set true the field, create axios instance */
-  useInstance: boolean;
-
   /** timeout of the request */
-  timeout?: Milliseconds;
+  timeout?: TMilliseconds;
 
   /**
    * Security providers for authentication
@@ -81,7 +76,7 @@ export interface IFrameOption {
    * Legacy authorization field for backward compatibility
    * eg. Bearer i-am-authorization-key
    * */
-  authoriztion?: string | AxiosRequestConfig['auth'];
+  authoriztion?: string | JinBasicAtuh;
 
   /**
    * validation configuration

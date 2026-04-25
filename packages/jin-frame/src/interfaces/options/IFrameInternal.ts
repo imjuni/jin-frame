@@ -1,5 +1,5 @@
-import type { AxiosInstance } from 'axios';
 import type { IFrameRetry } from '#interfaces/options/IFrameRetry';
+import type { JinHttpClient } from '#interfaces/JinHttpClient';
 
 export interface IFrameInternal {
   query?: Record<string, string | string[]>;
@@ -12,7 +12,7 @@ export interface IFrameInternal {
 
   retry: IFrameRetry & { try: number };
 
-  instance: AxiosInstance;
+  instance: JinHttpClient;
 
   startAt: Date;
 

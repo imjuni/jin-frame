@@ -1,4 +1,4 @@
-import type { AxiosRequestConfig } from 'axios';
+import type { JinBasicAtuh } from '#interfaces/JinBasicAuth';
 
 /**
  * Security context that contains authentication information to be applied to HTTP requests
@@ -24,8 +24,8 @@ export interface ISecurityContext {
   /** HTTP headers to be added to the request */
   headers?: Record<string, string>;
 
-  /** Axios basic auth configuration */
-  auth?: AxiosRequestConfig['auth'];
+  /** Basic authentication credentials */
+  auth?: JinBasicAtuh;
 
   /** Query parameters to be added to the request */
   queries?: Record<string, string>;
