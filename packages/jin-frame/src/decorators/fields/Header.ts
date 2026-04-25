@@ -10,6 +10,7 @@ import 'reflect-metadata';
 export function Header(_option?: Partial<Omit<IHeaderFieldOption, 'type'>>) {
   return function headerHandle(target: object, propertyKey: string | symbol): void {
     const option = getDefaultHeaderFieldOption(_option);
-    Reflect.defineMetadata(REQUEST_FIELD_DECORATOR, { key: propertyKey, option }, target, propertyKey);
+    const existing: unknown[] = Reflect.getOwnMetadata(REQUEST_FIELD_DECORATOR, target, propertyKey) ?? [];
+    Reflect.defineMetadata(REQUEST_FIELD_DECORATOR, [...existing, { key: propertyKey, option }], target, propertyKey);
   };
 }

@@ -159,7 +159,7 @@ describe('JinFrame ObjectBody using Array', () => {
       timeout: 120000,
       headers: { 'Content-Type': 'application/json' },
       method: 'POST',
-      data: [
+      body: JSON.stringify([
         {
           name: 'ironman',
           skill: 'Energy repulsor',
@@ -172,10 +172,8 @@ describe('JinFrame ObjectBody using Array', () => {
           count: 5,
           category: { name: 'healthy' },
         },
-      ],
-      transformRequest: undefined,
+      ]),
       url: 'http://some.api.google.com/jinframe/hello',
-      validateStatus: undefined,
     };
 
     // console.log(req.data);
@@ -208,7 +206,7 @@ describe('JinFrame ObjectBody using Array', () => {
       timeout: 120000,
       headers: { 'Content-Type': 'application/json' },
       method: 'POST',
-      data: [
+      body: JSON.stringify([
         {
           name: 'ironman',
           skill: 'Energy repulsor',
@@ -221,10 +219,8 @@ describe('JinFrame ObjectBody using Array', () => {
           count: 5,
           category: { name: 'healthy', developAt: '2020-10-11 11:22:10' },
         },
-      ],
-      transformRequest: undefined,
+      ]),
       url: 'http://some.api.google.com/jinframe/hello',
-      validateStatus: undefined,
     };
 
     // console.log(req.data);
@@ -244,10 +240,8 @@ describe('JinFrame ObjectBody using Array', () => {
       timeout: 120000,
       headers: { 'Content-Type': 'application/json' },
       method: 'POST',
-      data: ['Energy repulsor', 'Regeneration'],
-      transformRequest: undefined,
+      body: JSON.stringify(['Energy repulsor', 'Regeneration']),
       url: 'http://some.api.google.com/jinframe/hello',
-      validateStatus: undefined,
     };
 
     // console.log(req.data);
@@ -267,10 +261,8 @@ describe('JinFrame ObjectBody using Array', () => {
       timeout: 120000,
       headers: { 'Content-Type': 'application/json' },
       method: 'POST',
-      data: ['1980-03-11 01:33:00', '2020-10-11 11:22:10'],
-      transformRequest: undefined,
+      body: JSON.stringify(['1980-03-11 01:33:00', '2020-10-11 11:22:10']),
       url: 'http://some.api.google.com/jinframe/hello',
-      validateStatus: undefined,
     };
 
     // console.log(req.data);
@@ -291,10 +283,8 @@ describe('JinFrame ObjectBody using Array', () => {
       timeout: 120000,
       headers: { 'Content-Type': 'application/json' },
       method: 'POST',
-      data: ['1990-04-06 01:33:00', '2020-06-08 11:32:10', '1980-03-11 01:33:00', '2010-10-11 11:22:10'],
-      transformRequest: undefined,
+      body: JSON.stringify(['1990-04-06 01:33:00', '2020-06-08 11:32:10', '1980-03-11 01:33:00', '2010-10-11 11:22:10']),
       url: 'http://some.api.google.com/jinframe/hello',
-      validateStatus: undefined,
     };
 
     // console.log(req.data);
@@ -315,10 +305,8 @@ describe('JinFrame ObjectBody using Array', () => {
       timeout: 120000,
       headers: { 'Content-Type': 'application/json' },
       method: 'POST',
-      data: ['Energy repulsor', 'Regeneration', '1990-04-06 01:33:00', '2020-06-08 11:32:10'],
-      transformRequest: undefined,
+      body: JSON.stringify(['Energy repulsor', 'Regeneration', '1990-04-06 01:33:00', '2020-06-08 11:32:10']),
       url: 'http://some.api.google.com/jinframe/hello',
-      validateStatus: undefined,
     };
 
     // console.log(req.data);
@@ -352,7 +340,7 @@ describe('JinFrame ObjectBody using Array', () => {
       timeout: 120000,
       headers: { 'Content-Type': 'application/json' },
       method: 'POST',
-      data: [
+      body: JSON.stringify([
         '1990-04-06 01:33:00',
         '2020-06-08 11:32:10',
         {
@@ -367,10 +355,8 @@ describe('JinFrame ObjectBody using Array', () => {
           count: 5,
           category: { name: 'healthy', developAt: '2020-10-11 11:22:10' },
         },
-      ],
-      transformRequest: undefined,
+      ]),
       url: 'http://some.api.google.com/jinframe/hello',
-      validateStatus: undefined,
     };
 
     // console.log(req.data);

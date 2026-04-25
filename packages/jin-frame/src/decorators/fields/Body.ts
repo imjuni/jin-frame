@@ -10,6 +10,7 @@ import 'reflect-metadata';
 export function Body(_option?: Partial<Omit<IBodyFieldOption, 'type'>>) {
   return function bodyHandle(target: object, propertyKey: string | symbol): void {
     const option = getDefaultBodyFieldOption(_option);
-    Reflect.defineMetadata(REQUEST_FIELD_DECORATOR, { key: propertyKey, option }, target, propertyKey);
+    const existing: unknown[] = Reflect.getOwnMetadata(REQUEST_FIELD_DECORATOR, target, propertyKey) ?? [];
+    Reflect.defineMetadata(REQUEST_FIELD_DECORATOR, [...existing, { key: propertyKey, option }], target, propertyKey);
   };
 }

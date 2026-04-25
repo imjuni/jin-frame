@@ -58,10 +58,8 @@ describe('JinFrame ObjectBody using Primitive type', () => {
       timeout: 120000,
       headers: { 'Content-Type': 'application/json' },
       method: 'POST',
-      data: 1,
-      transformRequest: undefined,
+      body: JSON.stringify(1),
       url: 'http://some.api.google.com/jinframe/hello',
-      validateStatus: undefined,
     };
 
     // console.log(req.data);
@@ -80,10 +78,8 @@ describe('JinFrame ObjectBody using Primitive type', () => {
       timeout: 120000,
       headers: { 'Content-Type': 'application/json' },
       method: 'POST',
-      data: 'Energy repulsor',
-      transformRequest: undefined,
+      body: JSON.stringify('Energy repulsor'),
       url: 'http://some.api.google.com/jinframe/hello',
-      validateStatus: undefined,
     };
 
     // console.log(req.data);
@@ -103,10 +99,8 @@ describe('JinFrame ObjectBody using Primitive type', () => {
       timeout: 120000,
       headers: { 'Content-Type': 'application/json' },
       method: 'POST',
-      data: '2022-10-19 11:22:33',
-      transformRequest: undefined,
+      body: JSON.stringify('2022-10-19 11:22:33'),
       url: 'http://some.api.google.com/jinframe/hello',
-      validateStatus: undefined,
     };
 
     // console.log(req.data);
@@ -126,10 +120,8 @@ describe('JinFrame ObjectBody using Primitive type', () => {
       timeout: 120000,
       headers: { 'Content-Type': 'application/json' },
       method: 'POST',
-      data: true,
-      transformRequest: undefined,
+      body: JSON.stringify(true),
       url: 'http://some.api.google.com/jinframe/hello',
-      validateStatus: undefined,
     };
 
     // console.log(req.data);

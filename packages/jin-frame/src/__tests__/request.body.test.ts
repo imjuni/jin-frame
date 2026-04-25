@@ -125,7 +125,7 @@ it('T001-object-type-field-multiple-formatting', async () => {
     },
   };
 
-  expect(req.data).toEqual(expectation);
+  expect(JSON.parse(req.body as string)).toEqual(expectation);
 });
 
 @Post({ host: 'http://some.api.google.com/jinframe/{passing}' })
@@ -218,5 +218,5 @@ it('T0002-many-object-field-multiple-formattin', async () => {
     },
   };
 
-  expect(req.data).toEqual(expectation);
+  expect(JSON.parse(req.body as string)).toEqual(expectation);
 });

@@ -50,14 +50,12 @@ it('object formatters array', async () => {
     timeout: 120000,
     headers: { 'Content-Type': 'application/json' },
     method: 'POST',
-    data: {
+    body: JSON.stringify({
       name: 'cannon::111',
       date: '2023-01-01',
       desc: 'fire cannon',
-    },
-    transformRequest: undefined,
+    }),
     url: 'http://some.api.google.com/jinframe/hello',
-    validateStatus: undefined,
   };
 
   // console.log(req.data);

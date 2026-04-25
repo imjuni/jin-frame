@@ -1,7 +1,6 @@
 import { JinFile } from '#frames/JinFile';
 import { JinFrame } from '#frames/JinFrame';
 import { Post } from '#decorators/methods/Post';
-import MockAdapter from 'axios-mock-adapter';
 import { setupServer } from 'msw/node';
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 import { Param } from '#decorators/fields/Param';
@@ -45,7 +44,6 @@ class Test002PostFrame extends JinFrame<{ message: string }> {
   host: 'http://some.api.google.com',
   path: '/jinframe/{passing}',
   contentType: 'application/x-www-form-urlencoded',
-  transformRequest: (v) => `tr:${v}`,
 })
 class Test003PostFrame extends JinFrame<{ message: string }> {
   @Param()
@@ -58,7 +56,7 @@ class Test003PostFrame extends JinFrame<{ message: string }> {
   declare public readonly password: string;
 }
 
-@Post({ host: 'http://some.api.google.com/jinframe/{passing}', useInstance: true })
+@Post({ host: 'http://some.api.google.com/jinframe/{passing}' })
 class Test004PostFrame extends JinFrame<{ message: string }> {
   @Param()
   declare public readonly passing: string[];
@@ -70,7 +68,7 @@ class Test004PostFrame extends JinFrame<{ message: string }> {
   declare public readonly nums: number[];
 }
 
-@Post({ host: 'http://some.api.google.com/jinframe', useInstance: true })
+@Post({ host: 'http://some.api.google.com/jinframe' })
 class Test005PostFrame extends JinFrame<{ message: string }> {
   @Query()
   declare public readonly name: string[];
@@ -92,10 +90,10 @@ describe('AbstractJinFrame', () => {
     server.close();
   });
 
-  it('show return form-data when using getFormData', async () => {
+  it('show return form-data when using getBodyInit with multipart/form-data', async () => {
     const frame = Test001PostFrame.of({ username: 'ironman', password: 'avengers', passing: 'pass' });
 
-    const fd = frame.getFormData({
+    const fd = frame.getBodyInit({
       first: 'one',
       second: 'two',
       third: 3,
@@ -105,11 +103,7 @@ describe('AbstractJinFrame', () => {
       seventh: [new JinFile('f3', Buffer.from('test')), new JinFile('f3', Buffer.from('test'))],
     });
 
-    expect(fd).toMatchObject({
-      dataSize: 0,
-      maxDataSize: 2097152,
-      pauseStreams: true,
-    });
+    expect(fd).toBeInstanceOf(FormData);
   });
 
   it('should return body, param field when using @Body, @Param decorator', async () => {
@@ -144,7 +138,7 @@ describe('AbstractJinFrame', () => {
 
       const sym = Symbol('ironman');
 
-      frame.getFormData({
+      frame.getBodyInit({
         first: 'one',
         second: 'two',
         third: sym,
@@ -177,20 +171,21 @@ describe('AbstractJinFrame', () => {
     expect(frame.getOption('method')).toEqual('POST');
     expect(frame.getOption('customBody')).toMatchObject({ sample: 'my-custom-body' });
     expect(frame.getOption('contentType')).toEqual('application/json');
-    expect(r.data).toMatchObject({
+    expect(JSON.parse(r.body as string)).toMatchObject({
       sample: 'my-custom-body',
     });
   });
 
-  it('should return transformRequest when auto generated transformRequest function', async () => {
+  it('should return urlencoded body when content-type is application/x-www-form-urlencoded', async () => {
     const frame = Test003PostFrame.of({ username: 'ironman', password: 'avengers', passing: 'pass' });
 
-    const t = frame.getTransformRequest();
-    expect(frame.getOption('transformRequest')).toBeTruthy();
-    expect(t).toBeTruthy();
+    const r = frame.request();
+    expect(typeof r.body).toBe('string');
+    expect(r.body).toContain('username=ironman');
+    expect(r.body).toContain('password=avengers');
   });
 
-  it('should create axios instance when useInstance set true', async () => {
+  it('should create instance and process query/param when instantiated', async () => {
     const frame = Test004PostFrame.of({
       name: ['ironman', 'captain'],
       passing: ['pass', 'fail'],
@@ -201,20 +196,5 @@ describe('AbstractJinFrame', () => {
 
     expect(frame.getData('query')).toMatchObject({ name: ['ironman', 'captain'], nums: ['1', '2', '3'] });
     expect(frame.getData('param')).toMatchObject({ passing: 'pass,fail' });
-  });
-
-  it('should mocking with instance when useInstance set true and MockAdapter', async () => {
-    const frame = Test005PostFrame.of({
-      name: ['ironman', 'captain'],
-      nums: [1, 2, 3],
-    });
-
-    const mock = new MockAdapter(frame.getData('instance'));
-    const reply = { mock: { name: 'i am mock' } };
-
-    mock.onPost().reply(200, reply);
-    const response = await frame.execute();
-
-    expect(response.data).toMatchObject(reply);
   });
 });

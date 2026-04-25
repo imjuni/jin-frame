@@ -159,10 +159,8 @@ describe('JinFrame - Body with formatters', () => {
       timeout: 120000,
       headers: { 'Content-Type': 'application/json' },
       method: 'POST',
-      data: { username: ['ironman+111', 'thor+111'], password: 'advengers' },
-      transformRequest: undefined,
+      body: JSON.stringify({ username: ['ironman+111', 'thor+111'], password: 'advengers' }),
       url: 'http://some.api.google.com/jinframe/hello',
-      validateStatus: undefined,
     };
 
     // console.log(req);
@@ -182,10 +180,8 @@ describe('JinFrame - Body with formatters', () => {
       timeout: 120000,
       headers: { 'Content-Type': 'application/json' },
       method: 'POST',
-      data: { username: ['ironman', 'thor'], password: 'advengers+111' },
-      transformRequest: undefined,
+      body: JSON.stringify({ username: ['ironman', 'thor'], password: 'advengers+111' }),
       url: 'http://some.api.google.com/jinframe/hello',
-      validateStatus: undefined,
     };
 
     // console.log(req);
@@ -194,26 +190,27 @@ describe('JinFrame - Body with formatters', () => {
   });
 
   it('T003-string-array-and-string-formatter', async () => {
+    const today = new Date(2022, 7, 9, 11, 22, 33);
     const frame = Test003PostFrame.of({
       passing: 'hello',
       username: ['ironman', 'thor'],
       password: 'advengers',
-      today: new Date(2022, 7, 9, 11, 22, 33),
+      today,
     });
     const req = frame.request();
+
+    const expectedData = {
+      username: ['000+ironman+222', '000+thor+222'],
+      password: 'advengers+111',
+      today,
+    };
 
     const expectation = {
       timeout: 120000,
       headers: { 'Content-Type': 'application/json' },
       method: 'POST',
-      data: {
-        username: ['000+ironman+222', '000+thor+222'],
-        password: 'advengers+111',
-        today: new Date(2022, 7, 9, 11, 22, 33),
-      },
-      transformRequest: undefined,
+      body: JSON.stringify(expectedData),
       url: 'http://some.api.google.com/jinframe/hello',
-      validateStatus: undefined,
     };
 
     // console.log(req);
@@ -234,14 +231,12 @@ describe('JinFrame - Body with formatters', () => {
       timeout: 120000,
       headers: { 'Content-Type': 'application/json' },
       method: 'POST',
-      data: {
+      body: JSON.stringify({
         username: ['000+ironman+222', '000+thor+222'],
         password: 'advengers+111',
         today: '2022-08-09 11:22:33',
-      },
-      transformRequest: undefined,
+      }),
       url: 'http://some.api.google.com/jinframe/hello',
-      validateStatus: undefined,
     };
 
     // console.log(req);
@@ -262,14 +257,12 @@ describe('JinFrame - Body with formatters', () => {
       timeout: 120000,
       headers: { 'Content-Type': 'application/json' },
       method: 'POST',
-      data: {
+      body: JSON.stringify({
         username: ['000+ironman+222', '000+thor+222'],
         password: 'advengers+111',
         today: '2022-08-09T11:22:33',
-      },
-      transformRequest: undefined,
+      }),
       url: 'http://some.api.google.com/jinframe/hello',
-      validateStatus: undefined,
     };
 
     // console.log(req);
@@ -290,14 +283,12 @@ describe('JinFrame - Body with formatters', () => {
       timeout: 120000,
       headers: { 'Content-Type': 'application/json' },
       method: 'POST',
-      data: {
+      body: JSON.stringify({
         username: ['000+ironman+222', '000+thor+222'],
         pw: 'advengers+111',
         'format-day': '2022-08-09T11:22:33',
-      },
-      transformRequest: undefined,
+      }),
       url: 'http://some.api.google.com/jinframe/hello',
-      validateStatus: undefined,
     };
 
     // console.log(req);

@@ -14,19 +14,24 @@ interface IRequestFieldRecord {
   header: IHeaderFieldOption[];
 }
 
+type FieldEntry =
+  | { key: string; option: IQueryFieldOption }
+  | { key: string; option: IParamFieldOption }
+  | { key: string; option: IBodyFieldOption }
+  | { key: string; option: IObjectBodyFieldOption }
+  | { key: string; option: IHeaderFieldOption };
+
 export function getFieldMetadata(type: object, keys: { key: string; value: unknown }[]): IRequestFieldRecord {
-  const fields = keys
-    .map((key) => {
-      const meta = Reflect.getOwnMetadata(REQUEST_FIELD_DECORATOR, type, key.key) as
-        | { key: string; option: IQueryFieldOption }
-        | { key: string; option: IParamFieldOption }
-        | { key: string; option: IBodyFieldOption }
-        | { key: string; option: IObjectBodyFieldOption }
-        | { key: string; option: IHeaderFieldOption };
-      return { key: key.key, meta };
-    })
-    .filter((field) => field.meta != null)
-    .map((field) => ({ key: field.key, meta: { ...field.meta, option: { ...field.meta.option, key: field.key } } }));
+  const fields: Array<{ key: string; meta: FieldEntry }> = [];
+
+  for (const key of keys) {
+    const raw = Reflect.getOwnMetadata(REQUEST_FIELD_DECORATOR, type, key.key) as FieldEntry | FieldEntry[] | undefined;
+    if (raw == null) continue;
+    const entries = Array.isArray(raw) ? raw : [raw];
+    for (const entry of entries) {
+      fields.push({ key: key.key, meta: { ...entry, option: { ...entry.option, key: key.key } } });
+    }
+  }
 
   const fieldMap = fields.reduce<IRequestFieldRecord>(
     (aggregate, field) => {
