@@ -10,7 +10,7 @@ describe('Host Strategy Integration Test', () => {
     servers: [
       { url: 'https://dev.api.example.com/v1', description: 'Development server' },
       { url: 'https://staging.api.example.com/v1', description: 'Staging server' },
-      { url: 'https://api.example.com/v1', description: 'Production server' }
+      { url: 'https://api.example.com/v1', description: 'Production server' },
     ],
     paths: {
       '/users': {
@@ -28,24 +28,24 @@ describe('Host Strategy Integration Test', () => {
                       type: 'object',
                       properties: {
                         id: { type: 'integer' },
-                        name: { type: 'string' }
-                      }
-                    }
-                  }
-                }
-              }
-            }
-          }
-        }
-      }
-    }
+                        name: { type: 'string' },
+                      },
+                    },
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
+    },
   };
 
   describe('generateHostValue', () => {
     it('should generate string host for string strategy', () => {
       const result = generateHostValue({
-        servers: mockOpenApiDoc.servers!,
-        options: { hostStrategy: 'string' }
+        servers: mockOpenApiDoc.servers ?? [],
+        options: { hostStrategy: 'string' },
       });
 
       expect(result).toBe("'https://dev.api.example.com/v1'");
@@ -53,11 +53,11 @@ describe('Host Strategy Integration Test', () => {
 
     it('should generate custom function name for function strategy', () => {
       const result = generateHostValue({
-        servers: mockOpenApiDoc.servers!,
+        servers: mockOpenApiDoc.servers ?? [],
         options: {
           hostStrategy: 'function',
-          hostFunctionName: 'getCustomApiHost'
-        }
+          hostFunctionName: 'getCustomApiHost',
+        },
       });
 
       expect(result).toBe('getCustomApiHost');
@@ -65,16 +65,16 @@ describe('Host Strategy Integration Test', () => {
 
     it('should generate environment-based function with custom mapping', () => {
       const result = generateHostValue({
-        servers: mockOpenApiDoc.servers!,
+        servers: mockOpenApiDoc.servers ?? [],
         options: {
           hostStrategy: 'env-function',
           hostEnvVar: 'API_ENV',
           serverMapping: {
             local: 'http://localhost:3000',
             dev: 'https://dev.api.example.com/v1',
-            prod: 'https://api.example.com/v1'
-          }
-        }
+            prod: 'https://api.example.com/v1',
+          },
+        },
       });
 
       expect(result).toContain('process.env.API_ENV');
@@ -85,11 +85,11 @@ describe('Host Strategy Integration Test', () => {
 
     it('should override with explicit host when provided', () => {
       const result = generateHostValue({
-        servers: mockOpenApiDoc.servers!,
+        servers: mockOpenApiDoc.servers ?? [],
         options: {
           hostStrategy: 'string',
-          host: 'https://custom.override.com'
-        }
+          host: 'https://custom.override.com',
+        },
       });
 
       expect(result).toBe("'https://custom.override.com'");
@@ -103,7 +103,7 @@ describe('Host Strategy Integration Test', () => {
         output: '/test/output',
         useCodeFence: false,
         document: mockOpenApiDoc,
-        hostStrategy: 'string'
+        hostStrategy: 'string',
       });
 
       expect(frames).toHaveLength(1);
@@ -117,7 +117,7 @@ describe('Host Strategy Integration Test', () => {
         useCodeFence: false,
         document: mockOpenApiDoc,
         hostStrategy: 'function',
-        hostFunctionName: 'getApiEndpoint'
+        hostFunctionName: 'getApiEndpoint',
       });
 
       expect(frames).toHaveLength(1);
@@ -131,7 +131,7 @@ describe('Host Strategy Integration Test', () => {
         useCodeFence: false,
         document: mockOpenApiDoc,
         hostStrategy: 'env-function',
-        hostEnvVar: 'NODE_ENV'
+        hostEnvVar: 'NODE_ENV',
       });
 
       expect(frames).toHaveLength(1);
