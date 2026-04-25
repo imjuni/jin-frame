@@ -18,9 +18,9 @@ export function renderHostFunc(hosts: string[]): string {
     writer
       .writeLine(`const hosts = ${util.inspect(hosts)};`)
       .writeLine('const host = hosts.at(0);')
-      .writeLine("if (host == null) {")
+      .writeLine('if (host == null) {')
       .writeLine("    throw new Error('Cannot found host: undefined');")
-      .writeLine("}")
+      .writeLine('}')
       .writeLine('return host;'),
   );
 
