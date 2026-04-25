@@ -13,7 +13,7 @@ import { getMethodDecorator } from '#/generators/content-type/getMethodDecorator
 import { dotRelative } from '#/tools/dotRelative';
 import { safePathJoin } from '#/tools/safePathJoin';
 import { removeExt } from '#/tools/removeExt';
-import { getResponeTypeMappedAccessPath } from '#/generators/content-type/getResponeTypeMappedAccessPath';
+import { getResponseTypeMappedAccessPath } from '#/generators/content-type/getResponseTypeMappedAccessPath';
 
 interface IProps {
   specTypeFilePath: string;
@@ -111,7 +111,7 @@ export function createFrame(project: Project, params: IProps): IResult {
 
   const parentFrame = params.baseFrame ?? 'JinFrame';
 
-  const responeTypeMappedAccessPath = getResponeTypeMappedAccessPath({
+  const responseTypeMappedAccessPath = getResponseTypeMappedAccessPath({
     method: originMethod,
     pathKey: params.pathKey,
     responseContentType,
@@ -123,7 +123,7 @@ export function createFrame(project: Project, params: IProps): IResult {
     decorators: [methodDecorator],
     properties,
     isExported: true,
-    extends: `${parentFrame}<paths${responeTypeMappedAccessPath}>`,
+    extends: `${parentFrame}<paths${responseTypeMappedAccessPath}>`,
   });
 
   return {

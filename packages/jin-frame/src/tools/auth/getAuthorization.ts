@@ -1,7 +1,7 @@
 import { applySecurityProviders } from '#tools/auth/applySecurityProviders';
 import type { AuthorizationData } from '#interfaces/security/AuthorizationData';
 import type { FrameOption } from '#interfaces/options/FrameOption';
-import type { JinBasicAtuh } from '#interfaces/JinBasicAuth';
+import type { JinBasicAuth } from '#interfaces/JinBasicAuth';
 
 /**
  * Extracts and processes authorization information from various sources in priority order.
@@ -53,11 +53,11 @@ import type { JinBasicAtuh } from '#interfaces/JinBasicAuth';
 export function getAuthorization(
   headers: Record<string, string>,
   frameOption: Pick<FrameOption, 'security' | 'authorization' | 'authoriztion'>,
-  auth?: JinBasicAtuh,
+  auth?: JinBasicAuth,
   dynamicAuth?: AuthorizationData,
 ): {
   authKey?: string;
-  auth?: JinBasicAtuh;
+  auth?: JinBasicAuth;
   securityHeaders?: Record<string, string>;
   securityQueries?: Record<string, string>;
 } {
