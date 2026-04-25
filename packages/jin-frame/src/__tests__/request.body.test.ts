@@ -109,7 +109,7 @@ class Test001PostFrame extends JinFrame {
 
 it('T001-object-type-field-multiple-formatting', async () => {
   const frame = new Test001PostFrame({ multipleFormatting: structuredClone(share.first) });
-  const req = frame.request();
+  const req = frame._request();
 
   const expectation = {
     multipleFormatting: {
@@ -185,7 +185,7 @@ it('T0002-many-object-field-multiple-formattin', async () => {
     heroBio: structuredClone(share.second),
     thirdField: structuredClone(share.third),
   });
-  const req = frame.request();
+  const req = frame._request();
 
   const expectation = {
     hero: {

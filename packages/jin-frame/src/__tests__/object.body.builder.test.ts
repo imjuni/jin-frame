@@ -101,7 +101,7 @@ describe('JinFrame ObjectBody using Object', () => {
       password: 'advengers',
       hero: { name: 'ironman', age: 33, bio: { birth: '2022-11-22 11:22:33' } },
     });
-    const req = frame.request();
+    const req = frame._request();
 
     const expectedBody = {
       username: 'ironman',
@@ -133,7 +133,7 @@ describe('JinFrame ObjectBody using Object', () => {
       ability: { skill: 'Energy repulsor', count: 5, category: { name: 'laser' } },
       hero: { name: 'ironman', age: 33, bio: { birth: '2022-11-22 11:22:33' } },
     });
-    const req = frame.request();
+    const req = frame._request();
 
     const expectedBody = {
       username: 'ironman',
@@ -171,7 +171,7 @@ describe('JinFrame ObjectBody using Object', () => {
       },
       hero: { name: 'ironman', age: 33, bio: { birth: new Date(1970, 2, 11, 1, 33, 0) } },
     });
-    const req = frame.request();
+    const req = frame._request();
 
     const expectedBody = {
       username: 'ironman',
@@ -210,7 +210,7 @@ describe('JinFrame ObjectBody using Object', () => {
       },
       hero: { name: 'ironman', age: 33, bio: { birth: new Date(1970, 2, 11, 1, 33, 0) } },
     });
-    const req = frame.request();
+    const req = frame._request();
 
     const expectedBody = {
       username: 'ironman',

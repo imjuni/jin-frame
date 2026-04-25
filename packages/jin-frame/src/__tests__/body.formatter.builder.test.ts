@@ -153,7 +153,7 @@ describe('JinFrame - Body with formatters', () => {
       username: ['ironman', 'thor'],
       password: 'advengers',
     });
-    const req = frame.request();
+    const req = frame._request();
 
     const expectation = {
       timeout: 120000,
@@ -174,7 +174,7 @@ describe('JinFrame - Body with formatters', () => {
       username: ['ironman', 'thor'],
       password: 'advengers',
     });
-    const req = frame.request();
+    const req = frame._request();
 
     const expectation = {
       timeout: 120000,
@@ -197,7 +197,7 @@ describe('JinFrame - Body with formatters', () => {
       password: 'advengers',
       today,
     });
-    const req = frame.request();
+    const req = frame._request();
 
     const expectedData = {
       username: ['000+ironman+222', '000+thor+222'],
@@ -225,7 +225,7 @@ describe('JinFrame - Body with formatters', () => {
       password: 'advengers',
       today: new Date(2022, 7, 9, 11, 22, 33),
     });
-    const req = frame.request();
+    const req = frame._request();
 
     const expectation = {
       timeout: 120000,
@@ -251,7 +251,7 @@ describe('JinFrame - Body with formatters', () => {
       password: 'advengers',
       today: '2022-08-09 11:22:33',
     });
-    const req = frame.request();
+    const req = frame._request();
 
     const expectation = {
       timeout: 120000,
@@ -277,7 +277,7 @@ describe('JinFrame - Body with formatters', () => {
       password: 'advengers',
       today: '2022-08-09 11:22:33',
     });
-    const req = frame.request();
+    const req = frame._request();
 
     const expectation = {
       timeout: 120000,

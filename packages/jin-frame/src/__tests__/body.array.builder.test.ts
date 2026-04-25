@@ -40,7 +40,7 @@ describe('JinFrame - Body', () => {
       password: 'advengers',
     });
 
-    const req = frame.request();
+    const req = frame._request();
 
     const expectation = {
       timeout: 120000,
@@ -62,7 +62,7 @@ describe('JinFrame - Body', () => {
       username2: ['hulk', 'black widow'],
       password: 'advengers',
     });
-    const req = frame.request();
+    const req = frame._request();
 
     const expectation = {
       timeout: 120000,

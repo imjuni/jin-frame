@@ -56,7 +56,7 @@ describe('JinFrame', () => {
       username: ['ironman', 'thor'],
       password: 'advengers',
     });
-    const req = frame.request();
+    const req = frame._request();
 
     const expectation = {
       timeout: 120000,
@@ -77,7 +77,7 @@ describe('JinFrame', () => {
       hero: { name: 'ironman', age: 33, bio: { birth: new Date(1978, 2, 3, 11, 22, 33) } },
       password: 'advengers',
     });
-    const req = frame.request();
+    const req = frame._request();
 
     const expectedBody = {
       hero: {

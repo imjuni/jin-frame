@@ -44,7 +44,7 @@ it('object formatters array', async () => {
     },
   });
 
-  const req = frame.request();
+  const req = frame._request();
 
   const expectation = {
     timeout: 120000,

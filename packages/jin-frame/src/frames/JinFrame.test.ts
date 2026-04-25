@@ -83,7 +83,7 @@ class Test003PostFrame extends JinFrame<{ message: string }> {
 
   accessor preHookCount = 0;
 
-  override async $_postHook(
+  override async _postHook(
     _req: JinRequestConfig,
     _result: JinResp<{ message: string }, { message: string }>,
     _debugInfo: DebugInfo,
@@ -92,7 +92,7 @@ class Test003PostFrame extends JinFrame<{ message: string }> {
     // console.log('post hook executed: ', this.postHookCount);
   }
 
-  override async $_preHook(_req: JinRequestConfig): Promise<void> {
+  override async _preHook(_req: JinRequestConfig): Promise<void> {
     this.preHookCount += 1;
     // console.log('pre hook executed: ', this.preHookCount);
   }
@@ -116,7 +116,7 @@ class Test004PostFrame extends JinFrame<{ message: string }> {
 
   accessor preHookCount = 0;
 
-  override async $_postHook(
+  override async _postHook(
     _req: JinRequestConfig,
     _reply: JinResp<{ message: string }, { message: string }>,
     _debugInfo: DebugInfo,
@@ -125,7 +125,7 @@ class Test004PostFrame extends JinFrame<{ message: string }> {
     console.log('post hook executed: ', this.postHookCount);
   }
 
-  override async $_preHook(_req: JinRequestConfig): Promise<void> {
+  override async _preHook(_req: JinRequestConfig): Promise<void> {
     this.preHookCount += 1;
     console.log('pre hook executed: ', this.preHookCount);
   }
@@ -301,7 +301,7 @@ describe('JinFrame', () => {
 
     await expect(async () => {
       const frame = Test001PostFrame.of({ username: 'ironman', password: 'marvel', passing: 'pass' });
-      await frame.execute({ validateStatus: (status) => status < 400 });
+      await frame._execute({ validateStatus: (status) => status < 400 });
     }).rejects.toThrowError();
   });
 
@@ -325,7 +325,7 @@ describe('JinFrame', () => {
       passing: 'pass',
     });
 
-    const reply = await frame.execute({ validateStatus: (status) => status < 400 });
+    const reply = await frame._execute({ validateStatus: (status) => status < 400 });
     expect(reply.status).toEqual(200);
   });
 
@@ -351,7 +351,7 @@ describe('JinFrame', () => {
       passing: 'pass',
     });
 
-    const reply = await frame.execute({
+    const reply = await frame._execute({
       validateStatus: (status) => status < 400,
       customBody,
     });
@@ -375,7 +375,7 @@ describe('JinFrame', () => {
 
     await expect(async () => {
       const frame = Test001PostFrame.of({ username: 'ironman', password: 'marvel', passing: 'pass' });
-      await frame.execute();
+      await frame._execute();
     }).rejects.toMatchObject({
       resp: { status: 404 },
     });
@@ -398,7 +398,7 @@ describe('JinFrame', () => {
     const frame = Test002PostFrame.of({ username: 'ironman', password: 'marvel', passing: 'fail' });
 
     try {
-      await frame.execute();
+      await frame._execute();
     } catch (catched) {
       expect(catched as JinCreateError<any, any>).toBeDefined();
     }
@@ -408,7 +408,7 @@ describe('JinFrame', () => {
     // 기본 핸들러가 모든 요청에 대해 404를 반환하므로 별도 설정 불필요
     await expect(async () => {
       const frame = Test001PostFrame.of({ username: 'ironman', password: 'marvel', passing: 'fail' });
-      await frame.execute();
+      await frame._execute();
     }).rejects.toMatchObject({ resp: { status: 404 } });
   });
 
@@ -428,7 +428,7 @@ describe('JinFrame', () => {
 
     await expect(async () => {
       const frame = Test001PostFrame.of({ username: 'ironman', password: 'marvel', passing: 'pass' });
-      await frame.execute({
+      await frame._execute({
         validateStatus: () => {
           // eslint-disable-next-line @typescript-eslint/only-throw-error
           throw 'invalid exception';
@@ -453,7 +453,7 @@ describe('JinFrame', () => {
 
     await expect(async () => {
       const frame = Test001PostFrame.of({ username: 'ironman', password: 'marvel', passing: 'pass' });
-      await frame.execute({
+      await frame._execute({
         getError: (err) => {
           if (err instanceof JinCreateError) {
             return new CustomError(err.message, { status: `${err.status ?? 500}` });
@@ -481,7 +481,7 @@ describe('JinFrame', () => {
 
     await expect(async () => {
       const frame = Test001PostFrame.of({ username: 'ironman', password: 'marvel', passing: 'fail' });
-      await frame.execute({
+      await frame._execute({
         getError: (err) => {
           if (err instanceof JinCreateError) {
             return new CustomError(err.message, { status: `${err.status ?? 500}` });
@@ -509,7 +509,7 @@ describe('JinFrame', () => {
 
     await expect(async () => {
       const frame = Test001PostFrame.of({ username: 'ironman', password: 'marvel', passing: 'pass' });
-      await frame.execute({
+      await frame._execute({
         getError: (err) => {
           if (err instanceof JinCreateError) {
             return new CustomError(err.message, { status: `${err.status ?? 500}` });
@@ -545,11 +545,12 @@ describe('JinFrame', () => {
         postHookCount: 0,
         preHookCount: 0,
       });
-      frame.$_postHook = () => {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      (frame as any)._postHook = () => {
         throw new Error('unknown error raised');
       };
 
-      await frame.execute({
+      await frame._execute({
         getError: (err) => {
           if (err instanceof JinCreateError) {
             return new CustomError(err.message, { status: `${err.status ?? 500}` });
@@ -599,7 +600,7 @@ describe('JinFrame pre, post Hook execution', () => {
         postHookCount: 0,
         preHookCount: 0,
       });
-      await frame.execute({ validateStatus: (status) => status < 400 });
+      await frame._execute({ validateStatus: (status) => status < 400 });
     }).rejects.toThrowError();
   });
 
@@ -625,7 +626,7 @@ describe('JinFrame pre, post Hook execution', () => {
       preHookCount: 0,
     });
 
-    const reply = await frame.execute({ validateStatus: (status) => status < 400 });
+    const reply = await frame._execute({ validateStatus: (status) => status < 400 });
     expect(frame.preHookCount).toEqual(1);
     expect(frame.postHookCount).toEqual(1);
     expect(reply.status).toEqual(200);
@@ -668,9 +669,9 @@ describe('hook count either frame test', () => {
     });
 
     try {
-      await frame.execute();
+      await frame._execute();
     } catch (catched) {
-      expect(frame.getData('retry')?.try).toEqual(3);
+      expect(frame._getData('retry')?.try).toEqual(3);
       expect(frame.preHookCount).toEqual(1);
       expect(frame.postHookCount).toEqual(1);
       expect(catched).toBeDefined();
@@ -709,9 +710,9 @@ describe('hook count either frame test', () => {
     });
 
     try {
-      await frame.execute({ validateStatus: (status) => status < 400 });
+      await frame._execute({ validateStatus: (status) => status < 400 });
     } catch (catched) {
-      expect(frame.getData('retry')?.try).toEqual(3);
+      expect(frame._getData('retry')?.try).toEqual(3);
       expect(frame.preHookCount).toEqual(1);
       expect(frame.postHookCount).toEqual(1);
       expect(catched).toBeDefined();
@@ -740,9 +741,9 @@ describe('hook count either frame test', () => {
       preHookCount: 0,
     });
 
-    const reply = await frame.execute();
+    const reply = await frame._execute();
 
-    expect(frame.getData('retry')?.try).toEqual(1);
+    expect(frame._getData('retry')?.try).toEqual(1);
     expect(frame.preHookCount).toEqual(1);
     expect(frame.postHookCount).toEqual(1);
     expect(reply.status).toEqual(200);
@@ -754,7 +755,7 @@ describe('hook count either frame test', () => {
 
     await expect(async () => {
       const frame = Test001PostFrame.of({ username: 'ironman', password: 'marvel', passing: 'pass' });
-      await frame.execute();
+      await frame._execute();
     }).rejects.toThrowError();
 
     // 서버 재시작
@@ -770,7 +771,7 @@ describe('hook count either frame test', () => {
 
     await expect(async () => {
       const frame = Test001PostFrame.of({ username: 'ironman', password: 'marvel', passing: 'pass' });
-      await frame.execute({
+      await frame._execute({
         getError: () => customError, // custom getError handler 제공
       });
     }).rejects.toThrow('Custom network error');
@@ -795,12 +796,12 @@ describe('hook count either frame test', () => {
       @Body()
       declare public readonly password: string;
 
-      override $_retryFail(_req: any, _prevResponse: any) {
+      override _retryFail(_req: any, _prevResponse: any) {
         hookCallCount += 1;
         console.log(`Network timeout retry hook executed: ${hookCallCount}`);
       }
 
-      override $_retryException(_req: any, _prevResponse: any) {
+      override _retryException(_req: any, _prevResponse: any) {
         hookExcpetionCount += 1;
         console.log(`Network timeout retry hook executed: ${hookExcpetionCount}`);
       }
@@ -816,7 +817,7 @@ describe('hook count either frame test', () => {
         passing: 'pass',
       });
 
-      await frame.execute();
+      await frame._execute();
     }).rejects.toThrowError();
 
     // AbstractJinFrame catch 블록의 334라인 테스트
@@ -860,7 +861,7 @@ describe('hook count either frame test', () => {
         passing: 'pass',
       });
 
-      await frame.execute();
+      await frame._execute();
     }).rejects.toThrowError();
 
     // 332라인 테스트: max가 0이므로 hook이 실행되지 않아야 함
@@ -902,7 +903,7 @@ describe('JinFrame validation test', () => {
 
     const frame = Test005PostFrame.of({ username: 'ironman', password: 'marvel', passing: 'pass' });
     await expect(async () => {
-      await frame.execute();
+      await frame._execute();
     }).rejects.toThrowError();
   });
 
@@ -922,7 +923,7 @@ describe('JinFrame validation test', () => {
 
     const frame = Test005PostFrame.of({ username: 'ironman', password: 'marvel', passing: 'pass' });
     await expect(async () => {
-      await frame.execute({ getError: (err) => new Error(err.message) });
+      await frame._execute({ getError: (err) => new Error(err.message) });
     }).rejects.toThrowError();
   });
 
@@ -941,7 +942,7 @@ describe('JinFrame validation test', () => {
     );
 
     const frame = Test006PostFrame.of({ username: 'ironman', password: 'marvel', passing: 'pass' });
-    const reply = await frame.execute();
+    const reply = await frame._execute();
 
     expect(reply.status).toEqual(200);
     expect(reply.data.message).toEqual(123);
@@ -964,7 +965,7 @@ describe('JinFrame validation test', () => {
     const frame = Test007PostFrame.of({ username: 'ironman', password: 'marvel', passing: 'pass' });
 
     await expect(async () => {
-      await frame.execute();
+      await frame._execute();
     }).rejects.toThrowError();
   });
 });
@@ -1006,7 +1007,7 @@ describe('JinFrame fail validation test', () => {
 
     const frame = FailValidationFrame.of({ passing: 'pass' });
 
-    await expect(frame.execute()).rejects.toMatchObject({
+    await expect(frame._execute()).rejects.toMatchObject({
       resp: {
         ok: false,
         status: 404,
@@ -1028,7 +1029,7 @@ describe('JinFrame fail validation test', () => {
 
     const frame = NoValidatorFrame.of({ passing: 'pass' });
 
-    await expect(frame.execute()).rejects.toMatchObject({
+    await expect(frame._execute()).rejects.toMatchObject({
       resp: { ok: false, status: 404, $validated: { valid: true } },
     });
   });
@@ -1061,7 +1062,7 @@ describe('JinFrame fail validation test', () => {
     // Should throw JinRespError (not JinValidationtError) with $validated populated
     let caught: unknown;
     try {
-      await frame.execute();
+      await frame._execute();
     } catch (e) {
       caught = e;
     }
@@ -1105,7 +1106,7 @@ describe('JinFrame Cookie decorator test', () => {
     }
 
     const frame = CookieFrame.of({ sessionId: 'abc123', token: 'xyz789' });
-    await frame.execute();
+    await frame._execute();
 
     expect(receivedCookieHeader).toContain('sessionId=abc123');
     expect(receivedCookieHeader).toContain('auth_token=xyz789');
@@ -1128,7 +1129,7 @@ describe('JinFrame Cookie decorator test', () => {
     }
 
     const frame = NoCookieFrame.of({ name: 'test' });
-    await frame.execute();
+    await frame._execute();
 
     expect(receivedCookieHeader).toBeNull();
   });
@@ -1153,7 +1154,7 @@ describe('JinFrame coverage branches', () => {
     class UrlencodedNoBodyFrame extends JinFrame<{ message: string }> {}
 
     const frame = new UrlencodedNoBodyFrame();
-    const result = await frame.execute();
+    const result = await frame._execute();
     expect(result.ok).toBe(true);
   });
 
@@ -1168,7 +1169,7 @@ describe('JinFrame coverage branches', () => {
 
     const controller = new AbortController();
     const frame = SignalFrame.of({ name: 'test' });
-    const result = await frame.execute({ signal: controller.signal });
+    const result = await frame._execute({ signal: controller.signal });
     expect(result.ok).toBe(true);
   });
 
@@ -1181,7 +1182,7 @@ describe('JinFrame coverage branches', () => {
 
     const frame = new InvalidMultipartFrame();
     // Pass unsupported Symbol value via customBody to trigger getBodyInit throw path
-    expect(() => frame.requestWrap({ customBody: { file: Symbol('invalid') } })).toThrow(JinCreateError);
+    expect(() => frame._requestWrap({ customBody: { file: Symbol('invalid') } })).toThrow(JinCreateError);
   });
 
   it('should clone raw response when cloneRaw option is true', async () => {
@@ -1194,7 +1195,7 @@ describe('JinFrame coverage branches', () => {
     }
 
     const frame = CloneRawFrame.of({ name: 'test' });
-    const result = await frame.execute({ cloneRaw: true });
+    const result = await frame._execute({ cloneRaw: true });
     expect(result.ok).toBe(true);
     expect(result.raw).toBeDefined();
   });
@@ -1211,7 +1212,7 @@ describe('JinFrame coverage branches', () => {
     }
 
     const frame = DeserializeFrame.of({ name: 'test' });
-    const result = await frame.execute({
+    const result = await frame._execute({
       deserialize: (text) => ({ value: parseInt(text.replace(/\D/g, ''), 10) }),
     });
     expect(result.ok).toBe(true);
@@ -1228,7 +1229,7 @@ describe('JinFrame coverage branches', () => {
     }
 
     const frame = EmptyBodyFrame.of({ name: 'test' });
-    const result = await frame.execute();
+    const result = await frame._execute();
     expect(result.ok).toBe(true);
     expect(result.data).toBeUndefined();
   });
@@ -1243,7 +1244,7 @@ describe('JinFrame coverage branches', () => {
     }
 
     const frame = OptionUrlFrame.of({ id: '99' });
-    const result = await frame.execute({ url: 'http://branch.api.example.com/items/{id}' });
+    const result = await frame._execute({ url: 'http://branch.api.example.com/items/{id}' });
     expect(result.ok).toBe(true);
   });
 
@@ -1257,7 +1258,7 @@ describe('JinFrame coverage branches', () => {
     }
 
     const frame = PathOnlyFrame.of({ name: 'test' });
-    const req = frame.requestWrap();
+    const req = frame._requestWrap();
     expect(req.url).toBe('/api/resource');
   });
 
@@ -1274,7 +1275,7 @@ describe('JinFrame coverage branches', () => {
       headers: {},
       timeout: undefined,
     };
-    const result = await frame.retry(req, (s) => s === 200);
+    const result = await frame._retry(req, (s) => s === 200);
     expect(result.resp.status).toBe(200);
   });
 });
@@ -1302,7 +1303,7 @@ describe('Dedupe Request', () => {
       body: { team: 'advengers', code: 1234 },
     });
 
-    const result = frame.getCacheKey();
+    const result = frame._getCacheKey();
     const expectation = `{"query":{},"param":{"pass_key":"pass"},"header":{"Authorization":"Bearer k"},"body":{"team":"advengers","username":"ironman","password":"marvel"},"cookie":{},"endpoint":{"host":"http://some.api.google.com","path":"/jinframe/{pass_key}"}}`;
     expect(result).toEqual(expectation);
   });
@@ -1347,7 +1348,7 @@ describe('Dedupe Request', () => {
       body: { team: 'advengers', code: 1234 },
     });
 
-    const [reply01, reply02, reply03] = await Promise.all([frame01.execute(), frame02.execute(), frame03.execute()]);
+    const [reply01, reply02, reply03] = await Promise.all([frame01._execute(), frame02._execute(), frame03._execute()]);
 
     console.log(reply01.data.message);
     console.log(reply02.data.message);

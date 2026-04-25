@@ -72,7 +72,7 @@ describe('Real Request and Response', () => {
       offset: 0,
     });
 
-    const reply = await frame.execute();
+    const reply = await frame._execute();
 
     // console.log(reply.pass.data);
     expect(reply).toBeDefined();
@@ -84,7 +84,7 @@ describe('Real Request and Response', () => {
       tid: crypto.randomUUID(),
     });
 
-    const reply = await frame.execute();
+    const reply = await frame._execute();
 
     // console.log(reply);
     expect(reply).toBeDefined();
