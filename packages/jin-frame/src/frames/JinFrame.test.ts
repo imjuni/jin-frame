@@ -199,7 +199,7 @@ class Test007PostFrame extends JinFrame<{ message: string }> {
 @Dedupe()
 @Post({
   host: 'http://some.api.google.com',
-  path: '/jinframe/:pass_key',
+  path: '/jinframe/{pass_key}',
 })
 class Test008PostFrame extends JinFrame<{ message: string }> {
   @Query({ cacheKeyExclude: true })
@@ -989,7 +989,7 @@ describe('Dedupe Request', () => {
     });
 
     const result = frame.getCacheKey();
-    const expectation = `{"query":{},"param":{"pass_key":"pass"},"header":{"Authorization":"Bearer k"},"body":{"team":"advengers","username":"ironman","password":"marvel"},"endpoint":{"host":"http://some.api.google.com","path":"/jinframe/:pass_key"}}`;
+    const expectation = `{"query":{},"param":{"pass_key":"pass"},"header":{"Authorization":"Bearer k"},"body":{"team":"advengers","username":"ironman","password":"marvel"},"endpoint":{"host":"http://some.api.google.com","path":"/jinframe/{pass_key}"}}`;
     expect(result).toEqual(expectation);
   });
 
