@@ -314,7 +314,7 @@ export abstract class AbstractJinFrame {
     // Serialize @Cookie fields as Cookie header (name=value; name2=value2)
     const cookieEntries = Object.entries(cookieMap);
     if (cookieEntries.length > 0) {
-      headers['Cookie'] = cookieEntries.map(([k, v]) => `${k}=${v}`).join('; ');
+      headers.Cookie = cookieEntries.map(([k, v]) => `${k}=${v}`).join('; ');
     }
 
     if (authKey != null) {
