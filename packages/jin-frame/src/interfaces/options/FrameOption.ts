@@ -4,7 +4,7 @@ import type { BaseValidator } from '#validators/BaseValidator';
 import type { ISecurityProvider } from '#interfaces/security/ISecurityProvider';
 import type { AuthorizationData } from '#interfaces/security/AuthorizationData';
 import type { TMilliseconds } from '#interfaces/options/TMilliseconds';
-import type { JinBasicAtuh } from '#interfaces/JinBasicAuth';
+import type { JinBasicAuth } from '#interfaces/JinBasicAuth';
 
 export interface FrameOption {
   /**
@@ -76,7 +76,7 @@ export interface FrameOption {
    * Legacy authorization field for backward compatibility
    * eg. Bearer i-am-authorization-key
    * */
-  authoriztion?: string | JinBasicAtuh;
+  authoriztion?: string | JinBasicAuth;
 
   /**
    * validation configuration

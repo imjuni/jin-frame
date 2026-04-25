@@ -1,4 +1,4 @@
-import type { JinBasicAtuh } from '#interfaces/JinBasicAuth';
+import type { JinBasicAuth } from '#interfaces/JinBasicAuth';
 
 /**
  * Security context that contains authentication information to be applied to HTTP requests
@@ -25,7 +25,7 @@ export interface ISecurityContext {
   headers?: Record<string, string>;
 
   /** Basic authentication credentials */
-  auth?: JinBasicAtuh;
+  auth?: JinBasicAuth;
 
   /** Query parameters to be added to the request */
   queries?: Record<string, string>;

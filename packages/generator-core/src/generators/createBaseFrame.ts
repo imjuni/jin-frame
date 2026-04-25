@@ -66,7 +66,7 @@ export function createBaseFrame(project: Project, params: IProps): IResult {
       timeout != null
         ? {
             name: 'Timeout',
-            arguments: ['60_000'],
+            arguments: [`${timeout}`],
           }
         : undefined,
     ].filter((decorator) => decorator != null),

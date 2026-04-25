@@ -36,7 +36,7 @@ export function getParameter(params: IProps): IResult | undefined {
     type: `NonNullable<paths['${params.pathKey}']['${params.method}']['parameters']['${decorator?.in}']>['${params.parameter.name}']`,
     hasDeclareKeyword: true,
     isReadonly: true,
-    hasQuestionToken: params.parameter.required ?? false,
+    hasQuestionToken: !(params.parameter.required ?? false),
     scope: Scope.Public,
     kind: StructureKind.Property,
   };
