@@ -27,11 +27,8 @@ import { getHeaderObject } from '#tools/getHeaderObject';
 /**
  * Definition HTTP Request
  *
- * @typeParam TPASS AxiosResponse type argument case of valid status.
- * eg. `AxiosResponse<TPASS>`
- *
- * @typeParam TFAIL AxiosResponse type argument case of invalid status.
- * eg. `AxiosResponse<TFAIL>`
+ * @typeParam Pass response data type for valid status — returned as JinPassResp<Pass>
+ * @typeParam Fail response data type for invalid status — returned as JinFailResp<Fail>
  */
 export class JinFrame<Pass = unknown, Fail = Pass> extends AbstractJinFrame implements JinFrameFunction<Pass, Fail> {
   /**
@@ -219,10 +216,10 @@ export class JinFrame<Pass = unknown, Fail = Pass> extends AbstractJinFrame impl
   }
 
   /**
-   * Generate an AxiosRequestConfig value and invoke HTTP APIs
+   * Generate a request config and invoke HTTP APIs
    *
-   * @param option same with AxiosRequestConfig, bug exclude some filed ignored
-   * @returns AxiosResponse With PassFailEither
+   * @param option request configuration options
+   * @returns JinResp with pass or fail discriminated union
    */
   public async execute<TSelf extends this = this>(
     this: TSelf,
