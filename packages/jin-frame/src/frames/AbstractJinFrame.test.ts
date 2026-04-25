@@ -68,7 +68,6 @@ class Test004PostFrame extends JinFrame<{ message: string }> {
   declare public readonly nums: number[];
 }
 
-
 describe('AbstractJinFrame', () => {
   // MSW server configuration
   const server = setupServer();
