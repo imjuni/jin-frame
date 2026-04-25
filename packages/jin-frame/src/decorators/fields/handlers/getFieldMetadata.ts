@@ -28,11 +28,11 @@ export function getFieldMetadata(type: object, keys: { key: string; value: unkno
   const fields: { key: string; meta: FieldEntry }[] = [];
 
   for (const key of keys) {
-    const raw = Reflect.getOwnMetadata(REQUEST_FIELD_DECORATOR, type, key.key) as FieldEntry | FieldEntry[] | undefined;
+    const raw = Reflect.getOwnMetadata(REQUEST_FIELD_DECORATOR, type, key.key) as FieldEntry[] | undefined;
 
     if (raw != null) {
-      const entries = Array.isArray(raw) ? raw : [raw];
-      for (const entry of entries) {
+      for (const entry of raw) {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         fields.push({ key: key.key, meta: { key: key.key, option: { ...(entry.option as any), key: key.key } } });
       }
