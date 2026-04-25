@@ -247,6 +247,7 @@ export abstract class AbstractJinFrame {
     const queries = getQuerystringMap(this as Record<string, unknown>, fields.query); // create querystring information
     const headers = flatStringMap(getQuerystringMap(this as Record<string, unknown>, fields.header)); // create header information
     const paths = flatStringMap(getQuerystringMap(this as Record<string, unknown>, fields.param)); // create param information
+    const cookieMap = flatStringMap(getQuerystringMap(this as Record<string, unknown>, fields.cookie)); // create cookie information
     const bodies: unknown = (() => {
       if (option?.customBody != null) {
         return option.customBody;
@@ -308,6 +309,12 @@ export abstract class AbstractJinFrame {
     // For multipart/form-data, omit Content-Type so fetch can auto-generate it with the boundary
     if (this.$_option.contentType !== 'multipart/form-data') {
       headers['Content-Type'] = this.$_option.contentType;
+    }
+
+    // Serialize @Cookie fields as Cookie header (name=value; name2=value2)
+    const cookieEntries = Object.entries(cookieMap);
+    if (cookieEntries.length > 0) {
+      headers['Cookie'] = cookieEntries.map(([k, v]) => `${k}=${v}`).join('; ');
     }
 
     if (authKey != null) {

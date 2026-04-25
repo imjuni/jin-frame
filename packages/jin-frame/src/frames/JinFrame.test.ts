@@ -8,17 +8,20 @@ import type { JinRequestConfig } from '#interfaces/JinRequestConfig';
 import type { JinResp } from '#interfaces/JinResp';
 import type { JinPassResp } from '#interfaces/JinPassResp';
 import { Post } from '#decorators/methods/Post';
+import { Get } from '#decorators/methods/Get';
 import { http, HttpResponse, PathParams } from 'msw';
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 import { Param } from '#decorators/fields/Param';
 import { Body } from '#decorators/fields/Body';
-import type { ValidationResult, ValidationResultType } from '#interfaces/ValidationResult';
+import type { ValidationResult } from '#interfaces/ValidationResult';
 import { BaseValidator } from '#validators/BaseValidator';
 import { Validator } from '#decorators/methods/options/Validator';
 import { ObjectBody } from '#decorators/fields/ObjectBody';
 import { Header } from '#decorators/fields/Header';
 import { Query } from '#decorators/fields/Query';
 import { Dedupe } from '#decorators/methods/options/Dedupe';
+import { ValidationResultType } from '#interfaces/ValidationResultType';
+import { Cookie } from '#decorators/fields/Cookie';
 
 const messageSchema = z.object({
   message: z.string(),
@@ -1067,6 +1070,67 @@ describe('JinFrame fail validation test', () => {
       valid: false,
       error: ['always invalid'],
     });
+  });
+});
+
+describe('JinFrame Cookie decorator test', () => {
+  const cookieServer = setupServer();
+
+  beforeEach(() => {
+    cookieServer.listen();
+  });
+
+  afterEach(() => {
+    cookieServer.resetHandlers();
+    cookieServer.close();
+  });
+
+  it('should send Cookie header when @Cookie fields are set', async () => {
+    let receivedCookieHeader: string | null = null;
+
+    cookieServer.use(
+      http.get('http://cookie.api.example.com/items', ({ request }) => {
+        receivedCookieHeader = request.headers.get('Cookie');
+        return HttpResponse.json({ message: 'ok' });
+      }),
+    );
+
+    @Get({ host: 'http://cookie.api.example.com', path: '/items' })
+    class CookieFrame extends JinFrame<{ message: string }> {
+      @Cookie()
+      declare public readonly sessionId: string;
+
+      @Cookie({ replaceAt: 'auth_token' })
+      declare public readonly token: string;
+    }
+
+    const frame = CookieFrame.of({ sessionId: 'abc123', token: 'xyz789' });
+    await frame.execute();
+
+    expect(receivedCookieHeader).toContain('sessionId=abc123');
+    expect(receivedCookieHeader).toContain('auth_token=xyz789');
+  });
+
+  it('should not set Cookie header when no @Cookie fields are present', async () => {
+    let receivedCookieHeader: string | null = null;
+
+    cookieServer.use(
+      http.post('http://cookie.api.example.com/items', ({ request }) => {
+        receivedCookieHeader = request.headers.get('Cookie');
+        return HttpResponse.json({ message: 'ok' });
+      }),
+    );
+
+    @Post({ host: 'http://cookie.api.example.com', path: '/items' })
+    class NoCookieFrame extends JinFrame<{ message: string }> {
+      @Body()
+      declare public readonly name: string;
+    }
+
+    const frame = NoCookieFrame.of({ name: 'test' });
+    await frame.execute();
+
+    expect(receivedCookieHeader).toBeNull();
   });
 });
 
