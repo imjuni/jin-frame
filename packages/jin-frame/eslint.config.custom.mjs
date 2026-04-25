@@ -17,7 +17,22 @@ export const customEslintRule = [
           code: 120,
         },
       ],
-      'no-underscore-dangle': ['error', { allowAfterThis: true }],
+      'no-underscore-dangle': [
+        'error',
+        {
+          allowAfterThis: true,
+          allowAfterSuper: true,
+          allow: [
+            '_request', '_requestWrap',
+            '_create', '_execute', '_retry',
+            '_getData', '_getOption', '_setFields', '_setData',
+            '_getBodyInit', '_getCacheKey', '_getBaseUrlString',
+            '_retryFail', '_retryException',
+            '_preHook', '_postHook',
+            '_startAt', '_option',
+          ],
+        },
+      ],
       'no-restricted-syntax': [
         'error',
         {

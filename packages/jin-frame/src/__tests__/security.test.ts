@@ -179,8 +179,7 @@ describe('Security Integration Tests', () => {
   });
 
   it('should authenticate with Bearer token provider successfully', async () => {
-    const frame = new UserProfileFrame();
-    frame.id = 'user123';
+    const frame = UserProfileFrame.of({ id: 'user123' });
     const result = await frame._execute();
 
     expect(result.status).toBe(200);

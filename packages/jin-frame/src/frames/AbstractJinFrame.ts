@@ -124,10 +124,7 @@ export abstract class AbstractJinFrame {
     return this.#data[kind];
   }
 
-  protected _setData<K extends keyof Pick<FrameInternal, 'retry'>>(
-    kind: K,
-    value: FrameInternal[K],
-  ): void {
+  protected _setData<K extends keyof Pick<FrameInternal, 'retry'>>(kind: K, value: FrameInternal[K]): void {
     this.#data[kind] = value;
   }
 
