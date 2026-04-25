@@ -1,5 +1,12 @@
 import type { DedupeResult } from '#interfaces/DedupeResult';
 
+interface BufferedResponse {
+  status: number;
+  statusText: string;
+  headers: Headers;
+  body: string;
+}
+
 /**
  * Manages request deduplication to prevent multiple identical HTTP requests
  * from being sent simultaneously. When multiple requests with the same cache key
@@ -10,8 +17,8 @@ import type { DedupeResult } from '#interfaces/DedupeResult';
  * which creates a unique identifier based on the request parameters and configuration.
  */
 export class RequestDedupeManager {
-  /** Store pending requests (key: cacheKey, value: Promise) */
-  private static pendingRequests = new Map<string, Promise<Response>>();
+  /** Store pending requests (key: cacheKey, value: Promise of buffered response) */
+  private static pendingRequests = new Map<string, Promise<BufferedResponse>>();
 
   /**
    * Deduplicates HTTP requests based on cache key. If a request with the same
@@ -39,19 +46,19 @@ export class RequestDedupeManager {
   static async dedupe(cacheKey: string, requesterFn: () => Promise<Response>): Promise<DedupeResult> {
     const existingPromise = this.pendingRequests.get(cacheKey);
     if (existingPromise) {
-      const resp = await existingPromise;
+      const buffered = await existingPromise;
+      const resp = new Response(buffered.body, { status: buffered.status, statusText: buffered.statusText, headers: buffered.headers });
       return { resp, isDeduped: true };
     }
 
-    // Create new request and register it in pendingRequests first
+    // Buffer the response so multiple callers can each read the body independently
     const promise = requesterFn()
-      .then((reply) => {
-        // Safely remove from pending on success
+      .then(async (reply) => {
+        const body = await reply.text();
         this.pendingRequests.delete(cacheKey);
-        return reply;
+        return { status: reply.status, statusText: reply.statusText, headers: reply.headers, body } satisfies BufferedResponse;
       })
-      .catch((error) => {
-        // Safely remove from pending on failure as well
+      .catch((error: unknown) => {
         this.pendingRequests.delete(cacheKey);
         throw error;
       });
@@ -59,8 +66,9 @@ export class RequestDedupeManager {
     // Prevent race condition: register promise immediately after creation
     this.pendingRequests.set(cacheKey, promise);
 
-    const reply = await promise;
-    return { resp: reply, isDeduped: false };
+    const buffered = await promise;
+    const resp = new Response(buffered.body, { status: buffered.status, statusText: buffered.statusText, headers: buffered.headers });
+    return { resp, isDeduped: false };
   }
 
   /**

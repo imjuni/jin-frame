@@ -46,10 +46,8 @@ describe('JinFrame - Body', () => {
       timeout: 120000,
       headers: { 'Content-Type': 'application/json' },
       method: 'POST',
-      data: { username: ['ironman', 'thor'], password: 'advengers' },
-      transformRequest: undefined,
+      body: JSON.stringify({ username: ['ironman', 'thor'], password: 'advengers' }),
       url: 'http://some.api.google.com/jinframe/hello',
-      validateStatus: undefined,
     };
 
     // console.log(req);
@@ -70,10 +68,8 @@ describe('JinFrame - Body', () => {
       timeout: 120000,
       headers: { 'Content-Type': 'application/json' },
       method: 'POST',
-      data: { username: ['hulk', 'black widow'], password: 'advengers' },
-      transformRequest: undefined,
+      body: JSON.stringify({ username: ['hulk', 'black widow'], password: 'advengers' }),
       url: 'http://some.api.google.com/jinframe/hello',
-      validateStatus: undefined,
     };
 
     // console.log(req);

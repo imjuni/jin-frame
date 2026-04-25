@@ -4,10 +4,9 @@ import fs from 'node:fs';
 import { http, HttpResponse } from 'msw';
 import { setupServer } from 'msw/node';
 import path from 'node:path';
-import { afterEach, describe, it } from 'vitest';
+import { afterEach, beforeEach, describe, it } from 'vitest';
 import { Post } from '#decorators/methods/Post';
 import { Body } from '#decorators/fields/Body';
-import { beforeEach } from 'node:test';
 
 @Post({ host: 'http://some.api.google.com/fileupload-case04', contentType: 'multipart/form-data' })
 class TestGetFrame extends JinFrame {
@@ -64,7 +63,7 @@ describe('fileupload.test', () => {
         const singleFileArrayBuffer = await singleFile.arrayBuffer();
         const singleFileBuffer = new Uint8Array(singleFileArrayBuffer);
 
-        if (originalFileContent.equals(singleFileBuffer)) {
+        if (!originalFileContent.equals(singleFileBuffer)) {
           return new HttpResponse('File content mismatch', { status: 400 });
         }
 
@@ -86,7 +85,7 @@ describe('fileupload.test', () => {
             const multipleFileArrayBuffer = await file.arrayBuffer();
             const multipleFileBuffer = new Uint8Array(multipleFileArrayBuffer);
 
-            if (originalFileContent.equals(multipleFileBuffer)) {
+            if (!originalFileContent.equals(multipleFileBuffer)) {
               return { valid: false, error: `File content mismatch: ${file.name}` };
             }
 

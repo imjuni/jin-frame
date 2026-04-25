@@ -62,10 +62,8 @@ describe('JinFrame', () => {
       timeout: 120000,
       headers: { 'Content-Type': 'application/json' },
       method: 'POST',
-      data: { username: ['ironman+111+222', 'thor+111+222'], password: 'advengers' },
-      transformRequest: undefined,
+      body: JSON.stringify({ username: ['ironman+111+222', 'thor+111+222'], password: 'advengers' }),
       url: 'http://some.api.google.com/jinframe/hello',
-      validateStatus: undefined,
     };
 
     // console.log(req);
@@ -81,27 +79,27 @@ describe('JinFrame', () => {
     });
     const req = frame.request();
 
+    const expectedBody = {
+      hero: {
+        name: 'ironman+111',
+        age: 33,
+        bio: {
+          birth: '1978-03-03T11:22:33',
+        },
+      },
+      password: 'advengers',
+    };
+
     const expectation = {
       timeout: 120000,
       headers: { 'Content-Type': 'application/json' },
       method: 'POST',
-      data: {
-        hero: {
-          age: 33,
-          bio: {
-            birth: '1978-03-03T11:22:33',
-          },
-          name: 'ironman+111',
-        },
-        password: 'advengers',
-      },
-      transformRequest: undefined,
+      body: expectedBody,
       url: 'http://some.api.google.com/jinframe/hello',
-      validateStatus: undefined,
     };
 
     // console.log(req);
 
-    expect(req).toEqual(expectation);
+    expect({ ...req, body: JSON.parse(req.body as string) }).toEqual(expectation);
   });
 });

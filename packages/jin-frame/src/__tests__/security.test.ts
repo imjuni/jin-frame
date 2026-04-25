@@ -104,7 +104,7 @@ class MultiSecurityFrame extends JinFrame {}
 class DynamicAuthFrame extends JinFrame {}
 
 const server = setupServer(
-  http.get('http://api.example.com/user/{id}', ({ request }) => {
+  http.get('http://api.example.com/user/:id', ({ request }) => {
     const authHeader = request.headers.get('Authorization');
     if (authHeader === 'Bearer user-token-12345') {
       return HttpResponse.json({ id: 'user123', name: 'Test User' });

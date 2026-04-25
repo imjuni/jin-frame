@@ -66,10 +66,8 @@ describe('JinFrame - primitive type', () => {
       timeout: 120000,
       headers: { 'Content-Type': 'application/json' },
       method: 'POST',
-      data: { username: 'ironman', password: 'advengers' },
-      transformRequest: undefined,
+      body: JSON.stringify({ username: 'ironman', password: 'advengers' }),
       url: 'http://some.api.google.com/jinframe/hello',
-      validateStatus: undefined,
     };
 
     expect(req).toEqual(expectation);
@@ -83,10 +81,8 @@ describe('JinFrame - primitive type', () => {
       timeout: 120000,
       headers: { 'Content-Type': 'application/json' },
       method: 'POST',
-      data: { uuu: 'ironman', ppp: 'advengers' },
-      transformRequest: undefined,
+      body: JSON.stringify({ uuu: 'ironman', ppp: 'advengers' }),
       url: 'http://some.api.google.com/jinframe/hello',
-      validateStatus: undefined,
     };
 
     expect(req).toEqual(expectation);
@@ -100,10 +96,8 @@ describe('JinFrame - primitive type', () => {
       timeout: 120000,
       headers: { 'Content-Type': 'application/json' },
       method: 'POST',
-      data: { uuu: { username: 'ironman' }, ppp: { password: 'advengers' } },
-      transformRequest: undefined,
+      body: JSON.stringify({ uuu: { username: 'ironman' }, ppp: { password: 'advengers' } }),
       url: 'http://some.api.google.com/jinframe/hello',
-      validateStatus: undefined,
     };
 
     // console.log(req.data);
@@ -124,10 +118,8 @@ describe('JinFrame - primitive type', () => {
       timeout: 120000,
       headers: { 'Content-Type': 'application/json' },
       method: 'POST',
-      data: { username: 'ironman', hero: { name: 'ironman', ability: 'proto cannon', age: 33 } },
-      transformRequest: undefined,
+      body: JSON.stringify({ username: 'ironman', hero: { name: 'ironman', ability: 'proto cannon', age: 33 } }),
       url: 'http://some.api.google.com/jinframe/hello',
-      validateStatus: undefined,
     };
 
     // console.log(req);
