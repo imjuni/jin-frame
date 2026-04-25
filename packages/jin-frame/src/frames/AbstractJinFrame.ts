@@ -5,14 +5,9 @@ import type { JinFrameRequestConfig } from '#interfaces/options/IJinFrameRequest
 import { getBodyMap } from '#processors/getBodyMap';
 import { getQuerystringMap } from '#processors/getQuerystringMap';
 import { startWithSlash } from '#tools/slash-utils/startWithSlash';
-import type { IFrameOption } from '#interfaces/options/IFrameOption';
-import type { IFrameInternal } from '#interfaces/options/IFrameInternal';
-import type { AxiosRequestConfig, AxiosResponse } from 'axios';
-import type axios from 'axios';
-import { AxiosError } from 'axios';
-import fastSafeStringify from 'fast-safe-stringify';
-import FormData from 'form-data';
-import { first } from 'my-easy-fp';
+import type { FrameOption } from '#interfaces/options/FrameOption';
+import type { FrameInternal } from '#interfaces/options/FrameInternal';
+import { atOrUndefined, first, isError } from 'my-easy-fp';
 import { parseTemplate } from 'url-template';
 import type { Constructor } from 'type-fest';
 import { flatStringMap } from '#processors/flatStringMap';
@@ -38,8 +33,11 @@ import { sleep } from '#tools/sleep';
 import type { DedupeResult } from '#interfaces/DedupeResult';
 import 'reflect-metadata';
 import { getUrlValue } from '#tools/getUrlValue';
+import type { JinResp } from '#interfaces/JinResp';
+import type { JinRequestConfig } from '#interfaces/JinRequestConfig';
+import { fetchClient } from '#tools/fetchClient';
 
-export abstract class AbstractJinFrame<TPASS> {
+export abstract class AbstractJinFrame<Pass, Fail> {
   static getEndpoint(): URL {
     const meta = getRequestMeta(this);
     const urlMeta = getUrl(getUrlValue(meta.option.host), getUrlValue(meta.option.path));
@@ -98,14 +96,14 @@ export abstract class AbstractJinFrame<TPASS> {
   /* eslint-enable @typescript-eslint/no-explicit-any */
 
   // eslint-disable-next-line class-methods-use-this
-  protected $_retryFail(_req: AxiosRequestConfig, _res: AxiosResponse<TPASS>): void | Promise<void> {}
+  protected $_retryFail(_req: JinRequestConfig, _res: JinResp<Pass, Fail>): void | Promise<void> {}
 
   // eslint-disable-next-line class-methods-use-this
-  protected $_retryException(_req: AxiosRequestConfig, _err: Error): void | Promise<void> {}
+  protected $_retryException(_req: JinRequestConfig, _err: Error): void | Promise<void> {}
 
-  protected $_option: IFrameOption;
+  protected $_option: FrameOption;
 
-  protected $_data: IFrameInternal;
+  protected $_data: FrameInternal;
 
   constructor() {
     const fromDecorator = getRequestMeta(this.constructor as Constructor<unknown>);
@@ -114,14 +112,13 @@ export abstract class AbstractJinFrame<TPASS> {
     this.$_data = getFrameInternalData(this.$_option);
   }
 
-  public getData<K extends keyof Pick<IFrameInternal, 'body' | 'param' | 'query' | 'header' | 'instance' | 'retry'>>(
+  public getData<K extends keyof Pick<FrameInternal, 'body' | 'param' | 'query' | 'header' | 'retry'>>(
     kind: K,
-  ): Pick<IFrameInternal, 'body' | 'param' | 'query' | 'header' | 'instance' | 'retry'>[K] {
+  ): Pick<FrameInternal, 'body' | 'param' | 'query' | 'header' | 'retry'>[K] {
     return this.$_data[kind];
   }
 
-  public getOption<K extends keyof IFrameOption>(kind: K): IFrameOption[K] {
-    // TypeScript inference limitation with complex interface types
+  public getOption<K extends keyof FrameOption>(kind: K): FrameOption[K] {
     return this.$_option[kind];
   }
 
@@ -131,27 +128,27 @@ export abstract class AbstractJinFrame<TPASS> {
     }
   }
 
-  public getTransformRequest(): undefined | axios.AxiosRequestTransformer | axios.AxiosRequestTransformer[] {
-    if (this.$_option.contentType !== 'application/x-www-form-urlencoded') {
-      return undefined;
+  public getBodyInit(bodies: unknown): BodyInit | undefined {
+    if (this.$_option.contentType === 'application/x-www-form-urlencoded') {
+      if (typeof bodies !== 'object' || bodies == null) {
+        return undefined;
+      }
+
+      const params = new URLSearchParams();
+
+      Object.entries(bodies as Record<string, unknown>)
+        .filter((entry): entry is [string, string] => atOrUndefined(entry, 1) != null)
+        .forEach(([key, value]) => params.append(key, value));
+
+      return params.toString();
     }
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const transformRequest: axios.AxiosRequestTransformer = (formData: any) =>
-      Object.entries<string | undefined>(formData)
-        .filter((entry): entry is [string, string] => entry[1] != null)
-        .map(([key, value]) => `${encodeURIComponent(key)}=${encodeURIComponent(value)}`)
-        .join('&');
-
-    return transformRequest;
-  }
-
-  public getFormData(bodies: unknown): unknown {
-    if (this.$_option.method !== 'post' && this.$_option.method !== 'POST') {
-      return bodies;
-    }
-
-    if (this.$_option.contentType === 'multipart/form-data' && typeof bodies === 'object' && bodies != null) {
+    if (
+      this.$_option.contentType === 'multipart/form-data' &&
+      (this.$_option.method === 'post' || this.$_option.method === 'POST') &&
+      typeof bodies === 'object' &&
+      bodies != null
+    ) {
       const formData = new FormData();
 
       Object.entries(bodies).forEach(([key, value]) => {
@@ -166,10 +163,10 @@ export abstract class AbstractJinFrame<TPASS> {
         } else if (typeof value === 'boolean') {
           formData.append(key, value.toString());
         } else if (typeof value === 'object') {
-          formData.append(key, fastSafeStringify(value));
+          formData.append(key, JSON.stringify(value));
         } else {
           throw new Error(
-            `Invalid data type: ${typeof value}/ ${fastSafeStringify(
+            `Invalid data type: ${typeof value}/ ${JSON.stringify(
               value,
             )}, only support JinFile, string, number, boolean, object type`,
           );
@@ -179,7 +176,11 @@ export abstract class AbstractJinFrame<TPASS> {
       return formData;
     }
 
-    return bodies;
+    if (bodies == null) {
+      return undefined;
+    }
+
+    return JSON.stringify(bodies);
   }
 
   public getCacheKey(): string | undefined {
@@ -196,7 +197,7 @@ export abstract class AbstractJinFrame<TPASS> {
         set(data, getCachePath({ ...input }), value);
       });
 
-    // 순서 중요하다, body를 objectBody가 overwrite 하지 않도록 주의하자
+    // Order is important. Caution about body field overwrite by objectBody value.
     [...fields.objectBody, ...fields.body].forEach((input) => {
       const value = get(this, input.key);
       set(data, getCachePath({ ...input }), value);
@@ -213,13 +214,27 @@ export abstract class AbstractJinFrame<TPASS> {
     return safeStringify(data);
   }
 
+  public getBaseUrlString(paths: Record<string, string>): string {
+    const host = getUrlValue(this.$_option.host);
+    const pathPrefix = getUrlValue(this.$_option.pathPrefix);
+    const path = getUrlValue(this.$_option.path);
+
+    // Expand URI templates before creating URL object to avoid encoding
+    const expandedHost = host ? parseTemplate(host).expand(paths) : host;
+    const expandedPathPrefix = pathPrefix ? parseTemplate(pathPrefix).expand(paths) : pathPrefix;
+    const expandedPath = path ? parseTemplate(path).expand(paths) : path;
+
+    const urlMeta = getUrl(expandedHost, expandedPathPrefix, expandedPath);
+    return urlMeta.isOnlyPath ? urlMeta.str : urlMeta.url.href;
+  }
+
   /**
-   * AxiosRequestConfig create using by class member variable.
+   * JinRequestConfig create using by class member variable.
    *
-   * @param option same with AxiosRequestConfig, bug exclude some filed ignored
-   * @returns created AxiosRequestConfig
+   * @param option same with JinRequestConfig, bug exclude some filed ignored
+   * @returns created JinRequestConfig
    */
-  public request(option?: JinFrameRequestConfig & IJinFrameCreateConfig): AxiosRequestConfig {
+  public request(option?: JinFrameRequestConfig & IJinFrameCreateConfig): JinRequestConfig {
     const entries = Object.entries(this).map(([key, value]) => ({ key, value }));
 
     // stage 01. extract request parameter and option
@@ -253,21 +268,7 @@ export abstract class AbstractJinFrame<TPASS> {
     this.$_data.param = paths;
 
     // stage 05. url endpoint build and path parameter evaluation
-    const baseUrlString =
-      option?.url ??
-      (() => {
-        const host = getUrlValue(this.$_option.host);
-        const pathPrefix = getUrlValue(this.$_option.pathPrefix);
-        const path = getUrlValue(this.$_option.path);
-
-        // Expand URI templates before creating URL object to avoid encoding
-        const expandedHost = host ? parseTemplate(host).expand(paths) : host;
-        const expandedPathPrefix = pathPrefix ? parseTemplate(pathPrefix).expand(paths) : pathPrefix;
-        const expandedPath = path ? parseTemplate(path).expand(paths) : path;
-
-        const urlMeta = getUrl(expandedHost, expandedPathPrefix, expandedPath);
-        return urlMeta.isOnlyPath ? urlMeta.str : urlMeta.url.href;
-      })();
+    const baseUrlString = option?.url ?? this.getBaseUrlString(paths);
 
     // Expand URI template for option.url case
     const expandedUrlString = option?.url != null ? parseTemplate(baseUrlString).expand(paths) : baseUrlString;
@@ -278,12 +279,7 @@ export abstract class AbstractJinFrame<TPASS> {
       const queryOption = queryMap.get(key);
       const keyFormat = getQuerystringKeyFormat(queryOption);
 
-      if (Array.isArray(value) && keyFormat != null) {
-        value.forEach((val, index) => {
-          const formatted = getQuerystringKey({ key, index, format: keyFormat });
-          url.searchParams.append(formatted, val);
-        });
-      } else if (Array.isArray(value)) {
+      if (Array.isArray(value)) {
         value.forEach((val, index) => {
           const formatted = getQuerystringKey({ key, index, format: keyFormat });
           url.searchParams.append(formatted, val);
@@ -313,6 +309,11 @@ export abstract class AbstractJinFrame<TPASS> {
       headers.Authorization = authKey;
     }
 
+    if (auth != null) {
+      const encoded = btoa(`${auth.username}:${auth.password}`);
+      headers.Authorization = encoded;
+    }
+
     // Apply security provider query parameters
     if (securityQueries != null) {
       Object.entries(securityQueries).forEach(([key, value]) => {
@@ -325,52 +326,47 @@ export abstract class AbstractJinFrame<TPASS> {
       Object.assign(headers, securityHeaders);
     }
 
-    const transformRequest = this.getTransformRequest();
-    const data = this.getFormData(bodies);
     const timeout = option?.timeout ?? this.$_option.timeout ?? defaultJinFrameTimeout;
+    const body = this.getBodyInit(bodies);
 
     const targetUrl = isOnlyPath ? `${startWithSlash(url.pathname)}${url.search}` : url.href;
-    const req: AxiosRequestConfig = {
-      ...option,
-      ...{
-        timeout,
-        headers,
-        auth,
-        method: this.$_option.method,
-        data,
-        transformRequest: option?.transformRequest ?? transformRequest,
-        url: targetUrl,
-        validateStatus: option?.validateStatus,
-      },
+    const req: JinRequestConfig = {
+      url: targetUrl,
+      method: this.$_option.method,
+      headers,
+      body,
+      timeout,
     };
 
     return req;
   }
 
-  async retry(req: AxiosRequestConfig, isValidateStatus: (status: number) => boolean): Promise<DedupeResult<TPASS>> {
+  async retry(req: JinRequestConfig, isValidateStatus: (status: number) => boolean): Promise<DedupeResult<Pass, Fail>> {
     const { retry } = this.$_data;
 
     const handle = async () => {
-      let returnValue: DedupeResult<TPASS> | AxiosError = new AxiosError();
+      let returnValue: DedupeResult<Pass, Fail> | Error = new Error();
 
       /* eslint-disable no-await-in-loop, no-restricted-syntax */
       for (let i = 0; i < retry.max; i += 1) {
         try {
           retry.try += 1;
 
+          const fetchReq = new Request(req.url, {
+            method: req.method,
+            headers: req.headers,
+            body: req.body,
+            signal: req.signal,
+          });
+
           const cacheKey = this.$_option.dedupe ? this.getCacheKey() : undefined;
-          // TODO: replace with fetch-based call when AbstractJinFrame is migraed!
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          const axiosInstance = this.$_data.instance as any;
           const promised =
             cacheKey != null
-              ? RequestDedupeManager.dedupe<TPASS>(
-                  cacheKey,
-                  async () => axiosInstance.request(req) as Promise<AxiosResponse<TPASS>>,
-                )
-              : (async () => ({ reply: await axiosInstance.request(req), isDeduped: false }))();
+              ? // eslint-disable-next-line @typescript-eslint/promise-function-async
+                RequestDedupeManager.dedupe<Pass, Fail>(cacheKey, () => fetchClient<Pass, Fail>(fetchReq))
+              : (async () => ({ reply: await fetchClient(fetchReq), isDeduped: false }))();
 
-          const deduped = await promised;
+          const deduped = (await promised) as { reply: JinResp<Pass, Fail>; isDeduped: boolean };
           const { reply } = deduped;
           const retryAfterValue = reply.headers['retry-after'] ?? reply.headers['Retry-After'];
           const retryAfter = getRetryAfter(retry, retryAfterValue);
@@ -393,7 +389,7 @@ export abstract class AbstractJinFrame<TPASS> {
 
           await sleep(interval);
         } catch (err) {
-          returnValue = err as AxiosError;
+          returnValue = isError(err, new Error('unknown error raised'));
 
           await runAndUnwrap(this.$_retryException.bind(this), req, returnValue);
 
@@ -411,7 +407,7 @@ export abstract class AbstractJinFrame<TPASS> {
       /* eslint-enable no-await-in-loop, no-restricted-syntax */
 
       // Return Value
-      if (returnValue instanceof AxiosError) {
+      if (returnValue instanceof Error) {
         throw returnValue;
       }
 

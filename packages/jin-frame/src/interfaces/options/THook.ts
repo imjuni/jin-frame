@@ -2,7 +2,7 @@ import type { DebugInfo } from '#interfaces/DebugInfo';
 import type { IFailReplyJinFrame } from '#interfaces/IFailJinEitherFrame';
 import type { JinFailResp } from '#interfaces/JinFailResp';
 import type { JinPassResp } from '#interfaces/JinPassResp';
-import type { JinRequestConfig } from '#interfaces/TJinFrameResponse';
+import type { JinRequestConfig } from '#interfaces/JinRequestConfig';
 import type { TPassJinFrame } from '#interfaces/TPassJinEitherFrame';
 import type { AxiosResponse } from 'axios';
 

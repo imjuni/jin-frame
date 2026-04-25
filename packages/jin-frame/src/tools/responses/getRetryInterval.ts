@@ -1,4 +1,4 @@
-import type { IFrameInternal } from '#interfaces/options/IFrameInternal';
+import type { FrameInternal } from '#interfaces/options/FrameInternal';
 
 /**
  * @param retry retry configuration from the internal data
@@ -7,7 +7,7 @@ import type { IFrameInternal } from '#interfaces/options/IFrameInternal';
  * @param retryAfterSeconds Optional Retry-After header value in seconds (takes highest priority)
  */
 export function getRetryInterval(
-  retry: NonNullable<IFrameInternal['retry']>,
+  retry: NonNullable<FrameInternal['retry']>,
   totalDuration: number,
   eachDuration: number,
   retryAfterSeconds?: number,

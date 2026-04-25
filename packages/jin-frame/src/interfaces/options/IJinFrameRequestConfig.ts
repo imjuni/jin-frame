@@ -1,12 +1,11 @@
-import type { AxiosRequestConfig } from 'axios';
 import type { AuthorizationData } from '#interfaces/security/AuthorizationData';
+import type { JinBasicAtuh } from '#interfaces/JinBasicAuth';
+import type { TMilliseconds } from '#interfaces/options/TMilliseconds';
 
 /**
- * Configuration for AxiosRequestConfig. Exclude headers, method, data, url, validateStatus.
- * headers, method, data, url, validateStatus use jin-frame configuration value.
+ * Configuration for JinFrame.
  */
-export interface JinFrameRequestConfig
-  extends Omit<AxiosRequestConfig, 'headers' | 'method' | 'data' | 'url' | 'validateStatus'> {
+export interface JinFrameRequestConfig {
   /**
    * User-Agent string. Axios use Custom Use-Agent string like "axios/0.27.2". You can change
    * that string by useAgent field.
@@ -16,6 +15,10 @@ export interface JinFrameRequestConfig
   url?: string;
 
   customBody?: unknown;
+
+  auth?: JinBasicAtuh;
+
+  timeout?: TMilliseconds;
 
   /**
    * Dynamic authorization data that will be passed to security providers
