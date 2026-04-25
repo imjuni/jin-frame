@@ -1,10 +1,10 @@
 import { setFrameOption } from '#tools/setFrameOption';
-import type { IFrameOption } from '#interfaces/options/IFrameOption';
+import type { FrameOption } from '#interfaces/options/FrameOption';
 
-export function mergeFrameOption(prev: IFrameOption, next: IFrameOption): IFrameOption {
-  const merged: IFrameOption = { ...prev };
+export function mergeFrameOption(prev: FrameOption, next: FrameOption): FrameOption {
+  const merged: FrameOption = { ...prev };
 
-  for (const key of Object.keys(next) as (keyof IFrameOption)[]) {
+  for (const key of Object.keys(next) as (keyof FrameOption)[]) {
     setFrameOption(merged, key, next[key]);
   }
 

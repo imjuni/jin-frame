@@ -1,6 +1,6 @@
-import type { IFrameRetry } from '#interfaces/options/IFrameRetry';
+import type { FrameRetry } from '#interfaces/options/FrameRetry';
 
-export function mergeRetryOption(prev: IFrameRetry, next: IFrameRetry): IFrameRetry {
+export function mergeRetryOption(prev: FrameRetry, next: FrameRetry): FrameRetry {
   return {
     ...prev,
     ...(next.max != null && { max: next.max }),

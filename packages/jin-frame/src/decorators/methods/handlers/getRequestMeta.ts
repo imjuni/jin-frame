@@ -1,8 +1,8 @@
 import { getAllRequestMetaInherited } from '#decorators/methods/handlers/getAllMethodMetaInherited';
 import type { AbstractConstructor, Constructor } from 'type-fest';
-import type { IFrameOption } from '#interfaces/options/IFrameOption';
+import type { FrameOption } from '#interfaces/options/FrameOption';
 import type { TMethodEntry } from '#interfaces/options/TMethodEntry';
-import type { IFrameRetry } from '#interfaces/options/IFrameRetry';
+import type { FrameRetry } from '#interfaces/options/FrameRetry';
 import { mergeFrameOption } from '#tools/mergeFrameOption';
 import { mergeRetryOption } from '#tools/mergeRetryOption';
 
@@ -32,12 +32,12 @@ export function getRequestMeta(ctor: AbstractConstructor<unknown> | Constructor<
   const authorizations = [...metas.authorizations].reverse();
   const securities = [...metas.securities].reverse();
 
-  const mergedOption = methods.reduce<IFrameOption>(
+  const mergedOption = methods.reduce<FrameOption>(
     (merged, meta) => mergeFrameOption(merged, meta.option),
-    {} as IFrameOption,
+    {} as FrameOption,
   );
 
-  const mergedRetry = retries.reduce<IFrameRetry | undefined>((merged, meta) => {
+  const mergedRetry = retries.reduce<FrameRetry | undefined>((merged, meta) => {
     if (merged == null) {
       return meta;
     }

@@ -1,16 +1,16 @@
 import { mergeFrameOption } from '#tools/mergeFrameOption';
-import type { IFrameOption } from '#interfaces/options/IFrameOption';
+import type { FrameOption } from '#interfaces/options/FrameOption';
 import { describe, expect, it } from 'vitest';
 
 describe('mergeFrameOption', () => {
-  const prev: IFrameOption = {
+  const prev: FrameOption = {
     method: 'GET',
     host: 'https://api.site.com',
     contentType: 'application/json',
     useInstance: false,
   };
 
-  const next: IFrameOption = {
+  const next: FrameOption = {
     method: 'POST',
     path: 'api-path/{name}',
     contentType: 'application/json',

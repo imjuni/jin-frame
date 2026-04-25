@@ -1,6 +1,6 @@
-import type { IFrameRetry } from '#interfaces/options/IFrameRetry';
+import type { FrameRetry } from '#interfaces/options/FrameRetry';
 
-export function getRetryAfter(retry: IFrameRetry, rawRetryAfter: string | string[] | undefined): number | undefined {
+export function getRetryAfter(retry: FrameRetry, rawRetryAfter: string | string[] | undefined): number | undefined {
   try {
     const useRetryAfter = retry.useRetryAfter ?? true;
 

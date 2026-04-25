@@ -1,4 +1,4 @@
-import type { IFrameRetry } from '#interfaces/options/IFrameRetry';
+import type { FrameRetry } from '#interfaces/options/FrameRetry';
 import type { TMethod } from '#interfaces/options/TMethod';
 import type { BaseValidator } from '#validators/BaseValidator';
 import type { ISecurityProvider } from '#interfaces/security/ISecurityProvider';
@@ -6,7 +6,7 @@ import type { AuthorizationData } from '#interfaces/security/AuthorizationData';
 import type { TMilliseconds } from '#interfaces/options/TMilliseconds';
 import type { JinBasicAtuh } from '#interfaces/JinBasicAuth';
 
-export interface IFrameOption {
+export interface FrameOption {
   /**
    * host and path of API Request endpoint
    *
@@ -54,7 +54,7 @@ export interface IFrameOption {
   customBody?: unknown;
 
   /** retry configuration */
-  retry?: IFrameRetry;
+  retry?: FrameRetry;
 
   /** timeout of the request */
   timeout?: TMilliseconds;

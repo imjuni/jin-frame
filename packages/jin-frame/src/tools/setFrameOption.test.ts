@@ -1,9 +1,9 @@
 import { setFrameOption } from '#tools/setFrameOption';
-import type { IFrameOption } from '#interfaces/options/IFrameOption';
+import type { FrameOption } from '#interfaces/options/FrameOption';
 import { describe, expect, it } from 'vitest';
 
 describe('setFrameOption', () => {
-  const option: IFrameOption = {
+  const option: FrameOption = {
     method: 'GET',
     contentType: 'application/json',
     useInstance: false,
