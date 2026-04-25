@@ -33,11 +33,9 @@ import { sleep } from '#tools/sleep';
 import type { DedupeResult } from '#interfaces/DedupeResult';
 import 'reflect-metadata';
 import { getUrlValue } from '#tools/getUrlValue';
-import type { JinResp } from '#interfaces/JinResp';
 import type { JinRequestConfig } from '#interfaces/JinRequestConfig';
-import { fetchClient } from '#tools/fetchClient';
 
-export abstract class AbstractJinFrame<Pass, Fail> {
+export abstract class AbstractJinFrame {
   static getEndpoint(): URL {
     const meta = getRequestMeta(this);
     const urlMeta = getUrl(getUrlValue(meta.option.host), getUrlValue(meta.option.path));
@@ -96,7 +94,7 @@ export abstract class AbstractJinFrame<Pass, Fail> {
   /* eslint-enable @typescript-eslint/no-explicit-any */
 
   // eslint-disable-next-line class-methods-use-this
-  protected $_retryFail(_req: JinRequestConfig, _res: JinResp<Pass, Fail>): void | Promise<void> {}
+  protected $_retryFail(_req: JinRequestConfig, _res: Response): void | Promise<void> {}
 
   // eslint-disable-next-line class-methods-use-this
   protected $_retryException(_req: JinRequestConfig, _err: Error): void | Promise<void> {}
@@ -341,11 +339,11 @@ export abstract class AbstractJinFrame<Pass, Fail> {
     return req;
   }
 
-  async retry(req: JinRequestConfig, isValidateStatus: (status: number) => boolean): Promise<DedupeResult<Pass, Fail>> {
+  async retry(req: JinRequestConfig, isValidateStatus: (status: number) => boolean): Promise<DedupeResult> {
     const { retry } = this.$_data;
 
     const handle = async () => {
-      let returnValue: DedupeResult<Pass, Fail> | Error = new Error();
+      let returnValue: DedupeResult | Error = new Error();
 
       /* eslint-disable no-await-in-loop, no-restricted-syntax */
       for (let i = 0; i < retry.max; i += 1) {
@@ -363,21 +361,21 @@ export abstract class AbstractJinFrame<Pass, Fail> {
           const promised =
             cacheKey != null
               ? // eslint-disable-next-line @typescript-eslint/promise-function-async
-                RequestDedupeManager.dedupe<Pass, Fail>(cacheKey, () => fetchClient<Pass, Fail>(fetchReq))
-              : (async () => ({ reply: await fetchClient(fetchReq), isDeduped: false }))();
+                RequestDedupeManager.dedupe(cacheKey, () => fetch(fetchReq))
+              : (async () => ({ resp: await fetch(fetchReq), isDeduped: false }))();
 
-          const deduped = (await promised) as { reply: JinResp<Pass, Fail>; isDeduped: boolean };
-          const { reply } = deduped;
-          const retryAfterValue = reply.headers['retry-after'] ?? reply.headers['Retry-After'];
-          const retryAfter = getRetryAfter(retry, retryAfterValue);
+          const deduped = await promised;
+          const { resp } = deduped;
+          const retryAfterValue = resp.headers.get('retry-after') ?? resp.headers.get('Retry-After');
+          const retryAfter = getRetryAfter(retry, retryAfterValue ?? undefined);
 
           returnValue = deduped;
 
-          if (isValidateStatus(reply.status)) {
+          if (isValidateStatus(resp.status)) {
             return deduped;
           }
 
-          await runAndUnwrap(this.$_retryFail.bind(this), req, reply);
+          await runAndUnwrap(this.$_retryFail.bind(this), req, resp);
 
           const current = new Date();
           const interval = getRetryInterval(

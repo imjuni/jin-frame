@@ -1,5 +1,4 @@
 import type { DedupeResult } from '#interfaces/DedupeResult';
-import type { JinResp } from '#interfaces/JinResp';
 
 /**
  * Manages request deduplication to prevent multiple identical HTTP requests
@@ -12,7 +11,7 @@ import type { JinResp } from '#interfaces/JinResp';
  */
 export class RequestDedupeManager {
   /** Store pending requests (key: cacheKey, value: Promise) */
-  private static pendingRequests = new Map<string, Promise<JinResp<unknown, unknown>>>();
+  private static pendingRequests = new Map<string, Promise<Response>>();
 
   /**
    * Deduplicates HTTP requests based on cache key. If a request with the same
@@ -37,14 +36,11 @@ export class RequestDedupeManager {
    * console.log(result.isDeduped); // false for original request, true for duplicates
    * ```
    */
-  static async dedupe<Pass, Fail>(
-    cacheKey: string,
-    requesterFn: () => Promise<JinResp<Pass, Fail>>,
-  ): Promise<DedupeResult<Pass, Fail>> {
+  static async dedupe(cacheKey: string, requesterFn: () => Promise<Response>): Promise<DedupeResult> {
     const existingPromise = this.pendingRequests.get(cacheKey);
     if (existingPromise) {
-      const response = (await existingPromise) as JinResp<Pass, Fail>;
-      return { reply: response, isDeduped: true };
+      const resp = await existingPromise;
+      return { resp, isDeduped: true };
     }
 
     // Create new request and register it in pendingRequests first
@@ -64,7 +60,7 @@ export class RequestDedupeManager {
     this.pendingRequests.set(cacheKey, promise);
 
     const reply = await promise;
-    return { reply, isDeduped: false };
+    return { resp: reply, isDeduped: false };
   }
 
   /**
