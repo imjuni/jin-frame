@@ -1,12 +1,12 @@
-import type { AxiosResponse } from 'axios';
+import type { JinResp } from '#interfaces/JinResp';
 
 /**
  * Result interface for deduplicated requests
- * @template T - The response data type
+ * @template Pass - The response data type
  */
-export interface DedupeResult<T> {
+export interface DedupeResult<Pass, Fail> {
   /** The response from the HTTP request */
-  reply: AxiosResponse<T>;
+  reply: JinResp<Pass, Fail>;
   /** Whether this request was deduplicated (true) or was the original request (false) */
   isDeduped: boolean;
 }

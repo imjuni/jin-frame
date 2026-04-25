@@ -5,23 +5,23 @@ import type { DebugInfo } from '#interfaces/DebugInfo';
 import type { IJinFrameCreateConfig } from '#interfaces/options/IJinFrameCreateConfig';
 import type { JinFrameFunction } from '#interfaces/options/IJinFrameFunction';
 import type { JinFrameRequestConfig } from '#interfaces/options/IJinFrameRequestConfig';
-import type { JinRequestConfig } from '#interfaces/TJinFrameResponse';
 import { getDuration } from '#tools/getDuration';
 import { getError } from '#tools/getError';
 import { isValidateStatusDefault } from '#tools/isValidateStatusDefault';
-import { getStatusFromAxiosError } from '#tools/responses/getStatusFromAxiosError';
-import { AxiosError, type AxiosRequestConfig, type AxiosResponse } from 'axios';
-import httpStatusCodes, { getReasonPhrase } from 'http-status-codes';
 import { runAndUnwrap } from '#tools/runAndUnwrap';
 import { JinValidationtError } from '#exceptions/JinValidationtError';
 import type { TGetError } from '#interfaces/TGetError';
 import type { ValidationResult } from '#interfaces/ValidationResult';
 import type { JinFailResp } from '#interfaces/JinFailResp';
+import type { JinRequestConfig } from '#interfaces/JinRequestConfig';
+import type { JinResp } from '#interfaces/JinResp';
 // eslint-disable-next-line import-x/no-extraneous-dependencies
 import formatISO from 'date-fns/formatISO';
 // eslint-disable-next-line import-x/no-extraneous-dependencies
 import getUnixTime from 'date-fns/getUnixTime';
 import 'reflect-metadata';
+import type { JinPassResp } from '#interfaces/JinPassResp';
+import { getStatusFromError } from '#tools/responses/getStatusFromError';
 
 /**
  * Definition HTTP Request
@@ -32,9 +32,9 @@ import 'reflect-metadata';
  * @typeParam TFAIL AxiosResponse type argument case of invalid status.
  * eg. `AxiosResponse<TFAIL>`
  */
-export class JinFrame<TPass = unknown, Fail = TPass>
-  extends AbstractJinFrame<TPass>
-  implements JinFrameFunction<TPass, Fail>
+export class JinFrame<Pass = unknown, Fail = Pass>
+  extends AbstractJinFrame<Pass, Fail>
+  implements JinFrameFunction<Pass, Fail>
 {
   /**
    * Execute before request. If you can change request object that is affected request.
@@ -55,11 +55,11 @@ export class JinFrame<TPass = unknown, Fail = TPass>
   // eslint-disable-next-line class-methods-use-this
   protected $_postHook(
     _req: JinRequestConfig,
-    _reply: AxiosResponse<TPass | Fail>,
+    _reply: JinResp<Pass, Fail>,
     _debugInfo: DebugInfo,
   ): void | Promise<void> {}
 
-  public requestWrap(option?: JinFrameRequestConfig & IJinFrameCreateConfig): AxiosRequestConfig {
+  public requestWrap(option?: JinFrameRequestConfig & IJinFrameCreateConfig): JinRequestConfig {
     try {
       return super.request(option);
     } catch (catched) {
@@ -73,7 +73,7 @@ export class JinFrame<TPass = unknown, Fail = TPass>
         isDeduped: false,
         duration,
       };
-      const err = new JinCreateError<typeof this, TPass, Fail>({ debug, frame: this, message: source.message });
+      const err = new JinCreateError<typeof this, Pass, Fail>({ debug, frame: this, message: source.message });
       err.stack = source.stack;
 
       throw err;
@@ -88,9 +88,9 @@ export class JinFrame<TPass = unknown, Fail = TPass>
    */
   public create<TSelf extends this = this>(
     this: this,
-    option?: JinFrameRequestConfig & IJinFrameCreateConfig & { getError?: TGetError<TSelf, TPass, Fail> },
+    option?: JinFrameRequestConfig & IJinFrameCreateConfig & { getError?: TGetError<TSelf, Pass, Fail> },
   ): () => Promise<
-    AxiosResponse<TPass> & {
+    JinResp<Pass, Fail> & {
       $debug: DebugInfo;
       $frame: TSelf;
       $validated?: ValidationResult;
@@ -100,7 +100,7 @@ export class JinFrame<TPass = unknown, Fail = TPass>
     const isValidateStatus = option?.validateStatus ?? isValidateStatusDefault;
 
     const jinFrameHandle = async (): Promise<
-      AxiosResponse<TPass> & {
+      JinPassResp<Pass> & {
         $debug: DebugInfo;
         $frame: TSelf;
         $validated?: ValidationResult;
@@ -113,7 +113,7 @@ export class JinFrame<TPass = unknown, Fail = TPass>
           iso: formatISO(startAt),
         },
         isDeduped: false,
-        req: { ...req, validateStatus: isValidateStatus },
+        req,
       };
 
       try {
@@ -128,7 +128,7 @@ export class JinFrame<TPass = unknown, Fail = TPass>
           const duration = getDuration(this.$_data.startAt, new Date());
 
           const debugInfo = { ...debug, duration, isDeduped: deduped.isDeduped };
-          const err = new JinRespError<TPass, Fail>({
+          const err = new JinRespError<Pass, Fail>({
             resp: failReply,
             debug: debugInfo,
             frame: this,
@@ -141,16 +141,17 @@ export class JinFrame<TPass = unknown, Fail = TPass>
           throw err;
         }
 
+        const passReply = reply as JinPassResp<Pass>;
         const duration = getDuration(this.$_data.startAt, new Date());
         const debugInfo = { ...debug, duration, isDeduped: deduped.isDeduped };
 
-        await runAndUnwrap(this.$_postHook.bind(this), req, reply, debugInfo);
+        await runAndUnwrap(this.$_postHook.bind(this), req, passReply, debugInfo);
 
         const { validator } = this.$_option;
-        const validated = await validator?.validate(reply);
+        const validated = await validator?.validate(passReply);
 
         if (validator != null && validated != null && validator.type === 'exception' && !validated.valid) {
-          const err = new JinValidationtError<TPass, Fail>({
+          const err = new JinValidationtError<Pass, Fail>({
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
             resp: reply as any,
             debug: debugInfo,
@@ -164,7 +165,7 @@ export class JinFrame<TPass = unknown, Fail = TPass>
         }
 
         return {
-          ...reply,
+          ...passReply,
           $debug: debugInfo,
           $frame: this as TSelf,
           $validated: validated,
@@ -178,31 +179,14 @@ export class JinFrame<TPass = unknown, Fail = TPass>
           throw getError(caught, option?.getError);
         }
 
-        if (caught instanceof AxiosError) {
-          const duration = getDuration(this.$_data.startAt, new Date());
-          const reply = caught.response as JinFailResp<Fail> | undefined;
-          const { status, statusText } = getStatusFromAxiosError(caught);
-
-          const jinFrameError = new JinRespError<TPass, Fail>({
-            resp:
-              reply ??
-              ({
-                status,
-                statusText,
-              } as JinFailResp<Fail>),
-            debug: { ...debug, duration },
-            frame: this,
-            message: caught.message,
-          });
-
-          throw getError(jinFrameError, option?.getError);
-        }
-
         const duration = getDuration(this.$_data.startAt, new Date());
-        const jinFrameError = new JinRespError<TPass, Fail>({
+        const { status, statusText } = getStatusFromError(caught);
+
+        const jinFrameError = new JinRespError<Pass, Fail>({
           resp: {
-            status: httpStatusCodes.INTERNAL_SERVER_ERROR,
-            statusText: getReasonPhrase(httpStatusCodes.INTERNAL_SERVER_ERROR),
+            ok: false,
+            status,
+            statusText,
           } as JinFailResp<Fail>,
           debug: { ...debug, duration },
           frame: this,
@@ -224,8 +208,8 @@ export class JinFrame<TPass = unknown, Fail = TPass>
    */
   public async execute<TSelf extends this = this>(
     this: TSelf,
-    option?: JinFrameRequestConfig & IJinFrameCreateConfig & { getError?: TGetError<TSelf, TPass, Fail> },
-  ): Promise<AxiosResponse<TPass>> {
+    option?: JinFrameRequestConfig & IJinFrameCreateConfig & { getError?: TGetError<TSelf, Pass, Fail> },
+  ): Promise<JinResp<Pass, Fail>> {
     const requester = this.create(option);
     return requester();
   }

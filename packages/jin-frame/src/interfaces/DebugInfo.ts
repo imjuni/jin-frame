@@ -1,4 +1,4 @@
-import type { AxiosRequestConfig } from 'axios';
+import type { JinRequestConfig } from '#interfaces/JinRequestConfig';
 
 /**
  * Debug information for HTTP requests
@@ -22,5 +22,5 @@ export interface DebugInfo {
   isDeduped: boolean;
 
   /** Axios request configuration object */
-  req: AxiosRequestConfig;
+  req: JinRequestConfig;
 }

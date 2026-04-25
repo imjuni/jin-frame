@@ -1,4 +1,4 @@
-export interface IFrameRetry {
+export interface FrameRetry {
   /**
    * retry를 최대 몇 번까지 할 것인지 설정
    *
