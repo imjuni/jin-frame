@@ -69,7 +69,7 @@ class Test004PostFrame extends JinFrame<{ message: string }> {
 }
 
 @Post({ host: 'http://some.api.google.com/jinframe' })
-class Test005PostFrame extends JinFrame<{ message: string }> {
+class _Test005PostFrame extends JinFrame<{ message: string }> {
   @Query()
   declare public readonly name: string[];
 

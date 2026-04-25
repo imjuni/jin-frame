@@ -47,7 +47,11 @@ export class RequestDedupeManager {
     const existingPromise = this.pendingRequests.get(cacheKey);
     if (existingPromise) {
       const buffered = await existingPromise;
-      const resp = new Response(buffered.body, { status: buffered.status, statusText: buffered.statusText, headers: buffered.headers });
+      const resp = new Response(buffered.body, {
+        status: buffered.status,
+        statusText: buffered.statusText,
+        headers: buffered.headers,
+      });
       return { resp, isDeduped: true };
     }
 
@@ -56,7 +60,12 @@ export class RequestDedupeManager {
       .then(async (reply) => {
         const body = await reply.text();
         this.pendingRequests.delete(cacheKey);
-        return { status: reply.status, statusText: reply.statusText, headers: reply.headers, body } satisfies BufferedResponse;
+        return {
+          status: reply.status,
+          statusText: reply.statusText,
+          headers: reply.headers,
+          body,
+        } satisfies BufferedResponse;
       })
       .catch((error: unknown) => {
         this.pendingRequests.delete(cacheKey);
@@ -67,7 +76,13 @@ export class RequestDedupeManager {
     this.pendingRequests.set(cacheKey, promise);
 
     const buffered = await promise;
-    const resp = new Response(buffered.body, { status: buffered.status, statusText: buffered.statusText, headers: buffered.headers });
+    const nullBodyStatuses = [101, 103, 204, 205, 304];
+    const responseBody = nullBodyStatuses.includes(buffered.status) ? null : buffered.body;
+    const resp = new Response(responseBody, {
+      status: buffered.status,
+      statusText: buffered.statusText,
+      headers: buffered.headers,
+    });
     return { resp, isDeduped: false };
   }
 
