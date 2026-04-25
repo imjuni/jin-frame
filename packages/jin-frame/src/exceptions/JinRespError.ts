@@ -1,17 +1,17 @@
 import type { JinFrame } from '#frames/JinFrame';
-import type { IDebugInfo } from '#interfaces/IDebugInfo';
-import type { AxiosError, AxiosResponse } from 'axios';
+import type { DebugInfo } from '#interfaces/DebugInfo';
+import type { JinFailResp } from '#interfaces/JinFailResp';
 
-export class JinRequestError<TPASS, TFAIL = unknown> extends Error {
-  __discriminator = 'JinRequestError';
+export class JinRespError<TPASS, TFAIL = unknown> extends Error {
+  __discriminator = 'JinRespError';
 
-  #debug: IDebugInfo;
+  #debug: DebugInfo;
 
   #frame: JinFrame<TPASS, TFAIL>;
 
-  #resp: AxiosResponse<TFAIL>;
+  #resp: JinFailResp<TFAIL>;
 
-  #status: AxiosError['status'];
+  #status: number;
 
   #statusText: string;
 
@@ -21,9 +21,9 @@ export class JinRequestError<TPASS, TFAIL = unknown> extends Error {
     resp,
     message,
   }: {
-    debug: IDebugInfo;
+    debug: DebugInfo;
     frame: JinFrame<TPASS, TFAIL>;
-    resp: AxiosResponse<TFAIL>;
+    resp: JinFailResp<TFAIL>;
     message: string;
   }) {
     super(message);
@@ -35,7 +35,7 @@ export class JinRequestError<TPASS, TFAIL = unknown> extends Error {
     this.#statusText = resp.statusText;
   }
 
-  get debug(): IDebugInfo {
+  get debug(): DebugInfo {
     return this.#debug;
   }
 
@@ -43,11 +43,11 @@ export class JinRequestError<TPASS, TFAIL = unknown> extends Error {
     return this.#frame;
   }
 
-  get resp(): AxiosResponse<TFAIL> | undefined {
+  get resp(): JinFailResp<TFAIL> | undefined {
     return this.#resp;
   }
 
-  get status(): AxiosError['status'] {
+  get status(): number {
     return this.#status;
   }
 

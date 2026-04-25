@@ -1,11 +1,11 @@
-import { JinRequestError } from '#exceptions/JinRequestError';
+import { JinRespError } from '#exceptions/JinRespError';
 import { getDuration } from '#tools/getDuration';
 import { getReasonPhrase } from 'http-status-codes';
 import { describe, expect, it } from 'vitest';
 
 describe('JinRequestError', () => {
   it('gettter/setter', () => {
-    const jf = new JinRequestError({
+    const jf = new JinRespError({
       debug: {
         ts: {
           unix: '1674349200',

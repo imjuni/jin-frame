@@ -1,6 +1,8 @@
-import type { IDebugInfo } from '#interfaces/IDebugInfo';
+import type { DebugInfo } from '#interfaces/DebugInfo';
 import type { IFailReplyJinFrame } from '#interfaces/IFailJinEitherFrame';
-import type { TJinRequestConfig } from '#interfaces/TJinFrameResponse';
+import type { JinFailResp } from '#interfaces/JinFailResp';
+import type { JinPassResp } from '#interfaces/JinPassResp';
+import type { JinRequestConfig } from '#interfaces/TJinFrameResponse';
 import type { TPassJinFrame } from '#interfaces/TPassJinEitherFrame';
 import type { AxiosResponse } from 'axios';
 
@@ -9,7 +11,7 @@ import type { AxiosResponse } from 'axios';
  *
  * @param req request object
  * */
-export type TPreEitherHook = (req: TJinRequestConfig) => void | Promise<void>;
+export type PreEitherHook = (req: JinRequestConfig) => void | Promise<void>;
 
 /**
  * Execute after request.
@@ -17,8 +19,8 @@ export type TPreEitherHook = (req: TJinRequestConfig) => void | Promise<void>;
  * @param req request object
  * @param reply [discriminated union](https://www.typescriptlang.org/docs/handbook/typescript-in-5-minutes-func.html#discriminated-unions) pass or fail
  */
-export type TPostEitherHook<TPASS, TFAIL> = (
-  req: TJinRequestConfig,
+export type PostEitherHook<TPASS, TFAIL> = (
+  req: JinRequestConfig,
   reply: IFailReplyJinFrame<TFAIL> | TPassJinFrame<TPASS>,
 ) => void | Promise<void>;
 
@@ -27,7 +29,7 @@ export type TPostEitherHook<TPASS, TFAIL> = (
  *
  * @param req request object
  * */
-export type TPreHook = (req: TJinRequestConfig) => void | Promise<void>;
+export type PreHook = (req: JinRequestConfig) => void | Promise<void>;
 
 /**
  * Execute after request.
@@ -35,10 +37,10 @@ export type TPreHook = (req: TJinRequestConfig) => void | Promise<void>;
  * @param req request object
  * @param reply reply object
  */
-export type TPostHook<TPASS, TFAIL> = (
-  req: TJinRequestConfig,
-  reply: AxiosResponse<TPASS | TFAIL>,
-  debugInfo: IDebugInfo,
+export type PostHook<TPASS, TFAIL> = (
+  req: JinRequestConfig,
+  reply: JinPassResp<TPASS> | JinFailResp<TFAIL>,
+  debugInfo: DebugInfo,
 ) => void | Promise<void>;
 
-export type TRetryFailHook<TDATA> = (req: TJinRequestConfig, res: AxiosResponse<TDATA>) => void | Promise<void>;
+export type RetryFailHook<TDATA> = (req: JinRequestConfig, res: AxiosResponse<TDATA>) => void | Promise<void>;
