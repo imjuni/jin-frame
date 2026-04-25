@@ -283,7 +283,12 @@ describe('JinFrame ObjectBody using Array', () => {
       timeout: 120000,
       headers: { 'Content-Type': 'application/json' },
       method: 'POST',
-      body: JSON.stringify(['1990-04-06 01:33:00', '2020-06-08 11:32:10', '1980-03-11 01:33:00', '2010-10-11 11:22:10']),
+      body: JSON.stringify([
+        '1990-04-06 01:33:00',
+        '2020-06-08 11:32:10',
+        '1980-03-11 01:33:00',
+        '2010-10-11 11:22:10',
+      ]),
       url: 'http://some.api.google.com/jinframe/hello',
     };
 

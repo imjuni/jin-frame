@@ -68,14 +68,6 @@ class Test004PostFrame extends JinFrame<{ message: string }> {
   declare public readonly nums: number[];
 }
 
-@Post({ host: 'http://some.api.google.com/jinframe' })
-class _Test005PostFrame extends JinFrame<{ message: string }> {
-  @Query()
-  declare public readonly name: string[];
-
-  @Query()
-  declare public readonly nums: number[];
-}
 
 describe('AbstractJinFrame', () => {
   // MSW server configuration
