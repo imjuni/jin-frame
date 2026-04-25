@@ -2,35 +2,48 @@ import { getServerUrl } from '#/generators/hosts/getServerUrl';
 import { safeUrl } from '#/tools/safeUrl';
 import type { OpenAPIV3 } from 'openapi-types';
 
-export interface IGetHostParams {
+interface IGetHostParams {
   host?: string;
   specTypeFilePath: string;
   document: OpenAPIV3.Document;
 }
 
 export function getHost(params: IGetHostParams): string {
-  if (params.host != null && params.host.trim() !== '') {
+  if (params.host != null) {
     return params.host;
   }
 
-  const specUrl = safeUrl(params.specTypeFilePath);
-
-  if (specUrl == null) {
-    throw new Error(`Failed to parse spec URL: ${params.specTypeFilePath}`);
-  }
-
-  // 2. document의 servers 섹션에서 첫 번째 서버 URL 추출
+  // Try absolute server URLs from the document first (specUrl not required)
   if (params.document.servers != null && params.document.servers.length > 0) {
-    const servers = params.document.servers
-      .map((server) => getServerUrl({ specUrl, server }))
-      .filter((url) => url != null);
-    const firstServer = servers.at(0);
-
-    if (firstServer != null) {
-      return firstServer.url.href;
+    for (const server of params.document.servers) {
+      const serverUrl = safeUrl(server.url);
+      if (serverUrl != null) {
+        return serverUrl.href;
+      }
     }
   }
 
-  // 3. 백업: specTypeFilePath에서 호스트 추출 시도
-  return specUrl.href;
+  // Fall back to relative server URL as-is (e.g. "/api/v3") when specTypeFilePath is a local path
+  if (params.document.servers != null && params.document.servers.length > 0) {
+    const firstServer = params.document.servers[0];
+    if (firstServer.url) {
+      // Try to resolve with specUrl if available
+      const specUrl = safeUrl(params.specTypeFilePath);
+      if (specUrl != null) {
+        return getServerUrl({ specUrl, server: firstServer }).url.href;
+      }
+      // Use relative server URL as-is
+      return firstServer.url;
+    }
+  }
+
+  // Last resort: use specTypeFilePath itself as the host
+  const specUrl = safeUrl(params.specTypeFilePath);
+  if (specUrl != null) {
+    return specUrl.href;
+  }
+
+  throw new Error(
+    `Cannot determine host: specTypeFilePath "${params.specTypeFilePath}" is not a valid URL and no usable server URL found`,
+  );
 }

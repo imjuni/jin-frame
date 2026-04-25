@@ -24,7 +24,6 @@ await esbuild.build({
     'merge',
     'my-easy-fp',
     'my-only-either',
-    'path-to-regexp',
     'reflect-metadata',
     'type-fest',
   ],

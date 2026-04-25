@@ -48,7 +48,7 @@
     "url": "git+https://github.com/imjuni/jin-frame.git"
   },
   "engines": {
-    "node": ">=20"
+    "node": ">=22"
   },
   "author": "ByungJoon Lee <imjuni+github@gmail.com>",
   "license": "MIT",
@@ -91,6 +91,7 @@
     "@rollup/plugin-node-resolve": "^15.2.3",
     "@stylistic/eslint-plugin": "^3.1.0",
     "@tsconfig/node20": "^20.1.6",
+    "@tsconfig/node22": "^22.0.5",
     "@types/debug": "^4.1.12",
     "@vitest/coverage-v8": "^3.2.4",
     "@vitest/ui": "^3.2.4",

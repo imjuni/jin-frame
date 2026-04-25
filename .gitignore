@@ -127,6 +127,9 @@ packages/jin-frame/docs/public
 # swc
 .swc/
 
+# env
+mise.toml
+
 # script
 git-short.sh
 **/api-spec/

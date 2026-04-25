@@ -12,8 +12,8 @@ interface IGetServerUrlReturn {
   prefix?: string;
 }
 
-export function getServerUrl(params: IGetServerUrlParams): IGetServerUrlReturn {
-  const serverUrl = safeUrl(params.server.url);
+export function getServerUrl({ specUrl, server }: IGetServerUrlParams): IGetServerUrlReturn {
+  const serverUrl = safeUrl(server.url);
 
   // server url can be used as is
   if (serverUrl != null) {
@@ -21,7 +21,7 @@ export function getServerUrl(params: IGetServerUrlParams): IGetServerUrlReturn {
   }
 
   // if server url is not a full url, combine spec url and server url
-  const next = new URL(params.specUrl.href);
-  next.pathname = urlJoin(next.pathname, params.server.url);
-  return { url: next, prefix: params.server.url };
+  const next = new URL(specUrl.href);
+  next.pathname = urlJoin(next.pathname, server.url);
+  return { url: next, prefix: server.url };
 }

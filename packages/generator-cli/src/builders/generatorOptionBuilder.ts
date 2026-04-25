@@ -40,6 +40,38 @@ export function generatorOptionBuilder(argv: Argv<IGeneratorOption>): Argv<IGene
       demandOption: false,
       default: true,
       describe: 'Whether to wrap generated code with markdown code fences',
+    })
+    .option('host-strategy', {
+      type: 'string',
+      choices: ['string', 'function', 'env-function'],
+      demandOption: false,
+      default: 'string',
+      describe: 'Strategy for generating host configuration',
+    })
+    .option('host-env-var', {
+      type: 'string',
+      demandOption: false,
+      default: 'NODE_ENV',
+      describe: 'Environment variable name for host selection (when using env-function)',
+    })
+    .option('host-function-name', {
+      type: 'string',
+      demandOption: false,
+      default: 'getApiHost',
+      describe: 'Custom function name for host resolution (when using function)',
+    })
+    .option('server-mapping', {
+      type: 'string',
+      demandOption: false,
+      describe: 'Environment to server URL mapping as JSON string',
+      coerce: (value: string) => {
+        if (!value) return undefined;
+        try {
+          return JSON.parse(value);
+        } catch {
+          throw new Error('server-mapping must be valid JSON');
+        }
+      }
     });
 
   return argv;

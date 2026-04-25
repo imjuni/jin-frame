@@ -3,7 +3,6 @@ import type { Project } from 'ts-morph';
 import { pascalCase } from 'change-case';
 import { getFrameName } from '#/generators/getFrameName';
 import { getClassJsDoc } from '#/generators/getClassJsDoc';
-import { swaggerPathToPathToRegexp } from '#/generators/swaggerPathToPathToRegexp';
 import type { OpenAPIV3 } from 'openapi-types';
 import { getParameter } from '#/generators/parameters/getParameter';
 import { getRequestContentType } from '#/generators/content-type/getRequestContentType';
@@ -20,7 +19,8 @@ interface IProps {
   specTypeFilePath: string;
   baseFrame?: string;
   output: string;
-  host: string;
+  host: string | (() => string);
+  hostCode?: string;
   pathKey: string;
   operation: OpenAPIV3.OperationObject;
   method: THttpMethod;
@@ -45,12 +45,12 @@ export function createFrame(project: Project, params: IProps): IResult {
   const originMethod = params.method.toLowerCase();
   const method = pascalCase(originMethod.toLowerCase());
   const description = getClassJsDoc(params);
-  const pathToRegex = swaggerPathToPathToRegexp(params.pathKey);
   const requestContentType = getRequestContentType(params.operation.requestBody);
   const responseContentType = getResponseContentType(params.operation.responses);
   const methodDecorator = getMethodDecorator({
     host: params.host,
-    path: pathToRegex,
+    hostCode: params.hostCode,
+    path: params.pathKey,
     baseFrame: params.baseFrame,
     method,
     contentType: requestContentType,
