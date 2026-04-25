@@ -12,7 +12,7 @@ describe('mergeFrameOption', () => {
 
   const next: IFrameOption = {
     method: 'POST',
-    path: 'api-path/:name',
+    path: 'api-path/{name}',
     contentType: 'application/json',
     useInstance: false,
   };
@@ -23,7 +23,7 @@ describe('mergeFrameOption', () => {
     expect(merged).toEqual({
       method: 'POST',
       host: 'https://api.site.com',
-      path: 'api-path/:name',
+      path: 'api-path/{name}',
       contentType: 'application/json',
       useInstance: false,
     });
