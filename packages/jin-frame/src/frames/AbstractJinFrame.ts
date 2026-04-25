@@ -375,7 +375,7 @@ export abstract class AbstractJinFrame {
             return deduped;
           }
 
-          await runAndUnwrap(this.$_retryFail.bind(this), req, resp);
+          await runAndUnwrap(this.$_retryFail.bind(this), req, resp.clone());
 
           const current = new Date();
           const interval = getRetryInterval(

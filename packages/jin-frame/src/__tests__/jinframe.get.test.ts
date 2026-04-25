@@ -1,6 +1,7 @@
 import { JinFrame } from '#frames/JinFrame';
 import { Get } from '#decorators/methods/Get';
-import axios, { type AxiosRequestConfig, type AxiosResponse } from 'axios';
+import type { JinRequestConfig } from '#interfaces/JinRequestConfig';
+import type { JinResp } from '#interfaces/JinResp';
 import { http, HttpResponse } from 'msw';
 import { setupServer } from 'msw/node';
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
@@ -26,11 +27,11 @@ class TestGet3Frame extends JinFrame {
     this.skill = ['beam', 'flying!'];
   }
 
-  override $_preHook(req: AxiosRequestConfig): void {
+  override $_preHook(req: JinRequestConfig): void {
     console.log('pre hook trigger: ', req);
   }
 
-  override $_postHook(req: AxiosRequestConfig, reply: AxiosResponse): void {
+  override $_postHook(req: JinRequestConfig, reply: JinResp<unknown, unknown>): void {
     console.log('post hook trigger: ', req);
     console.log(reply);
   }
@@ -55,11 +56,11 @@ class TestGet4Frame extends JinFrame {
     this.skill = ['beam', 'flying!'];
   }
 
-  override async $_preHook(req: AxiosRequestConfig): Promise<void> {
+  override async $_preHook(req: JinRequestConfig): Promise<void> {
     console.log('pre hook trigger: ', req);
   }
 
-  override async $_postHook(req: AxiosRequestConfig, reply: AxiosResponse): Promise<void> {
+  override async $_postHook(req: JinRequestConfig, reply: JinResp<unknown, unknown>): Promise<void> {
     console.log('post hook trigger: ', req);
     console.log(reply);
   }
@@ -84,7 +85,7 @@ class TestGet5Frame extends JinFrame {
     this.skill = ['beam', 'flying!'];
   }
 
-  override $_preHook(req: AxiosRequestConfig): void {
+  override $_preHook(req: JinRequestConfig): void {
     console.log('pre hook trigger: ', req);
   }
 }
@@ -108,7 +109,7 @@ class TestGet6Frame extends JinFrame {
     this.skill = ['beam', 'flying!'];
   }
 
-  override async $_preHook(req: AxiosRequestConfig): Promise<void> {
+  override async $_preHook(req: JinRequestConfig): Promise<void> {
     console.log('pre hook trigger: ', req);
   }
 }
@@ -126,7 +127,7 @@ describe('jinframe.test', () => {
     server.close();
   });
 
-  it('msw-with-axios', async () => {
+  it('msw-with-fetch', async () => {
     server.use(
       http.get('http://some.api.google.com/test', () =>
         HttpResponse.json({
@@ -135,7 +136,7 @@ describe('jinframe.test', () => {
       ),
     );
 
-    await axios.get('http://some.api.google.com/test');
+    await fetch('http://some.api.google.com/test');
   });
 
   it('jin-frame pre hook', async () => {

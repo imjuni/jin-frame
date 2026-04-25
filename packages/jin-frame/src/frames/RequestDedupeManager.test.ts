@@ -1,4 +1,3 @@
-import type { AxiosResponse } from 'axios';
 import { describe, expect, it, beforeEach, vi } from 'vitest';
 import { RequestDedupeManager } from './RequestDedupeManager';
 
@@ -9,14 +8,7 @@ describe('RequestDedupeManager', () => {
 
   describe('dedupe', () => {
     it('should execute request and return response with isDeduped: false for first call', async () => {
-      const mockResponse: AxiosResponse<string> = {
-        data: 'test data',
-        status: 200,
-        statusText: 'OK',
-        headers: {},
-        config: {} as any,
-      };
-
+      const mockResponse = new Response(JSON.stringify('test data'), { status: 200, statusText: 'OK' });
       const mockRequester = vi.fn().mockResolvedValue(mockResponse);
       const cacheKey = 'test-key-1';
 
@@ -29,17 +21,11 @@ describe('RequestDedupeManager', () => {
     });
 
     it('should return cached response with isDeduped: true for concurrent calls', async () => {
-      const mockResponse: AxiosResponse<string> = {
-        data: 'cached data',
-        status: 200,
-        statusText: 'OK',
-        headers: {},
-        config: {} as any,
-      };
+      const mockResponse = new Response(JSON.stringify('cached data'), { status: 200, statusText: 'OK' });
 
       const mockRequester = vi.fn().mockImplementation(
         async () =>
-          new Promise((resolve) => {
+          new Promise<Response>((resolve) => {
             setTimeout(() => resolve(mockResponse), 100);
           }),
       );
@@ -63,21 +49,8 @@ describe('RequestDedupeManager', () => {
     });
 
     it('should handle different cache keys independently', async () => {
-      const mockResponse1: AxiosResponse<string> = {
-        data: 'data 1',
-        status: 200,
-        statusText: 'OK',
-        headers: {},
-        config: {} as any,
-      };
-
-      const mockResponse2: AxiosResponse<string> = {
-        data: 'data 2',
-        status: 200,
-        statusText: 'OK',
-        headers: {},
-        config: {} as any,
-      };
+      const mockResponse1 = new Response(JSON.stringify('data 1'), { status: 200, statusText: 'OK' });
+      const mockResponse2 = new Response(JSON.stringify('data 2'), { status: 200, statusText: 'OK' });
 
       const mockRequester1 = vi.fn().mockResolvedValue(mockResponse1);
       const mockRequester2 = vi.fn().mockResolvedValue(mockResponse2);
@@ -96,14 +69,7 @@ describe('RequestDedupeManager', () => {
     });
 
     it('should remove pending request after successful completion', async () => {
-      const mockResponse: AxiosResponse<string> = {
-        data: 'test',
-        status: 200,
-        statusText: 'OK',
-        headers: {},
-        config: {} as any,
-      };
-
+      const mockResponse = new Response(JSON.stringify('test'), { status: 200, statusText: 'OK' });
       const mockRequester = vi.fn().mockResolvedValue(mockResponse);
       const cacheKey = 'test-key-3';
 
@@ -151,21 +117,8 @@ describe('RequestDedupeManager', () => {
     });
 
     it('should allow new requests after previous request completes', async () => {
-      const mockResponse1: AxiosResponse<string> = {
-        data: 'first response',
-        status: 200,
-        statusText: 'OK',
-        headers: {},
-        config: {} as any,
-      };
-
-      const mockResponse2: AxiosResponse<string> = {
-        data: 'second response',
-        status: 200,
-        statusText: 'OK',
-        headers: {},
-        config: {} as any,
-      };
+      const mockResponse1 = new Response(JSON.stringify('first response'), { status: 200, statusText: 'OK' });
+      const mockResponse2 = new Response(JSON.stringify('second response'), { status: 200, statusText: 'OK' });
 
       const mockRequester1 = vi.fn().mockResolvedValue(mockResponse1);
       const mockRequester2 = vi.fn().mockResolvedValue(mockResponse2);
@@ -182,28 +135,15 @@ describe('RequestDedupeManager', () => {
       expect(result2.isDeduped).toBe(false);
     });
 
-    it('should handle generic type correctly', async () => {
-      interface TestData {
-        id: number;
-        name: string;
-      }
-
-      const mockData: TestData = { id: 1, name: 'test' };
-      const mockResponse: AxiosResponse<TestData> = {
-        data: mockData,
-        status: 200,
-        statusText: 'OK',
-        headers: {},
-        config: {} as any,
-      };
-
+    it('should handle response correctly', async () => {
+      const mockResponse = new Response(JSON.stringify({ id: 1, name: 'test' }), { status: 200, statusText: 'OK' });
       const mockRequester = vi.fn().mockResolvedValue(mockResponse);
       const cacheKey = 'test-key-7';
 
-      const result = await RequestDedupeManager.dedupe<TestData>(cacheKey, mockRequester);
+      const result = await RequestDedupeManager.dedupe(cacheKey, mockRequester);
 
-      expect(result.resp.data.id).toBe(1);
-      expect(result.resp.data.name).toBe('test');
+      expect(result.resp.status).toBe(200);
+      expect(result.resp.ok).toBe(true);
       expect(result.isDeduped).toBe(false);
     });
   });
@@ -214,8 +154,8 @@ describe('RequestDedupeManager', () => {
 
       const mockRequester = vi.fn().mockImplementation(
         async () =>
-          new Promise<void>((resolve) => {
-            setTimeout(resolve, 100);
+          new Promise<Response>((resolve) => {
+            setTimeout(() => resolve(new Response(null, { status: 200 })), 100);
           }),
       );
 
@@ -235,8 +175,8 @@ describe('RequestDedupeManager', () => {
 
       const mockRequester = vi.fn().mockImplementation(
         async () =>
-          new Promise<void>((resolve) => {
-            setTimeout(resolve, 100);
+          new Promise<Response>((resolve) => {
+            setTimeout(() => resolve(new Response(null, { status: 200 })), 100);
           }),
       );
 
@@ -251,8 +191,8 @@ describe('RequestDedupeManager', () => {
     it('should clear all pending requests', async () => {
       const mockRequester = vi.fn().mockImplementation(
         async () =>
-          new Promise<void>((resolve) => {
-            setTimeout(resolve, 100);
+          new Promise<Response>((resolve) => {
+            setTimeout(() => resolve(new Response(null, { status: 200 })), 100);
           }),
       );
 
@@ -276,15 +216,9 @@ describe('RequestDedupeManager', () => {
 
   describe('edge cases and error scenarios', () => {
     it('should handle empty cache key', async () => {
-      const mockResponse: AxiosResponse<string> = {
-        data: 'test',
-        status: 200,
-        statusText: 'OK',
-        headers: {},
-        config: {} as any,
-      };
-
+      const mockResponse = new Response(JSON.stringify('test'), { status: 200, statusText: 'OK' });
       const mockRequester = vi.fn().mockResolvedValue(mockResponse);
+
       const result = await RequestDedupeManager.dedupe('', mockRequester);
 
       expect(result.resp).toBe(mockResponse);
@@ -294,15 +228,9 @@ describe('RequestDedupeManager', () => {
 
     it('should handle very long cache keys', async () => {
       const longKey = 'a'.repeat(1000);
-      const mockResponse: AxiosResponse<string> = {
-        data: 'test',
-        status: 200,
-        statusText: 'OK',
-        headers: {},
-        config: {} as any,
-      };
-
+      const mockResponse = new Response(JSON.stringify('test'), { status: 200, statusText: 'OK' });
       const mockRequester = vi.fn().mockResolvedValue(mockResponse);
+
       const result = await RequestDedupeManager.dedupe(longKey, mockRequester);
 
       expect(result.resp).toBe(mockResponse);
@@ -324,17 +252,11 @@ describe('RequestDedupeManager', () => {
     });
 
     it('should handle race condition when clearing pending requests during execution', async () => {
-      const mockResponse: AxiosResponse<string> = {
-        data: 'test',
-        status: 200,
-        statusText: 'OK',
-        headers: {},
-        config: {} as any,
-      };
+      const mockResponse = new Response(JSON.stringify('test'), { status: 200, statusText: 'OK' });
 
       const mockRequester = vi.fn().mockImplementation(
         async () =>
-          new Promise<AxiosResponse<string>>((resolve) => {
+          new Promise<Response>((resolve) => {
             setTimeout(() => resolve(mockResponse), 50);
           }),
       );
@@ -353,13 +275,7 @@ describe('RequestDedupeManager', () => {
 
     it('should handle multiple sequential calls with same key after error', async () => {
       const mockError = new Error('First request failed');
-      const mockResponse: AxiosResponse<string> = {
-        data: 'success',
-        status: 200,
-        statusText: 'OK',
-        headers: {},
-        config: {} as any,
-      };
+      const mockResponse = new Response(JSON.stringify('success'), { status: 200, statusText: 'OK' });
 
       const failingRequester = vi.fn().mockRejectedValue(mockError);
       const successRequester = vi.fn().mockResolvedValue(mockResponse);
@@ -374,21 +290,14 @@ describe('RequestDedupeManager', () => {
       expect(RequestDedupeManager.hasPendingRequest(cacheKey)).toBe(false);
     });
 
-    it('should handle null and undefined responses', async () => {
-      const mockResponse: AxiosResponse<null> = {
-        data: null,
-        status: 204,
-        statusText: 'No Content',
-        headers: {},
-        config: {} as any,
-      };
-
+    it('should handle no-content responses', async () => {
+      const mockResponse = new Response(null, { status: 204, statusText: 'No Content' });
       const mockRequester = vi.fn().mockResolvedValue(mockResponse);
       const cacheKey = 'null-response-key';
 
       const result = await RequestDedupeManager.dedupe(cacheKey, mockRequester);
 
-      expect(result.resp.data).toBe(null);
+      expect(result.resp.status).toBe(204);
       expect(result.isDeduped).toBe(false);
       expect(mockRequester).toHaveBeenCalledTimes(1);
     });
