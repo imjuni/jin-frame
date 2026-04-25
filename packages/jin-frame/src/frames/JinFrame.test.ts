@@ -1180,10 +1180,104 @@ describe('JinFrame coverage branches', () => {
     }
 
     const frame = InvalidMultipartFrame.of({ file: 'placeholder' });
-    // Force unsupported type (bigint) at runtime to trigger getBodyInit throw path
+    // Force unsupported type at runtime to trigger getBodyInit throw path
     (frame as Record<string, unknown>).file = Symbol('invalid');
 
     expect(() => frame.requestWrap()).toThrow(JinCreateError);
+  });
+
+  it('should clone raw response when cloneRaw option is true', async () => {
+    branchServer.use(http.post('http://branch.api.example.com/clone', () => HttpResponse.json({ message: 'ok' })));
+
+    @Post({ host: 'http://branch.api.example.com', path: '/clone' })
+    class CloneRawFrame extends JinFrame<{ message: string }> {
+      @Body()
+      declare public readonly name: string;
+    }
+
+    const frame = CloneRawFrame.of({ name: 'test' });
+    const result = await frame.execute({ cloneRaw: true });
+    expect(result.ok).toBe(true);
+    expect(result.raw).toBeDefined();
+  });
+
+  it('should use custom deserialize function when provided', async () => {
+    branchServer.use(
+      http.post('http://branch.api.example.com/deserialize', () => new HttpResponse('{"value":42}', { status: 200 })),
+    );
+
+    @Post({ host: 'http://branch.api.example.com', path: '/deserialize' })
+    class DeserializeFrame extends JinFrame<{ value: number }> {
+      @Body()
+      declare public readonly name: string;
+    }
+
+    const frame = DeserializeFrame.of({ name: 'test' });
+    const result = await frame.execute({
+      deserialize: (text) => ({ value: parseInt(text.replace(/\D/g, ''), 10) }),
+    });
+    expect(result.ok).toBe(true);
+    expect((result.data as { value: number }).value).toBe(42);
+  });
+
+  it('should return undefined data when response body is empty', async () => {
+    branchServer.use(http.post('http://branch.api.example.com/empty', () => new HttpResponse('', { status: 200 })));
+
+    @Post({ host: 'http://branch.api.example.com', path: '/empty' })
+    class EmptyBodyFrame extends JinFrame<undefined> {
+      @Body()
+      declare public readonly name: string;
+    }
+
+    const frame = EmptyBodyFrame.of({ name: 'test' });
+    const result = await frame.execute();
+    expect(result.ok).toBe(true);
+    expect(result.data).toBeUndefined();
+  });
+
+  it('should expand path params when option.url with template is provided', async () => {
+    branchServer.use(http.get('http://branch.api.example.com/items/99', () => HttpResponse.json({ message: 'ok' })));
+
+    @Get({ host: 'http://branch.api.example.com', path: '/items/{id}' })
+    class OptionUrlFrame extends JinFrame<{ message: string }> {
+      @Param()
+      declare public readonly id: string;
+    }
+
+    const frame = OptionUrlFrame.of({ id: '99' });
+    const result = await frame.execute({ url: 'http://branch.api.example.com/items/{id}' });
+    expect(result.ok).toBe(true);
+  });
+
+  it('should use path-only URL when host is not set (line 231 false branch)', async () => {
+    branchServer.use(http.post('/api/resource', () => HttpResponse.json({ message: 'ok' })));
+
+    @Post({ path: '/api/resource' })
+    class PathOnlyFrame extends JinFrame<{ message: string }> {
+      @Body()
+      declare public readonly name: string;
+    }
+
+    const frame = PathOnlyFrame.of({ name: 'test' });
+    const req = frame.requestWrap();
+    expect(req.url).toBe('/api/resource');
+  });
+
+  it('should create undefined timeoutSignal when timeout is not set (line 374 false branch)', async () => {
+    branchServer.use(http.get('http://branch.api.example.com/notimeout', () => HttpResponse.json({ message: 'ok' })));
+
+    @Get({ host: 'http://branch.api.example.com', path: '/notimeout' })
+    class NoTimeoutFrame extends JinFrame<{ message: string }> {}
+
+    const frame = new NoTimeoutFrame();
+    const req: JinRequestConfig = {
+      url: 'http://branch.api.example.com/notimeout',
+      method: 'GET',
+      headers: {},
+      timeout: undefined,
+    };
+    const result = await frame.retry(req, (s) => s === 200);
+    expect(result.resp.status).toBe(200);
   });
 });
 
