@@ -153,7 +153,7 @@ describe('JinFrame ObjectBody using Array', () => {
         },
       ],
     });
-    const req = frame.request();
+    const req = frame._request();
 
     const expectation = {
       timeout: 120000,
@@ -200,7 +200,7 @@ describe('JinFrame ObjectBody using Array', () => {
       ],
     });
 
-    const req = frame.request();
+    const req = frame._request();
 
     const expectation = {
       timeout: 120000,
@@ -234,7 +234,7 @@ describe('JinFrame ObjectBody using Array', () => {
       ability: ['Energy repulsor', 'Regeneration'],
     });
 
-    const req = frame.request();
+    const req = frame._request();
 
     const expectation = {
       timeout: 120000,
@@ -255,7 +255,7 @@ describe('JinFrame ObjectBody using Array', () => {
       ability: [new Date(1980, 2, 11, 1, 33, 0), new Date(2020, 9, 11, 11, 22, 10)],
     });
 
-    const req = frame.request();
+    const req = frame._request();
 
     const expectation = {
       timeout: 120000,
@@ -277,7 +277,7 @@ describe('JinFrame ObjectBody using Array', () => {
       birthAt: [new Date(1990, 3, 6, 1, 33, 0), new Date(2020, 5, 8, 11, 32, 10)],
     });
 
-    const req = frame.request();
+    const req = frame._request();
 
     const expectation = {
       timeout: 120000,
@@ -304,7 +304,7 @@ describe('JinFrame ObjectBody using Array', () => {
       birthAt: [new Date(1990, 3, 6, 1, 33, 0), new Date(2020, 5, 8, 11, 32, 10)],
     });
 
-    const req = frame.request();
+    const req = frame._request();
 
     const expectation = {
       timeout: 120000,
@@ -339,7 +339,7 @@ describe('JinFrame ObjectBody using Array', () => {
       birthAt: [new Date(1990, 3, 6, 1, 33, 0), new Date(2020, 5, 8, 11, 32, 10)],
     });
 
-    const req = frame.request();
+    const req = frame._request();
 
     const expectation = {
       timeout: 120000,

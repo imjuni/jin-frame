@@ -84,50 +84,65 @@ export abstract class AbstractJinFrame {
       const b = (this as any).builder() as TBuilderFor<T, C>;
       args(b);
       const built = b.get();
-      (inst as any).setFields({ ...auto, ...built });
+      (inst as any)._setFields({ ...auto, ...built });
       return inst;
     }
 
-    (inst as any).setFields({ ...auto, ...args });
+    (inst as any)._setFields({ ...auto, ...args });
     return inst;
   }
   /* eslint-enable @typescript-eslint/no-explicit-any */
 
   // eslint-disable-next-line class-methods-use-this
-  protected $_retryFail(_req: JinRequestConfig, _res: Response): void | Promise<void> {}
+  protected _retryFail(_req: JinRequestConfig, _res: Response): void | Promise<void> {}
 
   // eslint-disable-next-line class-methods-use-this
-  protected $_retryException(_req: JinRequestConfig, _err: Error): void | Promise<void> {}
+  protected _retryException(_req: JinRequestConfig, _err: Error): void | Promise<void> {}
 
-  protected $_option: FrameOption;
+  #option: FrameOption;
 
-  protected $_data: FrameInternal;
+  #data: FrameInternal;
+
+  protected get _startAt(): Date {
+    return this.#data.startAt;
+  }
+
+  protected get _option(): FrameOption {
+    return this.#option;
+  }
 
   constructor() {
     const fromDecorator = getRequestMeta(this.constructor as Constructor<unknown>);
 
-    this.$_option = { ...fromDecorator.option };
-    this.$_data = getFrameInternalData(this.$_option);
+    this.#option = { ...fromDecorator.option };
+    this.#data = getFrameInternalData(this.#option);
   }
 
-  public getData<K extends keyof Pick<FrameInternal, 'body' | 'param' | 'query' | 'header' | 'retry'>>(
+  public _getData<K extends keyof Pick<FrameInternal, 'body' | 'param' | 'query' | 'header' | 'retry'>>(
     kind: K,
   ): Pick<FrameInternal, 'body' | 'param' | 'query' | 'header' | 'retry'>[K] {
-    return this.$_data[kind];
+    return this.#data[kind];
   }
 
-  public getOption<K extends keyof FrameOption>(kind: K): FrameOption[K] {
-    return this.$_option[kind];
+  protected _setData<K extends keyof Pick<FrameInternal, 'retry'>>(
+    kind: K,
+    value: FrameInternal[K],
+  ): void {
+    this.#data[kind] = value;
   }
 
-  public setFields(args: typeof this): void {
+  public _getOption<K extends keyof FrameOption>(kind: K): FrameOption[K] {
+    return this.#option[kind];
+  }
+
+  public _setFields(args: typeof this): void {
     for (const key of Object.keys(args) as (keyof typeof this)[]) {
       this[key] = args[key];
     }
   }
 
-  public getBodyInit(bodies: unknown): BodyInit | undefined {
-    if (this.$_option.contentType === 'application/x-www-form-urlencoded') {
+  public _getBodyInit(bodies: unknown): BodyInit | undefined {
+    if (this.#option.contentType === 'application/x-www-form-urlencoded') {
       if (typeof bodies !== 'object' || bodies == null) {
         return undefined;
       }
@@ -142,8 +157,8 @@ export abstract class AbstractJinFrame {
     }
 
     if (
-      this.$_option.contentType === 'multipart/form-data' &&
-      (this.$_option.method === 'post' || this.$_option.method === 'POST') &&
+      this.#option.contentType === 'multipart/form-data' &&
+      (this.#option.method === 'post' || this.#option.method === 'POST') &&
       typeof bodies === 'object' &&
       bodies != null
     ) {
@@ -185,7 +200,7 @@ export abstract class AbstractJinFrame {
     return JSON.stringify(bodies);
   }
 
-  public getCacheKey(): string | undefined {
+  public _getCacheKey(): string | undefined {
     const entries = Object.entries(this).map(([key, value]) => ({ key, value }));
 
     // stage 01. extract request parameter and option
@@ -215,17 +230,17 @@ export abstract class AbstractJinFrame {
       });
     });
 
-    set(data, 'endpoint.host', this.$_option.host);
-    set(data, 'endpoint.pathPrefix', this.$_option.pathPrefix);
-    set(data, 'endpoint.path', this.$_option.path);
+    set(data, 'endpoint.host', this.#option.host);
+    set(data, 'endpoint.pathPrefix', this.#option.pathPrefix);
+    set(data, 'endpoint.path', this.#option.path);
 
     return safeStringify(data);
   }
 
-  public getBaseUrlString(paths: Record<string, string>): string {
-    const host = getUrlValue(this.$_option.host);
-    const pathPrefix = getUrlValue(this.$_option.pathPrefix);
-    const path = getUrlValue(this.$_option.path);
+  public _getBaseUrlString(paths: Record<string, string>): string {
+    const host = getUrlValue(this.#option.host);
+    const pathPrefix = getUrlValue(this.#option.pathPrefix);
+    const path = getUrlValue(this.#option.path);
 
     // Expand URI templates before creating URL object to avoid encoding
     const expandedHost = host ? parseTemplate(host).expand(paths) : host;
@@ -242,7 +257,7 @@ export abstract class AbstractJinFrame {
    * @param option same with JinRequestConfig, bug exclude some filed ignored
    * @returns created JinRequestConfig
    */
-  public request(option?: JinFrameRequestConfig & IJinFrameCreateConfig): JinRequestConfig {
+  public _request(option?: JinFrameRequestConfig & IJinFrameCreateConfig): JinRequestConfig {
     const entries = Object.entries(this).map(([key, value]) => ({ key, value }));
 
     // stage 01. extract request parameter and option
@@ -259,8 +274,8 @@ export abstract class AbstractJinFrame {
         return option.customBody;
       }
 
-      if (this.$_option.customBody != null) {
-        return this.$_option.customBody;
+      if (this.#option.customBody != null) {
+        return this.#option.customBody;
       }
 
       if (fields.body.length + fields.objectBody.length <= 0) {
@@ -271,13 +286,13 @@ export abstract class AbstractJinFrame {
     })();
 
     // stage 04. set debuggint variable
-    this.$_data.query = queries;
-    this.$_data.body = bodies;
-    this.$_data.header = headers;
-    this.$_data.param = paths;
+    this.#data.query = queries;
+    this.#data.body = bodies;
+    this.#data.header = headers;
+    this.#data.param = paths;
 
     // stage 05. url endpoint build and path parameter evaluation
-    const baseUrlString = option?.url ?? this.getBaseUrlString(paths);
+    const baseUrlString = option?.url ?? this._getBaseUrlString(paths);
 
     // Expand URI template for option.url case
     const expandedUrlString = option?.url != null ? parseTemplate(baseUrlString).expand(paths) : baseUrlString;
@@ -307,14 +322,14 @@ export abstract class AbstractJinFrame {
 
     const { authKey, auth, securityHeaders, securityQueries } = getAuthorization(
       headers,
-      this.$_option,
+      this.#option,
       option?.auth,
       option?.dynamicAuth,
     );
 
     // For multipart/form-data, omit Content-Type so fetch can auto-generate it with the boundary
-    if (this.$_option.contentType !== 'multipart/form-data') {
-      headers['Content-Type'] = this.$_option.contentType;
+    if (this.#option.contentType !== 'multipart/form-data') {
+      headers['Content-Type'] = this.#option.contentType;
     }
 
     // Serialize @Cookie fields as Cookie header (name=value; name2=value2)
@@ -344,13 +359,13 @@ export abstract class AbstractJinFrame {
       Object.assign(headers, securityHeaders);
     }
 
-    const timeout = option?.timeout ?? this.$_option.timeout ?? defaultJinFrameTimeout;
-    const body = this.getBodyInit(bodies);
+    const timeout = option?.timeout ?? this.#option.timeout ?? defaultJinFrameTimeout;
+    const body = this._getBodyInit(bodies);
 
     const targetUrl = isOnlyPath ? `${startWithSlash(url.pathname)}${url.search}` : url.href;
     const req: JinRequestConfig = {
       url: targetUrl,
-      method: this.$_option.method,
+      method: this.#option.method,
       headers,
       body,
       timeout,
@@ -360,8 +375,8 @@ export abstract class AbstractJinFrame {
     return req;
   }
 
-  async retry(req: JinRequestConfig, isValidateStatus: (status: number) => boolean): Promise<DedupeResult> {
-    const { retry } = this.$_data;
+  async _retry(req: JinRequestConfig, isValidateStatus: (status: number) => boolean): Promise<DedupeResult> {
+    const { retry } = this.#data;
 
     const handle = async () => {
       let returnValue: DedupeResult | Error = new Error();
@@ -383,7 +398,7 @@ export abstract class AbstractJinFrame {
             signal,
           });
 
-          const cacheKey = this.$_option.dedupe ? this.getCacheKey() : undefined;
+          const cacheKey = this.#option.dedupe ? this._getCacheKey() : undefined;
           const promised =
             cacheKey != null
               ? // eslint-disable-next-line @typescript-eslint/promise-function-async
@@ -401,13 +416,13 @@ export abstract class AbstractJinFrame {
             return deduped;
           }
 
-          await runAndUnwrap(this.$_retryFail.bind(this), req, resp.clone());
+          await runAndUnwrap(this._retryFail.bind(this), req, resp.clone());
 
           const current = new Date();
           const interval = getRetryInterval(
             retry,
-            getDuration(this.$_data.startAt, current),
-            getDuration(this.$_data.eachStartAt, current),
+            getDuration(this.#data.startAt, current),
+            getDuration(this.#data.eachStartAt, current),
             retryAfter,
           );
 
@@ -415,13 +430,13 @@ export abstract class AbstractJinFrame {
         } catch (err) {
           returnValue = isError(err, new Error('unknown error raised'));
 
-          await runAndUnwrap(this.$_retryException.bind(this), req, returnValue);
+          await runAndUnwrap(this._retryException.bind(this), req, returnValue);
 
           const current = new Date();
           const interval = getRetryInterval(
             retry,
-            getDuration(this.$_data.startAt, current),
-            getDuration(this.$_data.eachStartAt, current),
+            getDuration(this.#data.startAt, current),
+            getDuration(this.#data.eachStartAt, current),
             undefined,
           );
 

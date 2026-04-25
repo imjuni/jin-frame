@@ -28,7 +28,7 @@ export class PokemonFrame extends BaseFrame {
 describe('JinFrame inheritance', () => {
   it('ass', async () => {
     const frame = PokemonFrame.of((b) => b.from({ name: 'pikachu' }));
-    const req = frame.request();
+    const req = frame._request();
     expect(req.url).toEqual('https://pokeapi.co/api/v2/pokemon/pikachu?tid=fce5a3d5-84aa-4051-96a3-1dbecd93dbe4');
   });
 });

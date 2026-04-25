@@ -157,7 +157,7 @@ describe('jinframe.test', () => {
     );
 
     const frame = new TestGet3Frame();
-    const resp = await frame.execute();
+    const resp = await frame._execute();
 
     expect(resp.status).toEqual(200);
   });
@@ -184,7 +184,7 @@ describe('jinframe.test', () => {
 
     try {
       const frame = new TestGet3Frame();
-      await frame.execute();
+      await frame._execute();
     } catch (caught) {
       expect(caught).toBeTruthy();
     }
@@ -208,7 +208,7 @@ describe('jinframe.test', () => {
     );
 
     const frame = new TestGet4Frame();
-    const resp = await frame.execute();
+    const resp = await frame._execute();
 
     expect(resp.status).toEqual(200);
   });
@@ -235,7 +235,7 @@ describe('jinframe.test', () => {
 
     try {
       const frame = new TestGet4Frame();
-      await frame.execute();
+      await frame._execute();
     } catch (caught) {
       expect(caught).toBeTruthy();
     }
@@ -260,7 +260,7 @@ describe('jinframe.test', () => {
     );
 
     const frame = new TestGet5Frame();
-    const resp = await frame.execute();
+    const resp = await frame._execute();
 
     expect(resp.status).toEqual(200);
   });
@@ -283,7 +283,7 @@ describe('jinframe.test', () => {
     );
 
     const frame = new TestGet6Frame();
-    const resp = await frame.execute();
+    const resp = await frame._execute();
 
     expect(resp.status).toEqual(200);
   });

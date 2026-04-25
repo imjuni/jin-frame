@@ -52,7 +52,7 @@ describe('JinFrame ObjectBody using Primitive type', () => {
       passing: 'hello',
       ability: 1,
     });
-    const req = frame.request();
+    const req = frame._request();
 
     const expectation = {
       timeout: 120000,
@@ -72,7 +72,7 @@ describe('JinFrame ObjectBody using Primitive type', () => {
       passing: 'hello',
       ability: 'Energy repulsor',
     });
-    const req = frame.request();
+    const req = frame._request();
 
     const expectation = {
       timeout: 120000,
@@ -93,7 +93,7 @@ describe('JinFrame ObjectBody using Primitive type', () => {
       ability: new Date(2022, 9, 19, 11, 22, 33, 44),
     });
 
-    const req = frame.request();
+    const req = frame._request();
 
     const expectation = {
       timeout: 120000,
@@ -114,7 +114,7 @@ describe('JinFrame ObjectBody using Primitive type', () => {
       ability: true,
     });
 
-    const req = frame.request();
+    const req = frame._request();
 
     const expectation = {
       timeout: 120000,

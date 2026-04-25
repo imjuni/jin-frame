@@ -181,7 +181,7 @@ describe('Security Integration Tests', () => {
   it('should authenticate with Bearer token provider successfully', async () => {
     const frame = new UserProfileFrame();
     frame.id = 'user123';
-    const result = await frame.execute();
+    const result = await frame._execute();
 
     expect(result.status).toBe(200);
     expect(result.data).toEqual({ id: 'user123', name: 'Test User' });
@@ -189,7 +189,7 @@ describe('Security Integration Tests', () => {
 
   it('should authenticate with API key in header successfully', async () => {
     const frame = new DataFrame();
-    const result = await frame.execute();
+    const result = await frame._execute();
 
     expect(result.status).toBe(200);
     expect(result.data).toEqual({ data: 'secure data', filter: 'active' });
@@ -197,7 +197,7 @@ describe('Security Integration Tests', () => {
 
   it('should authenticate with API key in query parameter successfully', async () => {
     const frame = new SearchFrame();
-    const result = await frame.execute();
+    const result = await frame._execute();
 
     expect(result.status).toBe(200);
     expect(result.data).toEqual({ results: ['result1', 'result2'], query: 'test%20query' });
@@ -205,7 +205,7 @@ describe('Security Integration Tests', () => {
 
   it('should authenticate with Basic authentication successfully', async () => {
     const frame = new AdminUserFrame();
-    const result = await frame.execute();
+    const result = await frame._execute();
 
     expect(result.status).toBe(200);
     expect(result.data).toEqual({ success: true, message: 'User created' });
@@ -224,7 +224,7 @@ describe('Security Integration Tests', () => {
     );
 
     const frame = new OAuthProfileFrame();
-    const result = await frame.execute();
+    const result = await frame._execute();
 
     expect(result.status).toBe(200);
     expect(result.data).toEqual({ profile: 'oauth user profile' });
@@ -232,7 +232,7 @@ describe('Security Integration Tests', () => {
 
   it('should authenticate with multiple security providers successfully', async () => {
     const frame = new MultiSecurityFrame();
-    const result = await frame.execute();
+    const result = await frame._execute();
 
     expect(result.status).toBe(200);
     expect(result.data).toEqual({ secure: 'multi-auth data' });
@@ -240,7 +240,7 @@ describe('Security Integration Tests', () => {
 
   it('should use default authorization when no dynamic auth provided', async () => {
     const frame = new DynamicAuthFrame();
-    const result = await frame.execute();
+    const result = await frame._execute();
 
     expect(result.status).toBe(200);
     expect(result.data).toEqual({ message: 'Default auth successful' });
@@ -262,7 +262,7 @@ describe('Security Integration Tests', () => {
     );
 
     const frame = new DynamicAuthFrame();
-    const result = await frame.execute({ dynamicAuth: 'dynamic-override-token' });
+    const result = await frame._execute({ dynamicAuth: 'dynamic-override-token' });
 
     expect(result.status).toBe(200);
     expect(result.data).toEqual({ message: 'Dynamic auth successful' });
@@ -289,7 +289,7 @@ describe('Security Integration Tests', () => {
       }),
     );
 
-    const result = await bearerFrame.execute();
+    const result = await bearerFrame._execute();
     expect(result.status).toBe(200);
     expect(result.data).toEqual({ message: 'Standard Bearer successful' });
   });
@@ -315,7 +315,7 @@ describe('Security Integration Tests', () => {
       }),
     );
 
-    const result = await cookieFrame.execute();
+    const result = await cookieFrame._execute();
     expect(result.status).toBe(200);
     expect(result.data).toEqual({ message: 'Cookie auth successful' });
   });
@@ -341,7 +341,7 @@ describe('Security Integration Tests', () => {
       }),
     );
 
-    const result = await customOAuthFrame.execute();
+    const result = await customOAuthFrame._execute();
     expect(result.status).toBe(200);
     expect(result.data).toEqual({ message: 'Custom OAuth successful' });
   });
@@ -356,7 +356,7 @@ describe('Security Integration Tests', () => {
 
     const frame = new FailureFrame();
 
-    await expect(frame.execute()).rejects.toMatchObject({
+    await expect(frame._execute()).rejects.toMatchObject({
       resp: { status: 401 },
     });
   });
@@ -371,7 +371,7 @@ describe('Security Integration Tests', () => {
 
     const frame = new ApiKeyFailureFrame();
 
-    await expect(frame.execute()).rejects.toMatchObject({
+    await expect(frame._execute()).rejects.toMatchObject({
       resp: { status: 403 },
     });
   });
@@ -386,7 +386,7 @@ describe('Security Integration Tests', () => {
 
     const frame = new BasicAuthFailureFrame();
 
-    await expect(frame.execute()).rejects.toMatchObject({
+    await expect(frame._execute()).rejects.toMatchObject({
       resp: { status: 401 },
     });
   });
@@ -401,7 +401,7 @@ describe('Security Integration Tests', () => {
 
     const frame = new OAuth2FailureFrame();
 
-    await expect(frame.execute()).rejects.toMatchObject({
+    await expect(frame._execute()).rejects.toMatchObject({
       resp: { status: 401 },
     });
   });
@@ -416,7 +416,7 @@ describe('Security Integration Tests', () => {
 
     const frame = new MissingAuthFrame();
 
-    await expect(frame.execute()).rejects.toMatchObject({
+    await expect(frame._execute()).rejects.toMatchObject({
       resp: { status: 401 },
     });
   });
@@ -441,7 +441,7 @@ describe('Security Integration Tests', () => {
     );
 
     const frame = new DynamicOnlyFrame();
-    const result = await frame.execute({ dynamicAuth: 'dynamic-runtime-token' });
+    const result = await frame._execute({ dynamicAuth: 'dynamic-runtime-token' });
 
     expect(result.status).toBe(200);
     expect(result.data).toEqual({ id: 'user123', source: 'dynamic-auth' });
@@ -468,7 +468,7 @@ describe('Security Integration Tests', () => {
     );
 
     const frame = new MultiDynamicFrame();
-    const result = await frame.execute({ dynamicAuth: 'runtime-token' });
+    const result = await frame._execute({ dynamicAuth: 'runtime-token' });
 
     expect(result.status).toBe(200);
     expect(result.data).toEqual({ message: 'Multi-dynamic auth successful' });

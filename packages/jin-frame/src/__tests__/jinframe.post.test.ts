@@ -103,7 +103,7 @@ describe('jinframe.test', () => {
     frame.name = 'ironman';
     frame.gender = 'male';
     frame.skill = 'beam';
-    const resp = await frame.execute();
+    const resp = await frame._execute();
 
     expect(resp.status).toEqual(200);
   });
@@ -131,7 +131,7 @@ describe('jinframe.test', () => {
     frame.name = 'ironman';
     frame.gender = 'male';
     frame.skill = 'beam';
-    const resp = await frame.execute();
+    const resp = await frame._execute();
 
     expect(resp.status).toEqual(200);
   });
@@ -161,7 +161,7 @@ describe('jinframe.test', () => {
     frame.passing = 'pass';
     frame.username = 'ironman';
     frame.password = 'marvel';
-    const resp = await frame.execute();
+    const resp = await frame._execute();
 
     expect(resp.status).toEqual(200);
   });

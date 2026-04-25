@@ -39,7 +39,7 @@ export class JinFrame<Pass = unknown, Fail = Pass> extends AbstractJinFrame impl
    * @param req request object
    * */
   // eslint-disable-next-line class-methods-use-this
-  protected $_preHook(_req: JinRequestConfig): void | Promise<void> {}
+  protected _preHook(_req: JinRequestConfig): void | Promise<void> {}
 
   /**
    * Execute after request.
@@ -49,22 +49,22 @@ export class JinFrame<Pass = unknown, Fail = Pass> extends AbstractJinFrame impl
    * @param result [discriminated union](https://www.typescriptlang.org/docs/handbook/typescript-in-5-minutes-func.html#discriminated-unions) pass or fail
    */
   // eslint-disable-next-line class-methods-use-this
-  protected $_postHook(
+  protected _postHook(
     _req: JinRequestConfig,
     _reply: JinResp<Pass, Fail>,
     _debugInfo: DebugInfo,
   ): void | Promise<void> {}
 
-  public requestWrap(option?: JinFrameRequestConfig & IJinFrameCreateConfig): JinRequestConfig {
+  public _requestWrap(option?: JinFrameRequestConfig & IJinFrameCreateConfig): JinRequestConfig {
     try {
-      return super.request(option);
+      return super._request(option);
     } catch (catched) {
       const source = catched as Error;
-      const duration = getDuration(this.$_data.startAt, new Date());
+      const duration = getDuration(this._startAt, new Date());
       const debug: Omit<DebugInfo, 'req'> = {
         ts: {
-          unix: `${getUnixTime(this.$_data.startAt)}.${this.$_data.startAt.getMilliseconds()}`,
-          iso: formatISO(this.$_data.startAt),
+          unix: `${getUnixTime(this._startAt)}.${this._startAt.getMilliseconds()}`,
+          iso: formatISO(this._startAt),
         },
         isDeduped: false,
         duration,
@@ -82,7 +82,7 @@ export class JinFrame<Pass = unknown, Fail = Pass> extends AbstractJinFrame impl
    * @param option request configuration options
    * @returns Function that invokes HTTP APIs
    */
-  public create<TSelf extends this = this>(
+  public _create<TSelf extends this = this>(
     this: this,
     option?: JinFrameRequestConfig & IJinFrameCreateConfig & { getError?: TGetError<TSelf, Pass, Fail> },
   ): () => Promise<
@@ -92,7 +92,7 @@ export class JinFrame<Pass = unknown, Fail = Pass> extends AbstractJinFrame impl
       $validated?: ValidationResult;
     }
   > {
-    const req = this.requestWrap(option);
+    const req = this._requestWrap(option);
     const isValidateStatus = option?.validateStatus ?? isValidateStatusDefault;
 
     const jinFrameHandle = async (): Promise<
@@ -113,21 +113,21 @@ export class JinFrame<Pass = unknown, Fail = Pass> extends AbstractJinFrame impl
       };
 
       try {
-        await runAndUnwrap(this.$_preHook.bind(this), req);
+        await runAndUnwrap(this._preHook.bind(this), req);
 
-        const deduped = await this.retry(req, isValidateStatus);
+        const deduped = await this._retry(req, isValidateStatus);
         const { resp } = deduped;
 
-        const isCloneRaw = option?.cloneRaw ?? this.$_option.cloneRaw;
+        const isCloneRaw = option?.cloneRaw ?? this._option.cloneRaw;
         const raw = isCloneRaw ? resp.clone() : resp;
         const headers = getHeaderObject(resp.headers);
         const text = await resp.text();
-        const deserialize = option?.deserialize ?? this.$_option.deserialize;
+        const deserialize = option?.deserialize ?? this._option.deserialize;
         const parsed = deserialize != null ? deserialize(text) : safeParse(text);
         const data = text.length > 0 ? parsed : undefined;
 
         if (!isValidateStatus(resp.status)) {
-          const { validator } = this.$_option;
+          const { validator } = this._option;
           // eslint-disable-next-line @typescript-eslint/no-explicit-any
           const failValidated = validator != null ? await validator.validate(resp as any) : { valid: true as const };
 
@@ -140,7 +140,7 @@ export class JinFrame<Pass = unknown, Fail = Pass> extends AbstractJinFrame impl
             data: data as Fail,
             $validated: failValidated,
           };
-          const duration = getDuration(this.$_data.startAt, new Date());
+          const duration = getDuration(this._startAt, new Date());
 
           const debugInfo = { ...debug, duration, isDeduped: deduped.isDeduped };
           const err = new JinRespError<Pass, Fail>({
@@ -150,7 +150,7 @@ export class JinFrame<Pass = unknown, Fail = Pass> extends AbstractJinFrame impl
             message: 'response error',
           });
 
-          await runAndUnwrap(this.$_postHook.bind(this), req, failResp, debugInfo);
+          await runAndUnwrap(this._postHook.bind(this), req, failResp, debugInfo);
 
           throw err;
         }
@@ -164,12 +164,12 @@ export class JinFrame<Pass = unknown, Fail = Pass> extends AbstractJinFrame impl
           data: data as Pass,
         };
 
-        const duration = getDuration(this.$_data.startAt, new Date());
+        const duration = getDuration(this._startAt, new Date());
         const debugInfo = { ...debug, duration, isDeduped: deduped.isDeduped };
 
-        await runAndUnwrap(this.$_postHook.bind(this), req, passResp, debugInfo);
+        await runAndUnwrap(this._postHook.bind(this), req, passResp, debugInfo);
 
-        const { validator } = this.$_option;
+        const { validator } = this._option;
         const validated = validator != null ? await validator.validate(passResp) : { valid: true as const };
 
         if (validator != null && !validated.valid && validator.type === 'exception') {
@@ -201,7 +201,7 @@ export class JinFrame<Pass = unknown, Fail = Pass> extends AbstractJinFrame impl
           throw getError(caught, option?.getError);
         }
 
-        const duration = getDuration(this.$_data.startAt, new Date());
+        const duration = getDuration(this._startAt, new Date());
         const { status, statusText } = getStatusFromError(caught);
 
         const jinFrameError = new JinRespError<Pass, Fail>({
@@ -228,11 +228,11 @@ export class JinFrame<Pass = unknown, Fail = Pass> extends AbstractJinFrame impl
    * @param option request configuration options
    * @returns JinResp with pass or fail discriminated union
    */
-  public async execute<TSelf extends this = this>(
+  public async _execute<TSelf extends this = this>(
     this: TSelf,
     option?: JinFrameRequestConfig & IJinFrameCreateConfig & { getError?: TGetError<TSelf, Pass, Fail> },
   ): Promise<JinResp<Pass, Fail>> {
-    const requester = this.create(option);
+    const requester = this._create(option);
     return requester();
   }
 }

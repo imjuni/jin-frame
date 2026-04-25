@@ -92,7 +92,7 @@ describe('JinFrame - Header with formatters', () => {
       username: 'ironman',
       sendAt: new Date(2022, 7, 10, 11, 22, 33),
     });
-    const req = frame.request();
+    const req = frame._request();
 
     const expectation = {
       timeout: 120000,
@@ -114,7 +114,7 @@ describe('JinFrame - Header with formatters', () => {
       username: 'ironman',
       sendAt: [new Date(2022, 7, 10, 11, 22, 33), new Date(2022, 7, 11, 12, 23, 34), new Date(2022, 7, 12, 13, 24, 35)],
     });
-    const req = frame.request();
+    const req = frame._request();
 
     const expectation = {
       timeout: 120000,
@@ -138,7 +138,7 @@ describe('JinFrame - Header with formatters', () => {
       username: 'ironman',
       sendAt: ['2022-08-10 11:22:33', '2022-08-11 12:23:34', '2022-08-12 13:24:35'],
     });
-    const req = frame.request();
+    const req = frame._request();
 
     const expectation = {
       timeout: 120000,
@@ -165,7 +165,7 @@ describe('JinFrame - Header with formatters', () => {
       sendAt: [1660036953, 1660044153, 1660062153],
     });
 
-    const req = frame.request();
+    const req = frame._request();
 
     const expectation = {
       timeout: 120000,

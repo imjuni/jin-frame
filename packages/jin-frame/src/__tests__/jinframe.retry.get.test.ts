@@ -27,11 +27,11 @@ class RetryTestGet01Frame extends JinFrame {
   }
 
   get retryData() {
-    return this.$_data.retry;
+    return this._getData('retry');
   }
 
   set retryData(value) {
-    this.$_data.retry = value;
+    this._setData('retry', value);
   }
 }
 
@@ -53,10 +53,10 @@ class RetryTestGet02Frame extends JinFrame {
   }
 
   get retryData() {
-    return this.$_data.retry;
+    return this._getData('retry');
   }
 
-  override async $_retryFail(req: JinRequestConfig, res: Response): Promise<void> {
+  override async _retryFail(req: JinRequestConfig, res: Response): Promise<void> {
     this.#retryFail = await res.text();
 
     console.log(req.url);
@@ -133,7 +133,7 @@ describe('TestGet9Frame', () => {
 
     const frame = new RetryTestGet01Frame();
 
-    const resp = await frame.execute();
+    const resp = await frame._execute();
     expect(resp.status < 400).toEqual(true);
     expect(frame.retryData?.try).toEqual(3);
   });
@@ -157,7 +157,7 @@ describe('TestGet9Frame', () => {
     const frame = new RetryTestGet01Frame();
 
     await expect(async () => {
-      await frame.execute();
+      await frame._execute();
     }).rejects.toThrowError();
 
     console.log(frame.retryData);
@@ -184,7 +184,7 @@ describe('TestGet9Frame', () => {
     const frame = new RetryTestGet02Frame();
 
     await expect(async () => {
-      await frame.execute();
+      await frame._execute();
     }).rejects.toThrowError();
 
     console.log('A: ', frame.retryData, frame.retryFail);
