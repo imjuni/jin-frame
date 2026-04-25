@@ -71,7 +71,7 @@ class Test005PostFrame extends JinFrame {
 describe('JinFrame - Header', () => {
   it('T001-primitive-type', async () => {
     const frame = Test001PostFrame.of({ passing: 'hello', username: 'ironman', password: 'advengers' });
-    const req = frame.request();
+    const req = frame._request();
 
     const expectation = {
       timeout: 120000,
@@ -87,7 +87,7 @@ describe('JinFrame - Header', () => {
 
   it('T001-header', async () => {
     const frame = Test001PostFrame.of({ passing: 'hello', username: 'ironman', password: 'advengers' });
-    const req = frame.request();
+    const req = frame._request();
 
     expect(req.headers).toMatchObject({
       username: 'ironman',
@@ -98,7 +98,7 @@ describe('JinFrame - Header', () => {
 
   it('T002-primitive-type-key-replace', async () => {
     const frame = Test002PostFrame.of({ passing: 'hello', username: 'ironman', password: 'advengers' });
-    const req = frame.request();
+    const req = frame._request();
 
     const expectation = {
       timeout: 120000,
@@ -114,7 +114,7 @@ describe('JinFrame - Header', () => {
 
   it('T003-primitive-type-key-replace-at-not-support-dot-props', async () => {
     const frame = Test003PostFrame.of({ passing: 'hello', username: 'ironman', password: 'advengers' });
-    const req = frame.request();
+    const req = frame._request();
 
     const expectation = {
       timeout: 120000,
@@ -137,7 +137,7 @@ describe('JinFrame - Header', () => {
       hero: { name: 'ironman', ability: 'proto cannon', age: 33 },
     });
 
-    const req = frame.request();
+    const req = frame._request();
 
     const expectation = {
       timeout: 120000,
@@ -164,7 +164,7 @@ describe('JinFrame - Header', () => {
       hero: ['ironman', 'thor', 'hulk', 'doctor strange'],
     });
 
-    const req = frame.request();
+    const req = frame._request();
 
     const expectation = {
       timeout: 120000,

@@ -86,5 +86,5 @@ it('overlap-param-query', async () => {
   );
 
   const frame = TestGetFrame.of({ id: '3132', passing: 'pass', name: 'ironman', skills: ['beam', 'flying!'] });
-  await frame.execute();
+  await frame._execute();
 });

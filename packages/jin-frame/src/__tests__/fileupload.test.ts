@@ -130,7 +130,7 @@ describe('fileupload.test', () => {
       ],
     });
 
-    await frame.execute();
+    await frame._execute();
   });
 
   it('should upload Blob-based JinFile (non-Buffer branch) for single and array', async () => {
@@ -152,6 +152,6 @@ describe('fileupload.test', () => {
       multiBlobs: [new JinFile('a.txt', blobContent), new JinFile('b.txt', blobContent)],
     });
 
-    await frame.execute();
+    await frame._execute();
   });
 });

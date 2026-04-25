@@ -84,7 +84,7 @@ describe('AbstractJinFrame', () => {
   it('show return form-data when using getBodyInit with multipart/form-data', async () => {
     const frame = Test001PostFrame.of({ username: 'ironman', password: 'avengers', passing: 'pass' });
 
-    const fd = frame.getBodyInit({
+    const fd = frame._getBodyInit({
       first: 'one',
       second: 'two',
       third: 3,
@@ -100,23 +100,23 @@ describe('AbstractJinFrame', () => {
   it('should return body, param field when using @Body, @Param decorator', async () => {
     const frame = Test001PostFrame.of({ username: 'ironman', password: 'avengers', passing: 'pass' });
 
-    frame.request();
+    frame._request();
 
-    expect(frame.getData('body')).toMatchObject({ username: 'ironman', password: 'avengers' });
-    expect(frame.getData('param')).toMatchObject({ passing: 'pass' });
+    expect(frame._getData('body')).toMatchObject({ username: 'ironman', password: 'avengers' });
+    expect(frame._getData('param')).toMatchObject({ passing: 'pass' });
   });
 
   it('should return param, query field when using @Param, @Query decorator', async () => {
     const frame = Test004PostFrame.of({ name: ['ironman', 'captain'], passing: ['pass', 'fail'], nums: [1, 2, 3] });
-    frame.request();
+    frame._request();
 
-    expect(frame.getData('query')).toMatchObject({ name: ['ironman', 'captain'], nums: ['1', '2', '3'] });
-    expect(frame.getData('param')).toMatchObject({ passing: 'pass,fail' });
+    expect(frame._getData('query')).toMatchObject({ name: ['ironman', 'captain'], nums: ['1', '2', '3'] });
+    expect(frame._getData('param')).toMatchObject({ passing: 'pass,fail' });
   });
 
   it('should return array param, array query field when using @Param, @Query decorator', async () => {
     const frame = Test004PostFrame.of({ name: ['ironman', 'captain'], passing: ['pass', 'fail'], nums: [1, 2, 3] });
-    const r = frame.request();
+    const r = frame._request();
 
     expect(r.url).toMatch(
       'http://some.api.google.com/jinframe/pass%2Cfail?name=ironman&name=captain&nums=1&nums=2&nums=3',
@@ -129,7 +129,7 @@ describe('AbstractJinFrame', () => {
 
       const sym = Symbol('ironman');
 
-      frame.getBodyInit({
+      frame._getBodyInit({
         first: 'one',
         second: 'two',
         third: sym,
@@ -143,7 +143,7 @@ describe('AbstractJinFrame', () => {
     const ua =
       'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/109.0.0.0 Safari/537.36 Edg/109.0.1518.61';
     const frame = Test001PostFrame.of({ username: 'ironman', password: 'avengers', passing: 'pass' });
-    const req = frame.request({ userAgent: ua });
+    const req = frame._request({ userAgent: ua });
 
     expect(req.headers?.['User-Agent']).toEqual(ua);
   });
@@ -155,13 +155,13 @@ describe('AbstractJinFrame', () => {
       passing: 'pass',
     });
 
-    const r = frame.request();
+    const r = frame._request();
 
-    expect(frame.getOption('host')).toEqual('http://some.api.google.com');
-    expect(frame.getOption('path')).toEqual('/jinframe/{passing}');
-    expect(frame.getOption('method')).toEqual('POST');
-    expect(frame.getOption('customBody')).toMatchObject({ sample: 'my-custom-body' });
-    expect(frame.getOption('contentType')).toEqual('application/json');
+    expect(frame._getOption('host')).toEqual('http://some.api.google.com');
+    expect(frame._getOption('path')).toEqual('/jinframe/{passing}');
+    expect(frame._getOption('method')).toEqual('POST');
+    expect(frame._getOption('customBody')).toMatchObject({ sample: 'my-custom-body' });
+    expect(frame._getOption('contentType')).toEqual('application/json');
     expect(JSON.parse(r.body as string)).toMatchObject({
       sample: 'my-custom-body',
     });
@@ -170,7 +170,7 @@ describe('AbstractJinFrame', () => {
   it('should return urlencoded body when content-type is application/x-www-form-urlencoded', async () => {
     const frame = Test003PostFrame.of({ username: 'ironman', password: 'avengers', passing: 'pass' });
 
-    const r = frame.request();
+    const r = frame._request();
     expect(typeof r.body).toBe('string');
     expect(r.body).toContain('username=ironman');
     expect(r.body).toContain('password=avengers');
@@ -183,9 +183,9 @@ describe('AbstractJinFrame', () => {
       nums: [1, 2, 3],
     });
 
-    frame.request();
+    frame._request();
 
-    expect(frame.getData('query')).toMatchObject({ name: ['ironman', 'captain'], nums: ['1', '2', '3'] });
-    expect(frame.getData('param')).toMatchObject({ passing: 'pass,fail' });
+    expect(frame._getData('query')).toMatchObject({ name: ['ironman', 'captain'], nums: ['1', '2', '3'] });
+    expect(frame._getData('param')).toMatchObject({ passing: 'pass,fail' });
   });
 });

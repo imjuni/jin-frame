@@ -60,7 +60,7 @@ class Test004ZeroDepthPostFrame extends JinFrame {
 describe('JinFrame - primitive type', () => {
   it('should apply primitive type to path param and body', async () => {
     const frame = Test001PostFrame.of({ passing: 'hello', username: 'ironman', password: 'advengers' });
-    const req = frame.request();
+    const req = frame._request();
 
     const expectation = {
       timeout: 120000,
@@ -75,7 +75,7 @@ describe('JinFrame - primitive type', () => {
 
   it('should apply body key field to different key using replaceAt', async () => {
     const frame = Test002PostFrame.of({ passing: 'hello', username: 'ironman', password: 'advengers' });
-    const req = frame.request();
+    const req = frame._request();
 
     const expectation = {
       timeout: 120000,
@@ -90,7 +90,7 @@ describe('JinFrame - primitive type', () => {
 
   it('should apply body key fields to nested objects when using dot notation in replaceAt', async () => {
     const frame = Test003PostFrame.of({ passing: 'hello', username: 'ironman', password: 'advengers' });
-    const req = frame.request();
+    const req = frame._request();
 
     const expectation = {
       timeout: 120000,
@@ -112,7 +112,7 @@ describe('JinFrame - primitive type', () => {
       hero: { name: 'ironman', ability: 'proto cannon', age: 33 },
     });
 
-    const req = frame.request();
+    const req = frame._request();
 
     const expectation = {
       timeout: 120000,
