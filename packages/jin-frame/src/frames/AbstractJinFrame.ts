@@ -341,6 +341,7 @@ export abstract class AbstractJinFrame {
       headers,
       body,
       timeout,
+      signal: option?.signal,
     };
 
     return req;
