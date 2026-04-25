@@ -358,9 +358,10 @@ export abstract class AbstractJinFrame {
           retry.try += 1;
 
           const timeoutSignal = req.timeout != null ? AbortSignal.timeout(req.timeout) : undefined;
-          const signal = req.signal != null && timeoutSignal != null
-            ? AbortSignal.any([req.signal, timeoutSignal])
-            : req.signal ?? timeoutSignal;
+          const signal =
+            req.signal != null && timeoutSignal != null
+              ? AbortSignal.any([req.signal, timeoutSignal])
+              : (req.signal ?? timeoutSignal);
           const fetchReq = new Request(req.url, {
             method: req.method,
             headers: req.headers,

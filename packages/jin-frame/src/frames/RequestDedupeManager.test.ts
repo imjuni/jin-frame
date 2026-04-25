@@ -25,7 +25,10 @@ describe('RequestDedupeManager', () => {
       const mockRequester = vi.fn().mockImplementation(
         async () =>
           new Promise<Response>((resolve) => {
-            setTimeout(() => resolve(new Response(JSON.stringify('cached data'), { status: 200, statusText: 'OK' })), 100);
+            setTimeout(
+              () => resolve(new Response(JSON.stringify('cached data'), { status: 200, statusText: 'OK' })),
+              100,
+            );
           }),
       );
 
@@ -51,12 +54,12 @@ describe('RequestDedupeManager', () => {
     });
 
     it('should handle different cache keys independently', async () => {
-      const mockRequester1 = vi.fn().mockResolvedValue(
-        new Response(JSON.stringify('data 1'), { status: 200, statusText: 'OK' }),
-      );
-      const mockRequester2 = vi.fn().mockResolvedValue(
-        new Response(JSON.stringify('data 2'), { status: 200, statusText: 'OK' }),
-      );
+      const mockRequester1 = vi
+        .fn()
+        .mockResolvedValue(new Response(JSON.stringify('data 1'), { status: 200, statusText: 'OK' }));
+      const mockRequester2 = vi
+        .fn()
+        .mockResolvedValue(new Response(JSON.stringify('data 2'), { status: 200, statusText: 'OK' }));
 
       const [result1, result2] = await Promise.all([
         RequestDedupeManager.dedupe('key-1', mockRequester1),
@@ -122,12 +125,12 @@ describe('RequestDedupeManager', () => {
     });
 
     it('should allow new requests after previous request completes', async () => {
-      const mockRequester1 = vi.fn().mockResolvedValue(
-        new Response(JSON.stringify('first response'), { status: 200, statusText: 'OK' }),
-      );
-      const mockRequester2 = vi.fn().mockResolvedValue(
-        new Response(JSON.stringify('second response'), { status: 200, statusText: 'OK' }),
-      );
+      const mockRequester1 = vi
+        .fn()
+        .mockResolvedValue(new Response(JSON.stringify('first response'), { status: 200, statusText: 'OK' }));
+      const mockRequester2 = vi
+        .fn()
+        .mockResolvedValue(new Response(JSON.stringify('second response'), { status: 200, statusText: 'OK' }));
       const cacheKey = 'test-key-6';
 
       const result1 = await RequestDedupeManager.dedupe(cacheKey, mockRequester1);
@@ -224,9 +227,9 @@ describe('RequestDedupeManager', () => {
 
   describe('edge cases and error scenarios', () => {
     it('should handle empty cache key', async () => {
-      const mockRequester = vi.fn().mockResolvedValue(
-        new Response(JSON.stringify('test'), { status: 200, statusText: 'OK' }),
-      );
+      const mockRequester = vi
+        .fn()
+        .mockResolvedValue(new Response(JSON.stringify('test'), { status: 200, statusText: 'OK' }));
 
       const result = await RequestDedupeManager.dedupe('', mockRequester);
 
@@ -237,9 +240,9 @@ describe('RequestDedupeManager', () => {
 
     it('should handle very long cache keys', async () => {
       const longKey = 'a'.repeat(1000);
-      const mockRequester = vi.fn().mockResolvedValue(
-        new Response(JSON.stringify('test'), { status: 200, statusText: 'OK' }),
-      );
+      const mockRequester = vi
+        .fn()
+        .mockResolvedValue(new Response(JSON.stringify('test'), { status: 200, statusText: 'OK' }));
 
       const result = await RequestDedupeManager.dedupe(longKey, mockRequester);
 
@@ -265,10 +268,7 @@ describe('RequestDedupeManager', () => {
       const mockRequester = vi.fn().mockImplementation(
         async () =>
           new Promise<Response>((resolve) => {
-            setTimeout(
-              () => resolve(new Response(JSON.stringify('test'), { status: 200, statusText: 'OK' })),
-              50,
-            );
+            setTimeout(() => resolve(new Response(JSON.stringify('test'), { status: 200, statusText: 'OK' })), 50);
           }),
       );
 
@@ -287,9 +287,9 @@ describe('RequestDedupeManager', () => {
     it('should handle multiple sequential calls with same key after error', async () => {
       const mockError = new Error('First request failed');
       const failingRequester = vi.fn().mockRejectedValue(mockError);
-      const successRequester = vi.fn().mockResolvedValue(
-        new Response(JSON.stringify('success'), { status: 200, statusText: 'OK' }),
-      );
+      const successRequester = vi
+        .fn()
+        .mockResolvedValue(new Response(JSON.stringify('success'), { status: 200, statusText: 'OK' }));
       const cacheKey = 'error-recovery-key';
 
       await expect(RequestDedupeManager.dedupe(cacheKey, failingRequester)).rejects.toThrow('First request failed');
