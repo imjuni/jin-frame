@@ -46,7 +46,7 @@ class PokemonPagingFrame extends JinFrame {
   declare readonly offset: number;
 }
 
-@Get({ host: 'https://pokeapi.co/api/v2/pokemon/:name' })
+@Get({ host: 'https://pokeapi.co/api/v2/pokemon/{name}' })
 export class PokemonFrame extends JinFrame {
   @Param()
   declare public readonly name: string;

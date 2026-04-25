@@ -1,7 +1,7 @@
-import type { IFrameOption } from '#interfaces/options/IFrameOption';
-import type { AxiosRequestConfig } from 'axios';
-import type { AuthorizationData } from '#interfaces/security/AuthorizationData';
 import { applySecurityProviders } from '#tools/auth/applySecurityProviders';
+import type { AuthorizationData } from '#interfaces/security/AuthorizationData';
+import type { IFrameOption } from '#interfaces/options/IFrameOption';
+import type { JinBasicAtuh } from '#interfaces/JinBasicAuth';
 
 /**
  * Extracts and processes authorization information from various sources in priority order.
@@ -53,11 +53,11 @@ import { applySecurityProviders } from '#tools/auth/applySecurityProviders';
 export function getAuthorization(
   headers: Record<string, string>,
   frameOption: Pick<IFrameOption, 'security' | 'authorization' | 'authoriztion'>,
-  auth?: AxiosRequestConfig['auth'],
+  auth?: JinBasicAtuh,
   dynamicAuth?: AuthorizationData,
 ): {
   authKey?: string;
-  auth?: AxiosRequestConfig['auth'];
+  auth?: JinBasicAtuh;
   securityHeaders?: Record<string, string>;
   securityQueries?: Record<string, string>;
 } {

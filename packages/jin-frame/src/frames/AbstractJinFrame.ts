@@ -136,10 +136,6 @@ export abstract class AbstractJinFrame<TPASS> {
       return undefined;
     }
 
-    if (this.$_option.transformRequest != null) {
-      return this.$_option.transformRequest;
-    }
-
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const transformRequest: axios.AxiosRequestTransformer = (formData: any) =>
       Object.entries<string | undefined>(formData)
