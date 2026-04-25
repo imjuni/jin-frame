@@ -1176,14 +1176,12 @@ describe('JinFrame coverage branches', () => {
     @Post({ host: 'http://branch.api.example.com', path: '/upload', contentType: 'multipart/form-data' })
     class InvalidMultipartFrame extends JinFrame<{ message: string }> {
       @Body()
-      declare public readonly file: unknown;
+      declare public readonly file: string;
     }
 
-    const frame = InvalidMultipartFrame.of({ file: 'placeholder' });
-    // Force unsupported type at runtime to trigger getBodyInit throw path
-    (frame as Record<string, unknown>).file = Symbol('invalid');
-
-    expect(() => frame.requestWrap()).toThrow(JinCreateError);
+    const frame = new InvalidMultipartFrame();
+    // Pass unsupported Symbol value via customBody to trigger getBodyInit throw path
+    expect(() => frame.requestWrap({ customBody: { file: Symbol('invalid') } })).toThrow(JinCreateError);
   });
 
   it('should clone raw response when cloneRaw option is true', async () => {
