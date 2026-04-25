@@ -1,20 +1,19 @@
 import type { JinFrame } from '#frames/JinFrame';
-import type { IDebugInfo } from '#interfaces/IDebugInfo';
-import type { AxiosError } from 'axios';
+import type { DebugInfo } from '#interfaces/DebugInfo';
 import httpStatusCodes, { getReasonPhrase } from 'http-status-codes';
 
 export class JinCreateError<T extends JinFrame<TPASS, TFAIL>, TPASS, TFAIL = TPASS> extends Error {
   __discriminator = 'JinCreateError';
 
-  #debug: Omit<IDebugInfo, 'req'>;
+  #debug: Omit<DebugInfo, 'req'>;
 
   #frame: T;
 
-  #status: AxiosError['status'];
+  #status: number;
 
   #statusText: string;
 
-  constructor({ debug, frame, message }: { debug: Omit<IDebugInfo, 'req'>; frame: T; message: string }) {
+  constructor({ debug, frame, message }: { debug: Omit<DebugInfo, 'req'>; frame: T; message: string }) {
     super(message);
 
     this.#debug = debug;
@@ -23,7 +22,7 @@ export class JinCreateError<T extends JinFrame<TPASS, TFAIL>, TPASS, TFAIL = TPA
     this.#statusText = getReasonPhrase(httpStatusCodes.INTERNAL_SERVER_ERROR);
   }
 
-  get debug(): Omit<IDebugInfo, 'req'> {
+  get debug(): Omit<DebugInfo, 'req'> {
     return this.#debug;
   }
 
@@ -31,7 +30,7 @@ export class JinCreateError<T extends JinFrame<TPASS, TFAIL>, TPASS, TFAIL = TPA
     return this.#frame;
   }
 
-  get status(): AxiosError['status'] {
+  get status(): number {
     return this.#status;
   }
 

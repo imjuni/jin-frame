@@ -1,6 +1,6 @@
 import type { JinFrame } from '#frames/JinFrame';
-import type { IDebugInfo } from '#interfaces/IDebugInfo';
-import type { TValidationResult } from '#interfaces/TValidationResult';
+import type { DebugInfo } from '#interfaces/DebugInfo';
+import type { ValidationResult } from '#interfaces/ValidationResult';
 import type { AxiosResponse } from 'axios';
 import type { IFail } from 'my-only-either';
 
@@ -9,7 +9,7 @@ export interface IFailJinFrame<T = unknown> extends Pick<AxiosResponse, 'status'
   $err: Error;
 
   /** debugging information */
-  $debug: Omit<IDebugInfo, 'req'>;
+  $debug: Omit<DebugInfo, 'req'>;
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   $frame: JinFrame<any, T>;
@@ -25,9 +25,9 @@ export interface IFailReplyJinFrame<T = unknown> extends AxiosResponse<T>, IFail
   $progress: 'fail';
 
   /** debugging information */
-  $debug: IDebugInfo;
+  $debug: DebugInfo;
 
-  $validated: TValidationResult;
+  $validated: ValidationResult;
 }
 
 export type TJinFail<T> = IFail<IFailCreateJinFrame<T> | IFailReplyJinFrame<T>>;

@@ -1,7 +1,7 @@
 import { JinFile } from '#frames/JinFile';
 import { defaultJinFrameTimeout } from '#frames/defaultJinFrameTimeout';
 import type { IJinFrameCreateConfig } from '#interfaces/options/IJinFrameCreateConfig';
-import type { IJinFrameRequestConfig } from '#interfaces/options/IJinFrameRequestConfig';
+import type { JinFrameRequestConfig } from '#interfaces/options/IJinFrameRequestConfig';
 import { getBodyMap } from '#processors/getBodyMap';
 import { getQuerystringMap } from '#processors/getQuerystringMap';
 import { startWithSlash } from '#tools/slash-utils/startWithSlash';
@@ -219,7 +219,7 @@ export abstract class AbstractJinFrame<TPASS> {
    * @param option same with AxiosRequestConfig, bug exclude some filed ignored
    * @returns created AxiosRequestConfig
    */
-  public request(option?: IJinFrameRequestConfig & IJinFrameCreateConfig): AxiosRequestConfig {
+  public request(option?: JinFrameRequestConfig & IJinFrameCreateConfig): AxiosRequestConfig {
     const entries = Object.entries(this).map(([key, value]) => ({ key, value }));
 
     // stage 01. extract request parameter and option
@@ -359,10 +359,16 @@ export abstract class AbstractJinFrame<TPASS> {
           retry.try += 1;
 
           const cacheKey = this.$_option.dedupe ? this.getCacheKey() : undefined;
+          // TODO: replace with fetch-based call when AbstractJinFrame is migraed!
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          const axiosInstance = this.$_data.instance as any;
           const promised =
             cacheKey != null
-              ? RequestDedupeManager.dedupe<TPASS>(cacheKey, async () => this.$_data.instance.request<TPASS>(req))
-              : (async () => ({ reply: await this.$_data.instance.request<TPASS>(req), isDeduped: false }))();
+              ? RequestDedupeManager.dedupe<TPASS>(
+                  cacheKey,
+                  async () => axiosInstance.request(req) as Promise<AxiosResponse<TPASS>>,
+                )
+              : (async () => ({ reply: await axiosInstance.request(req), isDeduped: false }))();
 
           const deduped = await promised;
           const { reply } = deduped;

@@ -1,25 +1,25 @@
 import type { JinFrame } from '#frames/JinFrame';
-import type { IDebugInfo } from '#interfaces/IDebugInfo';
-import type { TValidationResult } from '#interfaces/TValidationResult';
-import type { AxiosError, AxiosResponse } from 'axios';
+import type { DebugInfo } from '#interfaces/DebugInfo';
+import type { ValidationResult } from '#interfaces/ValidationResult';
 import type { BaseValidator } from '#validators/BaseValidator';
+import type { JinPassResp } from '#interfaces/JinPassResp';
 
-export class JinValidationtError<TPASS, TFAIL = unknown, TValidationError = unknown> extends Error {
+export class JinValidationtError<Pass, Fail = unknown, ValidationError = unknown> extends Error {
   __discriminator = 'JinValidationtError';
 
-  #debug: IDebugInfo;
+  #debug: DebugInfo;
 
-  #frame: JinFrame<TPASS, TFAIL>;
+  #frame: JinFrame<Pass, Fail>;
 
-  #resp: AxiosResponse<TPASS>;
+  #resp: JinPassResp<Pass>;
 
-  #status: AxiosError['status'];
+  #status: number;
 
   #statusText: string;
 
   #validator: BaseValidator;
 
-  #validated: TValidationResult<TValidationError>;
+  #validated: ValidationResult<ValidationError>;
 
   constructor({
     debug,
@@ -29,12 +29,12 @@ export class JinValidationtError<TPASS, TFAIL = unknown, TValidationError = unkn
     validator,
     validated,
   }: {
-    debug: IDebugInfo;
-    frame: JinFrame<TPASS, TFAIL>;
-    resp: AxiosResponse<TPASS>;
+    debug: DebugInfo;
+    frame: JinFrame<Pass, Fail>;
+    resp: JinPassResp<Pass>;
     message: string;
     validator: BaseValidator;
-    validated: TValidationResult<TValidationError>;
+    validated: ValidationResult<ValidationError>;
   }) {
     super(message);
 
@@ -47,19 +47,19 @@ export class JinValidationtError<TPASS, TFAIL = unknown, TValidationError = unkn
     this.#validator = validator;
   }
 
-  get debug(): IDebugInfo {
+  get debug(): DebugInfo {
     return this.#debug;
   }
 
-  get frame(): JinFrame<TPASS, TFAIL> {
+  get frame(): JinFrame<Pass, Fail> {
     return this.#frame;
   }
 
-  get resp(): AxiosResponse<TPASS> | undefined {
+  get resp(): JinPassResp<Pass> | undefined {
     return this.#resp;
   }
 
-  get status(): AxiosError['status'] {
+  get status(): number {
     return this.#status;
   }
 
@@ -71,7 +71,7 @@ export class JinValidationtError<TPASS, TFAIL = unknown, TValidationError = unkn
     return this.#validator;
   }
 
-  get validated(): TValidationResult<TValidationError> {
+  get validated(): ValidationResult<ValidationError> {
     return this.#validated;
   }
 }
