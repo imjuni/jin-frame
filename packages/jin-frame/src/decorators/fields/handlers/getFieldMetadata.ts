@@ -4,6 +4,7 @@ import type { IParamFieldOption } from '#interfaces/field/IParamFieldOption';
 import type { IObjectBodyFieldOption } from '#interfaces/field/body/IObjectBodyFieldOption';
 import type { IHeaderFieldOption } from '#interfaces/field/IHeaderFieldOption';
 import type { IBodyFieldOption } from '#interfaces/field/body/IBodyFieldOption';
+import type { ICookieFieldOption } from '#interfaces/field/ICookieFieldOption';
 import 'reflect-metadata';
 
 interface IRequestFieldRecord {
@@ -12,6 +13,7 @@ interface IRequestFieldRecord {
   body: IBodyFieldOption[];
   objectBody: IObjectBodyFieldOption[];
   header: IHeaderFieldOption[];
+  cookie: ICookieFieldOption[];
 }
 
 type FieldEntry =
@@ -19,7 +21,8 @@ type FieldEntry =
   | { key: string; option: IParamFieldOption }
   | { key: string; option: IBodyFieldOption }
   | { key: string; option: IObjectBodyFieldOption }
-  | { key: string; option: IHeaderFieldOption };
+  | { key: string; option: IHeaderFieldOption }
+  | { key: string; option: ICookieFieldOption };
 
 export function getFieldMetadata(type: object, keys: { key: string; value: unknown }[]): IRequestFieldRecord {
   const fields: { key: string; meta: FieldEntry }[] = [];
@@ -49,6 +52,8 @@ export function getFieldMetadata(type: object, keys: { key: string; value: unkno
           return { ...aggregate, param: [...aggregate.param, option] };
         case 'header':
           return { ...aggregate, header: [...aggregate.header, option] };
+        case 'cookie':
+          return { ...aggregate, cookie: [...aggregate.cookie, option] };
         default:
           return { ...aggregate, query: [...aggregate.query, option] };
       }
@@ -59,6 +64,7 @@ export function getFieldMetadata(type: object, keys: { key: string; value: unkno
       objectBody: [],
       header: [],
       query: [],
+      cookie: [],
     },
   );
 
