@@ -4,7 +4,7 @@ interface IProps {
   responseContentType?: { statusCode: string; mediaType: string };
 }
 
-export function getResponeTypeMappedAccessPath(params: IProps): string {
+export function getResponseTypeMappedAccessPath(params: IProps): string {
   const contentPath =
     params.responseContentType?.mediaType != null && params.responseContentType?.mediaType !== ''
       ? 'content'
@@ -14,7 +14,7 @@ export function getResponeTypeMappedAccessPath(params: IProps): string {
       ? params.responseContentType?.mediaType
       : undefined;
 
-  const responeTypeMappedAccessPath = [
+  const responseTypeMappedAccessPath = [
     params.pathKey,
     params.method,
     'responses',
@@ -26,5 +26,5 @@ export function getResponeTypeMappedAccessPath(params: IProps): string {
     .map((element) => `['${element}']`)
     .join('');
 
-  return responeTypeMappedAccessPath;
+  return responseTypeMappedAccessPath;
 }

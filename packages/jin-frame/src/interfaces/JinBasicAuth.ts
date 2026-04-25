@@ -1,4 +1,4 @@
-export interface JinBasicAtuh {
+export interface JinBasicAuth {
   username: string;
   password: string;
 }

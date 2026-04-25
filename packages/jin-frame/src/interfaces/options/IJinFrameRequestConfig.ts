@@ -1,5 +1,5 @@
 import type { AuthorizationData } from '#interfaces/security/AuthorizationData';
-import type { JinBasicAtuh } from '#interfaces/JinBasicAuth';
+import type { JinBasicAuth } from '#interfaces/JinBasicAuth';
 import type { TMilliseconds } from '#interfaces/options/TMilliseconds';
 
 /**
@@ -16,7 +16,7 @@ export interface JinFrameRequestConfig {
 
   customBody?: unknown;
 
-  auth?: JinBasicAtuh;
+  auth?: JinBasicAuth;
 
   timeout?: TMilliseconds;
 
