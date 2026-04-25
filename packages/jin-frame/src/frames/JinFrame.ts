@@ -22,6 +22,7 @@ import getUnixTime from 'date-fns/getUnixTime';
 import 'reflect-metadata';
 import type { JinPassResp } from '#interfaces/JinPassResp';
 import { getStatusFromError } from '#tools/responses/getStatusFromError';
+import { getHeaderObject } from '#tools/getHeaderObject';
 
 /**
  * Definition HTTP Request
@@ -32,10 +33,7 @@ import { getStatusFromError } from '#tools/responses/getStatusFromError';
  * @typeParam TFAIL AxiosResponse type argument case of invalid status.
  * eg. `AxiosResponse<TFAIL>`
  */
-export class JinFrame<Pass = unknown, Fail = Pass>
-  extends AbstractJinFrame<Pass, Fail>
-  implements JinFrameFunction<Pass, Fail>
-{
+export class JinFrame<Pass = unknown, Fail = Pass> extends AbstractJinFrame implements JinFrameFunction<Pass, Fail> {
   /**
    * Execute before request. If you can change request object that is affected request.
    *
@@ -117,43 +115,63 @@ export class JinFrame<Pass = unknown, Fail = Pass>
       };
 
       try {
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        await runAndUnwrap(this.$_preHook.bind(this), req as any);
+        await runAndUnwrap(this.$_preHook.bind(this), req);
 
         const deduped = await this.retry(req, isValidateStatus);
-        const { reply } = deduped;
+        const { resp } = deduped;
 
-        if (!isValidateStatus(reply.status)) {
-          const failReply = reply as unknown as JinFailResp<Fail>;
+        const isCloneRaw = option?.cloneRaw ?? this.$_option.cloneRaw;
+        const raw = isCloneRaw ? resp.clone() : resp;
+        const headers = getHeaderObject(resp.headers);
+        const text = await resp.text();
+        const deserialize = option?.deserialize ?? this.$_option.deserialize ?? JSON.parse;
+        const data = text.length > 0 ? deserialize(text) : undefined;
+
+        if (!isValidateStatus(resp.status)) {
+          const failResp: JinFailResp<Fail> = {
+            ok: false,
+            status: resp.status,
+            statusText: resp.statusText,
+            headers,
+            raw,
+            data: data as Fail,
+          };
           const duration = getDuration(this.$_data.startAt, new Date());
 
           const debugInfo = { ...debug, duration, isDeduped: deduped.isDeduped };
           const err = new JinRespError<Pass, Fail>({
-            resp: failReply,
+            resp: failResp,
             debug: debugInfo,
             frame: this,
             message: 'response error',
           });
 
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          await runAndUnwrap(this.$_postHook.bind(this), req as any, failReply as any, debugInfo);
+          await runAndUnwrap(this.$_postHook.bind(this), req, failResp, debugInfo);
 
           throw err;
         }
 
-        const passReply = reply as JinPassResp<Pass>;
+        const passResp: JinPassResp<Pass> = {
+          ok: true,
+          status: resp.status,
+          statusText: resp.statusText,
+          headers,
+          raw,
+          data: data as Pass,
+        };
+
         const duration = getDuration(this.$_data.startAt, new Date());
         const debugInfo = { ...debug, duration, isDeduped: deduped.isDeduped };
 
-        await runAndUnwrap(this.$_postHook.bind(this), req, passReply, debugInfo);
+        await runAndUnwrap(this.$_postHook.bind(this), req, passResp, debugInfo);
 
         const { validator } = this.$_option;
-        const validated = await validator?.validate(passReply);
+        const validated = await validator?.validate(passResp);
 
         if (validator != null && validated != null && validator.type === 'exception' && !validated.valid) {
           const err = new JinValidationtError<Pass, Fail>({
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            resp: reply as any,
+            resp: resp as any,
             debug: debugInfo,
             frame: this,
             message: 'validation error',
@@ -165,7 +183,7 @@ export class JinFrame<Pass = unknown, Fail = Pass>
         }
 
         return {
-          ...passReply,
+          ...passResp,
           $debug: debugInfo,
           $frame: this as TSelf,
           $validated: validated,

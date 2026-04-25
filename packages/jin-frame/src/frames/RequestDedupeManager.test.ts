@@ -22,7 +22,7 @@ describe('RequestDedupeManager', () => {
 
       const result = await RequestDedupeManager.dedupe(cacheKey, mockRequester);
 
-      expect(result.reply).toBe(mockResponse);
+      expect(result.resp).toBe(mockResponse);
       expect(result.isDeduped).toBe(false);
       expect(mockRequester).toHaveBeenCalledTimes(1);
       expect(RequestDedupeManager.getPendingRequestsCount()).toBe(0);
@@ -53,11 +53,11 @@ describe('RequestDedupeManager', () => {
       ]);
 
       expect(mockRequester).toHaveBeenCalledTimes(1);
-      expect(result1.reply).toBe(mockResponse);
+      expect(result1.resp).toBe(mockResponse);
       expect(result1.isDeduped).toBe(false);
-      expect(result2.reply).toBe(mockResponse);
+      expect(result2.resp).toBe(mockResponse);
       expect(result2.isDeduped).toBe(true);
-      expect(result3.reply).toBe(mockResponse);
+      expect(result3.resp).toBe(mockResponse);
       expect(result3.isDeduped).toBe(true);
       expect(RequestDedupeManager.getPendingRequestsCount()).toBe(0);
     });
@@ -89,9 +89,9 @@ describe('RequestDedupeManager', () => {
 
       expect(mockRequester1).toHaveBeenCalledTimes(1);
       expect(mockRequester2).toHaveBeenCalledTimes(1);
-      expect(result1.reply).toBe(mockResponse1);
+      expect(result1.resp).toBe(mockResponse1);
       expect(result1.isDeduped).toBe(false);
-      expect(result2.reply).toBe(mockResponse2);
+      expect(result2.resp).toBe(mockResponse2);
       expect(result2.isDeduped).toBe(false);
     });
 
@@ -176,9 +176,9 @@ describe('RequestDedupeManager', () => {
 
       expect(mockRequester1).toHaveBeenCalledTimes(1);
       expect(mockRequester2).toHaveBeenCalledTimes(1);
-      expect(result1.reply).toBe(mockResponse1);
+      expect(result1.resp).toBe(mockResponse1);
       expect(result1.isDeduped).toBe(false);
-      expect(result2.reply).toBe(mockResponse2);
+      expect(result2.resp).toBe(mockResponse2);
       expect(result2.isDeduped).toBe(false);
     });
 
@@ -202,8 +202,8 @@ describe('RequestDedupeManager', () => {
 
       const result = await RequestDedupeManager.dedupe<TestData>(cacheKey, mockRequester);
 
-      expect(result.reply.data.id).toBe(1);
-      expect(result.reply.data.name).toBe('test');
+      expect(result.resp.data.id).toBe(1);
+      expect(result.resp.data.name).toBe('test');
       expect(result.isDeduped).toBe(false);
     });
   });
@@ -287,7 +287,7 @@ describe('RequestDedupeManager', () => {
       const mockRequester = vi.fn().mockResolvedValue(mockResponse);
       const result = await RequestDedupeManager.dedupe('', mockRequester);
 
-      expect(result.reply).toBe(mockResponse);
+      expect(result.resp).toBe(mockResponse);
       expect(result.isDeduped).toBe(false);
       expect(mockRequester).toHaveBeenCalledTimes(1);
     });
@@ -305,7 +305,7 @@ describe('RequestDedupeManager', () => {
       const mockRequester = vi.fn().mockResolvedValue(mockResponse);
       const result = await RequestDedupeManager.dedupe(longKey, mockRequester);
 
-      expect(result.reply).toBe(mockResponse);
+      expect(result.resp).toBe(mockResponse);
       expect(result.isDeduped).toBe(false);
       expect(RequestDedupeManager.hasPendingRequest(longKey)).toBe(false);
     });
@@ -347,7 +347,7 @@ describe('RequestDedupeManager', () => {
       }, 25);
 
       const result = await promise;
-      expect(result.reply).toBe(mockResponse);
+      expect(result.resp).toBe(mockResponse);
       expect(result.isDeduped).toBe(false);
     });
 
@@ -369,7 +369,7 @@ describe('RequestDedupeManager', () => {
       expect(RequestDedupeManager.hasPendingRequest(cacheKey)).toBe(false);
 
       const result = await RequestDedupeManager.dedupe(cacheKey, successRequester);
-      expect(result.reply).toBe(mockResponse);
+      expect(result.resp).toBe(mockResponse);
       expect(result.isDeduped).toBe(false);
       expect(RequestDedupeManager.hasPendingRequest(cacheKey)).toBe(false);
     });
@@ -388,7 +388,7 @@ describe('RequestDedupeManager', () => {
 
       const result = await RequestDedupeManager.dedupe(cacheKey, mockRequester);
 
-      expect(result.reply.data).toBe(null);
+      expect(result.resp.data).toBe(null);
       expect(result.isDeduped).toBe(false);
       expect(mockRequester).toHaveBeenCalledTimes(1);
     });
