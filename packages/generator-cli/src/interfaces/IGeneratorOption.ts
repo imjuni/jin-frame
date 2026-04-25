@@ -19,4 +19,16 @@ export interface IGeneratorOption {
 
   /** Whether to wrap generated code with markdown code fences */
   codeFence: boolean;
+
+  /** Strategy for generating host configuration */
+  hostStrategy?: 'string' | 'function' | 'env-function';
+
+  /** Environment variable name for host selection (when using env-function) */
+  hostEnvVar?: string;
+
+  /** Custom function name for host resolution (when using function) */
+  hostFunctionName?: string;
+
+  /** Environment to server URL mapping */
+  serverMapping?: Record<string, string>;
 }

@@ -7,7 +7,8 @@ import { StructureKind } from 'ts-morph';
 interface IProps {
   method: string;
   contentType?: string;
-  host: string;
+  host: string | (() => string);
+  hostCode?: string;
   path: string;
   baseFrame?: string;
 }
@@ -16,7 +17,14 @@ export function getMethodDecorator(params: IProps): DecoratorStructure {
   const jsonLiteralValue: IJsonLiteralValue[] = [];
 
   if (params.baseFrame == null) {
-    jsonLiteralValue.push({ key: 'host', value: params.host });
+    if (params.hostCode != null) {
+      // Raw generated code (function name, arrow function, etc.) — embed verbatim
+      jsonLiteralValue.push({ key: 'host', value: params.hostCode, isFunction: true });
+    } else if (typeof params.host === 'string') {
+      jsonLiteralValue.push({ key: 'host', value: params.host });
+    } else {
+      jsonLiteralValue.push({ key: 'host', value: params.host, isFunction: true });
+    }
   }
 
   jsonLiteralValue.push({ key: 'path', value: params.path });

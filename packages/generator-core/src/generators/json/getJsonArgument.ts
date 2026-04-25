@@ -11,6 +11,12 @@ export function getJsonArgument(_params?: IProps): string | undefined {
 
   const joined = params
     .map((param) => {
+      // Handle function values
+      if (param.isFunction || typeof param.value === 'function') {
+        const functionCode = typeof param.value === 'function' ? param.value.toString() : param.value;
+        return `${param.key}: ${functionCode}`;
+      }
+
       switch (typeof param.value) {
         case 'string':
           return `${param.key}: ${quote}${param.value}${quote}`;

@@ -1,8 +1,7 @@
 import { load } from '#/openapi/load';
 import { describe, it, expect, vi, afterEach } from 'vitest';
 import fs from 'node:fs';
-import path from 'node:path';
-import { exists, existsSync } from 'my-node-fp';
+import { exists } from 'my-node-fp';
 import axios from 'axios';
 
 vi.mock('my-node-fp', () => ({
@@ -14,14 +13,7 @@ describe('load', () => {
     vi.restoreAllMocks();
   });
 
-  it('', async () => {
-    // const result = await load('./samples/v3.yml');
-    const p = path.join(process.cwd(), '..', '..', 'examples', 'openapi', 'v3.json');
-    const e = await load(p);
-    console.log(e);
-  });
-
-  it('', async () => {
+  it('should return openapi spec document object when pass yml spec file', async () => {
     const expectation = { name: 'ironman' };
     const handle = vi.spyOn(fs.promises, 'readFile').mockResolvedValue(Buffer.from(JSON.stringify(expectation)));
 
@@ -30,20 +22,20 @@ describe('load', () => {
     const result = await load('./samples/v3.yml');
     handle.mockRestore();
 
-    expect(result).toEqual(expectation);
+    expect(result).toEqual({ from: 'file', kind: 'json', data: expectation });
   });
 
-  it('2', async () => {
+  it('should return openapi spec document object when pass openapi spec url', async () => {
     const expectation = { name: 'ironman' };
     const handle = vi.spyOn(axios, 'get').mockResolvedValue({ data: expectation });
 
     const result = await load('http://some.api.google.com/test');
     handle.mockRestore();
 
-    expect(result).toEqual(expectation);
+    expect(result).toEqual({ from: 'url', kind: 'json', data: expectation });
   });
 
-  it('3', async () => {
+  it('should return undefined when pass invalid file path', async () => {
     vi.mocked(exists).mockResolvedValue(false);
 
     const result = await load('/a/b/c/some-spec.yml');

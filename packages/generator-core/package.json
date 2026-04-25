@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "description": "A core module for generating jin-frame classes from an OpenAPI specification.",
   "engines": {
-    "node": ">=20"
+    "node": ">=22"
   },
   "scripts": {
     "openapi-typescript-example": "pnpm dlx openapi-typescript ./samples/v3.yml -o petstore.d.ts",

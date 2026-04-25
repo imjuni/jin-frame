@@ -5,6 +5,7 @@ import { createFrame } from '#/generators/createFrame';
 import { Project } from 'ts-morph';
 import { createBaseFrame } from '#/generators/createBaseFrame';
 import { getHost } from '#/generators/hosts/getHost';
+import { generateHostValue } from '#/generators/hosts/generateHostValue';
 
 export interface IProps {
   specTypeFilePath: string;
@@ -14,6 +15,10 @@ export interface IProps {
   useCodeFence: boolean;
   timeout?: number;
   document: OpenAPIV3.Document;
+  hostStrategy?: 'string' | 'function' | 'env-function';
+  hostEnvVar?: string;
+  hostFunctionName?: string;
+  serverMapping?: Record<string, string>;
 }
 
 export async function createFrames(params: IProps): Promise<
@@ -29,6 +34,21 @@ export async function createFrames(params: IProps): Promise<
   const methods: THttpMethod[] = ['get', 'post', 'put', 'delete', 'patch', 'head', 'options'];
 
   const host = getHost({ host: params.host, specTypeFilePath: params.specTypeFilePath, document });
+
+  // For function/env-function strategies, generate raw host code to embed verbatim in decorators
+  const hostCode =
+    params.hostStrategy === 'function' || params.hostStrategy === 'env-function'
+      ? generateHostValue({
+          servers: document.servers ?? [],
+          options: {
+            hostStrategy: params.hostStrategy,
+            hostEnvVar: params.hostEnvVar,
+            hostFunctionName: params.hostFunctionName,
+            serverMapping: params.serverMapping,
+            host: params.host,
+          },
+        })
+      : undefined;
 
   const baseFrame =
     params.baseFrame != null
@@ -54,6 +74,7 @@ export async function createFrames(params: IProps): Promise<
                   specTypeFilePath: params.specTypeFilePath,
                   output: params.output,
                   host,
+                  hostCode,
                   baseFrame: params.baseFrame,
                   pathKey,
                   method,
