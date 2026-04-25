@@ -13,7 +13,7 @@ import { AxiosError } from 'axios';
 import fastSafeStringify from 'fast-safe-stringify';
 import FormData from 'form-data';
 import { first } from 'my-easy-fp';
-import { expandUriTemplate } from '#tools/uri-template/expandUriTemplate';
+import { parseTemplate } from 'url-template';
 import type { Constructor } from 'type-fest';
 import { flatStringMap } from '#processors/flatStringMap';
 import { getUrl } from '#tools/slash-utils/getUrl';
@@ -265,16 +265,16 @@ export abstract class AbstractJinFrame<TPASS> {
         const path = getUrlValue(this.$_option.path);
 
         // Expand URI templates before creating URL object to avoid encoding
-        const expandedHost = host ? expandUriTemplate(host, paths) : host;
-        const expandedPathPrefix = pathPrefix ? expandUriTemplate(pathPrefix, paths) : pathPrefix;
-        const expandedPath = path ? expandUriTemplate(path, paths) : path;
+        const expandedHost = host ? parseTemplate(host).expand(paths) : host;
+        const expandedPathPrefix = pathPrefix ? parseTemplate(pathPrefix).expand(paths) : pathPrefix;
+        const expandedPath = path ? parseTemplate(path).expand(paths) : path;
 
         const urlMeta = getUrl(expandedHost, expandedPathPrefix, expandedPath);
         return urlMeta.isOnlyPath ? urlMeta.str : urlMeta.url.href;
       })();
 
     // Expand URI template for option.url case
-    const expandedUrlString = option?.url != null ? expandUriTemplate(baseUrlString, paths) : baseUrlString;
+    const expandedUrlString = option?.url != null ? parseTemplate(baseUrlString).expand(paths) : baseUrlString;
     const { url, isOnlyPath } = getUrl(expandedUrlString);
 
     // stage 07. querystring post processing
