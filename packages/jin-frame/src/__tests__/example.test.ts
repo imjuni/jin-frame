@@ -1,4 +1,3 @@
-import axios, { type AxiosRequestConfig } from 'axios';
 import { describe, expect, it } from 'vitest';
 import crypto from 'node:crypto';
 
@@ -13,13 +12,9 @@ interface IReqGetPokemonWithPaging {
 }
 
 async function getPokemonWithPaging(inp: IReqGetPokemonWithPaging) {
-  const req: AxiosRequestConfig = {
-    url: `https://pokeapi.co/api/v2/pokemon?limit=${inp.limit}&offset=${inp.offset}`,
-    method: 'get',
-  };
-
-  const reply = await axios.request<Record<string, string>>(req);
-  return reply.data;
+  const url = `https://pokeapi.co/api/v2/pokemon?limit=${inp.limit}&offset=${inp.offset}`;
+  const response = await fetch(url);
+  return response.json() as Promise<Record<string, string>>;
 }
 
 interface IReqGetPokemonInfoByName {
@@ -28,13 +23,9 @@ interface IReqGetPokemonInfoByName {
 }
 
 async function getPokemonInfoByName(inp: IReqGetPokemonInfoByName) {
-  const req: AxiosRequestConfig = {
-    url: `https://pokeapi.co/api/v2/pokemon/${inp.name}?tid=${inp.tid}`,
-    method: 'get',
-  };
-
-  const reply = await axios.request<Record<string, string>>(req);
-  return reply.data;
+  const url = `https://pokeapi.co/api/v2/pokemon/${inp.name}?tid=${inp.tid}`;
+  const response = await fetch(url);
+  return response.json() as Promise<Record<string, string>>;
 }
 
 @Get({ host: 'https://pokeapi.co/api/v2/pokemon' })

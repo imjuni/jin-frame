@@ -1,11 +1,12 @@
 import { setupServer } from 'msw/node';
-import { AxiosResponse } from 'axios';
 import z from 'zod';
 
 import { JinCreateError } from '#exceptions/JinCreateError';
 import { JinFrame } from '#frames/JinFrame';
 import type { DebugInfo } from '#interfaces/DebugInfo';
-import type { JinFrameResponse, JinRequestConfig } from '#interfaces/TJinFrameResponse';
+import type { JinRequestConfig } from '#interfaces/JinRequestConfig';
+import type { JinResp } from '#interfaces/JinResp';
+import type { JinPassResp } from '#interfaces/JinPassResp';
 import { Post } from '#decorators/methods/Post';
 import { http, HttpResponse, PathParams } from 'msw';
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
@@ -81,7 +82,7 @@ class Test003PostFrame extends JinFrame<{ message: string }> {
 
   override async $_postHook(
     _req: JinRequestConfig,
-    _result: JinFrameResponse<{ message: string }, { message: string }>,
+    _result: JinResp<{ message: string }, { message: string }>,
     _debugInfo: DebugInfo,
   ): Promise<void> {
     this.postHookCount += 1;
@@ -114,7 +115,7 @@ class Test004PostFrame extends JinFrame<{ message: string }> {
 
   override async $_postHook(
     _req: JinRequestConfig,
-    _reply: AxiosResponse<{ message: string }>,
+    _reply: JinResp<{ message: string }, { message: string }>,
     _debugInfo: DebugInfo,
   ): Promise<void> {
     this.postHookCount += 1;
@@ -128,7 +129,7 @@ class Test004PostFrame extends JinFrame<{ message: string }> {
 }
 
 class Test005PostFrameValidator extends BaseValidator<
-  AxiosResponse<{ message: string }>,
+  JinPassResp<{ message: string }>,
   { message: string },
   z.core.$ZodIssue
 > {
@@ -136,7 +137,7 @@ class Test005PostFrameValidator extends BaseValidator<
     super({ type });
   }
 
-  override getData(reply: AxiosResponse<{ message: string }>): { message: string } {
+  override getData(reply: JinPassResp<{ message: string }>): { message: string } {
     return reply.data;
   }
 
