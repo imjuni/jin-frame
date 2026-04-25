@@ -123,7 +123,8 @@ export class JinFrame<Pass = unknown, Fail = Pass> extends AbstractJinFrame impl
         const headers = getHeaderObject(resp.headers);
         const text = await resp.text();
         const deserialize = option?.deserialize ?? this.$_option.deserialize;
-        const data = text.length > 0 ? (deserialize != null ? deserialize(text) : safeParse(text)) : undefined;
+        const parsed = deserialize != null ? deserialize(text) : safeParse(text);
+        const data = text.length > 0 ? parsed : undefined;
 
         if (!isValidateStatus(resp.status)) {
           const failResp: JinFailResp<Fail> = {

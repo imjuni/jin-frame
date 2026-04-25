@@ -3,11 +3,7 @@ import type { JinFrameRequestConfig } from '#interfaces/options/IJinFrameRequest
 import type { JinResp } from '#interfaces/JinResp';
 
 export interface JinFrameFunction<Pass = unknown, Fail = Pass> {
-  create: (
-    args?: JinFrameRequestConfig & IJinFrameCreateConfig,
-  ) => () => Promise<JinResp<Pass, Fail>>;
+  create: (args?: JinFrameRequestConfig & IJinFrameCreateConfig) => () => Promise<JinResp<Pass, Fail>>;
 
-  execute: (
-    args?: JinFrameRequestConfig & IJinFrameCreateConfig,
-  ) => Promise<JinResp<Pass, Fail>>;
+  execute: (args?: JinFrameRequestConfig & IJinFrameCreateConfig) => Promise<JinResp<Pass, Fail>>;
 }

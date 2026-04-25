@@ -153,11 +153,11 @@ export abstract class AbstractJinFrame {
         if (Array.isArray(value) && first(value) instanceof JinFile) {
           value.forEach((jinFile: JinFile) => {
             const fileData = jinFile.file instanceof Buffer ? new Blob([jinFile.file]) : jinFile.file;
-            formData.append(key, fileData as Blob, jinFile.name);
+            formData.append(key, fileData, jinFile.name);
           });
         } else if (value instanceof JinFile) {
           const fileData = value.file instanceof Buffer ? new Blob([value.file]) : value.file;
-          formData.append(key, fileData as Blob, value.name);
+          formData.append(key, fileData, value.name);
         } else if (typeof value === 'string') {
           formData.append(key, value);
         } else if (typeof value === 'number') {
