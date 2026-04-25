@@ -76,10 +76,10 @@ export class JinFrame<Pass = unknown, Fail = Pass> extends AbstractJinFrame impl
   }
 
   /**
-   * Generate an AxiosRequestConfig value and use it to return a functions that invoke HTTP APIs
+   * Generate a request config and return a function that invokes HTTP APIs
    *
-   * @param option same with AxiosRequestConfig, bug exclude some filed ignored
-   * @returns Functions that invoke HTTP APIs
+   * @param option request configuration options
+   * @returns Function that invokes HTTP APIs
    */
   public create<TSelf extends this = this>(
     this: this,

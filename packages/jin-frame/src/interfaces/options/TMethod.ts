@@ -1,3 +1,23 @@
-import type { Method } from 'axios';
-
-export type TMethod = Method | 'SEARCH' | 'search';
+export type TMethod =
+  | 'get'
+  | 'GET'
+  | 'delete'
+  | 'DELETE'
+  | 'head'
+  | 'HEAD'
+  | 'options'
+  | 'OPTIONS'
+  | 'post'
+  | 'POST'
+  | 'put'
+  | 'PUT'
+  | 'patch'
+  | 'PATCH'
+  | 'purge'
+  | 'PURGE'
+  | 'link'
+  | 'LINK'
+  | 'unlink'
+  | 'UNLINK'
+  | 'SEARCH'
+  | 'search';
