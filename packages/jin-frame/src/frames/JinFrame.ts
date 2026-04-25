@@ -127,6 +127,10 @@ export class JinFrame<Pass = unknown, Fail = Pass> extends AbstractJinFrame impl
         const data = text.length > 0 ? parsed : undefined;
 
         if (!isValidateStatus(resp.status)) {
+          const { validator } = this.$_option;
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          const failValidated = validator != null ? await validator.validate(resp as any) : { valid: true as const };
+
           const failResp: JinFailResp<Fail> = {
             ok: false,
             status: resp.status,
@@ -134,6 +138,7 @@ export class JinFrame<Pass = unknown, Fail = Pass> extends AbstractJinFrame impl
             headers,
             raw,
             data: data as Fail,
+            $validated: failValidated,
           };
           const duration = getDuration(this.$_data.startAt, new Date());
 
@@ -165,9 +170,9 @@ export class JinFrame<Pass = unknown, Fail = Pass> extends AbstractJinFrame impl
         await runAndUnwrap(this.$_postHook.bind(this), req, passResp, debugInfo);
 
         const { validator } = this.$_option;
-        const validated = await validator?.validate(passResp);
+        const validated = validator != null ? await validator.validate(passResp) : { valid: true as const };
 
-        if (validator != null && validated != null && validator.type === 'exception' && !validated.valid) {
+        if (validator != null && !validated.valid && validator.type === 'exception') {
           const err = new JinValidationtError<Pass, Fail>({
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
             resp: resp as any,
