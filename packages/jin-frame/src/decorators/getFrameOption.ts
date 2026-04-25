@@ -8,8 +8,6 @@ export function getFrameOption(method: TMethod, option?: Partial<Omit<IFrameOpti
     path: option?.path,
     method,
     customBody: option?.customBody,
-    transformRequest: option?.transformRequest,
-    useInstance: option?.useInstance ?? false,
     contentType: option?.contentType ?? 'application/json',
     userAgent: option?.userAgent,
     retry: option?.retry,
