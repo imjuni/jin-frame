@@ -20,6 +20,15 @@ class TestGetFrame extends JinFrame {
   declare public readonly myFiles: JinFile<Buffer>[];
 }
 
+@Post({ host: 'http://some.api.google.com/fileupload-blob', contentType: 'multipart/form-data' })
+class BlobFileFrame extends JinFrame {
+  @Body()
+  declare public readonly singleBlob: JinFile<Blob>;
+
+  @Body()
+  declare public readonly multiBlobs: JinFile<Blob>[];
+}
+
 describe('fileupload.test', () => {
   const server = setupServer();
 
@@ -119,6 +128,28 @@ describe('fileupload.test', () => {
         new JinFile('README03.md', originalFileContent),
         new JinFile('README04.md', originalFileContent),
       ],
+    });
+
+    await frame.execute();
+  });
+
+  it('should upload Blob-based JinFile (non-Buffer branch) for single and array', async () => {
+    server.use(
+      http.post('http://some.api.google.com/fileupload-blob', async ({ request }) => {
+        const formData = await request.formData();
+        const single = formData.get('singleBlob') as File;
+        const multi = formData.getAll('multiBlobs') as File[];
+        if (single == null || multi.length !== 2) {
+          return new HttpResponse('Invalid', { status: 400 });
+        }
+        return HttpResponse.json({ message: 'ok' });
+      }),
+    );
+
+    const blobContent = new Blob(['hello blob'], { type: 'text/plain' });
+    const frame = BlobFileFrame.of({
+      singleBlob: new JinFile('single.txt', blobContent),
+      multiBlobs: [new JinFile('a.txt', blobContent), new JinFile('b.txt', blobContent)],
     });
 
     await frame.execute();
