@@ -12,9 +12,9 @@ describe('expandUriTemplate', () => {
     expect(result).toBe('/pet/123/tag/456');
   });
 
-  it('should handle spaces in path parameters without encoding', () => {
+  it('should percent-encode spaces in path parameters', () => {
     const result = expandUriTemplate('/search/{query}', { query: 'hello world' });
-    expect(result).toBe('/search/hello world');
+    expect(result).toBe('/search/hello%20world');
   });
 
   it('should handle numeric values', () => {
@@ -22,14 +22,14 @@ describe('expandUriTemplate', () => {
     expect(result).toBe('/user/123');
   });
 
-  it('should keep unchanged if variable not found', () => {
+  it('should expand to empty string when variable not found', () => {
     const result = expandUriTemplate('/pet/{petId}', {});
-    expect(result).toBe('/pet/{petId}');
+    expect(result).toBe('/pet/');
   });
 
   it('should handle mixed found and not found variables', () => {
     const result = expandUriTemplate('/pet/{petId}/tag/{tagId}', { petId: '123' });
-    expect(result).toBe('/pet/123/tag/{tagId}');
+    expect(result).toBe('/pet/123/tag/');
   });
 
   it('should handle special characters in variable names', () => {
