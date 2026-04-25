@@ -1134,6 +1134,59 @@ describe('JinFrame Cookie decorator test', () => {
   });
 });
 
+describe('JinFrame coverage branches', () => {
+  const branchServer = setupServer();
+
+  beforeEach(() => {
+    branchServer.listen();
+  });
+
+  afterEach(() => {
+    branchServer.resetHandlers();
+    branchServer.close();
+  });
+
+  it('should return undefined body when urlencoded content-type has no body fields', async () => {
+    branchServer.use(http.get('http://branch.api.example.com/items', () => HttpResponse.json({ message: 'ok' })));
+
+    @Get({ host: 'http://branch.api.example.com', path: '/items', contentType: 'application/x-www-form-urlencoded' })
+    class UrlencodedNoBodyFrame extends JinFrame<{ message: string }> {}
+
+    const frame = new UrlencodedNoBodyFrame();
+    const result = await frame.execute();
+    expect(result.ok).toBe(true);
+  });
+
+  it('should combine timeout signal and user signal when both are provided', async () => {
+    branchServer.use(http.post('http://branch.api.example.com/signal', () => HttpResponse.json({ message: 'ok' })));
+
+    @Post({ host: 'http://branch.api.example.com', path: '/signal', timeout: 5000 })
+    class SignalFrame extends JinFrame<{ message: string }> {
+      @Body()
+      declare public readonly name: string;
+    }
+
+    const controller = new AbortController();
+    const frame = SignalFrame.of({ name: 'test' });
+    const result = await frame.execute({ signal: controller.signal });
+    expect(result.ok).toBe(true);
+  });
+
+  it('should throw JinCreateError when request building fails due to invalid multipart body type', async () => {
+    @Post({ host: 'http://branch.api.example.com', path: '/upload', contentType: 'multipart/form-data' })
+    class InvalidMultipartFrame extends JinFrame<{ message: string }> {
+      @Body()
+      declare public readonly file: unknown;
+    }
+
+    const frame = InvalidMultipartFrame.of({ file: 'placeholder' });
+    // Force unsupported type (bigint) at runtime to trigger getBodyInit throw path
+    (frame as Record<string, unknown>).file = Symbol('invalid');
+
+    expect(() => frame.requestWrap()).toThrow(JinCreateError);
+  });
+});
+
 describe('Dedupe Request', () => {
   // MSW server configuration for this test suite
   const hookServer = setupServer();
@@ -1158,7 +1211,7 @@ describe('Dedupe Request', () => {
     });
 
     const result = frame.getCacheKey();
-    const expectation = `{"query":{},"param":{"pass_key":"pass"},"header":{"Authorization":"Bearer k"},"body":{"team":"advengers","username":"ironman","password":"marvel"},"endpoint":{"host":"http://some.api.google.com","path":"/jinframe/{pass_key}"}}`;
+    const expectation = `{"query":{},"param":{"pass_key":"pass"},"header":{"Authorization":"Bearer k"},"body":{"team":"advengers","username":"ironman","password":"marvel"},"cookie":{},"endpoint":{"host":"http://some.api.google.com","path":"/jinframe/{pass_key}"}}`;
     expect(result).toEqual(expectation);
   });
 

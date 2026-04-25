@@ -190,9 +190,15 @@ export abstract class AbstractJinFrame {
 
     // stage 01. extract request parameter and option
     const fields = getFieldMetadata(this.constructor.prototype, entries);
-    const data: Record<'query' | 'param' | 'header' | 'body', unknown> = { query: {}, param: {}, header: {}, body: {} };
+    const data: Record<'query' | 'param' | 'header' | 'body' | 'cookie', unknown> = {
+      query: {},
+      param: {},
+      header: {},
+      body: {},
+      cookie: {},
+    };
 
-    [...fields.query, ...fields.param, ...fields.header]
+    [...fields.query, ...fields.param, ...fields.header, ...fields.cookie]
       .filter((input) => !input.cacheKeyExclude)
       .forEach((input) => {
         const value = get(this, input.key);
