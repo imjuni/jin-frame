@@ -966,6 +966,104 @@ describe('JinFrame validation test', () => {
   });
 });
 
+describe('JinFrame fail validation test', () => {
+  const failValidationServer = setupServer();
+
+  beforeEach(() => {
+    failValidationServer.listen();
+  });
+
+  afterEach(() => {
+    failValidationServer.resetHandlers();
+    failValidationServer.close();
+  });
+
+  it('should set $validated on JinFailResp when validator is present and fail response received', async () => {
+    failValidationServer.use(
+      http.post('http://some.api.google.com/jinframe/pass', async () => {
+        return HttpResponse.json({ code: 'NOT_FOUND' }, { status: 404 });
+      }),
+    );
+
+    class FailValidator extends BaseValidator<unknown, unknown, string> {
+      constructor() {
+        super({ type: 'exception' });
+      }
+
+      override validator(_data: unknown): ValidationResult<string> {
+        return { valid: false, error: ['fail response detected'] };
+      }
+    }
+
+    @Post({ host: 'http://some.api.google.com/jinframe/{passing}', validator: new FailValidator() })
+    class FailValidationFrame extends JinFrame {
+      @Param()
+      declare public readonly passing: string;
+    }
+
+    const frame = FailValidationFrame.of({ passing: 'pass' });
+
+    await expect(frame.execute()).rejects.toMatchObject({
+      resp: {
+        ok: false,
+        status: 404,
+        $validated: { valid: false, error: ['fail response detected'] },
+      },
+    });
+  });
+
+  it('should set $validated to valid:true on JinFailResp when no validator is configured', async () => {
+    failValidationServer.use(
+      http.post('http://some.api.google.com/jinframe/pass', async () => {
+        return new HttpResponse('Not Found', { status: 404 });
+      }),
+    );
+
+    @Post({ host: 'http://some.api.google.com/jinframe/{passing}' })
+    class NoValidatorFrame extends JinFrame {
+      @Param()
+      declare public readonly passing: string;
+    }
+
+    const frame = NoValidatorFrame.of({ passing: 'pass' });
+
+    await expect(frame.execute()).rejects.toMatchObject({
+      resp: { ok: false, status: 404, $validated: { valid: true } },
+    });
+  });
+
+  it('should not throw JinValidationtError for fail response even when validator type is exception', async () => {
+    failValidationServer.use(
+      http.post('http://some.api.google.com/jinframe/pass', async () => {
+        return HttpResponse.json({ error: 'Forbidden' }, { status: 403 });
+      }),
+    );
+
+    class StrictValidator extends BaseValidator<unknown, unknown, string> {
+      constructor() {
+        super({ type: 'exception' });
+      }
+
+      override validator(_data: unknown): ValidationResult<string> {
+        return { valid: false, error: ['always invalid'] };
+      }
+    }
+
+    @Post({ host: 'http://some.api.google.com/jinframe/{passing}', validator: new StrictValidator() })
+    class StrictFrame extends JinFrame {
+      @Param()
+      declare public readonly passing: string;
+    }
+
+    const frame = StrictFrame.of({ passing: 'pass' });
+
+    // Should throw JinRespError (not JinValidationtError) with $validated populated
+    const err = await frame.execute().catch((e) => e);
+    expect(err.constructor.name).toBe('JinRespError');
+    expect(err.resp.$validated).toEqual({ valid: false, error: ['always invalid'] });
+  });
+});
+
 describe('Dedupe Request', () => {
   // MSW server configuration for this test suite
   const hookServer = setupServer();
