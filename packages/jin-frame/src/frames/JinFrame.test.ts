@@ -1056,10 +1056,17 @@ describe('JinFrame fail validation test', () => {
     const frame = StrictFrame.of({ passing: 'pass' });
 
     // Should throw JinRespError (not JinValidationtError) with $validated populated
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const err = await frame.execute().catch((e: any) => e);
-    expect(err.constructor.name).toBe('JinRespError');
-    expect(err.resp.$validated).toEqual({ valid: false, error: ['always invalid'] });
+    let caught: unknown;
+    try {
+      await frame.execute();
+    } catch (e) {
+      caught = e;
+    }
+    expect((caught as { constructor: { name: string } }).constructor.name).toBe('JinRespError');
+    expect((caught as { resp: { $validated: unknown } }).resp.$validated).toEqual({
+      valid: false,
+      error: ['always invalid'],
+    });
   });
 });
 
