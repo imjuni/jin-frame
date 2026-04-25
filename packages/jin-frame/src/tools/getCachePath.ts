@@ -3,6 +3,7 @@ import type { IObjectBodyFieldOption } from '#interfaces/field/body/IObjectBodyF
 import type { IHeaderFieldOption } from '#interfaces/field/IHeaderFieldOption';
 import type { IParamFieldOption } from '#interfaces/field/IParamFieldOption';
 import type { IQueryFieldOption } from '#interfaces/field/IQueryFieldOption';
+import type { ICookieFieldOption } from '#interfaces/field/ICookieFieldOption';
 
 interface IGetCachePathParams {
   key: string;
@@ -11,7 +12,8 @@ interface IGetCachePathParams {
     | IParamFieldOption['type']
     | IHeaderFieldOption['type']
     | IBodyFieldOption['type']
-    | IObjectBodyFieldOption['type'];
+    | IObjectBodyFieldOption['type']
+    | ICookieFieldOption['type'];
   replaceAt?: string;
 }
 
