@@ -4,14 +4,14 @@ import z from 'zod';
 
 import { JinCreateError } from '#exceptions/JinCreateError';
 import { JinFrame } from '#frames/JinFrame';
-import type { IDebugInfo } from '#interfaces/IDebugInfo';
-import type { TJinFrameResponse, TJinRequestConfig } from '#interfaces/TJinFrameResponse';
+import type { DebugInfo } from '#interfaces/DebugInfo';
+import type { JinFrameResponse, JinRequestConfig } from '#interfaces/TJinFrameResponse';
 import { Post } from '#decorators/methods/Post';
 import { http, HttpResponse, PathParams } from 'msw';
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 import { Param } from '#decorators/fields/Param';
 import { Body } from '#decorators/fields/Body';
-import type { TValidationResult, TValidationResultType } from '#interfaces/TValidationResult';
+import type { ValidationResult, ValidationResultType } from '#interfaces/ValidationResult';
 import { BaseValidator } from '#validators/BaseValidator';
 import { Validator } from '#decorators/methods/options/Validator';
 import { ObjectBody } from '#decorators/fields/ObjectBody';
@@ -80,15 +80,15 @@ class Test003PostFrame extends JinFrame<{ message: string }> {
   accessor preHookCount = 0;
 
   override async $_postHook(
-    _req: TJinRequestConfig,
-    _result: TJinFrameResponse<{ message: string }, { message: string }>,
-    _debugInfo: IDebugInfo,
+    _req: JinRequestConfig,
+    _result: JinFrameResponse<{ message: string }, { message: string }>,
+    _debugInfo: DebugInfo,
   ): Promise<void> {
     this.postHookCount += 1;
     // console.log('post hook executed: ', this.postHookCount);
   }
 
-  override async $_preHook(_req: TJinRequestConfig): Promise<void> {
+  override async $_preHook(_req: JinRequestConfig): Promise<void> {
     this.preHookCount += 1;
     // console.log('pre hook executed: ', this.preHookCount);
   }
@@ -113,15 +113,15 @@ class Test004PostFrame extends JinFrame<{ message: string }> {
   accessor preHookCount = 0;
 
   override async $_postHook(
-    _req: TJinRequestConfig,
+    _req: JinRequestConfig,
     _reply: AxiosResponse<{ message: string }>,
-    _debugInfo: IDebugInfo,
+    _debugInfo: DebugInfo,
   ): Promise<void> {
     this.postHookCount += 1;
     console.log('post hook executed: ', this.postHookCount);
   }
 
-  override async $_preHook(_req: TJinRequestConfig): Promise<void> {
+  override async $_preHook(_req: JinRequestConfig): Promise<void> {
     this.preHookCount += 1;
     console.log('pre hook executed: ', this.preHookCount);
   }
@@ -132,7 +132,7 @@ class Test005PostFrameValidator extends BaseValidator<
   { message: string },
   z.core.$ZodIssue
 > {
-  constructor(type: TValidationResultType) {
+  constructor(type: ValidationResultType) {
     super({ type });
   }
 
@@ -140,7 +140,7 @@ class Test005PostFrameValidator extends BaseValidator<
     return reply.data;
   }
 
-  override validator(_data: { message: string }): TValidationResult<z.core.$ZodIssue> {
+  override validator(_data: { message: string }): ValidationResult<z.core.$ZodIssue> {
     const result = messageSchema.safeParse(_data);
 
     if (result.success) {

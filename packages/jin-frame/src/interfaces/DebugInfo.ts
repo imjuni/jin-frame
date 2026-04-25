@@ -3,7 +3,7 @@ import type { AxiosRequestConfig } from 'axios';
 /**
  * Debug information for HTTP requests
  */
-export interface IDebugInfo {
+export interface DebugInfo {
   /** Timestamp information when the request started */
   ts: {
     /** Unix timestamp with milliseconds as string */

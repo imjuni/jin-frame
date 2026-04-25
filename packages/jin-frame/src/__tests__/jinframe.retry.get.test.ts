@@ -1,5 +1,5 @@
 import { JinFrame } from '#frames/JinFrame';
-import type { TJinRequestConfig } from '#interfaces/TJinFrameResponse';
+import type { JinRequestConfig } from '#interfaces/TJinFrameResponse';
 import { Get } from '#decorators/methods/Get';
 import type { AxiosResponse } from 'axios';
 import { http, HttpResponse, PathParams } from 'msw';
@@ -57,7 +57,7 @@ class RetryTestGet02Frame extends JinFrame {
     return this.$_data.retry;
   }
 
-  override $_retryFail<TDATA>(req: TJinRequestConfig, res: AxiosResponse<TDATA>): void | Promise<void> {
+  override $_retryFail<TDATA>(req: JinRequestConfig, res: AxiosResponse<TDATA>): void | Promise<void> {
     this.#retryFail = res.data as string;
 
     console.log(req.url);
