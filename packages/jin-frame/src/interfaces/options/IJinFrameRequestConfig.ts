@@ -21,6 +21,12 @@ export interface JinFrameRequestConfig {
   timeout?: TMilliseconds;
 
   /**
+   * AbortSignal to cancel the request.
+   * Combined with the timeout signal when both are provided.
+   */
+  signal?: AbortSignal;
+
+  /**
    * Dynamic authorization data that will be passed to security providers
    * This will override the authorization data configured in the frame
    */
