@@ -16,7 +16,7 @@ class BaseFrame extends JinFrame {
   }
 }
 
-@Get({ path: '/api/v2/pokemon/:name' })
+@Get({ path: '/api/v2/pokemon/{name}' })
 export class PokemonFrame extends BaseFrame {
   @Param()
   declare public readonly name: string;
