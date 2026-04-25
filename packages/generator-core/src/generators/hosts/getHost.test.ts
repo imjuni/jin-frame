@@ -17,8 +17,14 @@ describe('getHost', () => {
     expect(result).toEqual('http://example.com');
   });
 
-  it('should return host when host is not provided', () => {
-    expect(() => getHost({ specTypeFilePath: 'invald', document })).toThrowError();
+  it('should throw error when specTypeFilePath is invalid and no usable server url found', () => {
+    const emptyDocument = { ...document, servers: [] };
+    expect(() => getHost({ specTypeFilePath: 'invald', document: emptyDocument })).toThrowError();
+  });
+
+  it('should return server url when specTypeFilePath is invalid but document has absolute server url', () => {
+    const result = getHost({ specTypeFilePath: 'invald', document });
+    expect(result).toEqual('http://example.com/');
   });
 
   it('should return host when host is not provided', () => {

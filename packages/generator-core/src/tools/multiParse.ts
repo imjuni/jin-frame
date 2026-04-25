@@ -1,15 +1,16 @@
+import type { IMultiParse } from '#/tools/interfaces/IMultiParse';
 import { safeParse } from '#/tools/safeParse';
 import { safeYamlParse } from '#/tools/safeYamlParse';
 
-export function multiParse<T = unknown>(value: string): T | undefined {
+export function multiParse<T = unknown>(value: string): IMultiParse<T> | undefined {
   const json = safeParse<T>(value);
   if (json != null) {
-    return json;
+    return { kind: 'json', data: json };
   }
 
   const yaml = safeYamlParse<T>(value);
   if (yaml != null) {
-    return yaml;
+    return { kind: 'yaml', data: yaml };
   }
 
   return undefined;
