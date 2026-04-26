@@ -69,6 +69,13 @@ export abstract class AbstractJinFrame {
       get() {
         return store as Readonly<Partial<FieldsOf<InstanceType<C>>>>;
       },
+      build() {
+        // eslint-disable-next-line new-cap
+        const inst = new self() as InstanceType<C>;
+        const auto = (self as any).getDefaultValues?.() as Partial<FieldsOf<InstanceType<C>>>;
+        (inst as any)._setFields({ ...auto, ...store });
+        return inst;
+      },
     };
     return api;
   }

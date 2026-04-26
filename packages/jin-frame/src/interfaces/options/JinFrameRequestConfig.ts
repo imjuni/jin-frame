@@ -44,7 +44,7 @@ export interface JinFrameRequestConfig {
    *
    * Receives the raw response text and returns the parsed value.
    * Useful for handling non-standard JSON (e.g. BigInt values).
-   * If not provieded, JSON.parse is used.
+   * If not provided, JSON.parse is used.
    */
   deserialize?: (text: string) => unknown;
 }

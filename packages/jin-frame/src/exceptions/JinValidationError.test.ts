@@ -1,11 +1,11 @@
 import { getDuration } from '#tools/getDuration';
 import { getReasonPhrase } from 'http-status-codes';
 import { describe, expect, it } from 'vitest';
-import { JinValidationtError } from '#exceptions/JinValidationtError';
+import { JinValidationError } from '#exceptions/JinValidationError';
 
-describe('JinValidationtError', () => {
+describe('JinValidationError', () => {
   it('gettter/setter', () => {
-    const jf = new JinValidationtError({
+    const jf = new JinValidationError({
       debug: {
         ts: {
           unix: '1674349200',

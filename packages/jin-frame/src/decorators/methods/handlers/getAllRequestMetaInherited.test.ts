@@ -33,14 +33,14 @@ class GetAllRequestMetaInheritedTest003 extends GetAllRequestMetaInheritedTest00
 
 @Retry({ max: 2, interval: 500 })
 @Timeout(3000)
-@Put({ authoriztion: 'i-am-authorization-key' })
+@Put({})
 class GetAllRequestMetaInheritedTest004 extends GetAllRequestMetaInheritedTest003 {}
 
 @Security([new BasicAuthProvider('final-auth'), new BearerTokenProvider('final-bearer')])
 @Authorization({ sessionId: 'final-session', userId: 'final-user' })
 @Timeout(2000)
-@Validator(new BaseValidator({ type: 'exception' }))
-@Get({ path: 'overwrite/double/path', authoriztion: 'i-am-authorization-key' })
+@Validator({ pass: new BaseValidator({ type: 'exception' }) })
+@Get({ path: 'overwrite/double/path' })
 class GetAllRequestMetaInheritedTest005 extends GetAllRequestMetaInheritedTest004 {}
 
 describe('getAllRequestMetaInherited', () => {
@@ -59,9 +59,7 @@ describe('getAllRequestMetaInherited', () => {
             retry: undefined,
             timeout: undefined,
             userAgent: undefined,
-            authoriztion: 'i-am-authorization-key',
             pathPrefix: undefined,
-            validator: undefined,
           },
         },
         {
@@ -75,7 +73,6 @@ describe('getAllRequestMetaInherited', () => {
             retry: undefined,
             timeout: undefined,
             userAgent: undefined,
-            validator: undefined,
           },
         },
         {
@@ -88,9 +85,7 @@ describe('getAllRequestMetaInherited', () => {
             userAgent: undefined,
             retry: undefined,
             timeout: undefined,
-            authoriztion: undefined,
             pathPrefix: undefined,
-            validator: undefined,
           },
         },
         {
@@ -103,9 +98,7 @@ describe('getAllRequestMetaInherited', () => {
             userAgent: undefined,
             retry: undefined,
             timeout: undefined,
-            authoriztion: undefined,
             pathPrefix: undefined,
-            validator: undefined,
           },
         },
         {
@@ -118,15 +111,13 @@ describe('getAllRequestMetaInherited', () => {
             userAgent: undefined,
             retry: undefined,
             timeout: undefined,
-            authoriztion: undefined,
             pathPrefix: undefined,
-            validator: undefined,
           },
         },
       ],
       retries: [{ max: 2, interval: 500 }],
       timeouts: [2000, 3000, 1000],
-      validators: [new BaseValidator({ type: 'exception' })],
+      validators: [{ pass: new BaseValidator({ type: 'exception' }) }],
       dedupes: [],
       securities: [
         [new BasicAuthProvider('final-auth'), new BearerTokenProvider('final-bearer')],

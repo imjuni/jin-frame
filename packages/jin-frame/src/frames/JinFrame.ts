@@ -9,7 +9,7 @@ import { getDuration } from '#tools/getDuration';
 import { getError } from '#tools/getError';
 import { isValidateStatusDefault } from '#tools/isValidateStatusDefault';
 import { runAndUnwrap } from '#tools/runAndUnwrap';
-import { JinValidationtError } from '#exceptions/JinValidationtError';
+import { JinValidationError } from '#exceptions/JinValidationError';
 import type { GetError } from '#interfaces/GetError';
 import type { ValidationResult } from '#interfaces/ValidationResult';
 import type { JinFailResp } from '#interfaces/JinFailResp';
@@ -127,9 +127,9 @@ export class JinFrame<Pass = unknown, Fail = Pass> extends AbstractJinFrame impl
         const data = text.length > 0 ? parsed : undefined;
 
         if (!isValidateStatus(resp.status)) {
-          const { validator } = this._option;
+          const failValidator = this._option.validators?.fail;
           // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          const failValidated = validator != null ? await validator.validate(resp as any) : { valid: true as const };
+          const failValidated = failValidator != null ? await failValidator.validate(data as any) : undefined;
 
           const failResp: JinFailResp<Fail> = {
             ok: false,
@@ -138,6 +138,7 @@ export class JinFrame<Pass = unknown, Fail = Pass> extends AbstractJinFrame impl
             headers,
             raw,
             data: data as Fail,
+            valid: failValidated?.valid,
             $validated: failValidated,
           };
           const duration = getDuration(this._startAt, new Date());
@@ -164,22 +165,23 @@ export class JinFrame<Pass = unknown, Fail = Pass> extends AbstractJinFrame impl
           data: data as Pass,
         };
 
+        const passValidator = this._option.validators?.pass;
+        const validated = passValidator != null ? await passValidator.validate(passResp) : { valid: true as const };
+
+        passResp.valid = validated.valid;
+
         const duration = getDuration(this._startAt, new Date());
         const debugInfo = { ...debug, duration, isDeduped: deduped.isDeduped };
 
         await runAndUnwrap(this._postHook.bind(this), req, passResp, debugInfo);
 
-        const { validator } = this._option;
-        const validated = validator != null ? await validator.validate(passResp) : { valid: true as const };
-
-        if (validator != null && !validated.valid && validator.type === 'exception') {
-          const err = new JinValidationtError<Pass, Fail>({
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            resp: resp as any,
+        if (passValidator != null && !validated.valid && passValidator.type === 'exception') {
+          const err = new JinValidationError<Pass, Fail>({
+            resp: passResp,
             debug: debugInfo,
             frame: this,
             message: 'validation error',
-            validator,
+            validator: passValidator,
             validated,
           });
 
@@ -197,7 +199,7 @@ export class JinFrame<Pass = unknown, Fail = Pass> extends AbstractJinFrame impl
           throw getError(caught, option?.getError);
         }
 
-        if (caught instanceof JinValidationtError) {
+        if (caught instanceof JinValidationError) {
           throw getError(caught, option?.getError);
         }
 

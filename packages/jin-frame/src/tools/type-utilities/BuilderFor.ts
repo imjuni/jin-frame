@@ -8,4 +8,5 @@ export interface BuilderFor<T, C extends ConstructorFunction<T>> {
   }) => BuilderFor<T, C>;
   auto: () => BuilderFor<T, C>;
   get: () => Readonly<Partial<FieldsOf<InstanceType<C>>>>;
+  build: () => InstanceType<C>;
 }

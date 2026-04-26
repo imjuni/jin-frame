@@ -17,7 +17,7 @@ export function getAllRequestMetaInherited(ctor: AbstractConstructor<unknown> | 
   methods: readonly MethodEntry[];
   retries: readonly FrameRetry[];
   timeouts: readonly Milliseconds[];
-  validators: readonly BaseValidator[];
+  validators: readonly { pass?: BaseValidator; fail?: BaseValidator }[];
   dedupes: readonly boolean[];
   authorizations: readonly FrameOption['authorization'][];
   securities: readonly FrameOption['security'][];
@@ -25,7 +25,7 @@ export function getAllRequestMetaInherited(ctor: AbstractConstructor<unknown> | 
   const methods: MethodEntry[] = [];
   const retries: FrameRetry[] = [];
   const timeouts: Milliseconds[] = [];
-  const validators: BaseValidator[] = [];
+  const validators: { pass?: BaseValidator; fail?: BaseValidator }[] = [];
   const dedupes: boolean[] = [];
   const authorizations: FrameOption['authorization'][] = [];
   const securities: FrameOption['security'][] = [];
@@ -39,7 +39,10 @@ export function getAllRequestMetaInherited(ctor: AbstractConstructor<unknown> | 
     const method = (Reflect.getOwnMetadata(REQUEST_METHOD_DECORATOR, c) as MethodEntry[] | undefined) ?? [];
     const retry = (Reflect.getOwnMetadata(REQUEST_RETRY_DECORATOR, c) as FrameRetry[] | undefined) ?? [];
     const timeout = (Reflect.getOwnMetadata(REQUEST_TIMEOUT_DECORATOR, c) as Milliseconds[] | undefined) ?? [];
-    const validator = (Reflect.getOwnMetadata(REQUEST_VALIDATOR_DECORATOR, c) as BaseValidator[] | undefined) ?? [];
+    const validator =
+      (Reflect.getOwnMetadata(REQUEST_VALIDATOR_DECORATOR, c) as
+        | { pass?: BaseValidator; fail?: BaseValidator }[]
+        | undefined) ?? [];
     const dedupe = (Reflect.getOwnMetadata(REQUEST_DEDUPE_DECORATOR, c) as boolean[] | undefined) ?? [];
     const authorization =
       (Reflect.getOwnMetadata(REQUEST_AUTHORIZATION_DECORATOR, c) as FrameOption['authorization'][] | undefined) ?? [];

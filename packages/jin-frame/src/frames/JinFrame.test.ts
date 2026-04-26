@@ -39,10 +39,7 @@ class CustomError extends Error {
   }
 }
 
-@Post({
-  host: 'http://some.api.google.com/jinframe/{passing}',
-  authoriztion: 'Bearer i-am-bearer-authorization-key',
-})
+@Post({ host: 'http://some.api.google.com/jinframe/{passing}' })
 class Test001PostFrame extends JinFrame<{ message: string }> {
   @Param()
   declare public readonly passing: string;
@@ -157,7 +154,7 @@ class Test005PostFrameValidator extends BaseValidator<
 
 @Post({
   host: 'http://some.api.google.com/jinframe/{passing}',
-  validator: new Test005PostFrameValidator('exception'),
+  validators: { pass: new Test005PostFrameValidator('exception') },
 })
 class Test005PostFrame extends JinFrame<{ message: string }> {
   @Param()
@@ -172,7 +169,7 @@ class Test005PostFrame extends JinFrame<{ message: string }> {
 
 @Post({
   host: 'http://some.api.google.com/jinframe/{passing}',
-  validator: new Test005PostFrameValidator('value'),
+  validators: { pass: new Test005PostFrameValidator('value') },
 })
 class Test006PostFrame extends JinFrame<{ message: string }> {
   @Param()
@@ -185,7 +182,7 @@ class Test006PostFrame extends JinFrame<{ message: string }> {
   declare public readonly password: string;
 }
 
-@Validator(new Test005PostFrameValidator('exception'))
+@Validator({ pass: new Test005PostFrameValidator('exception') })
 @Post({
   host: 'http://some.api.google.com/jinframe/{passing}',
 })
@@ -998,7 +995,7 @@ describe('JinFrame fail validation test', () => {
       }
     }
 
-    @Post({ host: 'http://some.api.google.com/jinframe/{passing}', validator: new FailValidator() })
+    @Post({ host: 'http://some.api.google.com/jinframe/{passing}', validators: { fail: new FailValidator() } })
     class FailValidationFrame extends JinFrame {
       @Param()
       declare public readonly passing: string;
@@ -1010,6 +1007,7 @@ describe('JinFrame fail validation test', () => {
       resp: {
         ok: false,
         status: 404,
+        valid: false,
         $validated: { valid: false, error: ['fail response detected'] },
       },
     });
@@ -1029,11 +1027,11 @@ describe('JinFrame fail validation test', () => {
     const frame = NoValidatorFrame.of({ passing: 'pass' });
 
     await expect(frame._execute()).rejects.toMatchObject({
-      resp: { ok: false, status: 404, $validated: { valid: true } },
+      resp: { ok: false, status: 404 },
     });
   });
 
-  it('should not throw JinValidationtError for fail response even when validator type is exception', async () => {
+  it('should not throw JinValidationError for fail response even when validator type is exception', async () => {
     failValidationServer.use(
       http.post('http://some.api.google.com/jinframe/pass', () =>
         HttpResponse.json({ error: 'Forbidden' }, { status: 403 }),
@@ -1050,7 +1048,7 @@ describe('JinFrame fail validation test', () => {
       }
     }
 
-    @Post({ host: 'http://some.api.google.com/jinframe/{passing}', validator: new StrictValidator() })
+    @Post({ host: 'http://some.api.google.com/jinframe/{passing}', validators: { fail: new StrictValidator() } })
     class StrictFrame extends JinFrame {
       @Param()
       declare public readonly passing: string;
@@ -1058,7 +1056,7 @@ describe('JinFrame fail validation test', () => {
 
     const frame = StrictFrame.of({ passing: 'pass' });
 
-    // Should throw JinRespError (not JinValidationtError) with $validated populated
+    // Should throw JinRespError (not JinValidationError) with valid=false on resp
     let caught: unknown;
     try {
       await frame._execute();
@@ -1066,6 +1064,7 @@ describe('JinFrame fail validation test', () => {
       caught = e;
     }
     expect((caught as { constructor: { name: string } }).constructor.name).toBe('JinRespError');
+    expect((caught as { resp: { valid: boolean } }).resp.valid).toBe(false);
     expect((caught as { resp: { $validated: unknown } }).resp.$validated).toEqual({
       valid: false,
       error: ['always invalid'],
