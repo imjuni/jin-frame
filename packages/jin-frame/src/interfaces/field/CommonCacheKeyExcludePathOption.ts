@@ -1,4 +1,4 @@
-export interface ICommonCacheKeyExcludePathOption {
+export interface CommonCacheKeyExcludePathOption {
   /**
    * When paths are provided in this option, they will be excluded from cache key generation.
    * Unlike Query, Param, and Header, Body and ObjectBody use path specifications to

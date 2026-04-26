@@ -1,4 +1,4 @@
-import type { TSingleBodyFormatter } from '#interfaces/field/body/TSingleBodyFormatter';
+import type { SingleBodyFormatter } from '#interfaces/field/body/SingleBodyFormatter';
 import { getDefaultObjectBodyFieldOption } from '#processors/default-option/getDefaultObjectBodyFieldOption';
 import { describe, expect, it } from 'vitest';
 
@@ -15,7 +15,7 @@ describe('getDefaultObjectBodyFieldOption', () => {
   });
 
   it('should apply formatter when provided', () => {
-    const f: TSingleBodyFormatter = { findFrom: 'f', string: (s) => `f:${s}` };
+    const f: SingleBodyFormatter = { findFrom: 'f', string: (s) => `f:${s}` };
     const option = getDefaultObjectBodyFieldOption({ formatters: f });
 
     expect(option).toMatchObject({

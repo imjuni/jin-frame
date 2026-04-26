@@ -1,12 +1,12 @@
 import type { AuthorizationData } from '#interfaces/security/AuthorizationData';
-import type { ISecurityContext } from '#interfaces/security/ISecurityContext';
-import type { ISecurityProvider } from '#interfaces/security/ISecurityProvider';
+import type { SecurityContext } from '#interfaces/security/SecurityContext';
+import type { SecurityProvider } from '#interfaces/security/SecurityProvider';
 
 /**
  * Basic Authentication security provider that implements HTTP Basic Auth.
  * Supports both username/password pairs and pre-encoded Basic auth strings.
  */
-export class BasicAuthProvider implements ISecurityProvider {
+export class BasicAuthProvider implements SecurityProvider {
   /** Type identifier for this security provider */
   readonly type = 'http' as const;
 
@@ -28,7 +28,7 @@ export class BasicAuthProvider implements ISecurityProvider {
    * @returns Security context with Basic auth applied to headers or auth property
    */
   // eslint-disable-next-line class-methods-use-this
-  createContext(authorization?: AuthorizationData, dynamicKey?: string): ISecurityContext {
+  createContext(authorization?: AuthorizationData, dynamicKey?: string): SecurityContext {
     if (dynamicKey) {
       return BasicAuthProvider.handleDynamicKey(dynamicKey);
     }
@@ -41,7 +41,7 @@ export class BasicAuthProvider implements ISecurityProvider {
    * @param dynamicKey - The dynamic Basic auth string
    * @returns Security context with Authorization header
    */
-  private static handleDynamicKey(dynamicKey: string): ISecurityContext {
+  private static handleDynamicKey(dynamicKey: string): SecurityContext {
     if (dynamicKey.startsWith('Basic ')) {
       return {
         headers: {
@@ -62,7 +62,7 @@ export class BasicAuthProvider implements ISecurityProvider {
    * @param authorization - Authorization data that can be a string or an object with username/password
    * @returns Security context with either Authorization header or auth credentials
    */
-  private static handleAuthorization(authorization?: AuthorizationData): ISecurityContext {
+  private static handleAuthorization(authorization?: AuthorizationData): SecurityContext {
     if (typeof authorization === 'string') {
       const basicAuth = authorization.startsWith('Basic ') ? authorization : `Basic ${authorization}`;
       return {

@@ -19,19 +19,11 @@ class TestGet3Frame extends JinFrame {
   @Query({ encode: true })
   declare public readonly skill: string[];
 
-  constructor() {
-    super();
-
-    this.passing = 'pass';
-    this.name = 'ironman';
-    this.skill = ['beam', 'flying!'];
-  }
-
-  override $_preHook(req: JinRequestConfig): void {
+  override _preHook(req: JinRequestConfig): void {
     console.log('pre hook trigger: ', req);
   }
 
-  override $_postHook(req: JinRequestConfig, reply: JinResp<unknown, unknown>): void {
+  override _postHook(req: JinRequestConfig, reply: JinResp<unknown, unknown>): void {
     console.log('post hook trigger: ', req);
     console.log(reply);
   }
@@ -48,19 +40,11 @@ class TestGet4Frame extends JinFrame {
   @Query({ encode: true })
   declare public readonly skill: string[];
 
-  constructor() {
-    super();
-
-    this.passing = 'pass';
-    this.name = 'ironman';
-    this.skill = ['beam', 'flying!'];
-  }
-
-  override async $_preHook(req: JinRequestConfig): Promise<void> {
+  override async _preHook(req: JinRequestConfig): Promise<void> {
     console.log('pre hook trigger: ', req);
   }
 
-  override async $_postHook(req: JinRequestConfig, reply: JinResp<unknown, unknown>): Promise<void> {
+  override async _postHook(req: JinRequestConfig, reply: JinResp<unknown, unknown>): Promise<void> {
     console.log('post hook trigger: ', req);
     console.log(reply);
   }
@@ -77,15 +61,7 @@ class TestGet5Frame extends JinFrame {
   @Query({ encode: false, keyFormat: 'indices' })
   declare public readonly skill: string[];
 
-  constructor() {
-    super();
-
-    this.passing = 'pass';
-    this.name = 'ironman';
-    this.skill = ['beam', 'flying!'];
-  }
-
-  override $_preHook(req: JinRequestConfig): void {
+  override _preHook(req: JinRequestConfig): void {
     console.log('pre hook trigger: ', req);
   }
 }
@@ -101,15 +77,7 @@ class TestGet6Frame extends JinFrame {
   @Query({ encode: false, keyFormat: 'brackets' })
   declare public readonly skill: string[];
 
-  constructor() {
-    super();
-
-    this.passing = 'pass';
-    this.name = 'ironman';
-    this.skill = ['beam', 'flying!'];
-  }
-
-  override async $_preHook(req: JinRequestConfig): Promise<void> {
+  override async _preHook(req: JinRequestConfig): Promise<void> {
     console.log('pre hook trigger: ', req);
   }
 }
@@ -156,7 +124,7 @@ describe('jinframe.test', () => {
       }),
     );
 
-    const frame = new TestGet3Frame();
+    const frame = TestGet3Frame.of({ passing: 'pass', name: 'ironman', skill: ['beam', 'flying!'] });
     const resp = await frame._execute();
 
     expect(resp.status).toEqual(200);
@@ -183,7 +151,7 @@ describe('jinframe.test', () => {
     );
 
     try {
-      const frame = new TestGet3Frame();
+      const frame = TestGet3Frame.of({ passing: 'pass', name: 'ironman', skill: ['beam', 'flying!'] });
       await frame._execute();
     } catch (caught) {
       expect(caught).toBeTruthy();
@@ -207,7 +175,7 @@ describe('jinframe.test', () => {
       }),
     );
 
-    const frame = new TestGet4Frame();
+    const frame = TestGet4Frame.of({ passing: 'pass', name: 'ironman', skill: ['beam', 'flying!'] });
     const resp = await frame._execute();
 
     expect(resp.status).toEqual(200);
@@ -234,7 +202,7 @@ describe('jinframe.test', () => {
     );
 
     try {
-      const frame = new TestGet4Frame();
+      const frame = TestGet4Frame.of({ passing: 'pass', name: 'ironman', skill: ['beam', 'flying!'] });
       await frame._execute();
     } catch (caught) {
       expect(caught).toBeTruthy();
@@ -259,7 +227,7 @@ describe('jinframe.test', () => {
       }),
     );
 
-    const frame = new TestGet5Frame();
+    const frame = TestGet5Frame.of({ passing: 'pass', name: 'ironman', skill: ['beam', 'flying!'] });
     const resp = await frame._execute();
 
     expect(resp.status).toEqual(200);
@@ -282,7 +250,7 @@ describe('jinframe.test', () => {
       }),
     );
 
-    const frame = new TestGet6Frame();
+    const frame = TestGet6Frame.of({ passing: 'pass', name: 'ironman', skill: ['beam', 'flying!'] });
     const resp = await frame._execute();
 
     expect(resp.status).toEqual(200);

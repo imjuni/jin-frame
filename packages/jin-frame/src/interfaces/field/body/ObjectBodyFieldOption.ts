@@ -1,8 +1,8 @@
-import type { TSingleBodyFormatter } from '#interfaces/field/body/TSingleBodyFormatter';
-import type { ICommonFieldOption } from '#interfaces/field/ICommonFieldOption';
-import type { ICommonCacheKeyExcludePathOption } from '#interfaces/field/ICommonCacheKeyExcludePathOption';
+import type { SingleBodyFormatter } from '#interfaces/field/body/SingleBodyFormatter';
+import type { CommonFieldOption } from '#interfaces/field/CommonFieldOption';
+import type { CommonCacheKeyExcludePathOption } from '#interfaces/field/CommonCacheKeyExcludePathOption';
 
-export interface IObjectBodyFieldOption extends ICommonFieldOption, ICommonCacheKeyExcludePathOption {
+export interface ObjectBodyFieldOption extends CommonFieldOption, CommonCacheKeyExcludePathOption {
   type: 'object-body';
 
   /**
@@ -37,5 +37,5 @@ export interface IObjectBodyFieldOption extends ICommonFieldOption, ICommonCache
    * }
    * ```
    * */
-  formatters?: TSingleBodyFormatter | TSingleBodyFormatter[];
+  formatters?: SingleBodyFormatter | SingleBodyFormatter[];
 }

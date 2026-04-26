@@ -1,7 +1,7 @@
 import { JinFile } from '#frames/JinFile';
 import { defaultJinFrameTimeout } from '#frames/defaultJinFrameTimeout';
-import type { IJinFrameCreateConfig } from '#interfaces/options/IJinFrameCreateConfig';
-import type { JinFrameRequestConfig } from '#interfaces/options/IJinFrameRequestConfig';
+import type { JinFrameCreateConfig } from '#interfaces/options/JinFrameCreateConfig';
+import type { JinFrameRequestConfig } from '#interfaces/options/JinFrameRequestConfig';
 import { getBodyMap } from '#processors/getBodyMap';
 import { getQuerystringMap } from '#processors/getQuerystringMap';
 import { startWithSlash } from '#tools/slash-utils/startWithSlash';
@@ -17,9 +17,9 @@ import { getFieldMetadata } from '#decorators/fields/handlers/getFieldMetadata';
 import { getRetryInterval } from '#tools/responses/getRetryInterval';
 import { getDuration } from '#tools/getDuration';
 import { getFrameInternalData } from '#decorators/getFrameInternalData';
-import type { TConstructorFunction } from '#tools/type-utilities/TConstructorFunction';
-import type { TFieldsOf } from '#tools/type-utilities/TFieldsOf';
-import type { TBuilderFor } from '#tools/type-utilities/TBuilderFor';
+import type { ConstructorFunction } from '#tools/type-utilities/ConstructorFunction';
+import type { FieldsOf } from '#tools/type-utilities/FieldsOf';
+import type { BuilderFor } from '#tools/type-utilities/BuilderFor';
 import { getAuthorization } from '#tools/auth/getAuthorization';
 import { getQuerystringKeyFormat } from '#processors/getQuerystringKeyFormat';
 import { getQuerystringKey } from '#processors/getQuerystringKey';
@@ -42,16 +42,16 @@ export abstract class AbstractJinFrame {
     return urlMeta.url;
   }
 
-  protected static getDefaultValues(): Partial<TFieldsOf<InstanceType<typeof this>>> {
+  protected static getDefaultValues(): Partial<FieldsOf<InstanceType<typeof this>>> {
     return {};
   }
 
   /* eslint-disable @typescript-eslint/no-explicit-any */
-  static builder<T, C extends TConstructorFunction<T>>(this: C): TBuilderFor<T, C> {
-    const store: Partial<TFieldsOf<InstanceType<C>>> = {};
+  static builder<T, C extends ConstructorFunction<T>>(this: C): BuilderFor<T, C> {
+    const store: Partial<FieldsOf<InstanceType<C>>> = {};
     const self = this; // assign self for keep generic this
 
-    const api: TBuilderFor<T, C> = {
+    const api: BuilderFor<T, C> = {
       set(k, v) {
         store[k] = v;
         return this;
@@ -67,21 +67,21 @@ export abstract class AbstractJinFrame {
         return this;
       },
       get() {
-        return store as Readonly<Partial<TFieldsOf<InstanceType<C>>>>;
+        return store as Readonly<Partial<FieldsOf<InstanceType<C>>>>;
       },
     };
     return api;
   }
 
-  static of<T, C extends TConstructorFunction<T>>(
+  static of<T, C extends ConstructorFunction<T>>(
     this: C,
-    args: TFieldsOf<InstanceType<C>> | ((b: TBuilderFor<T, C>) => unknown),
+    args: FieldsOf<InstanceType<C>> | ((b: BuilderFor<T, C>) => unknown),
   ): InstanceType<C> {
     const inst = new this() as InstanceType<C>;
-    const auto = (this as any).getDefaultValues?.() as Partial<TFieldsOf<InstanceType<C>>>;
+    const auto = (this as any).getDefaultValues?.() as Partial<FieldsOf<InstanceType<C>>>;
 
     if (typeof args === 'function') {
-      const b = (this as any).builder() as TBuilderFor<T, C>;
+      const b = (this as any).builder() as BuilderFor<T, C>;
       args(b);
       const built = b.get();
       (inst as any)._setFields({ ...auto, ...built });
@@ -254,7 +254,7 @@ export abstract class AbstractJinFrame {
    * @param option same with JinRequestConfig, bug exclude some filed ignored
    * @returns created JinRequestConfig
    */
-  public _request(option?: JinFrameRequestConfig & IJinFrameCreateConfig): JinRequestConfig {
+  public _request(option?: JinFrameRequestConfig & JinFrameCreateConfig): JinRequestConfig {
     const entries = Object.entries(this).map(([key, value]) => ({ key, value }));
 
     // stage 01. extract request parameter and option

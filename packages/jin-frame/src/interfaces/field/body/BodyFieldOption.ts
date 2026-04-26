@@ -1,30 +1,18 @@
-import type { IFormatter } from '#interfaces/options/IFormatter';
+import type { SingleBodyFormatter } from '#interfaces/field/body/SingleBodyFormatter';
+import type { CommonCacheKeyExcludePathOption } from '#interfaces/field/CommonCacheKeyExcludePathOption';
+import type { CommonFieldOption } from '#interfaces/field/CommonFieldOption';
 
-export interface IQueryParamHeaderCommonFieldOption {
+export interface BodyFieldOption extends CommonFieldOption, CommonCacheKeyExcludePathOption {
+  type: 'body';
+
   /**
    * If you want to create depth or rename on field of body
    * set this option dot separated string. See below,
    *
    * @example
-   * `data.test.ironman` convert to `{ "data.test.ironman": "value here" }`
+   * `data.test.ironman` convert to `{ data: { test: { ironman: "value here" } } }`
    */
   replaceAt?: string;
-
-  /**
-   * "comma" option only working querystring. If you want to process array parameter of querystring
-   * using by comma separated string, set this option
-   *
-   * Comma separated array parameter on querystring
-   */
-  comma: boolean;
-
-  bit: {
-    /** enable bitwised operator using by array */
-    enable: boolean;
-
-    /** If this configuration set enable, bitwised operation result are zero after submit zero value */
-    withZero: boolean;
-  };
 
   /**
    * formatter configuration, use convert date type or transform data shape
@@ -39,19 +27,16 @@ export interface IQueryParamHeaderCommonFieldOption {
    * If you use the string formatter to change to JavaScript Date instance and then do not change to a string,
    * the formatters setting is: automatically convert to iso8601 string
    *
-   * header field don't need a findFrom. HTTP protocol header not treat complex type object and array.
-   *
-   * @see https://developer.mozilla.org/en-US/docs/Web/API/Headers
-   *
    * @example
    * ordered example.
    *
    * ```
    * {
+   *   findFrom: 'data.more.birthday',
    *   string: (value: string) => parse(value, "yyyy-MM-dd'T'HH:mm:ss", new Date()),
    *   dateTime: (value: Date) => format(value, 'yyyy-MM-dd HH:mm:ss'),
    * }
    * ```
    * */
-  formatters?: IFormatter | IFormatter[];
+  formatters?: SingleBodyFormatter | SingleBodyFormatter[];
 }

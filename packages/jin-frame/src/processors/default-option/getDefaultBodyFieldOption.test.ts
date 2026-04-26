@@ -1,4 +1,4 @@
-import type { IFormatter } from '#interfaces/options/IFormatter';
+import type { Formatter } from '#interfaces/options/Formatter';
 import { getDefaultBodyFieldOption } from '#processors/default-option/getDefaultBodyFieldOption';
 import { describe, expect, it } from 'vitest';
 
@@ -15,7 +15,7 @@ describe('getDefaultBodyFieldOption', () => {
   });
 
   it('should apply formatter when provided', () => {
-    const f: IFormatter = { string: (s) => `f:${s}` };
+    const f: Formatter = { string: (s) => `f:${s}` };
     const option = getDefaultBodyFieldOption({ formatters: f });
 
     expect(option).toMatchObject({

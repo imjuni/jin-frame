@@ -1,5 +1,5 @@
 import type { FrameOption } from '#interfaces/options/FrameOption';
 
-export type TMethodEntry = Readonly<{
+export type MethodEntry = Readonly<{
   option: Readonly<FrameOption>;
 }>;

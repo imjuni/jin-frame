@@ -1,4 +1,4 @@
-import type { TSingleBodyFormatter } from '#interfaces/field/body/TSingleBodyFormatter';
+import type { SingleBodyFormatter } from '#interfaces/field/body/SingleBodyFormatter';
 import { getBodyFormatters } from '#tools/formatters/getBodyFormatters';
 import { describe, expect, it } from 'vitest';
 
@@ -12,13 +12,13 @@ describe('getBodyFormatters', () => {
   });
 
   it('should return multiple formatter when singular formatter', () => {
-    const formatter: TSingleBodyFormatter = { number: (v) => `${v}` };
+    const formatter: SingleBodyFormatter = { number: (v) => `${v}` };
     const result = getBodyFormatters(formatter);
     expect(result).toEqual([formatter]);
   });
 
   it('should return multiple formatter when singular formatter', () => {
-    const formatter: TSingleBodyFormatter[] = [{ number: (v) => `${v}` }];
+    const formatter: SingleBodyFormatter[] = [{ number: (v) => `${v}` }];
     const result = getBodyFormatters(formatter);
     expect(result).toEqual(formatter);
   });

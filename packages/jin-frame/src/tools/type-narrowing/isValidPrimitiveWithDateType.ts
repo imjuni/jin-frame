@@ -1,6 +1,6 @@
-import type { TSupportPrimitiveType } from '#tools/type-utilities/TSupportPrimitiveType';
+import type { SupportPrimitiveType } from '#tools/type-utilities/SupportPrimitiveType';
 
-export function isValidPrimitiveWithDateType(value: unknown): value is TSupportPrimitiveType {
+export function isValidPrimitiveWithDateType(value: unknown): value is SupportPrimitiveType {
   if (
     typeof value === 'string' ||
     typeof value === 'boolean' ||

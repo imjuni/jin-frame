@@ -1,9 +1,9 @@
 import { isValidArrayType } from '#tools/type-narrowing/isValidArrayType';
 import { isValidPrimitiveWithDateType } from '#tools/type-narrowing/isValidPrimitiveWithDateType';
-import type { TSupportArrayType } from '#tools/type-utilities/TSupportArrayType';
-import type { TSupportPrimitiveType } from '#tools/type-utilities/TSupportPrimitiveType';
+import type { SupportArrayType } from '#tools/type-utilities/SupportArrayType';
+import type { SupportPrimitiveType } from '#tools/type-utilities/SupportPrimitiveType';
 
-export function typeAssert(strict: boolean, value: unknown): value is TSupportArrayType | TSupportPrimitiveType {
+export function typeAssert(strict: boolean, value: unknown): value is SupportArrayType | SupportPrimitiveType {
   if (isValidPrimitiveWithDateType(value)) {
     return true;
   }

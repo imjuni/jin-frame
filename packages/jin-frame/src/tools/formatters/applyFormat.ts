@@ -1,7 +1,7 @@
-import type { IFormatter } from '#interfaces/options/IFormatter';
+import type { Formatter } from '#interfaces/options/Formatter';
 import { isValidPrimitiveType } from '#tools/type-narrowing/isValidPrimitiveType';
 
-export function applyFormat(origin: unknown, formatter: IFormatter): unknown {
+export function applyFormat(origin: unknown, formatter: Formatter): unknown {
   const orders = formatter.order ?? ['number', 'string', 'dateTime'];
 
   const formatted = orders.reduce((processing, order) => {

@@ -1,5 +1,5 @@
 import { applySecurityProviders } from '#tools/auth/applySecurityProviders';
-import type { ISecurityProvider } from '#interfaces/security/ISecurityProvider';
+import type { SecurityProvider } from '#interfaces/security/SecurityProvider';
 import { describe, expect, it } from 'vitest';
 
 describe('applySecurityProviders', () => {
@@ -13,7 +13,7 @@ describe('applySecurityProviders', () => {
   });
 
   it('should merge headers from multiple providers', () => {
-    const provider1: ISecurityProvider = {
+    const provider1: SecurityProvider = {
       type: 'api-key',
       name: 'provider1',
       createContext: () => ({
@@ -21,7 +21,7 @@ describe('applySecurityProviders', () => {
       }),
     };
 
-    const provider2: ISecurityProvider = {
+    const provider2: SecurityProvider = {
       type: 'http',
       name: 'provider2',
       createContext: () => ({
@@ -41,7 +41,7 @@ describe('applySecurityProviders', () => {
   });
 
   it('should merge queries from multiple providers', () => {
-    const provider1: ISecurityProvider = {
+    const provider1: SecurityProvider = {
       type: 'api-key',
       name: 'provider1',
       createContext: () => ({
@@ -49,7 +49,7 @@ describe('applySecurityProviders', () => {
       }),
     };
 
-    const provider2: ISecurityProvider = {
+    const provider2: SecurityProvider = {
       type: 'api-key',
       name: 'provider2',
       createContext: () => ({
@@ -69,7 +69,7 @@ describe('applySecurityProviders', () => {
   });
 
   it('should use auth from last provider that provides it', () => {
-    const provider1: ISecurityProvider = {
+    const provider1: SecurityProvider = {
       type: 'http',
       name: 'provider1',
       createContext: () => ({
@@ -77,7 +77,7 @@ describe('applySecurityProviders', () => {
       }),
     };
 
-    const provider2: ISecurityProvider = {
+    const provider2: SecurityProvider = {
       type: 'api-key',
       name: 'provider2',
       createContext: () => ({
@@ -85,7 +85,7 @@ describe('applySecurityProviders', () => {
       }),
     };
 
-    const provider3: ISecurityProvider = {
+    const provider3: SecurityProvider = {
       type: 'http',
       name: 'provider3',
       createContext: () => ({
@@ -105,7 +105,7 @@ describe('applySecurityProviders', () => {
   });
 
   it('should pass authorization data to providers', () => {
-    const mockProvider: ISecurityProvider = {
+    const mockProvider: SecurityProvider = {
       type: 'api-key',
       name: 'mock',
       createContext: (auth, dynamicKey) => ({
@@ -124,13 +124,13 @@ describe('applySecurityProviders', () => {
   });
 
   it('should handle providers that return empty contexts', () => {
-    const emptyProvider: ISecurityProvider = {
+    const emptyProvider: SecurityProvider = {
       type: 'api-key',
       name: 'empty',
       createContext: () => ({}),
     };
 
-    const validProvider: ISecurityProvider = {
+    const validProvider: SecurityProvider = {
       type: 'http',
       name: 'valid',
       createContext: () => ({
@@ -149,7 +149,7 @@ describe('applySecurityProviders', () => {
   });
 
   it('should merge all context types together', () => {
-    const fullProvider: ISecurityProvider = {
+    const fullProvider: SecurityProvider = {
       type: 'oauth2',
       name: 'full',
       createContext: () => ({

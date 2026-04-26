@@ -1,15 +1,15 @@
-import type { IBodyFieldOption } from '#interfaces/field/body/IBodyFieldOption';
-import type { TSingleBodyFormatter } from '#interfaces/field/body/TSingleBodyFormatter';
+import type { BodyFieldOption } from '#interfaces/field/body/BodyFieldOption';
+import type { SingleBodyFormatter } from '#interfaces/field/body/SingleBodyFormatter';
 import { classifyBodyFormatters } from '#tools/formatters/classifyBodyFormatters';
 import { formatEach } from '#tools/formatters/formatEach';
 import { getBodyFormatters } from '#tools/formatters/getBodyFormatters';
 import { isValidArrayType } from '#tools/type-narrowing/isValidArrayType';
 import { isValidPrimitiveWithDateType } from '#tools/type-narrowing/isValidPrimitiveWithDateType';
-import type { TSupportArrayType } from '#tools/type-utilities/TSupportArrayType';
-import type { TSupportPrimitiveType } from '#tools/type-utilities/TSupportPrimitiveType';
+import type { SupportArrayType } from '#tools/type-utilities/SupportArrayType';
+import type { SupportPrimitiveType } from '#tools/type-utilities/SupportPrimitiveType';
 import * as dotProp from 'dot-prop';
 
-export function getBodyField(thisFrame: unknown, field: IBodyFieldOption): unknown {
+export function getBodyField(thisFrame: unknown, field: BodyFieldOption): unknown {
   if (
     isValidPrimitiveWithDateType(thisFrame) ||
     typeof thisFrame === 'bigint' ||
@@ -22,7 +22,7 @@ export function getBodyField(thisFrame: unknown, field: IBodyFieldOption): unkno
 
   const accessKey = field.key;
   const value: unknown = (thisFrame as Record<string, unknown>)[accessKey];
-  const formatters: TSingleBodyFormatter[] = getBodyFormatters(field.formatters);
+  const formatters: SingleBodyFormatter[] = getBodyFormatters(field.formatters);
   const replaceKey = field.replaceAt ?? accessKey;
 
   // case 02. nullable value
@@ -43,9 +43,9 @@ export function getBodyField(thisFrame: unknown, field: IBodyFieldOption): unkno
     const origin = {};
     dotProp.set(origin, replaceKey, value);
 
-    const formatted = formatters.reduce<Record<string, TSupportPrimitiveType | TSupportArrayType>>(
+    const formatted = formatters.reduce<Record<string, SupportPrimitiveType | SupportArrayType>>(
       (processing, formatter) => {
-        const childValue = dotProp.get<TSupportPrimitiveType | TSupportArrayType>(processing, replaceKey);
+        const childValue = dotProp.get<SupportPrimitiveType | SupportArrayType>(processing, replaceKey);
         const formatteds = formatEach(childValue, formatter);
 
         return dotProp.set(processing, replaceKey, formatteds);

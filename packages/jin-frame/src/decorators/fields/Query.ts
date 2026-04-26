@@ -1,4 +1,4 @@
-import type { IQueryFieldOption } from '#interfaces/field/IQueryFieldOption';
+import type { QueryFieldOption } from '#interfaces/field/QueryFieldOption';
 import { getDefaultQueryFieldOption } from '#processors/default-option/getDefaultQueryFieldOption';
 import { REQUEST_FIELD_DECORATOR } from '#decorators/fields/handlers/REQUEST_FIELD_DECORATOR';
 import 'reflect-metadata';
@@ -7,7 +7,7 @@ import 'reflect-metadata';
  * decorator to set class variable to HTTP API query parameter
  * @param option query parameter option
  */
-export function Query(_option?: Partial<Omit<IQueryFieldOption, 'type'>>) {
+export function Query(_option?: Partial<Omit<QueryFieldOption, 'type'>>) {
   return function queryHandle(target: object, propertyKey: string | symbol): void {
     const option = getDefaultQueryFieldOption(_option);
     const existing: unknown[] = Reflect.getOwnMetadata(REQUEST_FIELD_DECORATOR, target, propertyKey) ?? [];

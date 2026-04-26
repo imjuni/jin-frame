@@ -1,14 +1,14 @@
-import type { TSingleBodyFormatter } from '#interfaces/field/body/TSingleBodyFormatter';
-import type { IObjectBodyFieldOption } from '#interfaces/field/body/IObjectBodyFieldOption';
+import type { SingleBodyFormatter } from '#interfaces/field/body/SingleBodyFormatter';
+import type { ObjectBodyFieldOption } from '#interfaces/field/body/ObjectBodyFieldOption';
 import { classifyBodyFormatters } from '#tools/formatters/classifyBodyFormatters';
 import { getBodyFormatters } from '#tools/formatters/getBodyFormatters';
 import { isValidArrayType } from '#tools/type-narrowing/isValidArrayType';
 import { isValidPrimitiveWithDateType } from '#tools/type-narrowing/isValidPrimitiveWithDateType';
-import type { TSupportPrimitiveType } from '#tools/type-utilities/TSupportPrimitiveType';
+import type { SupportPrimitiveType } from '#tools/type-utilities/SupportPrimitiveType';
 import { bodyFormatEach } from '#tools/formatters/bodyFormatEach';
 import { formatEach } from '#tools/formatters/formatEach';
 
-export function getObjectBodyField(thisFrame: unknown, field: IObjectBodyFieldOption): unknown {
+export function getObjectBodyField(thisFrame: unknown, field: ObjectBodyFieldOption): unknown {
   if (
     isValidPrimitiveWithDateType(thisFrame) ||
     typeof thisFrame === 'bigint' ||
@@ -21,7 +21,7 @@ export function getObjectBodyField(thisFrame: unknown, field: IObjectBodyFieldOp
 
   const accessKey = field.key;
   const value: unknown = (thisFrame as Record<string, unknown>)[accessKey];
-  const formatters: TSingleBodyFormatter[] = getBodyFormatters(field.formatters);
+  const formatters: SingleBodyFormatter[] = getBodyFormatters(field.formatters);
 
   // case 02. nullable value
   if (value == null) {
@@ -31,7 +31,7 @@ export function getObjectBodyField(thisFrame: unknown, field: IObjectBodyFieldOp
   // case 02. primitive type & Date instance
   // case 03. array of primitive type & array of Date instance
   if (isValidPrimitiveWithDateType(value) || (Array.isArray(value) && isValidArrayType(value))) {
-    const formatted = formatters.reduce<TSupportPrimitiveType | TSupportPrimitiveType[]>(
+    const formatted = formatters.reduce<SupportPrimitiveType | SupportPrimitiveType[]>(
       (processing, formatter) => formatEach(processing, formatter),
       value,
     );

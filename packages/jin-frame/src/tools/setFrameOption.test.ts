@@ -6,7 +6,6 @@ describe('setFrameOption', () => {
   const option: FrameOption = {
     method: 'GET',
     contentType: 'application/json',
-    useInstance: false,
   };
 
   it('should set host value when non nullable value', () => {

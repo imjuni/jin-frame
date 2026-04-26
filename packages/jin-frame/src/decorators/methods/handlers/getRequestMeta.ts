@@ -1,7 +1,7 @@
 import { getAllRequestMetaInherited } from '#decorators/methods/handlers/getAllMethodMetaInherited';
 import type { AbstractConstructor, Constructor } from 'type-fest';
 import type { FrameOption } from '#interfaces/options/FrameOption';
-import type { TMethodEntry } from '#interfaces/options/TMethodEntry';
+import type { MethodEntry } from '#interfaces/options/MethodEntry';
 import type { FrameRetry } from '#interfaces/options/FrameRetry';
 import { mergeFrameOption } from '#tools/mergeFrameOption';
 import { mergeRetryOption } from '#tools/mergeRetryOption';
@@ -20,7 +20,7 @@ import { mergeRetryOption } from '#tools/mergeRetryOption';
  * @param ctor Constructor function
  * @returns
  */
-export function getRequestMeta(ctor: AbstractConstructor<unknown> | Constructor<unknown>): TMethodEntry {
+export function getRequestMeta(ctor: AbstractConstructor<unknown> | Constructor<unknown>): MethodEntry {
   const metas = getAllRequestMetaInherited(ctor);
 
   // reverse meta data for recursive merge

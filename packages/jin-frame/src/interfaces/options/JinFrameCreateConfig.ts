@@ -1,3 +1,3 @@
-export interface IJinFrameCreateConfig {
+export interface JinFrameCreateConfig {
   validateStatus?: (status: number) => boolean;
 }

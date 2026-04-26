@@ -1,9 +1,9 @@
 import type { FrameRetry } from '#interfaces/options/FrameRetry';
-import type { TMethod } from '#interfaces/options/TMethod';
+import type { Method } from '#interfaces/options/Method';
 import type { BaseValidator } from '#validators/BaseValidator';
-import type { ISecurityProvider } from '#interfaces/security/ISecurityProvider';
+import type { SecurityProvider } from '#interfaces/security/SecurityProvider';
 import type { AuthorizationData } from '#interfaces/security/AuthorizationData';
-import type { TMilliseconds } from '#interfaces/options/TMilliseconds';
+import type { Milliseconds } from '#interfaces/options/Milliseconds';
 import type { JinBasicAuth } from '#interfaces/JinBasicAuth';
 
 export interface FrameOption {
@@ -42,7 +42,7 @@ export interface FrameOption {
   path?: string | (() => string);
 
   /** method of API Request endpoint */
-  method: TMethod;
+  method: Method;
 
   /** content-type of API Request endpoint */
   contentType: string;
@@ -57,13 +57,13 @@ export interface FrameOption {
   retry?: FrameRetry;
 
   /** timeout of the request */
-  timeout?: TMilliseconds;
+  timeout?: Milliseconds;
 
   /**
    * Security providers for authentication
    * Can be a single provider or array of providers for multiple authentication schemes
    * */
-  security?: ISecurityProvider | ISecurityProvider[];
+  security?: SecurityProvider | SecurityProvider[];
 
   /**
    * Authorization data that will be passed to security providers

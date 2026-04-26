@@ -1,28 +1,28 @@
 import { REQUEST_FIELD_DECORATOR } from '#decorators/fields/handlers/REQUEST_FIELD_DECORATOR';
-import type { IQueryFieldOption } from '#interfaces/field/IQueryFieldOption';
-import type { IParamFieldOption } from '#interfaces/field/IParamFieldOption';
-import type { IObjectBodyFieldOption } from '#interfaces/field/body/IObjectBodyFieldOption';
-import type { IHeaderFieldOption } from '#interfaces/field/IHeaderFieldOption';
-import type { IBodyFieldOption } from '#interfaces/field/body/IBodyFieldOption';
-import type { ICookieFieldOption } from '#interfaces/field/ICookieFieldOption';
+import type { QueryFieldOption } from '#interfaces/field/QueryFieldOption';
+import type { ParamFieldOption } from '#interfaces/field/ParamFieldOption';
+import type { ObjectBodyFieldOption } from '#interfaces/field/body/ObjectBodyFieldOption';
+import type { HeaderFieldOption } from '#interfaces/field/HeaderFieldOption';
+import type { BodyFieldOption } from '#interfaces/field/body/BodyFieldOption';
+import type { CookieFieldOption } from '#interfaces/field/CookieFieldOption';
 import 'reflect-metadata';
 
 interface IRequestFieldRecord {
-  param: IParamFieldOption[];
-  query: IQueryFieldOption[];
-  body: IBodyFieldOption[];
-  objectBody: IObjectBodyFieldOption[];
-  header: IHeaderFieldOption[];
-  cookie: ICookieFieldOption[];
+  param: ParamFieldOption[];
+  query: QueryFieldOption[];
+  body: BodyFieldOption[];
+  objectBody: ObjectBodyFieldOption[];
+  header: HeaderFieldOption[];
+  cookie: CookieFieldOption[];
 }
 
 type FieldEntry =
-  | { key: string; option: IQueryFieldOption }
-  | { key: string; option: IParamFieldOption }
-  | { key: string; option: IBodyFieldOption }
-  | { key: string; option: IObjectBodyFieldOption }
-  | { key: string; option: IHeaderFieldOption }
-  | { key: string; option: ICookieFieldOption };
+  | { key: string; option: QueryFieldOption }
+  | { key: string; option: ParamFieldOption }
+  | { key: string; option: BodyFieldOption }
+  | { key: string; option: ObjectBodyFieldOption }
+  | { key: string; option: HeaderFieldOption }
+  | { key: string; option: CookieFieldOption };
 
 export function getFieldMetadata(type: object, keys: { key: string; value: unknown }[]): IRequestFieldRecord {
   const fields: { key: string; meta: FieldEntry }[] = [];

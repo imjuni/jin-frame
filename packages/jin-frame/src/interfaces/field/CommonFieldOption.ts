@@ -1,4 +1,4 @@
-export interface ICommonFieldOption {
+export interface CommonFieldOption {
   /** Do encodeURIComponent execution, this option only executed in query parameter */
   encode?: boolean;
 
