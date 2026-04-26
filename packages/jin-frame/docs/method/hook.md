@@ -92,6 +92,143 @@ interface DebugInfo {
 
 ---
 
+## \_retryFail
+
+Called after each attempt that receives a **non-success HTTP response** (i.e. `validateStatus` returns `false`). Fires once per failed attempt, including the last one before retries are exhausted.
+
+Use this hook to log retry attempts, update metrics, or notify an external system about transient failures.
+
+```ts
+import { Post, JinFrame } from 'jin-frame';
+import type { JinRequestConfig } from 'jin-frame';
+
+@Post({ host: 'https://api.example.com', path: '/submit', retry: { max: 3, interval: 500 } })
+class SubmitFrame extends JinFrame<Result> {
+  @Body()
+  declare public readonly payload: string;
+
+  protected override _retryFail(req: JinRequestConfig, res: Response): void {
+    console.warn(`[retry-fail] ${req.url} → ${res.status} (attempt ${this._getData('retry')?.try})`);
+  }
+}
+```
+
+### Signature
+
+```ts
+protected _retryFail(req: JinRequestConfig, res: Response): void | Promise<void>
+```
+
+| Parameter | Type               | Description                                              |
+| --------- | ------------------ | -------------------------------------------------------- |
+| `req`     | `JinRequestConfig` | The request config that was sent                         |
+| `res`     | `Response`         | A clone of the Response object (body can be read safely) |
+
+> `_retryFail` fires for **every** failed attempt, not only when retries are exhausted. Use `_postHook` if you need the final result.
+
+---
+
+## \_retryException
+
+Called after each attempt that **throws an error** (network down, timeout, connection refused, etc.). Fires once per error attempt, including the last one.
+
+Use this hook to log connectivity problems or trigger alerting on repeated exceptions.
+
+```ts
+import { Post, JinFrame } from 'jin-frame';
+import type { JinRequestConfig } from 'jin-frame';
+
+@Post({ host: 'https://api.example.com', path: '/submit', retry: { max: 3, interval: 500 } })
+class SubmitFrame extends JinFrame<Result> {
+  @Body()
+  declare public readonly payload: string;
+
+  protected override _retryException(req: JinRequestConfig, err: Error): void {
+    console.error(`[retry-exception] ${req.url} → ${err.message}`);
+  }
+}
+```
+
+### Signature
+
+```ts
+protected _retryException(req: JinRequestConfig, err: Error): void | Promise<void>
+```
+
+| Parameter | Type               | Description                              |
+| --------- | ------------------ | ---------------------------------------- |
+| `req`     | `JinRequestConfig` | The request config that was sent         |
+| `err`     | `Error`            | The error thrown during the fetch attempt |
+
+> `_retryException` fires on every network-level error, including the final one. Use `_postHook` if you need the definitive outcome.
+
+---
+
+## Hook Execution Flow
+
+The diagram below shows when each hook fires relative to the overall request lifecycle.
+
+```mermaid
+sequenceDiagram
+    participant Caller
+    participant JinFrame
+    participant Server as HTTP Server
+
+    Caller->>JinFrame: _execute(option)
+    JinFrame->>JinFrame: resolveSecurityKey()
+    JinFrame->>JinFrame: _requestWrap() → req
+    JinFrame->>JinFrame: _preHook(req)
+
+    loop up to retry.max attempts
+        JinFrame->>Server: fetch(req)
+        alt success — validateStatus = true
+            Server-->>JinFrame: Response (ok)
+            Note over JinFrame: exit loop immediately
+        else status failure — validateStatus = false
+            Server-->>JinFrame: Response (not ok)
+            JinFrame->>JinFrame: _retryFail(req, Response)
+            Note over JinFrame: sleep(interval) → next attempt
+        else network / timeout error
+            Server-->>JinFrame: throws Error
+            JinFrame->>JinFrame: _retryException(req, Error)
+            Note over JinFrame: sleep(interval) → next attempt
+        end
+    end
+
+    Note over JinFrame: retries exhausted or succeeded
+
+    alt last result = Response
+        JinFrame->>JinFrame: parse response body
+        alt validateStatus passes
+            JinFrame->>JinFrame: run pass validator
+            JinFrame->>JinFrame: _postHook(req, JinPassResp, debugInfo)
+            alt validator passes OR type = 'value'
+                JinFrame-->>Caller: JinPassResp ✓
+            else validator fails AND type = 'exception'
+                JinFrame-->>Caller: throw JinValidationError
+            end
+        else validateStatus fails (retries exhausted)
+            JinFrame->>JinFrame: run fail validator
+            JinFrame->>JinFrame: _postHook(req, JinFailResp, debugInfo)
+            JinFrame-->>Caller: throw JinRespError
+        end
+    else last result = Error (network error, retries exhausted)
+        JinFrame->>JinFrame: wrap → JinRespError
+        JinFrame-->>Caller: throw JinRespError
+    end
+```
+
+### Hook summary
+
+| Hook               | Fires                    | Times     | Typical use                             |
+| ------------------ | ------------------------ | --------- | --------------------------------------- |
+| `_preHook`         | Before the retry loop    | Once      | Token injection, request logging        |
+| `_retryFail`       | Each bad-status attempt  | 0 – N     | Retry logging, transient-error metrics  |
+| `_retryException`  | Each network-error attempt | 0 – N   | Connectivity alerting, error logging    |
+| `_postHook`        | After the retry loop     | Once      | Response logging, metrics, cache bust   |
+
+---
+
 ## Shared Base Frame Pattern
 
 The hooks pattern is especially useful when combined with inheritance. Define hooks once in a base frame and all subclasses inherit the behaviour automatically.
@@ -132,11 +269,13 @@ class CreateUserFrame extends ApiBase<User> {
 
 ## Common Use Cases
 
-| Use Case                  | Hook         | Example                                           |
-| ------------------------- | ------------ | ------------------------------------------------- |
-| Token injection / refresh | `_preHook`   | Attach `Authorization` header before each request |
-| Request logging           | `_preHook`   | Log the outgoing URL and method                   |
-| Response logging          | `_postHook`  | Log status code and latency                       |
-| Metrics / tracing         | `_postHook`  | Record duration in a metrics collector            |
-| Error alerting            | `_postHook`  | Send alert when `reply.ok === false`              |
-| Cache invalidation        | `_postHook`  | Bust a cache after a successful mutation          |
+| Use Case                     | Hook                | Example                                             |
+| ---------------------------- | ------------------- | --------------------------------------------------- |
+| Token injection / refresh    | `_preHook`          | Attach `Authorization` header before each request   |
+| Request logging              | `_preHook`          | Log the outgoing URL and method                     |
+| Retry attempt logging        | `_retryFail`        | Log status code and retry count on each failure     |
+| Connectivity error logging   | `_retryException`   | Log network error message on each exception         |
+| Response logging             | `_postHook`         | Log final status code and latency                   |
+| Metrics / tracing            | `_postHook`         | Record duration in a metrics collector              |
+| Error alerting               | `_postHook`         | Send alert when `reply.ok === false`                |
+| Cache invalidation           | `_postHook`         | Bust a cache after a successful mutation            |
