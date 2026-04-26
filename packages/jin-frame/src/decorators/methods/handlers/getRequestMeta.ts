@@ -60,7 +60,7 @@ export function getRequestMeta(ctor: AbstractConstructor<unknown> | Constructor<
   }
 
   if (mergedValidator != null) {
-    mergedOption.validator = mergedValidator;
+    mergedOption.validators = mergedValidator;
   }
 
   if (mergedDeduped != null) {

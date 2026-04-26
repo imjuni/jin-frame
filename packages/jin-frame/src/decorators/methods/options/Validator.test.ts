@@ -6,13 +6,13 @@ import { BaseValidator } from '#validators/BaseValidator';
 class IamClass {}
 
 describe('Validator', () => {
-  it('should set validator metadata correctly when Validator decorator applied to class', () => {
+  it('should set validators metadata correctly when Validator decorator applied to class', () => {
     const validator = new BaseValidator({ type: 'exception' });
-    const hanlde = Validator(validator);
-    hanlde(IamClass);
+    const handle = Validator({ pass: validator });
+    handle(IamClass);
 
     const meta = getRequestMeta(IamClass);
 
-    expect(meta.option.validator).toEqual(validator);
+    expect(meta.option.validators).toEqual({ pass: validator });
   });
 });

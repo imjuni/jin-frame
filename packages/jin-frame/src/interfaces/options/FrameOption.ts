@@ -4,7 +4,6 @@ import type { BaseValidator } from '#validators/BaseValidator';
 import type { SecurityProvider } from '#interfaces/security/SecurityProvider';
 import type { AuthorizationData } from '#interfaces/security/AuthorizationData';
 import type { Milliseconds } from '#interfaces/options/Milliseconds';
-import type { JinBasicAuth } from '#interfaces/JinBasicAuth';
 
 export interface FrameOption {
   /**
@@ -72,16 +71,11 @@ export interface FrameOption {
   authorization?: AuthorizationData;
 
   /**
-   * @deprecated Use `security` and `authorization` instead. This field will be removed in v5.0.0
-   * Legacy authorization field for backward compatibility
-   * eg. Bearer i-am-authorization-key
-   * */
-  authoriztion?: string | JinBasicAuth;
-
-  /**
-   * validation configuration
+   * Validators for pass and fail responses.
+   * - pass: runs when HTTP response is successful; can throw JinValidationError if type is 'exception'
+   * - fail: runs when HTTP response fails; only sets valid flag, never throws JinValidationError
    */
-  validator?: BaseValidator;
+  validators?: { pass?: BaseValidator; fail?: BaseValidator };
 
   /**
    * 이 값을 활성화 하는 경우 동일 요청이 반복되는 경우 dedupe 처리를 합니다
@@ -100,7 +94,7 @@ export interface FrameOption {
    *
    * Receives the raw response text and returns the parsed value.
    * Useful for handling non-standard JSON (e.g. BigInt values).
-   * If not provieded, JSON.parse is used.
+   * If not provided, JSON.parse is used.
    */
   deserialize?: (text: string) => unknown;
 }
