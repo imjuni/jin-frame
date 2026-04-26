@@ -11,6 +11,7 @@
 - **`validator` option replaced by `validators`**: The single `validator` option on `@Get`/`@Post`/etc. is replaced by `validators: { pass?: BaseValidator; fail?: BaseValidator }`. Pass and fail responses are validated independently.
 - **`valid` and `$validated` are non-nullable**: Both `JinPassResp` and `JinFailResp` now always carry `valid: boolean` and `$validated: ValidationResult`. When no validator is configured, `valid` defaults to `true`.
 - **Fail validator never throws `JinValidationError`**: Fail validators only set `valid`/`$validated` on the response. `JinValidationError` is only thrown for pass-path validation failures.
+- **`validateStatus` signature changed**: `validateStatus` now receives `(ok: boolean, status: number)` instead of `(status: number)`. `isValidateStatusDefault` delegates to `ok` directly instead of comparing against a status threshold.
 
 ### New Features in 5.0.0
 
