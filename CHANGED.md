@@ -12,9 +12,21 @@
 - **`valid` and `$validated` are non-nullable**: Both `JinPassResp` and `JinFailResp` now always carry `valid: boolean` and `$validated: ValidationResult`. When no validator is configured, `valid` defaults to `true`.
 - **Fail validator never throws `JinValidationError`**: Fail validators only set `valid`/`$validated` on the response. `JinValidationError` is only thrown for pass-path validation failures.
 - **`validateStatus` signature changed**: `validateStatus` now receives `(ok: boolean, status: number)` instead of `(status: number)`. `isValidateStatusDefault` delegates to `ok` directly instead of comparing against a status threshold.
+- **`@Authorization` decorator removed**: `@Authorization` is gone. Pass the security key as the second argument to `@Security` instead. Example: `@Security(new BearerTokenProvider(), 'my-token')` replaces the separate `@Authorization('my-token')`.
+- **`OAuth2Provider` removed**: `OAuth2Provider` has been removed. Use `BearerTokenProvider` for OAuth2 Bearer token scenarios. For Swagger/OpenAPI documentation generation, `BearerTokenProvider` now covers the use-cases previously handled by `OAuth2Provider`.
 
 ### New Features in 5.0.0
 
+- **`SecurityKey` — lazy / async key resolution**: The new `SecurityKey` type (`string | (() => string | Promise<string>)`) allows the authorization value to be supplied as a plain string or a function that returns one (synchronously or asynchronously). This enables secrets to be fetched at request time from dotenv, HashiCorp Vault, or any other async secret source.
+  ```ts
+  @Get({
+    host: 'https://api.example.com',
+    security: new BearerTokenProvider(),
+    authorization: async () => await vault.getSecret('api-token'),
+  })
+  class SecureFrame extends JinFrame<Response> {}
+  ```
+- **`BearerTokenProvider.setKey()`**: Allows the Bearer token to be updated at runtime (e.g. after a token refresh) without reconstructing the provider instance.
 - **`JinFrame.builder()` — phantom-type Builder pattern**: New static `builder()` method returns a `BuilderFor<C>` that tracks which fields have been set via TypeScript phantom types. `build()` is only callable once all public fields are set.
   ```ts
   const frame = MyFrame.builder()
