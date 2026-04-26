@@ -147,6 +147,7 @@ export const customOverrideEslintRule = [
       'class-methods-use-this': 'off',
       'n/no-sync': 'off',
       'no-console': 'off',
+      'no-underscore-dangle': 'off',
     },
   },
   {
