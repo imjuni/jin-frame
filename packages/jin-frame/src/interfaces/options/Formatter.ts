@@ -1,7 +1,7 @@
 /**
  * Define formatter for querystring, param, headers, body
  */
-export interface IFormatter {
+export interface Formatter {
   /**
    * order of formatter apply
    *

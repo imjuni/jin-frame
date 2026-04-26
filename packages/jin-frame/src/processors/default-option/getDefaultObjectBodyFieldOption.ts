@@ -1,9 +1,9 @@
-import type { IObjectBodyFieldOption } from '#interfaces/field/body/IObjectBodyFieldOption';
+import type { ObjectBodyFieldOption } from '#interfaces/field/body/ObjectBodyFieldOption';
 import type { Except } from 'type-fest';
 
 export function getDefaultObjectBodyFieldOption(
-  option?: Partial<IObjectBodyFieldOption> | Except<Partial<IObjectBodyFieldOption>, 'type'>,
-): IObjectBodyFieldOption {
+  option?: Partial<ObjectBodyFieldOption> | Except<Partial<ObjectBodyFieldOption>, 'type'>,
+): ObjectBodyFieldOption {
   return {
     key: '',
     type: 'object-body',

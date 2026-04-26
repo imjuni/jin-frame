@@ -5,26 +5,26 @@ import { REQUEST_VALIDATOR_DECORATOR } from '#decorators/methods/handlers/REQUES
 import { REQUEST_DEDUPE_DECORATOR } from '#decorators/methods/handlers/REQUEST_DEDUPE_DECORATOR';
 import { REQUEST_AUTHORIZATION_DECORATOR } from '#decorators/methods/handlers/REQUEST_AUTHORIZATION_DECORATOR';
 import { REQUEST_SECURITY_DECORATOR } from '#decorators/methods/handlers/REQUEST_SECURITY_DECORATOR';
-import type { TMethodEntry } from '#interfaces/options/TMethodEntry';
+import type { MethodEntry } from '#interfaces/options/MethodEntry';
 import type { AbstractConstructor, Constructor } from 'type-fest';
 import type { FrameRetry } from '#interfaces/options/FrameRetry';
 import type { BaseValidator } from '#validators/BaseValidator';
-import type { TMilliseconds } from '#interfaces/options/TMilliseconds';
+import type { Milliseconds } from '#interfaces/options/Milliseconds';
 import type { FrameOption } from '#interfaces/options/FrameOption';
 import 'reflect-metadata';
 
 export function getAllRequestMetaInherited(ctor: AbstractConstructor<unknown> | Constructor<unknown>): {
-  methods: readonly TMethodEntry[];
+  methods: readonly MethodEntry[];
   retries: readonly FrameRetry[];
-  timeouts: readonly TMilliseconds[];
+  timeouts: readonly Milliseconds[];
   validators: readonly BaseValidator[];
   dedupes: readonly boolean[];
   authorizations: readonly FrameOption['authorization'][];
   securities: readonly FrameOption['security'][];
 } {
-  const methods: TMethodEntry[] = [];
+  const methods: MethodEntry[] = [];
   const retries: FrameRetry[] = [];
-  const timeouts: TMilliseconds[] = [];
+  const timeouts: Milliseconds[] = [];
   const validators: BaseValidator[] = [];
   const dedupes: boolean[] = [];
   const authorizations: FrameOption['authorization'][] = [];
@@ -36,9 +36,9 @@ export function getAllRequestMetaInherited(ctor: AbstractConstructor<unknown> | 
     typeof c === 'function';
     c = Object.getPrototypeOf(c)
   ) {
-    const method = (Reflect.getOwnMetadata(REQUEST_METHOD_DECORATOR, c) as TMethodEntry[] | undefined) ?? [];
+    const method = (Reflect.getOwnMetadata(REQUEST_METHOD_DECORATOR, c) as MethodEntry[] | undefined) ?? [];
     const retry = (Reflect.getOwnMetadata(REQUEST_RETRY_DECORATOR, c) as FrameRetry[] | undefined) ?? [];
-    const timeout = (Reflect.getOwnMetadata(REQUEST_TIMEOUT_DECORATOR, c) as TMilliseconds[] | undefined) ?? [];
+    const timeout = (Reflect.getOwnMetadata(REQUEST_TIMEOUT_DECORATOR, c) as Milliseconds[] | undefined) ?? [];
     const validator = (Reflect.getOwnMetadata(REQUEST_VALIDATOR_DECORATOR, c) as BaseValidator[] | undefined) ?? [];
     const dedupe = (Reflect.getOwnMetadata(REQUEST_DEDUPE_DECORATOR, c) as boolean[] | undefined) ?? [];
     const authorization =

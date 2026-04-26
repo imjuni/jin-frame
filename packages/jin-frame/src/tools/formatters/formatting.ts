@@ -1,9 +1,9 @@
-import type { IFormatter } from '#interfaces/options/IFormatter';
+import type { Formatter } from '#interfaces/options/Formatter';
 import { applyFormat } from '#tools/formatters/applyFormat';
 import { isValidPrimitiveWithDateType } from '#tools/type-narrowing/isValidPrimitiveWithDateType';
-import type { TSupportPrimitiveType } from '#tools/type-utilities/TSupportPrimitiveType';
+import type { SupportPrimitiveType } from '#tools/type-utilities/SupportPrimitiveType';
 
-export function formatting(initialValue: unknown, formatter: IFormatter): TSupportPrimitiveType | undefined {
+export function formatting(initialValue: unknown, formatter: Formatter): SupportPrimitiveType | undefined {
   try {
     const applied = applyFormat(initialValue, formatter);
 

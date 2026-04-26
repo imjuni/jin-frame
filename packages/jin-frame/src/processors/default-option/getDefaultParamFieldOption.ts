@@ -1,8 +1,8 @@
-import type { IParamFieldOption } from '#interfaces/field/IParamFieldOption';
+import type { ParamFieldOption } from '#interfaces/field/ParamFieldOption';
 
 export function getDefaultParamFieldOption(
-  option?: Partial<IParamFieldOption> | Omit<Partial<IParamFieldOption>, 'type'>,
-): IParamFieldOption {
+  option?: Partial<ParamFieldOption> | Omit<Partial<ParamFieldOption>, 'type'>,
+): ParamFieldOption {
   return {
     key: '',
     type: 'param',

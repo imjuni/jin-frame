@@ -7,14 +7,12 @@ describe('mergeFrameOption', () => {
     method: 'GET',
     host: 'https://api.site.com',
     contentType: 'application/json',
-    useInstance: false,
   };
 
   const next: FrameOption = {
     method: 'POST',
     path: 'api-path/{name}',
     contentType: 'application/json',
-    useInstance: false,
   };
 
   it('should merged value when overwrite method and merged host and path', () => {
@@ -25,7 +23,6 @@ describe('mergeFrameOption', () => {
       host: 'https://api.site.com',
       path: 'api-path/{name}',
       contentType: 'application/json',
-      useInstance: false,
     });
   });
 });

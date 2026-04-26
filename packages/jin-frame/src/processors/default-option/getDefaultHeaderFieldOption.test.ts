@@ -1,4 +1,4 @@
-import type { IFormatter } from '#interfaces/options/IFormatter';
+import type { Formatter } from '#interfaces/options/Formatter';
 import { getDefaultHeaderFieldOption } from '#processors/default-option/getDefaultHeaderFieldOption';
 import { describe, expect, it } from 'vitest';
 
@@ -22,7 +22,7 @@ describe('getDefaultHeaderFieldOption', () => {
   });
 
   it('should apply formatter when provided', () => {
-    const f: IFormatter = { string: (s) => `f:${s}` };
+    const f: Formatter = { string: (s) => `f:${s}` };
     const option = getDefaultHeaderFieldOption({ formatters: f });
 
     expect(option).toMatchObject({

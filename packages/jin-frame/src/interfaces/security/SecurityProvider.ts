@@ -1,5 +1,5 @@
 import type { AuthorizationData } from '#interfaces/security/AuthorizationData';
-import type { ISecurityContext } from '#interfaces/security/ISecurityContext';
+import type { SecurityContext } from '#interfaces/security/SecurityContext';
 
 /**
  * Security provider interface for handling different authentication schemes
@@ -9,11 +9,11 @@ import type { ISecurityContext } from '#interfaces/security/ISecurityContext';
  *
  * @example
  * ```typescript
- * class CustomBearerProvider implements ISecurityProvider {
+ * class CustomBearerProvider implements SecurityProvider {
  *   readonly type = 'http';
  *   readonly name = 'custom-bearer';
  *
- *   createContext(authorization?: AuthorizationData, dynamicKey?: string): ISecurityContext {
+ *   createContext(authorization?: AuthorizationData, dynamicKey?: string): SecurityContext {
  *     const token = dynamicKey ?? authorization;
  *     return {
  *       headers: {
@@ -32,7 +32,7 @@ import type { ISecurityContext } from '#interfaces/security/ISecurityContext';
  * class MyFrame extends JinFrame {}
  * ```
  */
-export interface ISecurityProvider {
+export interface SecurityProvider {
   /** The type of security scheme (following OpenAPI 3.0 security scheme types) */
   readonly type: 'api-key' | 'http' | 'oauth2' | 'open-id-connect';
 
@@ -55,5 +55,5 @@ export interface ISecurityProvider {
    * const context2 = provider.createContext('frame-token', 'runtime-token');
    * ```
    */
-  createContext: (authorization?: AuthorizationData, dynamicKey?: string) => ISecurityContext;
+  createContext: (authorization?: AuthorizationData, dynamicKey?: string) => SecurityContext;
 }

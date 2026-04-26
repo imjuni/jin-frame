@@ -1,9 +1,9 @@
-import type { IBodyFieldOption } from '#interfaces/field/body/IBodyFieldOption';
+import type { BodyFieldOption } from '#interfaces/field/body/BodyFieldOption';
 import type { Except } from 'type-fest';
 
 export function getDefaultBodyFieldOption(
-  option?: Partial<IBodyFieldOption> | Except<Partial<IBodyFieldOption>, 'type'>,
-): IBodyFieldOption {
+  option?: Partial<BodyFieldOption> | Except<Partial<BodyFieldOption>, 'type'>,
+): BodyFieldOption {
   return {
     key: '',
     type: 'body',

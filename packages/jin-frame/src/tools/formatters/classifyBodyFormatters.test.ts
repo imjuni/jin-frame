@@ -1,10 +1,10 @@
-import type { TSingleBodyFormatter } from '#interfaces/field/body/TSingleBodyFormatter';
+import type { SingleBodyFormatter } from '#interfaces/field/body/SingleBodyFormatter';
 import { classifyBodyFormatters } from '#tools/formatters/classifyBodyFormatters';
 import { describe, expect, it } from 'vitest';
 
 describe('classifyBodyFormatters', () => {
-  const valid: TSingleBodyFormatter[] = [{ findFrom: 'a' }, { findFrom: 'b' }];
-  const invalid: TSingleBodyFormatter[] = [{}, {}];
+  const valid: SingleBodyFormatter[] = [{ findFrom: 'a' }, { findFrom: 'b' }];
+  const invalid: SingleBodyFormatter[] = [{}, {}];
 
   it('should return classifed formatter when formatters', () => {
     const r01 = classifyBodyFormatters();

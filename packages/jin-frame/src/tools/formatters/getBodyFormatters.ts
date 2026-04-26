@@ -1,6 +1,6 @@
-import type { TSingleBodyFormatter } from '#interfaces/field/body/TSingleBodyFormatter';
+import type { SingleBodyFormatter } from '#interfaces/field/body/SingleBodyFormatter';
 
-export function getBodyFormatters(formatters?: TSingleBodyFormatter | TSingleBodyFormatter[]): TSingleBodyFormatter[] {
+export function getBodyFormatters(formatters?: SingleBodyFormatter | SingleBodyFormatter[]): SingleBodyFormatter[] {
   if (formatters == null) {
     return [];
   }
