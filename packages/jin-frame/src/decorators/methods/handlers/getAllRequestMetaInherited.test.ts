@@ -7,19 +7,17 @@ import { Timeout } from '#decorators/methods/options/Timeout';
 import { Retry } from '#decorators/methods/options/Retry';
 import { Validator } from '#decorators/methods/options/Validator';
 import { Security } from '#decorators/methods/options/Security';
-import { Authorization } from '#decorators/methods/options/Authorization';
 import { BaseValidator } from '#validators/BaseValidator';
 import { Put } from '#decorators/methods/Put';
 import { BearerTokenProvider } from '#providers/security/BearerTokenProvider';
 import { ApiKeyProvider } from '#providers/security/ApiKeyProvider';
 import { BasicAuthProvider } from '#providers/security/BasicAuthProvider';
 
-@Security(new BearerTokenProvider('base-auth'))
-@Authorization('Bearer base-token')
+@Security(new BearerTokenProvider('base-auth'), 'Bearer base-token')
 @Get({ host: 'http://some.host.com' })
 class GetAllRequestMetaInheritedTest001 {}
 
-@Authorization({ apiKey: 'post-api-key' })
+@Security(new ApiKeyProvider('post-auth', 'X-API-Key', 'header'), 'post-api-key')
 @Post({ path: 'some/path' })
 class GetAllRequestMetaInheritedTest002 extends GetAllRequestMetaInheritedTest001 {}
 
@@ -36,15 +34,14 @@ class GetAllRequestMetaInheritedTest003 extends GetAllRequestMetaInheritedTest00
 @Put({})
 class GetAllRequestMetaInheritedTest004 extends GetAllRequestMetaInheritedTest003 {}
 
-@Security([new BasicAuthProvider('final-auth'), new BearerTokenProvider('final-bearer')])
-@Authorization({ sessionId: 'final-session', userId: 'final-user' })
+@Security([new BasicAuthProvider('final-auth'), new BearerTokenProvider('final-bearer')], 'final-session-token')
 @Timeout(2000)
 @Validator({ pass: new BaseValidator({ type: 'exception' }) })
 @Get({ path: 'overwrite/double/path' })
 class GetAllRequestMetaInheritedTest005 extends GetAllRequestMetaInheritedTest004 {}
 
 describe('getAllRequestMetaInherited', () => {
-  it('should return configuration when pass custom content-type', () => {
+  it('should collect methods from full inheritance chain', () => {
     const metas = getAllRequestMetaInherited(GetAllRequestMetaInheritedTest005);
 
     expect(metas).toMatchObject({
@@ -52,66 +49,32 @@ describe('getAllRequestMetaInherited', () => {
         {
           option: {
             contentType: 'application/json',
-            customBody: undefined,
-            host: undefined,
             method: 'GET',
             path: 'overwrite/double/path',
-            retry: undefined,
-            timeout: undefined,
-            userAgent: undefined,
-            pathPrefix: undefined,
           },
         },
         {
           option: {
-            contentType: 'application/json',
-            customBody: undefined,
-            host: undefined,
             method: 'PUT',
-            path: undefined,
-            pathPrefix: undefined,
-            retry: undefined,
-            timeout: undefined,
-            userAgent: undefined,
           },
         },
         {
           option: {
-            host: undefined,
-            path: 'overwrite/path',
             method: 'PATCH',
-            customBody: undefined,
+            path: 'overwrite/path',
             contentType: 'custom-content-type',
-            userAgent: undefined,
-            retry: undefined,
-            timeout: undefined,
-            pathPrefix: undefined,
           },
         },
         {
           option: {
-            host: undefined,
-            path: 'some/path',
             method: 'POST',
-            customBody: undefined,
-            contentType: 'application/json',
-            userAgent: undefined,
-            retry: undefined,
-            timeout: undefined,
-            pathPrefix: undefined,
+            path: 'some/path',
           },
         },
         {
           option: {
             host: 'http://some.host.com',
-            path: undefined,
             method: 'GET',
-            customBody: undefined,
-            contentType: 'application/json',
-            userAgent: undefined,
-            retry: undefined,
-            timeout: undefined,
-            pathPrefix: undefined,
           },
         },
       ],
@@ -122,30 +85,23 @@ describe('getAllRequestMetaInherited', () => {
       securities: [
         [new BasicAuthProvider('final-auth'), new BearerTokenProvider('final-bearer')],
         new ApiKeyProvider('patch-auth', 'X-API-Key', 'header'),
+        new ApiKeyProvider('post-auth', 'X-API-Key', 'header'),
         new BearerTokenProvider('base-auth'),
       ],
-      authorizations: [
-        { sessionId: 'final-session', userId: 'final-user' },
-        { apiKey: 'post-api-key' },
-        'Bearer base-token',
-      ],
+      authorizations: ['final-session-token', 'post-api-key', 'Bearer base-token'],
     });
   });
 
-  it('should handle Security and Authorization inheritance correctly', () => {
-    // Test inheritance hierarchy for Security and Authorization
-    @Security(new BearerTokenProvider('grandparent-auth'))
-    @Authorization('Bearer grandparent-token')
+  it('should handle Security with key in inheritance hierarchy', () => {
+    @Security(new BearerTokenProvider('grandparent-auth'), 'grandparent-token')
     @Get({ host: 'https://api.example.com' })
     class GrandParentClass {}
 
-    @Security(new ApiKeyProvider('parent-auth', 'X-API-Key', 'header'))
-    @Authorization({ apiKey: 'parent-key', scope: 'read' })
+    @Security(new ApiKeyProvider('parent-auth', 'X-API-Key', 'header'), 'parent-key')
     @Post({ path: '/api/v1' })
     class ParentClass extends GrandParentClass {}
 
-    @Security([new BasicAuthProvider('child-auth'), new BearerTokenProvider('child-bearer')])
-    @Authorization({ sessionId: 'child-session', permissions: ['read', 'write'] })
+    @Security([new BasicAuthProvider('child-auth'), new BearerTokenProvider('child-bearer')], 'child-session')
     @Put({ path: '/api/v2/resource' })
     class ChildClass extends ParentClass {}
 
@@ -157,11 +113,7 @@ describe('getAllRequestMetaInherited', () => {
       new BearerTokenProvider('grandparent-auth'),
     ]);
 
-    expect(metas.authorizations).toEqual([
-      { sessionId: 'child-session', permissions: ['read', 'write'] },
-      { apiKey: 'parent-key', scope: 'read' },
-      'Bearer grandparent-token',
-    ]);
+    expect(metas.authorizations).toEqual(['child-session', 'parent-key', 'grandparent-token']);
 
     expect(metas.methods).toHaveLength(3);
     expect(metas.methods.at(0)?.option.method).toBe('PUT');
@@ -169,18 +121,16 @@ describe('getAllRequestMetaInherited', () => {
     expect(metas.methods.at(2)?.option.method).toBe('GET');
   });
 
-  it('should handle Security and Authorization with mixed decorators', () => {
+  it('should handle Security without key', () => {
     @Security(new BearerTokenProvider('base-security'))
     @Get({ host: 'https://base.example.com' })
     class BaseClass {}
 
-    @Authorization({ token: 'middle-auth' })
     @Timeout(5000)
     @Post({ path: '/middle' })
     class MiddleClass extends BaseClass {}
 
-    @Security([new ApiKeyProvider('final-key', 'X-Key', 'query'), new BasicAuthProvider('final-basic')])
-    @Authorization('Bearer final-token')
+    @Security([new ApiKeyProvider('final-key', 'X-Key', 'query'), new BasicAuthProvider('final-basic')], 'final-token')
     @Retry({ max: 3, interval: 1000 })
     @Patch({ path: '/final' })
     class FinalClass extends MiddleClass {}
@@ -192,23 +142,19 @@ describe('getAllRequestMetaInherited', () => {
       new BearerTokenProvider('base-security'),
     ]);
 
-    expect(metas.authorizations).toEqual(['Bearer final-token', { token: 'middle-auth' }]);
+    expect(metas.authorizations).toEqual(['final-token']);
 
     expect(metas.retries).toEqual([{ max: 3, interval: 1000 }]);
     expect(metas.timeouts).toEqual([5000]);
   });
 
-  it('should handle empty Security and Authorization arrays correctly', () => {
+  it('should return empty authorizations when no key is provided', () => {
     @Get({ host: 'https://no-auth.example.com' })
     class NoAuthClass {}
 
     @Security(new BearerTokenProvider('only-security'))
     @Post({ path: '/only-security' })
     class OnlySecurityClass extends NoAuthClass {}
-
-    @Authorization('Bearer only-auth')
-    @Put({ path: '/only-auth' })
-    class OnlyAuthClass extends OnlySecurityClass {}
 
     const noAuthMetas = getAllRequestMetaInherited(NoAuthClass);
     expect(noAuthMetas.securities).toEqual([]);
@@ -217,9 +163,18 @@ describe('getAllRequestMetaInherited', () => {
     const onlySecurityMetas = getAllRequestMetaInherited(OnlySecurityClass);
     expect(onlySecurityMetas.securities).toEqual([new BearerTokenProvider('only-security')]);
     expect(onlySecurityMetas.authorizations).toEqual([]);
+  });
 
-    const onlyAuthMetas = getAllRequestMetaInherited(OnlyAuthClass);
-    expect(onlyAuthMetas.securities).toEqual([new BearerTokenProvider('only-security')]);
-    expect(onlyAuthMetas.authorizations).toEqual(['Bearer only-auth']);
+  it('should store function-based SecurityKey in authorizations', () => {
+    const keyFn = () => 'dynamic-token';
+
+    @Security(new BearerTokenProvider(), keyFn)
+    @Get({ host: 'https://api.example.com' })
+    class FnKeyClass {}
+
+    const metas = getAllRequestMetaInherited(FnKeyClass);
+
+    expect(metas.authorizations).toEqual([keyFn]);
+    expect(typeof metas.authorizations[0]).toBe('function');
   });
 });

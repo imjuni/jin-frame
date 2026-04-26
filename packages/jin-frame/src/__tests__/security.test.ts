@@ -7,20 +7,14 @@ import { Param } from '#decorators/fields/Param';
 import { BearerTokenProvider } from '#providers/security/BearerTokenProvider';
 import { ApiKeyProvider } from '#providers/security/ApiKeyProvider';
 import { BasicAuthProvider } from '#providers/security/BasicAuthProvider';
-import { OAuth2Provider } from '#providers/security/OAuth2Provider';
+import { Security } from '#decorators/methods/options/Security';
 import { http, HttpResponse } from 'msw';
 import { setupServer } from 'msw/node';
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
-import { Authorization } from '#decorators/methods/options/Authorization';
-import { Security } from '#decorators/methods/options/Security';
 
-// Bearer Token Authentication Frame
-
-@Authorization('user-token-12345')
-@Get({
-  host: 'http://api.example.com/user/{id}',
-  security: new BearerTokenProvider(),
-})
+// Bearer Token Authentication Frame — static string key
+@Security(new BearerTokenProvider(), 'user-token-12345')
+@Get({ host: 'http://api.example.com/user/{id}' })
 class UserProfileFrame extends JinFrame {
   @Param()
   declare public readonly id: string;
@@ -31,12 +25,9 @@ class UserProfileFrame extends JinFrame {
   }
 }
 
-// API Key in Header Authentication Frame
-@Security(new ApiKeyProvider('api-key', 'X-API-Key', 'header'))
-@Authorization('secret-api-key-value')
-@Get({
-  host: 'http://api.example.com/data',
-})
+// API Key in Header Authentication Frame — key via @Security second arg
+@Security(new ApiKeyProvider('api-key', 'X-API-Key', 'header'), 'secret-api-key-value')
+@Get({ host: 'http://api.example.com/data' })
 class DataFrame extends JinFrame {
   @Query()
   declare public readonly filter: string;
@@ -47,7 +38,7 @@ class DataFrame extends JinFrame {
   }
 }
 
-// API Key in Query Authentication Frame
+// API Key in Query Authentication Frame — key via FrameOption
 @Get({
   host: 'http://api.example.com/search',
   security: new ApiKeyProvider('api_key', 'key', 'query'),
@@ -63,7 +54,7 @@ class SearchFrame extends JinFrame {
   }
 }
 
-// Basic Authentication Frame
+// Basic Authentication Frame — complex auth object via FrameOption
 @Post({
   host: 'http://api.example.com/admin/users',
   security: new BasicAuthProvider(),
@@ -79,20 +70,17 @@ class AdminUserFrame extends JinFrame {
   }
 }
 
-// OAuth2 Authentication Frame
-@Security(new OAuth2Provider('oauth2', 'Bearer'))
-@Authorization({ accessToken: 'oauth-access-token-xyz', tokenType: 'Bearer' })
+// Bearer Token with BearerProvider — using FrameOption authorization
 @Get({
   host: 'http://api.example.com/oauth/profile',
+  security: new BearerTokenProvider('bearer'),
+  authorization: 'oauth-access-token-xyz',
 })
-class OAuthProfileFrame extends JinFrame {}
+class BearerProfileFrame extends JinFrame {}
 
 // Multiple Security Providers Frame
-@Security([new BearerTokenProvider(), new ApiKeyProvider('client-id', 'X-Client-ID', 'header')])
-@Authorization('multi-auth-token')
-@Get({
-  host: 'http://api.example.com/secure',
-})
+@Security([new BearerTokenProvider(), new ApiKeyProvider('client-id', 'X-Client-ID', 'header')], 'multi-auth-token')
+@Get({ host: 'http://api.example.com/secure' })
 class MultiSecurityFrame extends JinFrame {}
 
 // Dynamic Authorization Override Frame
@@ -176,9 +164,10 @@ describe('Security Integration Tests', () => {
 
   afterEach(() => {
     server.resetHandlers();
+    server.close();
   });
 
-  it('should authenticate with Bearer token provider successfully', async () => {
+  it('should authenticate with Bearer token via @Security second arg', async () => {
     const frame = UserProfileFrame.of({ id: 'user123' });
     const result = await frame._execute();
 
@@ -186,7 +175,7 @@ describe('Security Integration Tests', () => {
     expect(result.data).toEqual({ id: 'user123', name: 'Test User' });
   });
 
-  it('should authenticate with API key in header successfully', async () => {
+  it('should authenticate with API key in header via @Security second arg', async () => {
     const frame = new DataFrame();
     const result = await frame._execute();
 
@@ -194,7 +183,7 @@ describe('Security Integration Tests', () => {
     expect(result.data).toEqual({ data: 'secure data', filter: 'active' });
   });
 
-  it('should authenticate with API key in query parameter successfully', async () => {
+  it('should authenticate with API key in query parameter via FrameOption', async () => {
     const frame = new SearchFrame();
     const result = await frame._execute();
 
@@ -202,7 +191,7 @@ describe('Security Integration Tests', () => {
     expect(result.data).toEqual({ results: ['result1', 'result2'], query: 'test%20query' });
   });
 
-  it('should authenticate with Basic authentication successfully', async () => {
+  it('should authenticate with Basic authentication via FrameOption', async () => {
     const frame = new AdminUserFrame();
     const result = await frame._execute();
 
@@ -210,19 +199,8 @@ describe('Security Integration Tests', () => {
     expect(result.data).toEqual({ success: true, message: 'User created' });
   });
 
-  it('should authenticate with OAuth2 provider successfully', async () => {
-    // Ensure OAuth2 handler is in place
-    server.use(
-      http.get('http://api.example.com/oauth/profile', ({ request }) => {
-        const authHeader = request.headers.get('Authorization');
-        if (authHeader === 'Bearer oauth-access-token-xyz') {
-          return HttpResponse.json({ profile: 'oauth user profile' });
-        }
-        return HttpResponse.json({ error: 'Invalid token' }, { status: 401 });
-      }),
-    );
-
-    const frame = new OAuthProfileFrame();
+  it('should authenticate with Bearer provider via FrameOption authorization', async () => {
+    const frame = new BearerProfileFrame();
     const result = await frame._execute();
 
     expect(result.status).toBe(200);
@@ -246,7 +224,6 @@ describe('Security Integration Tests', () => {
   });
 
   it('should override frame authorization with dynamic auth', async () => {
-    // Mock server to handle dynamic auth override
     server.use(
       http.get('http://api.example.com/dynamic', ({ request }) => {
         const authHeader = request.headers.get('Authorization');
@@ -267,82 +244,83 @@ describe('Security Integration Tests', () => {
     expect(result.data).toEqual({ message: 'Dynamic auth successful' });
   });
 
-  it('should handle Bearer token with standard Bearer prefix', async () => {
-    @Get({
-      host: 'http://api.example.com/dynamic',
-      security: new BearerTokenProvider('bearer-standard'),
-      authorization: 'standard-bearer-token',
-    })
-    class StandardBearerFrame extends JinFrame {}
+  it('should resolve function-based SecurityKey at request time', async () => {
+    let tokenValue = 'first-token';
 
-    const bearerFrame = new StandardBearerFrame();
+    @Security(new BearerTokenProvider(), () => tokenValue)
+    @Get({ host: 'http://api.example.com/dynamic' })
+    class LazyTokenFrame extends JinFrame {}
 
-    // Mock server to accept standard Bearer token
     server.use(
       http.get('http://api.example.com/dynamic', ({ request }) => {
         const authHeader = request.headers.get('Authorization');
-        if (authHeader === 'Bearer standard-bearer-token') {
-          return HttpResponse.json({ message: 'Standard Bearer successful' });
+        if (authHeader === 'Bearer first-token') {
+          return HttpResponse.json({ message: 'First token successful' });
+        }
+        if (authHeader === 'Bearer second-token') {
+          return HttpResponse.json({ message: 'Second token successful' });
         }
         return HttpResponse.json({ error: 'Unauthorized' }, { status: 401 });
       }),
     );
 
-    const result = await bearerFrame._execute();
-    expect(result.status).toBe(200);
-    expect(result.data).toEqual({ message: 'Standard Bearer successful' });
+    const frame1 = new LazyTokenFrame();
+    const result1 = await frame1._execute();
+    expect(result1.data).toEqual({ message: 'First token successful' });
+
+    tokenValue = 'second-token';
+
+    const frame2 = new LazyTokenFrame();
+    const result2 = await frame2._execute();
+    expect(result2.data).toEqual({ message: 'Second token successful' });
   });
 
-  it('should handle API key in cookie location', async () => {
-    @Get({
-      host: 'http://api.example.com/cookie-auth',
-      security: new ApiKeyProvider('session', 'session_id', 'cookie'),
-      authorization: 'cookie-session-123',
-    })
-    class CookieAuthFrame extends JinFrame {}
+  it('should resolve async function-based SecurityKey at request time', async () => {
+    const asyncGetToken = async (): Promise<string> => Promise.resolve('async-vault-token');
 
-    const cookieFrame = new CookieAuthFrame();
+    @Security(new BearerTokenProvider(), asyncGetToken)
+    @Get({ host: 'http://api.example.com/dynamic' })
+    class AsyncTokenFrame extends JinFrame {}
 
-    // Mock server to accept cookie authentication
     server.use(
-      http.get('http://api.example.com/cookie-auth', ({ request }) => {
-        const cookieHeader = request.headers.get('Cookie');
-        if (cookieHeader === 'session_id=cookie-session-123') {
-          return HttpResponse.json({ message: 'Cookie auth successful' });
-        }
-        return HttpResponse.json({ error: 'Unauthorized' }, { status: 401 });
-      }),
-    );
-
-    const result = await cookieFrame._execute();
-    expect(result.status).toBe(200);
-    expect(result.data).toEqual({ message: 'Cookie auth successful' });
-  });
-
-  it('should handle OAuth2 with custom token type', async () => {
-    @Get({
-      host: 'http://api.example.com/custom-oauth',
-      security: new OAuth2Provider('custom-oauth2', 'Custom'),
-      authorization: { accessToken: 'custom-oauth-token', tokenType: 'Custom' },
-    })
-    class CustomOAuthFrame extends JinFrame {}
-
-    const customOAuthFrame = new CustomOAuthFrame();
-
-    // Mock server to accept custom OAuth2 token type
-    server.use(
-      http.get('http://api.example.com/custom-oauth', ({ request }) => {
+      http.get('http://api.example.com/dynamic', ({ request }) => {
         const authHeader = request.headers.get('Authorization');
-        if (authHeader === 'Custom custom-oauth-token') {
-          return HttpResponse.json({ message: 'Custom OAuth successful' });
+        if (authHeader === 'Bearer async-vault-token') {
+          return HttpResponse.json({ message: 'Async token successful' });
         }
         return HttpResponse.json({ error: 'Unauthorized' }, { status: 401 });
       }),
     );
 
-    const result = await customOAuthFrame._execute();
+    const frame = new AsyncTokenFrame();
+    const result = await frame._execute();
     expect(result.status).toBe(200);
-    expect(result.data).toEqual({ message: 'Custom OAuth successful' });
+    expect(result.data).toEqual({ message: 'Async token successful' });
+  });
+
+  it('should update BearerTokenProvider key with setKey()', async () => {
+    const provider = new BearerTokenProvider();
+
+    @Security(provider)
+    @Get({ host: 'http://api.example.com/dynamic' })
+    class MutableTokenFrame extends JinFrame {}
+
+    server.use(
+      http.get('http://api.example.com/dynamic', ({ request }) => {
+        const authHeader = request.headers.get('Authorization');
+        if (authHeader === 'Bearer mutable-token') {
+          return HttpResponse.json({ message: 'Mutable token successful' });
+        }
+        return HttpResponse.json({ error: 'Unauthorized' }, { status: 401 });
+      }),
+    );
+
+    provider.setKey('mutable-token');
+
+    const frame = new MutableTokenFrame();
+    const result = await frame._execute();
+    expect(result.status).toBe(200);
+    expect(result.data).toEqual({ message: 'Mutable token successful' });
   });
 
   it('should handle authentication failure gracefully', async () => {
@@ -390,21 +368,6 @@ describe('Security Integration Tests', () => {
     });
   });
 
-  it('should handle OAuth2 authentication failure', async () => {
-    @Get({
-      host: 'http://api.example.com/oauth/profile',
-      security: new OAuth2Provider('oauth2-failure', 'Bearer'),
-      authorization: { accessToken: 'invalid-oauth-token', tokenType: 'Bearer' },
-    })
-    class OAuth2FailureFrame extends JinFrame {}
-
-    const frame = new OAuth2FailureFrame();
-
-    await expect(frame._execute()).rejects.toMatchObject({
-      resp: { status: 401 },
-    });
-  });
-
   it('should handle missing authorization gracefully', async () => {
     @Get({
       host: 'http://api.example.com/user/user123',
@@ -424,11 +387,9 @@ describe('Security Integration Tests', () => {
     @Get({
       host: 'http://api.example.com/user/user123',
       security: new BearerTokenProvider(),
-      // No authorization field - using only dynamic auth
     })
     class DynamicOnlyFrame extends JinFrame {}
 
-    // Mock server to accept dynamic auth
     server.use(
       http.get('http://api.example.com/user/user123', ({ request }) => {
         const authHeader = request.headers.get('Authorization');
@@ -446,15 +407,13 @@ describe('Security Integration Tests', () => {
     expect(result.data).toEqual({ id: 'user123', source: 'dynamic-auth' });
   });
 
-  it('should authenticate successfully when using multiple security providers with dynamic auth', async () => {
+  it('should authenticate with multiple providers using dynamic auth', async () => {
     @Get({
       host: 'http://api.example.com/multi-dynamic',
       security: [new BearerTokenProvider(), new ApiKeyProvider('client-id', 'X-Client-ID', 'header')],
-      // No static authorization - providers will use same dynamic auth value
     })
     class MultiDynamicFrame extends JinFrame {}
 
-    // Mock server to check both headers from dynamic auth
     server.use(
       http.get('http://api.example.com/multi-dynamic', ({ request }) => {
         const authHeader = request.headers.get('Authorization');
@@ -471,5 +430,48 @@ describe('Security Integration Tests', () => {
 
     expect(result.status).toBe(200);
     expect(result.data).toEqual({ message: 'Multi-dynamic auth successful' });
+  });
+
+  it('should handle API key in cookie location', async () => {
+    @Get({
+      host: 'http://api.example.com/cookie-auth',
+      security: new ApiKeyProvider('session', 'session_id', 'cookie'),
+      authorization: 'cookie-session-123',
+    })
+    class CookieAuthFrame extends JinFrame {}
+
+    server.use(
+      http.get('http://api.example.com/cookie-auth', ({ request }) => {
+        const cookieHeader = request.headers.get('Cookie');
+        if (cookieHeader === 'session_id=cookie-session-123') {
+          return HttpResponse.json({ message: 'Cookie auth successful' });
+        }
+        return HttpResponse.json({ error: 'Unauthorized' }, { status: 401 });
+      }),
+    );
+
+    const result = await new CookieAuthFrame()._execute();
+    expect(result.status).toBe(200);
+    expect(result.data).toEqual({ message: 'Cookie auth successful' });
+  });
+
+  it('should handle Bearer token with standard Bearer prefix', async () => {
+    @Security(new BearerTokenProvider('bearer-standard'), 'standard-bearer-token')
+    @Get({ host: 'http://api.example.com/dynamic' })
+    class StandardBearerFrame extends JinFrame {}
+
+    server.use(
+      http.get('http://api.example.com/dynamic', ({ request }) => {
+        const authHeader = request.headers.get('Authorization');
+        if (authHeader === 'Bearer standard-bearer-token') {
+          return HttpResponse.json({ message: 'Standard Bearer successful' });
+        }
+        return HttpResponse.json({ error: 'Unauthorized' }, { status: 401 });
+      }),
+    );
+
+    const result = await new StandardBearerFrame()._execute();
+    expect(result.status).toBe(200);
+    expect(result.data).toEqual({ message: 'Standard Bearer successful' });
   });
 });

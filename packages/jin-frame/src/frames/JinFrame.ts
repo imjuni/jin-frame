@@ -24,6 +24,19 @@ import type { JinPassResp } from '#interfaces/JinPassResp';
 import { getStatusFromError } from '#tools/responses/getStatusFromError';
 import { getHeaderObject } from '#tools/getHeaderObject';
 import { safeParse } from '#tools/json/safeParse';
+import type { FrameOption } from '#interfaces/options/FrameOption';
+
+async function resolveSecurityKey<T extends JinFrameRequestConfig & JinFrameCreateConfig>(
+  frameOption: FrameOption,
+  option: T | undefined,
+): Promise<T & { dynamicAuth?: string }> {
+  const base = (option ?? {}) as T;
+  if (base.dynamicAuth != null) return base;
+  const frameAuth = frameOption.authorization;
+  if (typeof frameAuth !== 'function') return base;
+  const resolved = await frameAuth();
+  return { ...base, dynamicAuth: resolved };
+}
 
 /**
  * Definition HTTP Request
@@ -232,7 +245,10 @@ export class JinFrame<Pass = unknown, Fail = Pass> extends AbstractJinFrame impl
   }
 
   /**
-   * Generate a request config and invoke HTTP APIs
+   * Generate a request config and invoke HTTP APIs.
+   *
+   * Function-based `SecurityKey` values (set via `@Security(provider, () => key)`) are resolved
+   * here before building the request. Use this method when the authorization key is dynamic.
    *
    * @param option request configuration options
    * @returns JinResp with pass or fail discriminated union
@@ -241,7 +257,8 @@ export class JinFrame<Pass = unknown, Fail = Pass> extends AbstractJinFrame impl
     this: TSelf,
     option?: JinFrameRequestConfig & JinFrameCreateConfig & { getError?: GetError<TSelf, Pass, Fail> },
   ): Promise<JinResp<Pass, Fail>> {
-    const requester = this._create(option);
+    const resolvedOption = await resolveSecurityKey(this._option, option);
+    const requester = this._create(resolvedOption);
     return requester();
   }
 }
