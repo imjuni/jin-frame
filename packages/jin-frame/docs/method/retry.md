@@ -27,7 +27,7 @@ When multiple clients retry at the same fixed interval, it may actually increase
       return retry * 1000;
     },  
 })
-@Get({ path: '/api/v2/pokemon/:name' })
+@Get({ path: '/api/v2/pokemon/{name}' })
 class PokemonByNameId extends PokemonAPI<IPokemonData> {
   @Param()
   declare public readonly name: string;

@@ -17,7 +17,7 @@ import { Get, Dedupe } from 'jin-frame';
 @Dedupe()
 @Get({
   host: 'https://api.example.com',
-  path: '/users/:id',
+  path: '/users/{id}',
 })
 export class GetUserFrame extends JinFrame {
   @Param()
@@ -81,7 +81,7 @@ sequenceDiagram
 @Dedupe()
 @Get({
   host: 'https://api.example.com',
-  path: '/users/:id',
+  path: '/users/{id}',
 })
 export class GetUserFrame extends JinFrame {
   @Param()
@@ -90,9 +90,9 @@ export class GetUserFrame extends JinFrame {
 
 // Multiple simultaneous requests for the same user
 const promises = [
-  GetUserFrame.of({ id: '123' }).execute(),
-  GetUserFrame.of({ id: '123' }).execute(),
-  GetUserFrame.of({ id: '123' }).execute(),
+  GetUserFrame.of({ id: '123' })._execute(),
+  GetUserFrame.of({ id: '123' })._execute(),
+  GetUserFrame.of({ id: '123' })._execute(),
 ];
 
 // Only ONE HTTP request will be made to /users/123
@@ -106,7 +106,7 @@ When using dedupe, you can check if a response was deduplicated:
 
 ```ts
 const frame = GetUserFrame.of({ id: '123' });
-const result = await frame.execute();
+const result = await frame._execute();
 
 // The response includes deduplication information
 console.log(result.isDeduped); // true if this was a duplicate request
@@ -144,7 +144,7 @@ Sometimes you need to exclude certain fields from the cache key generation. This
 @Dedupe()
 @Get({
   host: 'https://api.example.com',
-  path: '/users/:id',
+  path: '/users/{id}',
 })
 export class GetUserFrame extends JinFrame {
   @Param()

@@ -18,8 +18,8 @@ Supported decorators: `@Get`, `@Post`, `@Put`, `@Patch`, `@Delete`, `@Link`, `@U
 @Timeout(10_000) // 10s timeout
 @Get({
   host: 'https://api.example.com',
-  path: '/orgs/:orgId/users',
-  authorization: process.env.YOUR_AUTH_TOKEN
+  path: '/orgs/{orgId}/users',
+  authorization: process.env.YOUR_AUTH_TOKEN,
 })
 export class ListUsersFrame extends JinFrame {
   @Param()
@@ -31,7 +31,7 @@ export class ListUsersFrame extends JinFrame {
 
 // Execute
 const frame = ListUsersFrame.of({ orgId: 'acme', page: 1 });
-const reply = await frame.execute();
+const reply = await frame._execute();
 ```
 
 ### POST (JSON Body)
@@ -53,7 +53,7 @@ export class CreateUserFrame extends JinFrame {
 
 // Execute
 const frame = CreateUserFrame.of({ name: 'Alice', email: 'alice@acme.com' });
-const res = await frame.execute();
+const res = await frame._execute();
 ```
 
 ### POST (multipart/form-data, File Upload)
@@ -68,37 +68,37 @@ export class UploadFrame extends JinFrame {
   @Body()
   declare readonly title: string;
 
-  @Body() 
+  @Body()
   declare readonly attachments: JinFile[]; // Supports JinFile or JinFile[]
 }
 
 // Execute
 const file = new JinFile(new File(['hello'], 'hello.txt'), 'hello.txt');
 const frame = UploadFrame.of({ title: 'greeting', attachments: [file] });
-await frame.execute();
+await frame._execute();
 ```
 
 ### PUT / PATCH / DELETE
 
 ```ts
-@Patch({ 
+@Patch({
   host: 'https://api.example.com',
-  path: '/users/:id',
+  path: '/users/{id}',
 })
 export class UpdateUserFrame extends JinFrame {
-  @Param() 
+  @Param()
   declare readonly id: string;
 
-  @Body() 
+  @Body()
   declare readonly name?: string;
 }
 
 @Delete({
   host: 'https://api.example.com',
-  path: '/users/:id',
+  path: '/users/{id}',
 })
 export class DeleteUserFrame extends JinFrame {
-  @Param() 
+  @Param()
   declare readonly id: string;
 }
 ```
@@ -107,21 +107,20 @@ export class DeleteUserFrame extends JinFrame {
 
 All method decorators (`@Get`, `@Post`, …) accept common options:
 
-| Option             | Type                                                                                 | Description                                                                 |
-| ------------------ | ------------------------------------------------------------------------------------ | --------------------------------------------------------------------------- |
-| `host`             | `string`                                                                             | Base URL (including protocol). Example: `https://api.example.com`           |
-| `path`             | `string`                                                                             | Path. Supports **Path Param** placeholders like `:id`                       |
-| `pathPrefix`       | `string`                                                                             | Path prefix to prepend to the path, such as `/api`                         |
-| `timeout`          | `number`                                                                             | Request timeout (ms). Uses library default if not set                       |
-| `retry`            | `{ max: number; interval?: number }` \*                                              | Retry policy. `max` is max attempts, `interval` is delay between retries(ms)|
-| `method`           | `string`                                                                             | Normally set internally, but can be overridden for custom methods           |
-| `contentType`      | `'application/json' \| 'multipart/form-data' \| 'application/x-www-form-urlencoded'` | Specifies the request content type                                          |
-| `customBody`       | `unknown`                                                                            | Provide a **custom body** instead of using decorated fields                 |
-| `transformRequest` | `AxiosRequestTransformer \| AxiosRequestTransformer[]`                               | Axios request transformer. Defaults to `x-www-form-urlencoded` transformer  |
-| `validateStatus`   | `(status: number) => boolean`                                                        | Axios status validator. Works with retry conditions                         |
-| `userAgent`        | `string`                                                                             | Sets User-Agent. May be ignored due to browser security restrictions        |
-| `authorization`    | `string` or `{ username: string; password: string }`                                 | Configure `Authorization` header directly or with Basic Auth                |
-| `validator`        | `Validator`                                                                          | Pass a custom `Validator` instance by extending the `Validator` class       |
+| Option           | Type                                                                                  | Description                                                                  |
+| ---------------- | ------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------- |
+| `host`           | `string`                                                                              | Base URL (including protocol). Example: `https://api.example.com`            |
+| `path`           | `string`                                                                              | Path. Supports RFC 6570 URI Template placeholders like `{id}`                |
+| `pathPrefix`     | `string`                                                                              | Path prefix to prepend to the path, such as `/api`                           |
+| `timeout`        | `number`                                                                              | Request timeout (ms). Uses library default if not set                        |
+| `retry`          | `{ max: number; interval?: number }` \*                                               | Retry policy. `max` is max attempts, `interval` is delay between retries(ms) |
+| `method`         | `string`                                                                              | Normally set internally, but can be overridden for custom methods            |
+| `contentType`    | `'application/json' \| 'multipart/form-data' \| 'application/x-www-form-urlencoded'` | Specifies the request content type                                           |
+| `customBody`     | `unknown`                                                                             | Provide a **custom body** instead of using decorated fields                  |
+| `validateStatus` | `(ok: boolean, status: number) => boolean`                                            | Determine success. Defaults to `(ok) => ok` (native `Response.ok`)          |
+| `userAgent`      | `string`                                                                              | Sets User-Agent. May be ignored due to browser security restrictions         |
+| `authorization`  | `string \| { username: string; password: string }`                                    | Configure `Authorization` header directly or with Basic Auth                 |
+| `validators`     | `{ pass?: BaseValidator; fail?: BaseValidator }`                                      | Validators for pass and fail responses, run independently                    |
 
 ## Body Transmission Rules & Content-Type
 
@@ -129,32 +128,29 @@ All method decorators (`@Get`, `@Post`, …) accept common options:
 - **`multipart/form-data`:** Internal FormData handling works **only for POST requests**.  
   - `JinFile` / `JinFile[]` are added as file parts.  
   - Strings/numbers/booleans/objects are stringified and added as form parts.  
-- **`application/x-www-form-urlencoded`:** The library injects a default `transformRequest` to encode as `key=value&…`.  
-  - If a custom `transformRequest` is provided, that takes precedence.
+- **`application/x-www-form-urlencoded`:** Field values are encoded as `key=value&…` using `URLSearchParams`.
 
-> Note: `multipart/form-data` auto-conversion only works for **POST**. For `PUT/PATCH/DELETE` with multipart, use `customBody` or `transformRequest`.
+> Note: `multipart/form-data` auto-conversion only works for **POST**. For `PUT/PATCH/DELETE` with multipart, use `customBody`.
 
 ## Method Semantics (Idempotency)
 
-- `GET`: Read-only. Pass data via **query/header/path** (no body).  
-- `POST`: Creation/action. Commonly includes a **body**.  
-- `PUT` / `PATCH`: Update. Can include body.  
-- `DELETE`: Deletion. Can include body/query depending on server rules.  
-
-Since the library passes `data` to Axios, bodies are possible for `PUT/PATCH/DELETE` if the server supports them.
+- `GET`: Read-only. Pass data via **query/header/path** (no body).
+- `POST`: Creation/action. Commonly includes a **body**.
+- `PUT` / `PATCH`: Update. Can include body.
+- `DELETE`: Deletion. Can include body/query depending on server rules.
 
 ## Debugging Tip
 
 ```ts
 const frame = SomeFrame.of(/* ... */);
-const req = frame.request();
+const req = frame._requestWrap();
 
-console.log(frame.getOption('method')); // Configured HTTP method
-console.log(frame.getData('param')); // Final Path Params
-console.log(frame.getData('query')); // Final Query Params
-console.log(frame.getData('header')); // Final Headers (before serialization)
-console.log(req); // Final Axios request config
+console.log(frame._getOption('method')); // Configured HTTP method
+console.log(frame._getData('param'));    // Final Path Params
+console.log(frame._getData('query'));    // Final Query Params
+console.log(frame._getData('header'));   // Final Headers (before serialization)
+console.log(req);                        // Final request config
 ```
 
-> If you want to inspect the request before sending, use `.request()` to get the Axios config object.  
-> `.execute()` actually performs the network call.
+> Use `_requestWrap()` to inspect the request config before sending.
+> `_execute()` builds the config and performs the network call in one step.

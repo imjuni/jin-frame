@@ -4,256 +4,173 @@ outline: deep
 
 # Validation
 
-The **Validator** in jin-frame is a class that provides functionality for validating HTTP response data. It ensures that API responses match the expected format and enables appropriate handling of invalid data.
+`JinFrame` supports response validation through the `BaseValidator` class. Validators run after the HTTP response is received and populate `valid` and `$validated` on the response object. Pass and fail responses are validated **independently**.
 
-## Basic Concepts
+## Concepts
+
+### Pass vs Fail Validators
+
+| Validator       | When it runs                       | Can throw `JinValidationError`? |
+| --------------- | ---------------------------------- | -------------------------------- |
+| `validators.pass` | When `validateStatus` returns `true`  | Yes — if `type: 'exception'`    |
+| `validators.fail` | When `validateStatus` returns `false` | No — only sets `valid`/`$validated` |
+
+Fail validators never throw `JinValidationError` because doing so would overwrite the original HTTP error.
+
+### Validation Result Fields
+
+Both `JinPassResp` and `JinFailResp` always carry these fields:
+
+```ts
+interface JinPassResp<T> {
+  ok: true;
+  data: T;
+  valid: boolean;           // false until validator runs and passes
+  $validated: ValidationResult;
+}
+```
+
+When no validator is configured, `valid` defaults to `true`.
 
 ### Validation Types
 
-Validator supports two validation types:
+- **`'exception'`** — throws `JinValidationError` on pass-path validation failure
+- **`'value'`** — sets `valid: false` and populates `$validated.error`, does not throw
 
-- **`exception`**: Throws a `JinValidationtError` exception when validation fails
-- **`value`**: Includes validation results in the response data when validation fails
+---
 
-### Validation Result
+## BaseValidator
 
-```typescript
-type TValidationResult<TError = unknown> = 
-  | { valid: true }                    // Validation success
-  | { valid: false; error: TError[] }  // Validation failure
-```
+Extend `BaseValidator` to implement your validation logic. Override `getData()` to extract the slice of the response you want to validate, and `validator()` to run the actual check.
 
-## Class Structure
+```ts
+import { BaseValidator } from 'jin-frame';
+import type { ValidationResult } from 'jin-frame';
+import type { JinPassResp } from 'jin-frame';
 
-```typescript
-export class Validator<TOrigin = unknown, TData = TOrigin, TError = unknown> {
-  constructor({ type }: { type: TValidationResultType })
-  
-  // Extract data to validate from response (overridable)
-  getData(reply: TOrigin): TData
-  
-  // Actual validation logic (must override)
-  validator(data: TData): TValidationResult<TError> | Promise<TValidationResult<TError>>
-  
-  // Execute the entire validation process
-  validate(reply: TOrigin): Promise<TValidationResult<TError>>
-}
-```
-
-### Generic Type Parameters
-
-- **`TOrigin`**: Original response type (e.g., `AxiosResponse<UserData>`)
-- **`TData`**: Data type to validate (e.g., `UserData`)  
-- **`TError`**: Error type for validation failures (e.g., `ZodIssue`)
-
-## Usage
-
-### Basic Usage
-
-```typescript
-import { Validator } from 'jin-frame';
-import type { AxiosResponse } from 'axios';
-
-class UserValidator extends Validator<
-  AxiosResponse<UserData>,  // Original response type
-  UserData,                 // Data type to validate
-  ValidationError           // Error type
-> {
+class UserPassValidator extends BaseValidator<JinPassResp<User>, User, ZodIssue> {
   constructor() {
-    super({ type: 'exception' }); // Exception mode
+    super({ type: 'exception' });
   }
 
-  // Extract data to validate from response
-  override getData(reply: AxiosResponse<UserData>): UserData {
+  // Extract the data to validate from the full response
+  override getData(reply: JinPassResp<User>): User {
     return reply.data;
   }
 
-  // Implement actual validation logic
-  override validator(data: UserData): TValidationResult<ValidationError> {
-    // Zod, Joi, or custom validation logic
+  override validator(data: User): ValidationResult<ZodIssue> {
     const result = userSchema.safeParse(data);
-    
-    if (result.success) {
-      return { valid: true };
-    }
-    
-    return { 
-      valid: false, 
-      error: result.error.issues 
-    };
+    if (result.success) return { valid: true };
+    return { valid: false, error: result.error.issues };
   }
 }
 ```
 
-### Usage with JinFrame
+### Generic Parameters
 
-```typescript
-@Validator(new UserValidator()) // Register validator
-@Post({
+| Parameter | Description                                              |
+| --------- | -------------------------------------------------------- |
+| `TOrigin` | Full response type passed to `validate()` (e.g. `JinPassResp<User>`) |
+| `TData`   | Slice extracted by `getData()` for actual validation     |
+| `TError`  | Type of each item in `error[]` on failure                |
+
+---
+
+## Registering Validators
+
+Pass validators through the `validators` option on the method decorator:
+
+```ts
+@Get({
   host: 'https://api.example.com',
-  path: '/users',
+  path: '/users/{id}',
+  validators: {
+    pass: new UserPassValidator(),
+    fail: new UserFailValidator(), // optional
+  },
 })
-class CreateUserFrame extends JinFrame<UserData> {
-  @Body()
-  declare name: string;
-
-  @Body() 
-  declare email: string;
+class GetUserFrame extends JinFrame<User, ErrorBody> {
+  @Param()
+  declare public readonly id: string;
 }
 ```
 
-### Validation with Zod
+---
 
-```typescript
+## Example: Zod Validation
+
+```ts
 import { z } from 'zod';
+import { BaseValidator, Get, JinFrame } from 'jin-frame';
+import type { JinPassResp, ValidationResult } from 'jin-frame';
 
-const messageSchema = z.object({
-  message: z.string(),
-  timestamp: z.number(),
+const userSchema = z.object({
+  id: z.string(),
+  name: z.string(),
+  email: z.string().email(),
 });
 
-class MessageValidator extends Validator<
-  AxiosResponse<{ message: string; timestamp: number }>,
-  { message: string; timestamp: number },
-  z.ZodIssue
-> {
+type User = z.infer<typeof userSchema>;
+
+class UserValidator extends BaseValidator<JinPassResp<User>, User, z.ZodIssue> {
   constructor() {
     super({ type: 'exception' });
   }
 
-  override getData(reply: AxiosResponse<{ message: string; timestamp: number }>) {
+  override getData(reply: JinPassResp<User>): User {
     return reply.data;
   }
 
-  override validator(data: { message: string; timestamp: number }) {
-    const result = messageSchema.safeParse(data);
-    
-    if (result.success) {
-      return { valid: true };
-    }
-    
-    return { 
-      valid: false, 
-      error: result.error.issues 
-    };
+  override validator(data: User): ValidationResult<z.ZodIssue> {
+    const result = userSchema.safeParse(data);
+    if (result.success) return { valid: true };
+    return { valid: false, error: result.error.issues };
+  }
+}
+
+@Get({
+  host: 'https://api.example.com',
+  path: '/users/{id}',
+  validators: { pass: new UserValidator() },
+})
+class GetUserFrame extends JinFrame<User> {
+  @Param()
+  declare public readonly id: string;
+}
+
+try {
+  const frame = GetUserFrame.of({ id: '123' });
+  const reply = await frame._execute();
+  console.log(reply.data); // User — validated
+} catch (err) {
+  if (err instanceof JinValidationError) {
+    console.error(err.validated); // ZodIssue[]
   }
 }
 ```
 
-## Validation Modes
+---
 
-### Exception Mode
+## Checking Validation Results Without Throwing
 
-```typescript
-const validator = new UserValidator({ type: 'exception' });
-```
+Use `type: 'value'` to receive validation results in the response instead of throwing:
 
-- Throws `JinValidationtError` exception on validation failure
-- Handle with try-catch in application logic
-- **Recommended**: Use for most cases
-
-### Value Mode  
-
-```typescript
-const validator = new UserValidator({ type: 'value' });
-```
-
-- Includes validation results in response object on validation failure
-- Check results in the `$validated` property of response object
-- **Use case**: When validation results need to be passed to client
-
-## Real-world Example
-
-```typescript
-// 1. Define validator
-class ProductValidator extends Validator<
-  AxiosResponse<Product>,
-  Product,
-  ValidationError
-> {
+```ts
+class SoftValidator extends BaseValidator<JinPassResp<User>, User, string> {
   constructor() {
-    super({ type: 'exception' });
+    super({ type: 'value' }); // does not throw
   }
 
-  override getData(reply: AxiosResponse<Product>): Product {
-    return reply.data;
-  }
+  override getData(reply: JinPassResp<User>) { return reply.data; }
 
-  override validator(product: Product): TValidationResult<ValidationError> {
-    if (!product.id || product.price < 0) {
-      return {
-        valid: false,
-        error: [{ message: 'Invalid product data' }]
-      };
-    }
-    
+  override validator(data: User): ValidationResult<string> {
+    if (!data.id) return { valid: false, error: ['missing id'] };
     return { valid: true };
   }
 }
 
-// 2. Apply to Frame
-@Validator(new ProductValidator()) // Register validator
-@Get({
-  host: 'https://api.shop.com',
-  path: '/products/:id',
-})
-class GetProductFrame extends JinFrame<Product> {
-  @Param()
-  declare id: string;
-}
-
-// 3. Usage
-try {
-  const frame = GetProductFrame.of({ id: '123' });
-  const response = await frame.execute();
-  // Reaches here only if validation succeeds
-  console.log('Valid product:', response.data);
-} catch (error) {
-  if (error instanceof JinValidationtError) {
-    console.log('Validation failed:', error.validated);
-  }
+const reply = await frame._execute();
+if (!reply.valid) {
+  console.warn(reply.$validated.error);
 }
 ```
-
-## Advantages
-
-### Type Safety
-
-- Complete type inference with TypeScript generics
-- Compile-time type error detection
-
-### Flexible Validation Logic  
-
-- Use any validation library (Zod, Joi, Yup, etc.)
-- Implement custom validation logic
-
-### Consistent Error Handling
-
-- Standardized validation result format
-- Choose between exception/value return modes
-
-### Framework Integration
-
-- Perfect integration with JinFrame
-- Simple configuration with decorator pattern
-
-## Error Handling
-
-The `JinValidationtError` thrown on validation failure includes the following information:
-
-```typescript
-interface JinValidationtError {
-  message: string;                    // Error message
-  validated: TValidationResult;       // Validation result
-  validator: Validator;               // Used validator
-  debug: IDebugInfo;                  // Debug information
-  frame: JinFrame;                    // Frame instance
-  resp: AxiosResponse;                // Response object
-}
-```
-
-This allows detailed analysis of validation failure causes.
-
----
-
-Validator is a core feature that **ensures data integrity of API responses** and **prevents runtime errors caused by unexpected data**. It's especially useful when using external APIs where response formats might change or unexpected data might be received.
