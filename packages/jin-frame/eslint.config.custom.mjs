@@ -174,6 +174,8 @@ export const customIgnore = [
   {
     ignores: [
       './.configs/**',
+      './docs/.vitepress/cache/**',
+      './docs/.vitepress/dist/**',
       './docs/.vitepress/config.mts',
       './docs/.vitepress/theme/index.ts',
       '**/dist/**/*',
