@@ -28,7 +28,7 @@ outline: deep
     },  
 })
 @Get({ 
-  path: '/api/v2/pokemon/:name',
+  path: '/api/v2/pokemon/{name}',
 })
 class PokemonByNameId extends PokemonAPI<IPokemonData> {
   @Param()

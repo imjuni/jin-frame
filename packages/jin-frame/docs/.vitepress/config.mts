@@ -60,6 +60,14 @@ const getThemeConfig = (_locale?: string) => {
               text: 'Dedupe',
               link: `${locale}/method/dedupe.md`,
             },
+            {
+              text: 'Hook',
+              link: `${locale}/method/hook.md`,
+            },
+            {
+              text: 'Builder',
+              link: `${locale}/method/builder.md`,
+            },
           ],
         },
         {

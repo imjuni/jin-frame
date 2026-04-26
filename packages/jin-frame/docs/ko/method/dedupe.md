@@ -17,7 +17,7 @@ import { Get, Dedupe } from 'jin-frame';
 @Dedupe()
 @Get({
   host: 'https://api.example.com',
-  path: '/users/:id',
+  path: '/users/{id}',
 })
 export class GetUserFrame extends JinFrame {
   @Param()
@@ -81,7 +81,7 @@ sequenceDiagram
 @Dedupe()
 @Get({
   host: 'https://api.example.com',
-  path: '/users/:id',
+  path: '/users/{id}',
 })
 export class GetUserFrame extends JinFrame {
   @Param()
@@ -90,9 +90,9 @@ export class GetUserFrame extends JinFrame {
 
 // 같은 사용자에 대한 동시 요청들
 const promises = [
-  GetUserFrame.of({ id: '123' }).execute(),
-  GetUserFrame.of({ id: '123' }).execute(),
-  GetUserFrame.of({ id: '123' }).execute(),
+  GetUserFrame.of({ id: '123' })._execute(),
+  GetUserFrame.of({ id: '123' })._execute(),
+  GetUserFrame.of({ id: '123' })._execute(),
 ];
 
 // /users/123에 대해 오직 하나의 HTTP 요청만 전송됩니다
@@ -106,7 +106,7 @@ dedupe를 사용할 때 응답이 중복 제거되었는지 확인할 수 있습
 
 ```ts
 const frame = GetUserFrame.of({ id: '123' });
-const result = await frame.execute();
+const result = await frame._execute();
 
 // 응답에는 중복 제거 정보가 포함됩니다
 console.log(result.isDeduped); // 중복 요청인 경우 true
@@ -144,7 +144,7 @@ console.log(result.isDeduped); // 중복 요청인 경우 true
 @Dedupe()
 @Get({
   host: 'https://api.example.com',
-  path: '/users/:id',
+  path: '/users/{id}',
 })
 export class GetUserFrame extends JinFrame {
   @Param()
