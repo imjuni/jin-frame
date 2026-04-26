@@ -14,5 +14,5 @@ export interface BuilderFor<
   ) => BuilderFor<C, TSet | (keyof V & keyof PublicFieldsOf<InstanceType<C>>)>;
   auto: () => BuilderFor<C, TSet | keyof PublicFieldsOf<InstanceType<C>>>;
   get: () => Readonly<Partial<PublicFieldsOf<InstanceType<C>>>>;
-  build: () => InstanceType<C>;
+  build: [keyof PublicFieldsOf<InstanceType<C>>] extends [TSet] ? () => InstanceType<C> : never;
 }

@@ -1,1 +1,1 @@
-export type ConstructorFunction<C> = new () => C;
+export type ConstructorFunction<C> = new (...args: unknown[]) => C;

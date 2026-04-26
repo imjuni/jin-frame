@@ -89,7 +89,6 @@ export class JinFrame<Pass = unknown, Fail = Pass> extends AbstractJinFrame impl
     JinResp<Pass, Fail> & {
       $debug: DebugInfo;
       $frame: TSelf;
-      $validated?: ValidationResult;
     }
   > {
     const req = this._requestWrap(option);
@@ -99,7 +98,6 @@ export class JinFrame<Pass = unknown, Fail = Pass> extends AbstractJinFrame impl
       JinPassResp<Pass> & {
         $debug: DebugInfo;
         $frame: TSelf;
-        $validated?: ValidationResult;
       }
     > => {
       const startAt = new Date();
