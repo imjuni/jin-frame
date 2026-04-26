@@ -29,13 +29,12 @@ import type { FrameOption } from '#interfaces/options/FrameOption';
 async function resolveSecurityKey<T extends JinFrameRequestConfig & JinFrameCreateConfig>(
   frameOption: FrameOption,
   option: T | undefined,
-): Promise<T & { dynamicAuth?: string }> {
-  const base = (option ?? {}) as T;
-  if (base.dynamicAuth != null) return base;
+): Promise<T> {
+  if (option?.dynamicAuth != null) return option;
   const frameAuth = frameOption.authorization;
-  if (typeof frameAuth !== 'function') return base;
+  if (typeof frameAuth !== 'function') return (option ?? {}) as T;
   const resolved = await frameAuth();
-  return { ...base, dynamicAuth: resolved };
+  return { ...(option ?? {}), dynamicAuth: resolved } as T;
 }
 
 /**
