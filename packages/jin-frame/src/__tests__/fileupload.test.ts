@@ -64,7 +64,7 @@ describe('fileupload.test', () => {
 
         // Single file validation
         const singleFile = formData.get('myFile') as File;
-        if (!singleFile || singleFile.name !== 'README.md') {
+        if (singleFile?.name !== 'README.md') {
           return new HttpResponse('Invalid myFile', { status: 400 });
         }
 

@@ -20,6 +20,8 @@ import { getFrameInternalData } from '#decorators/getFrameInternalData';
 import type { ConstructorFunction } from '#tools/type-utilities/ConstructorFunction';
 import type { PublicFieldsOf } from '#tools/type-utilities/FieldsOf';
 import type { BuilderFor } from '#tools/type-utilities/BuilderFor';
+import type { WithDefaultValues } from '#tools/type-utilities/WithDefaultValues';
+import type { WithBuilder } from '#tools/type-utilities/WithBuilder';
 import { getAuthorization } from '#tools/auth/getAuthorization';
 import { getQuerystringKeyFormat } from '#processors/getQuerystringKeyFormat';
 import { getQuerystringKey } from '#processors/getQuerystringKey';
@@ -46,37 +48,41 @@ export abstract class AbstractJinFrame {
     return {};
   }
 
-  /* eslint-disable @typescript-eslint/no-explicit-any */
-  static builder<C extends ConstructorFunction<unknown>>(this: C): BuilderFor<C> {
-    const store: Partial<PublicFieldsOf<InstanceType<C>>> = {};
+  static builder<C extends ConstructorFunction<unknown>>(
+    this: C,
+    ...ctorArgs: ConstructorParameters<C>
+  ): BuilderFor<C> {
+    type Fields = PublicFieldsOf<InstanceType<C>>;
+
+    const store: Partial<Fields> = {};
     const self = this;
 
-    const api: BuilderFor<C> = {
-      set(k, v) {
-        (store as any)[k] = v;
-        return api;
+    const api = {
+      set<K extends keyof Fields>(k: K, v: Fields[K]) {
+        (store as Record<keyof Fields, Fields[keyof Fields]>)[k] = v;
+        return api as unknown as BuilderFor<C, K>;
       },
-      from(v) {
+      from<V extends Partial<Fields>>(v: V) {
         for (const [k, e] of Object.entries(v)) {
-          (store as any)[k] = e;
+          (store as Record<string, unknown>)[k] = e;
         }
-        return api;
+        return api as unknown as BuilderFor<C, keyof V & keyof Fields>;
       },
       auto() {
-        Object.assign(store, (self as any).getDefaultValues?.());
-        return api;
+        Object.assign(store, (self as unknown as WithDefaultValues<C>).getDefaultValues?.());
+        return api as unknown as BuilderFor<C, keyof Fields>;
       },
       get() {
-        return store as Readonly<Partial<PublicFieldsOf<InstanceType<C>>>>;
+        return store;
       },
       build() {
         // eslint-disable-next-line new-cap
-        const inst = new self() as InstanceType<C>;
-        const defaults = (self as any).getDefaultValues?.() as Partial<PublicFieldsOf<InstanceType<C>>>;
-        (inst as any)._setFields({ ...defaults, ...store });
+        const inst = new self(...ctorArgs) as InstanceType<C>;
+        const defaults = (self as unknown as WithDefaultValues<C>).getDefaultValues?.();
+        Object.assign(inst as object, defaults, store);
         return inst;
       },
-    };
+    } as unknown as BuilderFor<C>;
 
     return api;
   }
@@ -84,22 +90,23 @@ export abstract class AbstractJinFrame {
   static of<C extends ConstructorFunction<unknown>>(
     this: C,
     args: PublicFieldsOf<InstanceType<C>> | ((b: BuilderFor<C>) => unknown),
+    ...ctorArgs: ConstructorParameters<C>
   ): InstanceType<C> {
-    const inst = new this() as InstanceType<C>;
-    const defaults = (this as any).getDefaultValues?.() as Partial<PublicFieldsOf<InstanceType<C>>>;
+    const defaults = (this as unknown as WithDefaultValues<C>).getDefaultValues?.();
 
     if (typeof args === 'function') {
-      const b = (this as any).builder() as BuilderFor<C>;
+      const b = (this as unknown as WithBuilder<C>).builder(...ctorArgs);
       args(b);
       const built = b.get();
-      (inst as any)._setFields({ ...defaults, ...built });
+      const inst = new this(...ctorArgs) as InstanceType<C>;
+      Object.assign(inst as object, defaults, built);
       return inst;
     }
 
-    (inst as any)._setFields({ ...defaults, ...args });
+    const inst = new this(...ctorArgs) as InstanceType<C>;
+    Object.assign(inst as object, defaults, args);
     return inst;
   }
-  /* eslint-enable @typescript-eslint/no-explicit-any */
 
   // eslint-disable-next-line class-methods-use-this
   protected _retryFail(_req: JinRequestConfig, _res: Response): void | Promise<void> {}
