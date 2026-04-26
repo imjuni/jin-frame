@@ -4,8 +4,8 @@ import type { ValidationResult } from '#interfaces/ValidationResult';
 import type { BaseValidator } from '#validators/BaseValidator';
 import type { JinPassResp } from '#interfaces/JinPassResp';
 
-export class JinValidationtError<Pass, Fail = unknown, ValidationError = unknown> extends Error {
-  __discriminator = 'JinValidationtError';
+export class JinValidationError<Pass, Fail = unknown, ValidationError = unknown> extends Error {
+  __discriminator = 'JinValidationError';
 
   #debug: DebugInfo;
 
