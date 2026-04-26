@@ -3,33 +3,28 @@ import type { SecurityContext } from '#interfaces/security/SecurityContext';
 import type { SecurityProvider } from '#interfaces/security/SecurityProvider';
 
 /**
- * Bearer Token security provider that implements HTTP Bearer Token authentication.
+ * Bearer Token security provider for HTTP Bearer Token authentication.
  * Automatically adds "Bearer " prefix to tokens if not already present.
+ * Call `setKey()` to update the token at runtime (e.g. after token refresh).
  */
 export class BearerTokenProvider implements SecurityProvider {
-  /** Type identifier for this security provider */
   readonly type = 'http' as const;
 
-  /** Name of this security provider instance */
   readonly name: string;
 
-  /**
-   * Creates a new Bearer Token provider
-   * @param name - Name of this security provider instance
-   */
+  private _internalKey?: string;
+
   constructor(name = 'bearer') {
     this.name = name;
   }
 
-  /**
-   * Creates security context with Bearer Token authentication
-   * @param authorization - Authorization data containing the bearer token
-   * @param dynamicKey - Optional dynamic bearer token that overrides the authorization data
-   * @returns Security context with Bearer token applied to Authorization header
-   */
-  // eslint-disable-next-line class-methods-use-this
+  setKey(key: string): this {
+    this._internalKey = key;
+    return this;
+  }
+
   createContext(authorization?: AuthorizationData, dynamicKey?: string): SecurityContext {
-    const token = dynamicKey ?? authorization;
+    const token = dynamicKey ?? this._internalKey ?? (typeof authorization === 'string' ? authorization : undefined);
 
     if (token == null || typeof token !== 'string') {
       return {};

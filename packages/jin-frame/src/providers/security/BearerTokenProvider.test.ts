@@ -16,9 +16,9 @@ describe('BearerTokenProvider', () => {
       const provider = new BearerTokenProvider();
       expect(provider.createContext()).toEqual({});
       expect(provider.createContext(undefined)).toEqual({});
-      expect(provider.createContext(null as any)).toEqual({});
+      expect(provider.createContext(null as unknown as undefined)).toEqual({});
       expect(provider.createContext({ token: 'some-token' })).toEqual({});
-      expect(provider.createContext(123 as any)).toEqual({});
+      expect(provider.createContext(123 as unknown as undefined)).toEqual({});
     });
 
     it('should apply Bearer prefix to token when token is provided', () => {
@@ -63,6 +63,49 @@ describe('BearerTokenProvider', () => {
       expect(provider.createContext('   ')).toEqual({
         headers: { Authorization: 'Bearer    ' },
       });
+    });
+  });
+
+  describe('setKey', () => {
+    it('should use internal key when set', () => {
+      const provider = new BearerTokenProvider();
+      provider.setKey('internal-token');
+
+      expect(provider.createContext()).toEqual({
+        headers: { Authorization: 'Bearer internal-token' },
+      });
+    });
+
+    it('should prioritize dynamic key over internal key', () => {
+      const provider = new BearerTokenProvider();
+      provider.setKey('internal-token');
+
+      expect(provider.createContext(undefined, 'dynamic-token')).toEqual({
+        headers: { Authorization: 'Bearer dynamic-token' },
+      });
+    });
+
+    it('should prioritize internal key over authorization data', () => {
+      const provider = new BearerTokenProvider();
+      provider.setKey('internal-token');
+
+      expect(provider.createContext('auth-token')).toEqual({
+        headers: { Authorization: 'Bearer internal-token' },
+      });
+    });
+
+    it('should allow updating internal key after construction', () => {
+      const provider = new BearerTokenProvider();
+      provider.setKey('first-token');
+      expect(provider.createContext()).toEqual({ headers: { Authorization: 'Bearer first-token' } });
+
+      provider.setKey('second-token');
+      expect(provider.createContext()).toEqual({ headers: { Authorization: 'Bearer second-token' } });
+    });
+
+    it('should return this for method chaining', () => {
+      const provider = new BearerTokenProvider();
+      expect(provider.setKey('my-token')).toBe(provider);
     });
   });
 });

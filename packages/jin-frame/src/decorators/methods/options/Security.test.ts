@@ -37,37 +37,12 @@ describe('Security', () => {
     const provider2 = new ApiKeyProvider('api-key', 'X-API-Key', 'header');
     const provider3 = new BasicAuthProvider('basic-auth');
 
-    // Proper way to use multiple security providers is via array
     const handle = Security([provider1, provider2, provider3]);
     handle(TestClass);
 
     const meta = getRequestMeta(TestClass);
 
     expect(meta.option.security).toEqual([provider1, provider2, provider3]);
-  });
-
-  it('should freeze security provider option to prevent mutation', () => {
-    class TestClass {}
-
-    const provider = new BearerTokenProvider('auth-bearer');
-    const handle = Security(provider);
-    handle(TestClass);
-
-    const meta = getRequestMeta(TestClass);
-
-    expect(Object.isFrozen(meta.option.security)).toBe(true);
-  });
-
-  it('should handle array of providers and freeze the array', () => {
-    class TestClass {}
-
-    const providers = [new BearerTokenProvider('auth-bearer'), new ApiKeyProvider('api-key', 'X-API-Key', 'header')];
-    const handle = Security(providers);
-    handle(TestClass);
-
-    const meta = getRequestMeta(TestClass);
-
-    expect(Object.isFrozen(meta.option.security)).toBe(true);
   });
 
   it('should override parent class security in inheritance hierarchy', () => {
@@ -87,7 +62,43 @@ describe('Security', () => {
     const childMeta = getRequestMeta(ChildClass);
 
     expect(parentMeta.option.security).toEqual(parentProvider);
-    // Child should override parent's security
     expect(childMeta.option.security).toEqual(childProvider);
+  });
+
+  it('should store static string key as authorization when key is provided', () => {
+    class TestClass {}
+
+    const provider = new BearerTokenProvider();
+    const handle = Security(provider, 'my-static-token');
+    handle(TestClass);
+
+    const meta = getRequestMeta(TestClass);
+
+    expect(meta.option.authorization).toBe('my-static-token');
+  });
+
+  it('should store function key as authorization when key is a function', () => {
+    class TestClass {}
+
+    const keyFn = () => 'dynamic-token';
+    const provider = new BearerTokenProvider();
+    const handle = Security(provider, keyFn);
+    handle(TestClass);
+
+    const meta = getRequestMeta(TestClass);
+
+    expect(meta.option.authorization).toBe(keyFn);
+  });
+
+  it('should not set authorization when no key is provided', () => {
+    class TestClass {}
+
+    const provider = new BearerTokenProvider();
+    const handle = Security(provider);
+    handle(TestClass);
+
+    const meta = getRequestMeta(TestClass);
+
+    expect(meta.option.authorization).toBeUndefined();
   });
 });
