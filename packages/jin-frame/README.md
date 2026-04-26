@@ -10,9 +10,9 @@
 [![codecov](https://codecov.io/gh/imjuni/jin-frame/branch/master/graph/badge.svg?style=flat-square&token=R7R2PdJcS9)](https://codecov.io/gh/imjuni/jin-frame)
 [![code style: prettier](https://img.shields.io/badge/code_style-prettier-ff69b4.svg?style=flat-square)](https://github.com/prettier/prettier)
 
-**HTTP Reqest** = **TypeScript Class**
+**HTTP Request** = **TypeScript Class**
 
-A reusable, declarative, type-safe, and extendable HTTP request library.
+A reusable, declarative, type-safe, and extendable HTTP request library built on native `fetch`.
 
 <!-- markdownlint-disable MD033 -->
 <p align="center">
@@ -24,29 +24,24 @@ Why `jin-frame`?
 
 1. Declarative API Definition
 2. Type Safety
-3. Support for Retry, Hooks, File Upload, Timeout and Mocking
-4. Build upon the Axios Ecosystem
-5. Path Parameter Support
+3. Retry, Hooks, File Upload, Timeout, and AbortSignal support
+4. Built on native `fetch` — no extra HTTP client dependency
+5. RFC 6570 URI Template path parameters (`{param}`)
+6. Builder pattern with compile-time field completeness checking
 
 ## Table of Contents <!-- omit in toc -->
 
-- [Comparison of direct usage and jin-frame](#comparison-of-direct-usage-and-jin-frame)
 - [Install](#install)
 - [Usage](#usage)
+- [Builder Pattern](#builder-pattern)
+- [Pass / Fail Response](#pass--fail-response)
+- [Validation](#validation)
 - [Retry, Timeout](#retry-timeout)
 - [Authorization](#authorization)
+- [Custom validateStatus](#custom-validatestatus)
 - [Requirements](#requirements)
-  - [Decorator](#decorator)
-  - [Axios version](#axios-version)
 - [Example](#example)
 - [License](#license)
-
-## Comparison of direct usage and jin-frame
-
-| Direct usage                        | Jin-Frame                                  |
-| ----------------------------------- | ------------------------------------------ |
-| ![axios](assets/axios-usage.png)    | ![jin-frame](assets/jinframe-usage.png)    |
-| [axios svg](assets/axios-usage.svg) | [jin-frame svg](assets/jinframe-usage.svg) |
 
 ## Install
 
@@ -64,15 +59,13 @@ pnpm add jin-frame --save
 
 ## Usage
 
-This is simple example of pokeapi.co.
-
 ```ts
 import { Get, Param, Query, JinFrame } from 'jin-frame';
 import { randomUUID } from 'node:crypto';
 
-@Get({ 
+@Get({
   host: 'https://pokeapi.co',
-  path: '/api/v2/pokemon/:name',
+  path: '/api/v2/pokemon/{name}',
 })
 export class PokemonFrame extends JinFrame {
   @Param()
@@ -82,30 +75,77 @@ export class PokemonFrame extends JinFrame {
   declare public readonly tid: string;
 }
 
-(async () => {
-  const frame = PokemonFrame.of({ 
-    name: 'pikachu', 
-    tid: randomUUID(),
-  });
-  const reply = await frame.execute();
-  
-  // Show Pikachu Data
-  console.log(reply.data);
-})();
+const frame = PokemonFrame.of({ name: 'pikachu', tid: randomUUID() });
+const reply = await frame._execute();
+
+console.log(reply.data);
 ```
+
+## Builder Pattern
+
+`builder()` tracks which fields have been set at the type level. `build()` is only available once all public fields are assigned, catching missing fields at compile time.
+
+```ts
+const frame = PokemonFrame.builder()
+  .set('name', 'pikachu')
+  .set('tid', randomUUID())
+  .build(); // compile error if any public field is missing
+
+const reply = await frame._execute();
+```
+
+`of()` also accepts a builder callback:
+
+```ts
+const frame = PokemonFrame.of((b) => b.set('name', 'pikachu').set('tid', randomUUID()));
+```
+
+## Pass / Fail Response
+
+`_execute()` returns a discriminated union typed by `ok`:
+
+```ts
+const reply = await frame._execute<MyFrame, Pokemon, ErrorBody>();
+
+if (reply.ok) {
+  console.log(reply.data); // typed as Pokemon
+} else {
+  console.error(reply.data); // typed as ErrorBody
+}
+```
+
+## Validation
+
+Validators run after the response is received and set `valid` and `$validated` on the response object. Pass and fail responses are validated independently.
+
+```ts
+@Get({
+  host: 'https://pokeapi.co',
+  path: '/api/v2/pokemon/{name}',
+  validators: {
+    pass: new MyPassValidator(),
+    fail: new MyFailValidator(),
+  },
+})
+export class PokemonFrame extends JinFrame<Pokemon, ErrorBody> { ... }
+
+const reply = await frame._execute();
+console.log(reply.valid);      // boolean — false if validator rejected
+console.log(reply.$validated); // ValidationResult with details
+```
+
+Fail validators never throw `JinValidationError`. `JinValidationError` is only thrown when a **pass** validator rejects and its `type` is `'exception'`.
 
 ## Retry, Timeout
 
-Retry and Timeout can be easily applied without installing additional packages.
-
 ```ts
-import { Param, Query, Retry, Timeout, JinFrame } from 'jin-frame';
+import { Get, Param, Query, Retry, Timeout, JinFrame } from 'jin-frame';
 
-@Timeout(2000) // Timeout after 2000ms
-@Retry({ max: 5, interval: 1000 }) // Retry up to 5 times with 1000ms interval
-@Get({ 
+@Timeout(2000)
+@Retry({ max: 5, interval: 1000 })
+@Get({
   host: 'https://pokeapi.co',
-  path: '/api/v2/pokemon/:name',
+  path: '/api/v2/pokemon/{name}',
 })
 export class PokemonFrame extends JinFrame {
   @Param()
@@ -119,12 +159,12 @@ export class PokemonFrame extends JinFrame {
 ## Authorization
 
 ```ts
-import { Get, Param, Query } from 'jin-frame';
+import { Get, Param, Query, JinFrame } from 'jin-frame';
 
-@Get({ 
-  host: 'https://pokeapi.co'
-  path: '/api/v2/pokemon/:name'
-  authorization: process.env.YOUR_KEY_HERE
+@Get({
+  host: 'https://pokeapi.co',
+  path: '/api/v2/pokemon/{name}',
+  authorization: process.env.YOUR_KEY_HERE,
 })
 export class PokemonFrame extends JinFrame {
   @Param()
@@ -135,36 +175,36 @@ export class PokemonFrame extends JinFrame {
 }
 ```
 
+## Custom validateStatus
+
+`validateStatus` receives both `ok` (native `fetch` `Response.ok`) and the raw `status` code, giving full control over what counts as a successful response.
+
+```ts
+const reply = await frame._execute({
+  validateStatus: (ok, status) => ok || status === 304,
+});
+```
+
+The default (`isValidateStatusDefault`) simply returns `ok`.
+
 ## Requirements
 
-### Decorator
-
-1. TypeScript
-1. Decorator
-   - enable experimentalDecorators, emitDecoratorMetadata option in `tsconfig.json`
+- Node.js >= 22
+- TypeScript >= 5.0 (tested up to 6.0)
+- `experimentalDecorators` and `emitDecoratorMetadata` enabled in `tsconfig.json`
 
 ```jsonc
 {
-  "extends": "@tsconfig/node20/tsconfig.json",
   "compilerOptions": {
-    // enable experimentalDecorators, emitDecoratorMetadata for using decorator
     "experimentalDecorators": true,
-    "emitDecoratorMetadata": true,
-  },
+    "emitDecoratorMetadata": true
+  }
 }
 ```
 
-### Axios version
-
-| jin-frame | axios     |
-| --------- | --------- |
-| 2.x       | <= 0.27.x |
-| 3.x       | >= 1.1.x  |
-| 4.x       | >= 1.4.x  |
-
 ## Example
 
-You can find more examples in [examples directory](https://github.com/imjuni/jin-frame/tree/master/examples).
+You can find more examples in the [examples directory](https://github.com/imjuni/jin-frame/tree/master/examples).
 
 ## License
 
