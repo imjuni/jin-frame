@@ -282,6 +282,28 @@ describe('JinFrame', () => {
     expect(frame.username).toEqual('ironman');
   });
 
+  it('should return instance with assigned values when builder.build() is called directly', () => {
+    const frame = Test001PostFrame.builder()
+      .set('username', 'ironman')
+      .set('password', 'marvel')
+      .set('passing', 'pass')
+      .build();
+
+    expect(frame.passing).toEqual('pass');
+    expect(frame.password).toEqual('marvel');
+    expect(frame.username).toEqual('ironman');
+  });
+
+  it('should copy all fields to target instance when _setFields is called', () => {
+    const source = Test001PostFrame.of({ username: 'ironman', password: 'marvel', passing: 'pass' });
+    const target = new Test001PostFrame();
+    target._setFields(source);
+
+    expect(target.passing).toEqual('pass');
+    expect(target.password).toEqual('marvel');
+    expect(target.username).toEqual('ironman');
+  });
+
   it('should throw exception when response status code 400', async () => {
     server.use(
       http.post<PathParams<'passing'>, JinFrameTestRequestBody>(
