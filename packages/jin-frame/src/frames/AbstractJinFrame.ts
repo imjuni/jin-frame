@@ -18,7 +18,7 @@ import { getRetryInterval } from '#tools/responses/getRetryInterval';
 import { getDuration } from '#tools/getDuration';
 import { getFrameInternalData } from '#decorators/getFrameInternalData';
 import type { ConstructorFunction } from '#tools/type-utilities/ConstructorFunction';
-import type { FieldsOf } from '#tools/type-utilities/FieldsOf';
+import type { PublicFieldsOf } from '#tools/type-utilities/FieldsOf';
 import type { BuilderFor } from '#tools/type-utilities/BuilderFor';
 import { getAuthorization } from '#tools/auth/getAuthorization';
 import { getQuerystringKeyFormat } from '#processors/getQuerystringKeyFormat';
@@ -42,60 +42,61 @@ export abstract class AbstractJinFrame {
     return urlMeta.url;
   }
 
-  protected static getDefaultValues(): Partial<FieldsOf<InstanceType<typeof this>>> {
+  protected static getDefaultValues(): Partial<PublicFieldsOf<InstanceType<typeof this>>> {
     return {};
   }
 
   /* eslint-disable @typescript-eslint/no-explicit-any */
-  static builder<T, C extends ConstructorFunction<T>>(this: C): BuilderFor<T, C> {
-    const store: Partial<FieldsOf<InstanceType<C>>> = {};
-    const self = this; // assign self for keep generic this
+  static builder<C extends ConstructorFunction<unknown>>(this: C): BuilderFor<C> {
+    const store: Partial<PublicFieldsOf<InstanceType<C>>> = {};
+    const self = this;
 
-    const api: BuilderFor<T, C> = {
+    const api: BuilderFor<C> = {
       set(k, v) {
-        store[k] = v;
-        return this;
+        (store as any)[k] = v;
+        return api;
       },
       from(v) {
         for (const [k, e] of Object.entries(v)) {
           (store as any)[k] = e;
         }
-        return this;
+        return api;
       },
       auto() {
         Object.assign(store, (self as any).getDefaultValues?.());
-        return this;
+        return api;
       },
       get() {
-        return store as Readonly<Partial<FieldsOf<InstanceType<C>>>>;
+        return store as Readonly<Partial<PublicFieldsOf<InstanceType<C>>>>;
       },
       build() {
         // eslint-disable-next-line new-cap
         const inst = new self() as InstanceType<C>;
-        const auto = (self as any).getDefaultValues?.() as Partial<FieldsOf<InstanceType<C>>>;
-        (inst as any)._setFields({ ...auto, ...store });
+        const defaults = (self as any).getDefaultValues?.() as Partial<PublicFieldsOf<InstanceType<C>>>;
+        (inst as any)._setFields({ ...defaults, ...store });
         return inst;
       },
     };
+
     return api;
   }
 
-  static of<T, C extends ConstructorFunction<T>>(
+  static of<C extends ConstructorFunction<unknown>>(
     this: C,
-    args: FieldsOf<InstanceType<C>> | ((b: BuilderFor<T, C>) => unknown),
+    args: PublicFieldsOf<InstanceType<C>> | ((b: BuilderFor<C>) => unknown),
   ): InstanceType<C> {
     const inst = new this() as InstanceType<C>;
-    const auto = (this as any).getDefaultValues?.() as Partial<FieldsOf<InstanceType<C>>>;
+    const defaults = (this as any).getDefaultValues?.() as Partial<PublicFieldsOf<InstanceType<C>>>;
 
     if (typeof args === 'function') {
-      const b = (this as any).builder() as BuilderFor<T, C>;
+      const b = (this as any).builder() as BuilderFor<C>;
       args(b);
       const built = b.get();
-      (inst as any)._setFields({ ...auto, ...built });
+      (inst as any)._setFields({ ...defaults, ...built });
       return inst;
     }
 
-    (inst as any)._setFields({ ...auto, ...args });
+    (inst as any)._setFields({ ...defaults, ...args });
     return inst;
   }
   /* eslint-enable @typescript-eslint/no-explicit-any */

@@ -6,3 +6,7 @@ type FunctionKeys<T> = { [K in keyof T]-?: Extract<T[K], AnyFn> extends never ? 
 type NonFunctionProps<T> = Omit<T, FunctionKeys<T>>;
 
 export type FieldsOf<T> = Readonly<NonFunctionProps<T>>;
+
+export type PublicFieldsOf<T> = {
+  [K in keyof NonFunctionProps<T> as K extends `_${string}` ? never : K]: NonFunctionProps<T>[K];
+};
