@@ -1,5 +1,52 @@
 # Changed
 
+## 5.0.0
+
+### Breaking Changes in 5.0.0
+
+- **Axios removed — native fetch**: `axios` and all axios-related types have been removed. HTTP requests now use the native `fetch` API. `JinRequestConfig` no longer extends `AxiosRequestConfig`; response objects wrap native `Response`.
+- **`JinEitherFrame` removed**: `JinEitherFrame` and the `my-only-either` dependency are gone. Use `JinFrame<Pass, Fail>` directly. The discriminated-union response (`ok: true` / `ok: false`) replaces the Either pattern.
+- **RFC 6570 URI Template syntax**: Path parameters now follow RFC 6570 (`{param}`) instead of path-to-regexp (`:param`). Example: `path: '/users/{id}'` replaces `path: '/users/:id'`.
+- **Interface and type prefix removed**: All `I`-prefixed interfaces and `T`-prefixed types have been renamed. For example, `IJinFrameRequestConfig` → `JinFrameRequestConfig`, `TMethod` → `Method`.
+- **`validator` option replaced by `validators`**: The single `validator` option on `@Get`/`@Post`/etc. is replaced by `validators: { pass?: BaseValidator; fail?: BaseValidator }`. Pass and fail responses are validated independently.
+- **`valid` and `$validated` are non-nullable**: Both `JinPassResp` and `JinFailResp` now always carry `valid: boolean` and `$validated: ValidationResult`. When no validator is configured, `valid` defaults to `true`.
+- **Fail validator never throws `JinValidationError`**: Fail validators only set `valid`/`$validated` on the response. `JinValidationError` is only thrown for pass-path validation failures.
+
+### New Features in 5.0.0
+
+- **`JinFrame.builder()` — phantom-type Builder pattern**: New static `builder()` method returns a `BuilderFor<C>` that tracks which fields have been set via TypeScript phantom types. `build()` is only callable once all public fields are set.
+  ```ts
+  const frame = MyFrame.builder()
+    .set('userId', 1)
+    .set('name', 'Alice')
+    .build();
+  ```
+- **`JinFrame.of()` — object or builder callback**: New static `of()` creates an instance from a plain object or a builder callback.
+  ```ts
+  const frame = MyFrame.of({ userId: 1, name: 'Alice' });
+  const frame2 = MyFrame.of(b => b.set('userId', 1).set('name', 'Alice'));
+  ```
+- **Constructor arguments in `builder()` / `of()`**: Classes with constructor parameters are fully supported — extra arguments are forwarded to the constructor via `ConstructorParameters<C>`.
+- **`@Cookie` decorator**: New decorator to set the `Cookie` request header from a field value.
+- **`AbortSignal` support**: `_execute()` and `_create()` now accept an `AbortSignal` through `JinFrameRequestConfig` for request cancellation.
+- **`raw` response field**: `JinRespBase` exposes the native `Response` object as `raw` (optionally cloned via `cloneRaw` option) for access to streaming or raw binary data.
+- **Custom `deserialize` option**: `_execute()` / `_create()` accept a `deserialize(text: string): unknown` function to override the default JSON parser.
+
+### Type System Improvements in 5.0.0
+
+- **`PublicFieldsOf<T>`**: Mapped type that extracts only public, non-function, non-`_`-prefixed fields from a class. Used to give `builder()` and `of()` precise field constraints.
+- **`BuilderFor<C, TSet>`**: Phantom-type builder interface that accumulates the set of assigned keys as a type parameter, enabling compile-time completeness checking.
+- **`WithDefaultValues<C>` / `WithBuilder<C>`**: Extracted interfaces for internal static method casting — follows Single File Single Responsibility.
+- **`AbstractConstructorFunction<C>`**: Companion to `ConstructorFunction<C>` for abstract class constructors.
+
+### Infrastructure in 5.0.0
+
+- **TypeScript 6.0.3**: Project upgraded to TypeScript 6.0.3.
+  - `ignoreDeprecations: "6.0"` added to `tsconfig.json` for the deprecated `baseUrl` option (to be removed in a follow-up migration).
+  - `rollup-plugin-dts` → `^6.4.1` (adds TS 6.x peer dep support).
+  - `@stylistic/eslint-plugin` → `^5.10.0`, `typescript-eslint` → `^8.59.0`, `typedoc` → `^0.28.19`.
+- **`pnpm` catalog**: Workspace-level TypeScript catalog entry updated to `6.0.3`.
+
 ## 4.8.0
 
 ### New Features in 4.8.0
