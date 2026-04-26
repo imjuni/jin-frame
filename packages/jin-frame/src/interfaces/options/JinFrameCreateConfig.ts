@@ -1,3 +1,3 @@
 export interface JinFrameCreateConfig {
-  validateStatus?: (status: number) => boolean;
+  validateStatus?: (ok: boolean, status: number) => boolean;
 }

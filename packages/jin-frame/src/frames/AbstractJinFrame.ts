@@ -387,7 +387,10 @@ export abstract class AbstractJinFrame {
     return req;
   }
 
-  async _retry(req: JinRequestConfig, isValidateStatus: (status: number) => boolean): Promise<DedupeResult> {
+  async _retry(
+    req: JinRequestConfig,
+    isValidateStatus: (ok: boolean, status: number) => boolean,
+  ): Promise<DedupeResult> {
     const { retry } = this.#data;
 
     const handle = async () => {
@@ -424,7 +427,7 @@ export abstract class AbstractJinFrame {
 
           returnValue = deduped;
 
-          if (isValidateStatus(resp.status)) {
+          if (isValidateStatus(resp.ok, resp.status)) {
             return deduped;
           }
 

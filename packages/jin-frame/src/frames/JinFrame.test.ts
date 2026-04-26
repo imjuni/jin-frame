@@ -298,7 +298,7 @@ describe('JinFrame', () => {
 
     await expect(async () => {
       const frame = Test001PostFrame.of({ username: 'ironman', password: 'marvel', passing: 'pass' });
-      await frame._execute({ validateStatus: (status) => status < 400 });
+      await frame._execute({ validateStatus: (ok) => ok });
     }).rejects.toThrowError();
   });
 
@@ -322,7 +322,7 @@ describe('JinFrame', () => {
       passing: 'pass',
     });
 
-    const reply = await frame._execute({ validateStatus: (status) => status < 400 });
+    const reply = await frame._execute({ validateStatus: (ok) => ok });
     expect(reply.status).toEqual(200);
   });
 
@@ -349,7 +349,7 @@ describe('JinFrame', () => {
     });
 
     const reply = await frame._execute({
-      validateStatus: (status) => status < 400,
+      validateStatus: (ok) => ok,
       customBody,
     });
 
@@ -596,7 +596,7 @@ describe('JinFrame pre, post Hook execution', () => {
         postHookCount: 0,
         preHookCount: 0,
       });
-      await frame._execute({ validateStatus: (status) => status < 400 });
+      await frame._execute({ validateStatus: (ok) => ok });
     }).rejects.toThrowError();
   });
 
@@ -622,7 +622,7 @@ describe('JinFrame pre, post Hook execution', () => {
       preHookCount: 0,
     });
 
-    const reply = await frame._execute({ validateStatus: (status) => status < 400 });
+    const reply = await frame._execute({ validateStatus: (ok) => ok });
     expect(frame.preHookCount).toEqual(1);
     expect(frame.postHookCount).toEqual(1);
     expect(reply.status).toEqual(200);
@@ -706,7 +706,7 @@ describe('hook count either frame test', () => {
     });
 
     try {
-      await frame._execute({ validateStatus: (status) => status < 400 });
+      await frame._execute({ validateStatus: (ok) => ok });
     } catch (catched) {
       expect(frame._getData('retry')?.try).toEqual(3);
       expect(frame.preHookCount).toEqual(1);
@@ -1273,7 +1273,7 @@ describe('JinFrame coverage branches', () => {
       headers: {},
       timeout: undefined,
     };
-    const result = await frame._retry(req, (s) => s === 200);
+    const result = await frame._retry(req, (ok) => ok);
     expect(result.resp.status).toBe(200);
   });
 });

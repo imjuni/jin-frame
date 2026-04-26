@@ -124,7 +124,7 @@ export class JinFrame<Pass = unknown, Fail = Pass> extends AbstractJinFrame impl
         const parsed = deserialize != null ? deserialize(text) : safeParse(text);
         const data = text.length > 0 ? parsed : undefined;
 
-        if (!isValidateStatus(resp.status)) {
+        if (!isValidateStatus(resp.ok, resp.status)) {
           const failValidator = this._option.validators?.fail;
 
           const failResp: JinFailResp<Fail> = {
