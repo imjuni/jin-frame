@@ -1,4 +1,4 @@
-import type { IQueryFieldOption } from '#interfaces/field/IQueryFieldOption';
+import type { QueryFieldOption } from '#interfaces/field/QueryFieldOption';
 
 export function getQuerystringKey({
   key,
@@ -7,7 +7,7 @@ export function getQuerystringKey({
 }: {
   key: string;
   index: number;
-  format?: IQueryFieldOption['keyFormat'];
+  format?: QueryFieldOption['keyFormat'];
 }): string {
   if (format === 'brackets') {
     return `${key}[]`;

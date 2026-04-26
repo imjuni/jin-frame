@@ -1,8 +1,8 @@
-import type { ICookieFieldOption } from '#interfaces/field/ICookieFieldOption';
+import type { CookieFieldOption } from '#interfaces/field/CookieFieldOption';
 
 export function getDefaultCookieFieldOption(
-  option?: Partial<ICookieFieldOption> | Omit<Partial<ICookieFieldOption>, 'type'>,
-): ICookieFieldOption {
+  option?: Partial<CookieFieldOption> | Omit<Partial<CookieFieldOption>, 'type'>,
+): CookieFieldOption {
   return {
     key: '',
     type: 'cookie',

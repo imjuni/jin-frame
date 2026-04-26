@@ -20,15 +20,6 @@ class TestPostFrame extends JinFrame {
 
   @Body({ replaceAt: 'test.hello.marvel.gender' })
   declare public readonly gender: string;
-
-  constructor() {
-    super();
-
-    this.passing = 'pass';
-    this.name = 'ironman';
-    this.skill = 'beam';
-    this.gender = 'male';
-  }
 }
 
 @Post({
@@ -44,14 +35,6 @@ class TestUrlencodedPostFrame extends JinFrame {
 
   @Body()
   declare public readonly password: string;
-
-  constructor() {
-    super();
-
-    this.passing = 'pass';
-    this.username = 'ironman';
-    this.password = 'marvel';
-  }
 }
 
 interface TestPostFrameBody {
@@ -98,11 +81,7 @@ describe('jinframe.test', () => {
       ),
     );
 
-    const frame = new TestPostFrame();
-    frame.passing = 'pass';
-    frame.name = 'ironman';
-    frame.gender = 'male';
-    frame.skill = 'beam';
+    const frame = TestPostFrame.of({ passing: 'pass', name: 'ironman', skill: 'beam', gender: 'male' });
     const resp = await frame._execute();
 
     expect(resp.status).toEqual(200);
@@ -126,11 +105,7 @@ describe('jinframe.test', () => {
       ),
     );
 
-    const frame = new TestPostFrame();
-    frame.passing = 'pass';
-    frame.name = 'ironman';
-    frame.gender = 'male';
-    frame.skill = 'beam';
+    const frame = TestPostFrame.of({ passing: 'pass', name: 'ironman', skill: 'beam', gender: 'male' });
     const resp = await frame._execute();
 
     expect(resp.status).toEqual(200);
@@ -157,10 +132,7 @@ describe('jinframe.test', () => {
       ),
     );
 
-    const frame = new TestUrlencodedPostFrame();
-    frame.passing = 'pass';
-    frame.username = 'ironman';
-    frame.password = 'marvel';
+    const frame = TestUrlencodedPostFrame.of({ passing: 'pass', username: 'ironman', password: 'marvel' });
     const resp = await frame._execute();
 
     expect(resp.status).toEqual(200);

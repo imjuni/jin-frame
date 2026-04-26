@@ -1,12 +1,12 @@
 import type { AuthorizationData } from '#interfaces/security/AuthorizationData';
-import type { ISecurityContext } from '#interfaces/security/ISecurityContext';
-import type { ISecurityProvider } from '#interfaces/security/ISecurityProvider';
+import type { SecurityContext } from '#interfaces/security/SecurityContext';
+import type { SecurityProvider } from '#interfaces/security/SecurityProvider';
 
 /**
  * API Key security provider that implements authentication using API keys.
  * Supports API key placement in headers, query parameters, or cookies.
  */
-export class ApiKeyProvider implements ISecurityProvider {
+export class ApiKeyProvider implements SecurityProvider {
   /** Type identifier for this security provider */
   readonly type = 'api-key' as const;
 
@@ -37,7 +37,7 @@ export class ApiKeyProvider implements ISecurityProvider {
    * @param dynamicKey - Optional dynamic API key that overrides the authorization data
    * @returns Security context with the API key applied to the appropriate location
    */
-  createContext(authorization?: AuthorizationData, dynamicKey?: string): ISecurityContext {
+  createContext(authorization?: AuthorizationData, dynamicKey?: string): SecurityContext {
     const key = dynamicKey ?? ApiKeyProvider.extractKey(authorization);
 
     if (key == null) {

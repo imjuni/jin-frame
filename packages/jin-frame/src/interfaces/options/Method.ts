@@ -1,4 +1,4 @@
-export type TMethod =
+export type Method =
   | 'get'
   | 'GET'
   | 'delete'

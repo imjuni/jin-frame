@@ -1,8 +1,8 @@
-import type { IHeaderFieldOption } from '#interfaces/field/IHeaderFieldOption';
+import type { HeaderFieldOption } from '#interfaces/field/HeaderFieldOption';
 
 export function getDefaultHeaderFieldOption(
-  option?: Partial<IHeaderFieldOption> | Omit<Partial<IHeaderFieldOption>, 'type'>,
-): IHeaderFieldOption {
+  option?: Partial<HeaderFieldOption> | Omit<Partial<HeaderFieldOption>, 'type'>,
+): HeaderFieldOption {
   return {
     key: '',
     type: 'header',

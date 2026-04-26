@@ -3,7 +3,7 @@ import type { JinRespError } from '#exceptions/JinRespError';
 import type { JinValidationtError } from '#exceptions/JinValidationtError';
 import type { JinFrame } from '#frames/JinFrame';
 
-export type TGetError<TFRAME extends JinFrame<TPASS, TFAIL>, TPASS, TFAIL, TValidationError = unknown> = (
+export type GetError<TFRAME extends JinFrame<TPASS, TFAIL>, TPASS, TFAIL, TValidationError = unknown> = (
   err:
     | JinCreateError<TFRAME, TPASS, TFAIL>
     | JinRespError<TPASS, TFAIL>

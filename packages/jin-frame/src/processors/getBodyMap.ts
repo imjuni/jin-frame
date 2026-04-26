@@ -1,23 +1,23 @@
-import type { IBodyFieldOption } from '#interfaces/field/body/IBodyFieldOption';
-import type { IObjectBodyFieldOption } from '#interfaces/field/body/IObjectBodyFieldOption';
+import type { BodyFieldOption } from '#interfaces/field/body/BodyFieldOption';
+import type { ObjectBodyFieldOption } from '#interfaces/field/body/ObjectBodyFieldOption';
 import { getBodyField } from '#processors/getBodyField';
 import { getObjectBodyField } from '#processors/getObjectBodyField';
 import { isValidPrimitiveType } from '#tools/type-narrowing/isValidPrimitiveType';
-import type { TSupportArrayType } from '#tools/type-utilities/TSupportArrayType';
-import type { TSupportPrimitiveType } from '#tools/type-utilities/TSupportPrimitiveType';
+import type { SupportArrayType } from '#tools/type-utilities/SupportArrayType';
+import type { SupportPrimitiveType } from '#tools/type-utilities/SupportPrimitiveType';
 import { recursive } from 'merge';
 import { atOrThrow } from 'my-easy-fp';
 
 export function getBodyMap<T extends Record<string, unknown>>(
   thisFrame: T,
-  fields: (IBodyFieldOption | IObjectBodyFieldOption)[],
-): Record<string, unknown> | TSupportPrimitiveType | TSupportArrayType | unknown[] {
+  fields: (BodyFieldOption | ObjectBodyFieldOption)[],
+): Record<string, unknown> | SupportPrimitiveType | SupportArrayType | unknown[] {
   const bodies: unknown[] = [];
   const objectBodies: unknown[] = [];
 
   const classifed = fields.reduce<{
-    bodies: IBodyFieldOption[];
-    objectBodies: IObjectBodyFieldOption[];
+    bodies: BodyFieldOption[];
+    objectBodies: ObjectBodyFieldOption[];
   }>(
     (aggregated, option) => {
       if (option.type === 'body') {
@@ -50,7 +50,7 @@ export function getBodyMap<T extends Record<string, unknown>>(
   // 또한 의도적으로 위에 열거한 3가지 형식을 먼저 처리한다. 즉, 기본 자료형을 먼저 처리하는 것을 원칙으로 한다.
   // ------------------------------------------------------------------------------------
   // primitive type array
-  const primitiveTypes = objectBodies.filter((item): item is TSupportArrayType => isValidPrimitiveType(item));
+  const primitiveTypes = objectBodies.filter((item): item is SupportArrayType => isValidPrimitiveType(item));
 
   if (primitiveTypes.length > 0) {
     return atOrThrow(primitiveTypes, 0);

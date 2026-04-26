@@ -1,4 +1,4 @@
-import type { IFormatter } from '#interfaces/options/IFormatter';
+import type { Formatter } from '#interfaces/options/Formatter';
 import { getDefaultQueryFieldOption } from '#processors/default-option/getDefaultQueryFieldOption';
 import { describe, expect, it } from 'vitest';
 
@@ -23,7 +23,7 @@ describe('getDefaultQueryFieldOption', () => {
   });
 
   it('should apply formatter when provided', () => {
-    const f: IFormatter = { string: (s) => `f:${s}` };
+    const f: Formatter = { string: (s) => `f:${s}` };
     const option = getDefaultQueryFieldOption({ formatters: f });
 
     expect(option).toMatchObject({

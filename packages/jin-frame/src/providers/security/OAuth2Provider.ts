@@ -1,12 +1,12 @@
 import type { AuthorizationData } from '#interfaces/security/AuthorizationData';
-import type { ISecurityContext } from '#interfaces/security/ISecurityContext';
-import type { ISecurityProvider } from '#interfaces/security/ISecurityProvider';
+import type { SecurityContext } from '#interfaces/security/SecurityContext';
+import type { SecurityProvider } from '#interfaces/security/SecurityProvider';
 
 /**
  * OAuth2 security provider that implements OAuth 2.0 token authentication.
  * Supports configurable token types (Bearer, etc.) and access token extraction.
  */
-export class OAuth2Provider implements ISecurityProvider {
+export class OAuth2Provider implements SecurityProvider {
   /** Type identifier for this security provider */
   readonly type = 'oauth2' as const;
 
@@ -32,7 +32,7 @@ export class OAuth2Provider implements ISecurityProvider {
    * @param dynamicKey - Optional dynamic access token that overrides the authorization data
    * @returns Security context with OAuth2 token applied to Authorization header
    */
-  createContext(authorization?: AuthorizationData, dynamicKey?: string): ISecurityContext {
+  createContext(authorization?: AuthorizationData, dynamicKey?: string): SecurityContext {
     const token = dynamicKey ?? OAuth2Provider.extractAccessToken(authorization);
 
     if (token == null || typeof token !== 'string') {

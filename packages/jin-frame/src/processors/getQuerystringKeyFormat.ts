@@ -1,10 +1,10 @@
-import type { IHeaderFieldOption } from '#interfaces/field/IHeaderFieldOption';
-import type { IParamFieldOption } from '#interfaces/field/IParamFieldOption';
-import type { IQueryFieldOption } from '#interfaces/field/IQueryFieldOption';
+import type { HeaderFieldOption } from '#interfaces/field/HeaderFieldOption';
+import type { ParamFieldOption } from '#interfaces/field/ParamFieldOption';
+import type { QueryFieldOption } from '#interfaces/field/QueryFieldOption';
 
 export function getQuerystringKeyFormat(
-  option?: IQueryFieldOption | IParamFieldOption | IHeaderFieldOption,
-): IQueryFieldOption['keyFormat'] {
+  option?: QueryFieldOption | ParamFieldOption | HeaderFieldOption,
+): QueryFieldOption['keyFormat'] {
   if (option == null) {
     return undefined;
   }

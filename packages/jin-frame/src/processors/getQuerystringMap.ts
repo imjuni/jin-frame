@@ -1,7 +1,7 @@
-import type { IHeaderFieldOption } from '#interfaces/field/IHeaderFieldOption';
-import type { IParamFieldOption } from '#interfaces/field/IParamFieldOption';
-import type { IQueryFieldOption } from '#interfaces/field/IQueryFieldOption';
-import type { ICookieFieldOption } from '#interfaces/field/ICookieFieldOption';
+import type { HeaderFieldOption } from '#interfaces/field/HeaderFieldOption';
+import type { ParamFieldOption } from '#interfaces/field/ParamFieldOption';
+import type { QueryFieldOption } from '#interfaces/field/QueryFieldOption';
+import type { CookieFieldOption } from '#interfaces/field/CookieFieldOption';
 import { bitwised } from '#tools/bitwised';
 import { encode } from '#tools/encodes/encode';
 import { formatEach } from '#tools/formatters/formatEach';
@@ -14,7 +14,7 @@ import * as dotProp from 'dot-prop';
 
 export function getQuerystringMap<T extends Record<string, unknown>>(
   thisFrame: T,
-  fields: (IQueryFieldOption | IParamFieldOption | IHeaderFieldOption | ICookieFieldOption)[],
+  fields: (QueryFieldOption | ParamFieldOption | HeaderFieldOption | CookieFieldOption)[],
 ): Record<string, string | string[]> {
   const queries: Record<string, string | string[]> = {};
 

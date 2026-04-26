@@ -2,15 +2,15 @@ import { AbstractJinFrame } from '#frames/AbstractJinFrame';
 import { JinCreateError } from '#exceptions/JinCreateError';
 import { JinRespError } from '#exceptions/JinRespError';
 import type { DebugInfo } from '#interfaces/DebugInfo';
-import type { IJinFrameCreateConfig } from '#interfaces/options/IJinFrameCreateConfig';
-import type { JinFrameFunction } from '#interfaces/options/IJinFrameFunction';
-import type { JinFrameRequestConfig } from '#interfaces/options/IJinFrameRequestConfig';
+import type { JinFrameCreateConfig } from '#interfaces/options/JinFrameCreateConfig';
+import type { JinFrameFunction } from '#interfaces/options/JinFrameFunction';
+import type { JinFrameRequestConfig } from '#interfaces/options/JinFrameRequestConfig';
 import { getDuration } from '#tools/getDuration';
 import { getError } from '#tools/getError';
 import { isValidateStatusDefault } from '#tools/isValidateStatusDefault';
 import { runAndUnwrap } from '#tools/runAndUnwrap';
 import { JinValidationtError } from '#exceptions/JinValidationtError';
-import type { TGetError } from '#interfaces/TGetError';
+import type { GetError } from '#interfaces/GetError';
 import type { ValidationResult } from '#interfaces/ValidationResult';
 import type { JinFailResp } from '#interfaces/JinFailResp';
 import type { JinRequestConfig } from '#interfaces/JinRequestConfig';
@@ -55,7 +55,7 @@ export class JinFrame<Pass = unknown, Fail = Pass> extends AbstractJinFrame impl
     _debugInfo: DebugInfo,
   ): void | Promise<void> {}
 
-  public _requestWrap(option?: JinFrameRequestConfig & IJinFrameCreateConfig): JinRequestConfig {
+  public _requestWrap(option?: JinFrameRequestConfig & JinFrameCreateConfig): JinRequestConfig {
     try {
       return super._request(option);
     } catch (catched) {
@@ -84,7 +84,7 @@ export class JinFrame<Pass = unknown, Fail = Pass> extends AbstractJinFrame impl
    */
   public _create<TSelf extends this = this>(
     this: this,
-    option?: JinFrameRequestConfig & IJinFrameCreateConfig & { getError?: TGetError<TSelf, Pass, Fail> },
+    option?: JinFrameRequestConfig & JinFrameCreateConfig & { getError?: GetError<TSelf, Pass, Fail> },
   ): () => Promise<
     JinResp<Pass, Fail> & {
       $debug: DebugInfo;
@@ -230,7 +230,7 @@ export class JinFrame<Pass = unknown, Fail = Pass> extends AbstractJinFrame impl
    */
   public async _execute<TSelf extends this = this>(
     this: TSelf,
-    option?: JinFrameRequestConfig & IJinFrameCreateConfig & { getError?: TGetError<TSelf, Pass, Fail> },
+    option?: JinFrameRequestConfig & JinFrameCreateConfig & { getError?: GetError<TSelf, Pass, Fail> },
   ): Promise<JinResp<Pass, Fail>> {
     const requester = this._create(option);
     return requester();

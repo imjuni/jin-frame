@@ -1,23 +1,23 @@
-import type { TSingleBodyFormatter } from '#interfaces/field/body/TSingleBodyFormatter';
+import type { SingleBodyFormatter } from '#interfaces/field/body/SingleBodyFormatter';
 import type { SetOptional, SetRequired } from 'type-fest';
 
-export function classifyBodyFormatters(formatters?: TSingleBodyFormatter[]): {
-  valid: SetRequired<TSingleBodyFormatter, 'findFrom'>[];
-  invalid: SetOptional<TSingleBodyFormatter, 'findFrom'>[];
+export function classifyBodyFormatters(formatters?: SingleBodyFormatter[]): {
+  valid: SetRequired<SingleBodyFormatter, 'findFrom'>[];
+  invalid: SetOptional<SingleBodyFormatter, 'findFrom'>[];
 } {
   if (formatters == null) {
     return { valid: [], invalid: [] };
   }
 
   const result = formatters.reduce<{
-    valid: SetRequired<TSingleBodyFormatter, 'findFrom'>[];
-    invalid: SetOptional<TSingleBodyFormatter, 'findFrom'>[];
+    valid: SetRequired<SingleBodyFormatter, 'findFrom'>[];
+    invalid: SetOptional<SingleBodyFormatter, 'findFrom'>[];
   }>(
     (aggregated, formatter) => {
       if (formatter.findFrom != null) {
         return {
           ...aggregated,
-          valid: [...aggregated.valid, formatter as SetRequired<TSingleBodyFormatter, 'findFrom'>],
+          valid: [...aggregated.valid, formatter as SetRequired<SingleBodyFormatter, 'findFrom'>],
         };
       }
 

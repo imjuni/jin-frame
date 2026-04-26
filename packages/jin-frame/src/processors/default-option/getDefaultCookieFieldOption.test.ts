@@ -1,4 +1,4 @@
-import type { IFormatter } from '#interfaces/options/IFormatter';
+import type { Formatter } from '#interfaces/options/Formatter';
 import { getDefaultCookieFieldOption } from '#processors/default-option/getDefaultCookieFieldOption';
 import { describe, expect, it } from 'vitest';
 
@@ -37,7 +37,7 @@ describe('getDefaultCookieFieldOption', () => {
   });
 
   it('should apply formatter when provided', () => {
-    const f: IFormatter = { string: (s) => `f:${s}` };
+    const f: Formatter = { string: (s) => `f:${s}` };
     const option = getDefaultCookieFieldOption({ formatters: f });
 
     expect(option).toMatchObject({ type: 'cookie', formatters: f });

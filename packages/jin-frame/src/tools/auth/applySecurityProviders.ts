@@ -1,5 +1,5 @@
-import type { ISecurityProvider } from '#interfaces/security/ISecurityProvider';
-import type { ISecurityContext } from '#interfaces/security/ISecurityContext';
+import type { SecurityProvider } from '#interfaces/security/SecurityProvider';
+import type { SecurityContext } from '#interfaces/security/SecurityContext';
 import type { AuthorizationData } from '#interfaces/security/AuthorizationData';
 
 /**
@@ -36,11 +36,11 @@ import type { AuthorizationData } from '#interfaces/security/AuthorizationData';
  * ```
  */
 export function applySecurityProviders(
-  providers: ISecurityProvider[],
+  providers: SecurityProvider[],
   authorization?: AuthorizationData,
   dynamicAuth?: AuthorizationData,
-): ISecurityContext {
-  const context: ISecurityContext = {
+): SecurityContext {
+  const context: SecurityContext = {
     headers: {},
     queries: {},
   };

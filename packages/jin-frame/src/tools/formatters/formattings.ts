@@ -1,10 +1,10 @@
-import type { IFormatter } from '#interfaces/options/IFormatter';
+import type { Formatter } from '#interfaces/options/Formatter';
 import { formatting } from '#tools/formatters/formatting';
-import type { TSupportPrimitiveType } from '#tools/type-utilities/TSupportPrimitiveType';
+import type { SupportPrimitiveType } from '#tools/type-utilities/SupportPrimitiveType';
 import { toArray } from 'my-easy-fp';
 
-export function formattings(initialValue: unknown, formatters: IFormatter | IFormatter[]): TSupportPrimitiveType {
-  const applied = toArray(formatters).reduce<TSupportPrimitiveType>((aggregated, formatter) => {
+export function formattings(initialValue: unknown, formatters: Formatter | Formatter[]): SupportPrimitiveType {
+  const applied = toArray(formatters).reduce<SupportPrimitiveType>((aggregated, formatter) => {
     const formatted = formatting(aggregated, formatter);
 
     if (formatted != null) {
@@ -12,7 +12,7 @@ export function formattings(initialValue: unknown, formatters: IFormatter | IFor
     }
 
     return aggregated;
-  }, initialValue as TSupportPrimitiveType);
+  }, initialValue as SupportPrimitiveType);
 
   return applied;
 }

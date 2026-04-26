@@ -1,7 +1,7 @@
-import type { TMethod } from '#interfaces/options/TMethod';
+import type { Method } from '#interfaces/options/Method';
 import type { FrameOption } from '#interfaces/options/FrameOption';
 
-export function getFrameOption(method: TMethod, option?: Partial<Omit<FrameOption, 'method'>>): FrameOption {
+export function getFrameOption(method: Method, option?: Partial<Omit<FrameOption, 'method'>>): FrameOption {
   const frameOption: FrameOption = {
     host: option?.host,
     pathPrefix: option?.pathPrefix,

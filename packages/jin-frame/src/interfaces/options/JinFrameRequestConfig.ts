@@ -1,6 +1,6 @@
 import type { AuthorizationData } from '#interfaces/security/AuthorizationData';
 import type { JinBasicAuth } from '#interfaces/JinBasicAuth';
-import type { TMilliseconds } from '#interfaces/options/TMilliseconds';
+import type { Milliseconds } from '#interfaces/options/Milliseconds';
 
 /**
  * Configuration for JinFrame.
@@ -18,7 +18,7 @@ export interface JinFrameRequestConfig {
 
   auth?: JinBasicAuth;
 
-  timeout?: TMilliseconds;
+  timeout?: Milliseconds;
 
   /**
    * AbortSignal to cancel the request.

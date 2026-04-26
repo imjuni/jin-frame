@@ -1,4 +1,4 @@
-import type { IFormatter } from '#interfaces/options/IFormatter';
+import type { Formatter } from '#interfaces/options/Formatter';
 import { getDefaultParamFieldOption } from '#processors/default-option/getDefaultParamFieldOption';
 import { describe, expect, it } from 'vitest';
 
@@ -22,7 +22,7 @@ describe('getDefaultParamFieldOption', () => {
   });
 
   it('should apply formatter when provided', () => {
-    const f: IFormatter = { string: (s) => `f:${s}` };
+    const f: Formatter = { string: (s) => `f:${s}` };
     const option = getDefaultParamFieldOption({ formatters: f });
 
     expect(option).toMatchObject({

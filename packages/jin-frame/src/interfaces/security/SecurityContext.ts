@@ -5,7 +5,7 @@ import type { JinBasicAuth } from '#interfaces/JinBasicAuth';
  *
  * @example
  * ```typescript
- * const context: ISecurityContext = {
+ * const context: SecurityContext = {
  *   headers: {
  *     'Authorization': 'Bearer token123',
  *     'X-API-Key': 'api-key-value'
@@ -20,7 +20,7 @@ import type { JinBasicAuth } from '#interfaces/JinBasicAuth';
  * };
  * ```
  */
-export interface ISecurityContext {
+export interface SecurityContext {
   /** HTTP headers to be added to the request */
   headers?: Record<string, string>;
 
