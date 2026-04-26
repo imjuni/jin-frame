@@ -16,9 +16,9 @@ import type { JinFailResp } from '#interfaces/JinFailResp';
 import type { JinRequestConfig } from '#interfaces/JinRequestConfig';
 import type { JinResp } from '#interfaces/JinResp';
 // eslint-disable-next-line import-x/no-extraneous-dependencies
-import formatISO from 'date-fns/formatISO';
+import { formatISO } from 'date-fns/formatISO';
 // eslint-disable-next-line import-x/no-extraneous-dependencies
-import getUnixTime from 'date-fns/getUnixTime';
+import { getUnixTime } from 'date-fns/getUnixTime';
 import 'reflect-metadata';
 import type { JinPassResp } from '#interfaces/JinPassResp';
 import { getStatusFromError } from '#tools/responses/getStatusFromError';
