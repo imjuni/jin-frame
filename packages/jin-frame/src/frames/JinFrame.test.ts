@@ -1214,7 +1214,7 @@ describe('JinFrame coverage branches', () => {
       deserialize: (text) => ({ value: parseInt(text.replace(/\D/g, ''), 10) }),
     });
     expect(result.ok).toBe(true);
-    expect((result.data as { value: number }).value).toBe(42);
+    expect(result.data.value).toBe(42);
   });
 
   it('should return undefined data when response body is empty', async () => {
