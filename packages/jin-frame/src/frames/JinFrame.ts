@@ -128,8 +128,6 @@ export class JinFrame<Pass = unknown, Fail = Pass> extends AbstractJinFrame impl
 
         if (!isValidateStatus(resp.status)) {
           const failValidator = this._option.validators?.fail;
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          const failValidated = failValidator != null ? await failValidator.validate(data as any) : undefined;
 
           const failResp: JinFailResp<Fail> = {
             ok: false,
@@ -138,9 +136,16 @@ export class JinFrame<Pass = unknown, Fail = Pass> extends AbstractJinFrame impl
             headers,
             raw,
             data: data as Fail,
-            valid: failValidated?.valid,
-            $validated: failValidated,
+            valid: false,
+            $validated: { valid: false, error: [] },
           };
+
+          const failValidated: ValidationResult =
+            failValidator != null ? await failValidator.validate(failResp) : { valid: true };
+
+          failResp.valid = failValidated?.valid;
+          failResp.$validated = failValidated;
+
           const duration = getDuration(this._startAt, new Date());
 
           const debugInfo = { ...debug, duration, isDeduped: deduped.isDeduped };
@@ -163,12 +168,16 @@ export class JinFrame<Pass = unknown, Fail = Pass> extends AbstractJinFrame impl
           headers,
           raw,
           data: data as Pass,
+          valid: false,
+          $validated: { valid: false, error: [] },
         };
 
         const passValidator = this._option.validators?.pass;
-        const validated = passValidator != null ? await passValidator.validate(passResp) : { valid: true as const };
+        const validated: ValidationResult =
+          passValidator != null ? await passValidator.validate(passResp) : { valid: true as const };
 
         passResp.valid = validated.valid;
+        passResp.$validated = validated;
 
         const duration = getDuration(this._startAt, new Date());
         const debugInfo = { ...debug, duration, isDeduped: deduped.isDeduped };
