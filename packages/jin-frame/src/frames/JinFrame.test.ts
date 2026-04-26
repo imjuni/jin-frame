@@ -545,8 +545,7 @@ describe('JinFrame', () => {
         postHookCount: 0,
         preHookCount: 0,
       });
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      (frame as any)._postHook = () => {
+      frame._postHook = () => {
         throw new Error('unknown error raised');
       };
 
