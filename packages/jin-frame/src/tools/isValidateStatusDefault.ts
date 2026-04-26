@@ -1,5 +1,3 @@
-import httpStatusCodes from 'http-status-codes';
-
-export function isValidateStatusDefault(status: number): boolean {
-  return status < httpStatusCodes.BAD_REQUEST;
+export function isValidateStatusDefault(ok: boolean, _status: number): boolean {
+  return ok;
 }
