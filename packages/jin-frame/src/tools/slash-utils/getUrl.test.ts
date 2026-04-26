@@ -99,4 +99,34 @@ describe('getUrl', () => {
       isOnlyPath: true,
     });
   });
+
+  it('should return url when host includes port number', () => {
+    const result = getUrl('http://localhost:3000', undefined, '/api/users/42');
+    expect(result).toEqual({
+      url: new URL('http://localhost:3000/api/users/42'),
+      str: 'http://localhost:3000/api/users/42',
+      pathname: '/api/users/42',
+      isOnlyPath: false,
+    });
+  });
+
+  it('should return url when host with port and pathPrefix and path are all provided', () => {
+    const result = getUrl('http://localhost:3000', '/api', '/users/42');
+    expect(result).toEqual({
+      url: new URL('http://localhost:3000/api/users/42'),
+      str: 'http://localhost:3000/api/users/42',
+      pathname: '/api/users/42',
+      isOnlyPath: false,
+    });
+  });
+
+  it('should return url when host is an IP address with port number', () => {
+    const result = getUrl('http://127.0.0.1:3000', undefined, '/api/users/42');
+    expect(result).toEqual({
+      url: new URL('http://127.0.0.1:3000/api/users/42'),
+      str: 'http://127.0.0.1:3000/api/users/42',
+      pathname: '/api/users/42',
+      isOnlyPath: false,
+    });
+  });
 });

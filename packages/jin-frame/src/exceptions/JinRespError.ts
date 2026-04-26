@@ -20,13 +20,15 @@ export class JinRespError<TPASS, TFAIL = unknown> extends Error {
     frame,
     resp,
     message,
+    cause,
   }: {
     debug: DebugInfo;
     frame: JinFrame<TPASS, TFAIL>;
     resp: JinFailResp<TFAIL>;
     message: string;
+    cause?: unknown;
   }) {
-    super(message);
+    super(message, { cause });
 
     this.#debug = debug;
     this.#frame = frame;
@@ -53,5 +55,9 @@ export class JinRespError<TPASS, TFAIL = unknown> extends Error {
 
   get statusText(): string {
     return this.#statusText;
+  }
+
+  override toString(): string {
+    return `JinRespError [${this.#status} ${this.#statusText}]: ${this.message}`;
   }
 }

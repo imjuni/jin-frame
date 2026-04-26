@@ -163,7 +163,7 @@ export class JinFrame<Pass = unknown, Fail = Pass> extends AbstractJinFrame impl
             resp: failResp,
             debug: debugInfo,
             frame: this,
-            message: 'response error',
+            message: `response error: ${resp.status} ${resp.statusText}`,
           });
 
           await runAndUnwrap(this._postHook.bind(this), req, failResp, debugInfo);
@@ -233,7 +233,8 @@ export class JinFrame<Pass = unknown, Fail = Pass> extends AbstractJinFrame impl
           } as JinFailResp<Fail>,
           debug: { ...debug, duration },
           frame: this,
-          message: 'unknown error raised',
+          message: caught instanceof Error ? caught.message : 'unknown error raised',
+          cause: caught,
         });
 
         throw getError(jinFrameError, option?.getError);
