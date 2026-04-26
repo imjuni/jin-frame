@@ -13,6 +13,15 @@
     },
     {
       "files": [
+        "**/tsconfig.json",
+        "**/tsconfig.*.json"
+      ],
+      "options": {
+        "parser": "json"
+      }
+    },
+    {
+      "files": [
         ".vscode/launch.json",
         ".vscode/settings.json"
       ],
