@@ -120,6 +120,7 @@ export default defineConfig({
   title: 'jin-frame',
   description: 'Declarative API definition',
   base,
+  ignoreDeadLinks: true,
   markdown: {
     config: (md) => {
       const fence = md.renderer.rules.fence!
