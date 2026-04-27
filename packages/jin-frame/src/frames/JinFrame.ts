@@ -40,8 +40,8 @@ async function resolveSecurityKey<T extends JinFrameRequestConfig & JinFrameCrea
 /**
  * Definition HTTP Request
  *
- * @typeParam Pass response data type for valid status — returned as JinPassResp<Pass>
- * @typeParam Fail response data type for invalid status — returned as JinFailResp<Fail>
+ * @typeParam Pass response data type for valid status — returned as `JinPassResp<Pass>`
+ * @typeParam Fail response data type for invalid status — returned as `JinFailResp<Fail>`
  */
 export class JinFrame<Pass = unknown, Fail = Pass> extends AbstractJinFrame implements JinFrameFunction<Pass, Fail> {
   /**
