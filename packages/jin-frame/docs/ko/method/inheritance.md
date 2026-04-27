@@ -118,7 +118,7 @@ class PokemonAPI<PASS = unknown, FAIL = unknown> extends JinFrame<PASS, FAIL> {
 }
 ```
 
-Hook 함수명에 `_` prefix가 붙는 이유는 `jin-frame` 내부 규칙상 필드 이름과 충돌을 피하기 위해 Hook과 내부 변수에는 `_` 접두사가 붙습니다.
+Hook 함수명에 `_` 접두사가 붙는 이유는 모든 인스턴스 메서드에 `_`를 붙여 사용자가 선언한 필드 이름과의 충돌을 방지하기 위한 jin-frame의 네이밍 컨벤션 때문입니다. 전체 규칙은 [네이밍 컨벤션](./naming-convention.md)을 참고하세요.
 
 ### 자식 클래스 Hook 확장
 

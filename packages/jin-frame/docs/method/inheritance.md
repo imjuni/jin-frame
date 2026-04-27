@@ -118,7 +118,7 @@ class PokemonAPI<PASS = unknown, FAIL = unknown> extends JinFrame<PASS, FAIL> {
 }
 ```
 
-The reason hook methods use the `_` prefix is that `jin-frame` reserves this naming to avoid conflicts with field names.
+The reason hook methods use the `_` prefix is that `jin-frame` applies this to all instance methods to prevent collisions with user-declared field names. See [Naming Convention](./naming-convention.md) for the full rules.
 
 ### Extending Hook in Child Class
 
