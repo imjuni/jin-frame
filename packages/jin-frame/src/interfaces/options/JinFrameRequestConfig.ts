@@ -7,8 +7,8 @@ import type { Milliseconds } from '#interfaces/options/Milliseconds';
  */
 export interface JinFrameRequestConfig {
   /**
-   * User-Agent string. Axios use Custom Use-Agent string like "axios/0.27.2". You can change
-   * that string by useAgent field.
+   * User-Agent string sent with each request.
+   * Override this to identify your client (e.g. "my-app/1.0.0").
    */
   userAgent?: string;
 

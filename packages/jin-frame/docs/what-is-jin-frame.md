@@ -21,8 +21,8 @@ It goes beyond simply defining requests by providing a variety of features frequ
 - 🎢 **Production-Ready Features**  
   Backed by 290 test cases ensuring reliability, and equipped with features essential for MSA environments such as retry, hooks, file upload, and mocking.
 
-- 🏭 **Axios Ecosystem**  
-  Built on top of Axios, allowing you to take advantage of its stable ecosystem while extending its functionality.
+- 🏭 **Standards-Based HTTP**  
+  Built on the native `fetch` API, with no third-party HTTP client dependency.
 
 - 🎪 **Path Parameter Support**  
   Safely replace path parameters like `example.com/:id` with strong typing guarantees.
@@ -39,7 +39,7 @@ It goes beyond simply defining requests by providing a variety of features frequ
   Apply different timeout values for each endpoint, useful in microservices environments.
 
 - **File Upload**  
-  Handle file uploads seamlessly with Axios under the same class-based request definitions.
+  Handle file uploads seamlessly using the native `FormData` API under the same class-based request definitions.
 
 - **Mocking Support**  
   Easily mock API responses for testing and development environments.
@@ -49,12 +49,12 @@ It goes beyond simply defining requests by providing a variety of features frequ
 
 ## Usage Example
 
-Here’s a comparison between using Axios directly and using jin-frame:
+Here’s a comparison between using `fetch` directly and using jin-frame:
 
 | Direct usage                           | Jin-Frame                                     |
 | -------------------------------------- | --------------------------------------------- |
-| ![axios](./assets/axios-usage.png)    | ![jin-frame](./assets/jinframe-usage.png)    |
-| [axios svg](./assets/axios-usage.svg) | [jin-frame svg](./assets/jinframe-usage.svg) |
+| ![fetch](./assets/axios-usage.png)    | ![jin-frame](./assets/jinframe-usage.png)    |
+| [fetch svg](./assets/axios-usage.svg) | [jin-frame svg](./assets/jinframe-usage.svg) |
 
 The amount of code is similar, but jin-frame makes it **clear which variables belong to Querystring, Header, Body, or Path Param**.  
 Also, by using the static factory method `of`, you can create and execute requests in a type-safe way.
@@ -94,7 +94,7 @@ These configurations can also be reused through inheritance, making it easy to e
 
 ## Conclusion
 
-**`jin-frame`** is not just a utility wrapper around Axios. It is a **type-safe, declarative, and extensible HTTP Request management library** designed to meet the needs of MSA environments.  
+**`jin-frame`** is not just a thin wrapper around `fetch`. It is a **type-safe, declarative, and extensible HTTP Request management library** designed to meet the needs of MSA environments.  
 
 With jin-frame, developers can define API requests more clearly and systematically, gaining productivity in both maintenance and scalability.
 

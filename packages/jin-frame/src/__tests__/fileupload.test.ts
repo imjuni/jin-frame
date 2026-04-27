@@ -6,6 +6,8 @@ import { setupServer } from 'msw/node';
 import path from 'node:path';
 import { afterEach, beforeEach, describe, it } from 'vitest';
 import { Post } from '#decorators/methods/Post';
+import { Put } from '#decorators/methods/Put';
+import { Patch } from '#decorators/methods/Patch';
 import { Body } from '#decorators/fields/Body';
 
 @Post({ host: 'http://some.api.google.com/fileupload-case04', contentType: 'multipart/form-data' })
@@ -27,6 +29,24 @@ class BlobFileFrame extends JinFrame {
 
   @Body()
   declare public readonly multiBlobs: JinFile<Blob>[];
+}
+
+@Put({ host: 'http://some.api.google.com/fileupload-put', contentType: 'multipart/form-data' })
+class PutFileFrame extends JinFrame {
+  @Body()
+  declare public readonly description: string;
+
+  @Body()
+  declare public readonly myFile: JinFile<Buffer>;
+}
+
+@Patch({ host: 'http://some.api.google.com/fileupload-patch', contentType: 'multipart/form-data' })
+class PatchFileFrame extends JinFrame {
+  @Body()
+  declare public readonly description: string;
+
+  @Body()
+  declare public readonly myFile: JinFile<Buffer>;
 }
 
 describe('fileupload.test', () => {
@@ -128,6 +148,72 @@ describe('fileupload.test', () => {
         new JinFile('README03.md', originalFileContent),
         new JinFile('README04.md', originalFileContent),
       ],
+    });
+
+    await frame._execute();
+  });
+
+  it('should upload multipart/form-data with PUT method', async () => {
+    const originalFileContent = fs.readFileSync(path.join(process.cwd(), 'README.md'));
+
+    server.use(
+      http.put('http://some.api.google.com/fileupload-put', async ({ request }) => {
+        const contentType = request.headers.get('content-type');
+        if (!contentType?.includes('multipart/form-data')) {
+          return new HttpResponse('Invalid Content-Type', { status: 400 });
+        }
+
+        const formData = await request.formData();
+        const description = formData.get('description');
+        if (description !== 'put-test') {
+          return new HttpResponse('Invalid description', { status: 400 });
+        }
+
+        const file = formData.get('myFile') as File;
+        if (file?.name !== 'README.md') {
+          return new HttpResponse('Invalid myFile', { status: 400 });
+        }
+
+        return HttpResponse.json({ message: 'PUT uploaded successfully' });
+      }),
+    );
+
+    const frame = PutFileFrame.of({
+      description: 'put-test',
+      myFile: new JinFile('README.md', originalFileContent),
+    });
+
+    await frame._execute();
+  });
+
+  it('should upload multipart/form-data with PATCH method', async () => {
+    const originalFileContent = fs.readFileSync(path.join(process.cwd(), 'README.md'));
+
+    server.use(
+      http.patch('http://some.api.google.com/fileupload-patch', async ({ request }) => {
+        const contentType = request.headers.get('content-type');
+        if (!contentType?.includes('multipart/form-data')) {
+          return new HttpResponse('Invalid Content-Type', { status: 400 });
+        }
+
+        const formData = await request.formData();
+        const description = formData.get('description');
+        if (description !== 'patch-test') {
+          return new HttpResponse('Invalid description', { status: 400 });
+        }
+
+        const file = formData.get('myFile') as File;
+        if (file?.name !== 'README.md') {
+          return new HttpResponse('Invalid myFile', { status: 400 });
+        }
+
+        return HttpResponse.json({ message: 'PATCH uploaded successfully' });
+      }),
+    );
+
+    const frame = PatchFileFrame.of({
+      description: 'patch-test',
+      myFile: new JinFile('README.md', originalFileContent),
     });
 
     await frame._execute();

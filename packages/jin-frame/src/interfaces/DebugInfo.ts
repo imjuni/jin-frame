@@ -21,6 +21,6 @@ export interface DebugInfo {
   /** Whether the request was deduplicated */
   isDeduped: boolean;
 
-  /** Axios request configuration object */
+  /** HTTP request configuration object */
   req: JinRequestConfig;
 }

@@ -13,15 +13,14 @@ outline: deep
 
 ## application/x-www-form-urlencoded
 
-`application/x-www-form-urlencoded` 방식은 [Axios](https://github.com/axios/axios)에서 제공하는 `transformRequest` 함수를 통해 Form 데이터를 변환합니다. jin-frame에서 `content-type`을 `application/x-www-form-urlencoded`로 지정하면, 기본 제공되는 `transformRequest` 함수를 사용할 수 있습니다. 필요하다면 직접 정의한 `transformRequest` 함수를 생성자 옵션으로 전달하여 동작을 커스터마이즈할 수도 있습니다.
-multipart/form-data
+`application/x-www-form-urlencoded` 방식은 네이티브 `URLSearchParams` API를 사용하여 폼 필드를 URL 인코딩된 키-값 쌍으로 직렬화합니다. `contentType` 옵션을 `application/x-www-form-urlencoded`로 지정하고, 각 필드에 `@Body()`를 붙여주면 됩니다.
 
 ```ts
 @Post({
   host: 'http://some.api.google.com/jinframe/:passing',
   contentType: 'application/x-www-form-urlencoded',
 })
-class TestUrlencodedPostFrame extends JinEitherFrame {
+class TestUrlencodedPostFrame extends JinFrame {
   @Param()
   declare public readonly passing: string;
 
@@ -33,23 +32,20 @@ class TestUrlencodedPostFrame extends JinEitherFrame {
 }
 ```
 
-jin-frame에서 `content-type`을 `application/x-www-form-urlencoded`로 지정하면, 기본 제공되는 `transformRequest` 함수를 사용할 수 있습니다.
-
-- 기본 제공되는 `transformRequest` 함수를 사용할 수 있습니다.
-- 혹은 필요에 따라 직접 정의한 `transformRequest` 함수를 **생성자 옵션으로 전달**할 수도 있습니다.
-
-이를 통해 키-값 쌍 형태의 데이터를 URL 인코딩 방식으로 전송할 수 있습니다.
+jin-frame은 `@Body()` 필드를 자동으로 `application/x-www-form-urlencoded` 형식으로 인코딩합니다 — 별도 설정이 필요하지 않습니다.
 
 ## multipart/form-data
 
-`multipart/form-data` 방식은 주로 **파일 업로드**나 **복합 데이터 전송**에 사용됩니다. jin-frame은 내부적으로 [form-data](https://github.com/form-data/form-data) 패키지를 활용하여 이 방식을 처리합니다.
+`multipart/form-data` 방식은 주로 **파일 업로드**나 **복합 데이터 전송**에 사용됩니다. jin-frame은 네이티브 `FormData` API를 사용하여 요청 바디를 구성합니다. 파일 데이터는 `JinFile`로 감싸고, 필드에 `@Body()`를 붙여주세요.
+
+지원하는 HTTP 메서드: `POST`, `PUT`, `PATCH`.
 
 ```ts
 @Post({
   host: 'http://some.api.google.com/fileupload-case04',
   contentType: 'multipart/form-data',
 })
-class TestGetFrame extends JinEitherFrame {
+class UploadFrame extends JinFrame {
   @Body()
   declare public readonly description: string;
 
@@ -61,7 +57,8 @@ class TestGetFrame extends JinEitherFrame {
 }
 ```
 
-- `content-type`을 `multipart/form-data`로 설정하면, jin-frame이 `form-data` 패키지를 사용하여 `AxiosRequestConfig.data` 필드 값을 자동으로 생성합니다.
+- `contentType`을 `multipart/form-data`로 설정하면, jin-frame이 네이티브 `FormData` API를 사용하여 요청 바디를 자동으로 구성합니다.
+- `Content-Type` 헤더(멀티파트 boundary 포함)는 런타임이 자동으로 설정합니다 — 직접 지정하지 않아도 됩니다.
 
 이를 통해 이미지, 문서, 바이너리 파일 등 다양한 데이터를 손쉽게 업로드할 수 있습니다.
 

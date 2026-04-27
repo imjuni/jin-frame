@@ -106,19 +106,19 @@ class PokemonAPI<PASS = unknown, FAIL = unknown> extends JinFrame<PASS, FAIL> {
   @Query()
   declare public readonly tid: string;
 
-  override async $_postHook(
-    _req: TJinRequestConfig,
-    reply: AxiosResponse<{ message: string }>,
-    _debugInfo: IDebugInfo,
+  override async _postHook(
+    _req: JinRequestConfig,
+    reply: JinResp<PASS, FAIL>,
+    _debugInfo: DebugInfo,
   ) {
-    if (reply.status >= 400) {
+    if (!reply.ok) {
       // Common error logging
     }
   }
 }
 ```
 
-The reason hook methods use the `$_` prefix is that `jin-frame` reserves this naming to avoid conflicts with field names.
+The reason hook methods use the `_` prefix is that `jin-frame` reserves this naming to avoid conflicts with field names.
 
 ### Extending Hook in Child Class
 
@@ -128,13 +128,13 @@ class PokemonByNameId extends PokemonAPI<IPokemonData> {
   @Param()
   public declare readonly name: string;
 
-  override async $_postHook(
-    _req: TJinRequestConfig,
-    reply: AxiosResponse<{ message: string }>,
-    _debugInfo: IDebugInfo,
+  override async _postHook(
+    _req: JinRequestConfig,
+    reply: JinResp<IPokemonData, unknown>,
+    _debugInfo: DebugInfo,
   ) {
     // Execute parent hook
-    await super.$_postHook(_req, reply, _debugInfo);
+    await super._postHook(_req, reply, _debugInfo);
 
     // Additional logging or post-processing
     ...

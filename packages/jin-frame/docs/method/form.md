@@ -13,14 +13,14 @@ These formats make it easy to handle **file uploads** or **form field submission
 
 ## application/x-www-form-urlencoded
 
-The `application/x-www-form-urlencoded` format uses Axios’s built-in [`transformRequest`](https://github.com/axios/axios) function to convert form data. When you set the `content-type` to `application/x-www-form-urlencoded` in jin-frame, you can use the default `transformRequest` function. If needed, you can also pass your own `transformRequest` function as a constructor option to customize behavior.
+The `application/x-www-form-urlencoded` format serializes form fields into URL-encoded key-value pairs using the native `URLSearchParams` API. Set the `contentType` option to `application/x-www-form-urlencoded` and annotate each field with `@Body()`.
 
 ```ts
 @Post({
   host: 'http://some.api.google.com/jinframe/:passing',
   contentType: 'application/x-www-form-urlencoded',
 })
-class TestUrlencodedPostFrame extends JinEitherFrame {
+class TestUrlencodedPostFrame extends JinFrame {
   @Param()
   declare public readonly passing: string;
 
@@ -32,19 +32,20 @@ class TestUrlencodedPostFrame extends JinEitherFrame {
 }
 ```
 
-By setting the `content-type` to `application/x-www-form-urlencoded`, jin-frame will automatically apply its default `transformRequest` function. Alternatively, you can define and provide a custom `transformRequest` function through constructor options.  
-This allows you to transmit key-value data in the standard URL-encoded format.
+jin-frame encodes all `@Body()` fields into `application/x-www-form-urlencoded` format automatically — no extra configuration needed.
 
 ## multipart/form-data
 
-The `multipart/form-data` format is mainly used for **file uploads** or **complex data submissions**. Internally, jin-frame uses the [form-data](https://github.com/form-data/form-data) package to process this format.
+The `multipart/form-data` format is mainly used for **file uploads** or **complex data submissions**. jin-frame uses the native `FormData` API to build the request body. Use `JinFile` to wrap file data and annotate fields with `@Body()`.
+
+Supported HTTP methods: `POST`, `PUT`, `PATCH`.
 
 ```ts
 @Post({
   host: 'http://some.api.google.com/fileupload-case04',
   contentType: 'multipart/form-data',
 })
-class TestGetFrame extends JinEitherFrame {
+class UploadFrame extends JinFrame {
   @Body()
   declare public readonly description: string;
 
@@ -56,7 +57,8 @@ class TestGetFrame extends JinEitherFrame {
 }
 ```
 
-- When `content-type` is set to `multipart/form-data`, jin-frame uses the `form-data` package to automatically generate the `AxiosRequestConfig.data` field value.
+- When `contentType` is set to `multipart/form-data`, jin-frame uses the native `FormData` API to build the request body automatically.
+- The `Content-Type` header (including the multipart boundary) is set by the runtime — do not set it manually.
 
 This makes it simple to upload a variety of data types, including images, documents, and binary files.
 

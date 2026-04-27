@@ -30,9 +30,9 @@ features:
   - title: Support for Retry, Hooks, File Upload, Timeout and Mocking
     icon: 🎢
     details: Provides essential features for real-world usage, including Retry, Hooks, File Upload, Timeout and Mocking.
-  - title: Build upon the Axios Ecosystem
+  - title: Standards-Based HTTP (fetch)
     icon: 🏭
-    details:
+    details: Built on the native fetch API — no third-party HTTP client dependency.
   - title: Path Parameter Support
     icon: 🎪
     details: Supports path parameter substitution via URLs, e.g., example.com/:id.

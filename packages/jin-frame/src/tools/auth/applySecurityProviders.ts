@@ -16,7 +16,7 @@ import type { AuthorizationData } from '#interfaces/security/AuthorizationData';
  * @returns Unified security context containing:
  * - `headers`: Merged HTTP headers from all providers
  * - `queries`: Merged query parameters from all providers
- * - `auth`: Axios auth configuration from the last provider that provided one
+ * - `auth`: HTTP Basic auth configuration from the last provider that provided one
  *
  * @example
  * ```typescript
