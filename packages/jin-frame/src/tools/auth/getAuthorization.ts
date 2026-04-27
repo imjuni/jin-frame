@@ -8,18 +8,17 @@ import type { JinBasicAuth } from '#interfaces/JinBasicAuth';
  *
  * The function follows this priority hierarchy:
  * 1. Authorization header from the headers parameter
- * 2. Axios auth configuration
- * 3. Security providers (new security system)
- * 4. Legacy authorization configuration (deprecated)
+ * 2. HTTP Basic auth configuration (username/password)
+ * 3. Security providers
  *
  * @param headers - HTTP headers containing potential Authorization header
  * @param frameOption - Frame configuration options containing security and authorization settings
- * @param auth - Optional Axios authentication configuration (username/password)
+ * @param auth - Optional HTTP Basic auth configuration (username/password)
  * @param dynamicAuth - Optional dynamic authorization data for runtime security provider configuration
  *
  * @returns Authorization result object containing:
- * - `authKey`: Authorization token/key string (from header or legacy config)
- * - `auth`: Axios auth configuration object
+ * - `authKey`: Authorization token/key string (from header or security provider)
+ * - `auth`: HTTP Basic auth configuration object
  * - `securityHeaders`: Additional headers from security providers
  * - `securityQueries`: Query parameters from security providers
  *
@@ -32,7 +31,7 @@ import type { JinBasicAuth } from '#interfaces/JinBasicAuth';
  * );
  * // Returns: { authKey: 'Bearer token123', auth: undefined }
  *
- * // Using Axios auth
+ * // Using Basic auth
  * const result = getAuthorization(
  *   {},
  *   frameOption,

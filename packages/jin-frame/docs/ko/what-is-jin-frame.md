@@ -19,8 +19,8 @@
 - 🎢 **Production-Ready 기능**  
   290개의 테스트 케이스로 신뢰성을 확보하였으며, MSA 환경에서 요구되는 retry, hook, file upload, mocking 기능을 지원합니다.
 
-- 🏭 **Axios 생태계 활용**  
-  Axios 위에 구축되어 있어 안정적인 생태계를 활용하면서 기능을 확장할 수 있습니다.
+- 🏭 **표준 기반 HTTP**  
+  서드파티 HTTP 클라이언트 없이 네이티브 `fetch` API 위에 구축되어 있습니다.
 
 - 🎪 **Path Parameter 지원**  
   `example.com/:id`와 같은 path parameter를 타입 안정성을 보장하며 치환할 수 있습니다.
@@ -37,7 +37,7 @@
   마이크로서비스 환경에서 엔드포인트마다 다른 timeout 값을 적용할 수 있습니다.
 
 - **파일 업로드**  
-  Axios 기반의 파일 업로드를 동일한 클래스 정의 방식으로 처리할 수 있습니다.
+  네이티브 `FormData` API를 사용한 파일 업로드를 동일한 클래스 정의 방식으로 처리할 수 있습니다.
 
 - **Mocking 지원**  
   테스트나 개발 환경에서 API 응답을 손쉽게 모킹할 수 있습니다.
@@ -47,12 +47,12 @@
 
 ## 사용 예시
 
-기존 Axios를 직접 사용할 때와 jin-frame을 사용할 때의 비교 예시는 다음과 같습니다.
+`fetch`를 직접 사용할 때와 jin-frame을 사용할 때의 비교 예시는 다음과 같습니다.
 
 | Direct usage                           | Jin-Frame                                     |
 | -------------------------------------- | --------------------------------------------- |
-| ![axios](../assets/axios-usage.png)    | ![jin-frame](../assets/jinframe-usage.png)    |
-| [axios svg](../assets/axios-usage.svg) | [jin-frame svg](../assets/jinframe-usage.svg) |
+| ![fetch](../assets/axios-usage.png)    | ![jin-frame](../assets/jinframe-usage.png)    |
+| [fetch svg](../assets/axios-usage.svg) | [jin-frame svg](../assets/jinframe-usage.svg) |
 
 코드 양 자체는 비슷하지만, jin-frame은 **각 변수가 Querystring, Header, Body, Path Param 중 어디에 들어가는지 명확하게 보인다**는 점이 다릅니다. 또한 `of`라는 정적 팩토리 메서드를 통해 타입 안정성을 유지하면서 Request를 생성하고 실행할 수 있습니다.
 
@@ -91,6 +91,6 @@ export class PokemonFrame extends JinFrame {
 
 ## 결론
 
-jin-frame은 단순히 Axios를 감싸는 유틸리티가 아니라, **타입 안정성과 선언적 코드 스타일**, 그리고 **MSA 환경에 필요한 기능**을 결합한 HTTP Request 관리 라이브러리입니다. 이를 통해 개발자는 API 요청을 더욱 명확하고 체계적으로 정의할 수 있으며, 유지보수와 확장성 측면에서도 높은 생산성을 기대할 수 있습니다.
+jin-frame은 단순히 `fetch`를 감싸는 유틸리티가 아니라, **타입 안정성과 선언적 코드 스타일**, 그리고 **MSA 환경에 필요한 기능**을 결합한 HTTP Request 관리 라이브러리입니다. 이를 통해 개발자는 API 요청을 더욱 명확하고 체계적으로 정의할 수 있으며, 유지보수와 확장성 측면에서도 높은 생산성을 기대할 수 있습니다.
 
 또한 이렇게 정의한 클래스를 하나의 패키지로 분리해 두면, 공통 API 요청 로직을 여러 프로젝트에서 재사용할 수도 있습니다. 즉, 팀 단위 혹은 조직 전체에서 동일한 규격의 API 호출 방식을 공유할 수 있어, **일관성과 재사용성**을 동시에 확보할 수 있습니다.

@@ -106,19 +106,19 @@ class PokemonAPI<PASS = unknown, FAIL = unknown> extends JinFrame<PASS, FAIL> {
   @Query()
   public declare readonly tid: string;
 
-  override async $_postHook(
-    _req: TJinRequestConfig,
-    reply: AxiosResponse<{ message: string }>,
-    _debugInfo: IDebugInfo,
+  override async _postHook(
+    _req: JinRequestConfig,
+    reply: JinResp<PASS, FAIL>,
+    _debugInfo: DebugInfo,
   ) {
-    if (reply.status >= 400) {
+    if (!reply.ok) {
       // 공통 에러 로깅 처리
     }
   }
 }
 ```
 
-Hook 함수명에 `$_` prefix가 붙는 이유는 `jin-frame` 내부 규칙상 필드 이름과 충돌을 피하기 위해 Hook과 내부 변수에는 `$_` 접두사가 붙습니다.
+Hook 함수명에 `_` prefix가 붙는 이유는 `jin-frame` 내부 규칙상 필드 이름과 충돌을 피하기 위해 Hook과 내부 변수에는 `_` 접두사가 붙습니다.
 
 ### 자식 클래스 Hook 확장
 
@@ -128,13 +128,13 @@ class PokemonByNameId extends PokemonAPI<IPokemonData> {
   @Param()
   public declare readonly name: string;
 
-  override async $_postHook(
-    _req: TJinRequestConfig,
-    reply: AxiosResponse<{ message: string }>,
-    _debugInfo: IDebugInfo,
+  override async _postHook(
+    _req: JinRequestConfig,
+    reply: JinResp<IPokemonData, unknown>,
+    _debugInfo: DebugInfo,
   ) {
     // 부모 Hook 실행
-    await super.$_postHook(_req, reply, _debugInfo);
+    await super._postHook(_req, reply, _debugInfo);
 
     // 추가적인 로깅이나 후처리
     ...

@@ -114,8 +114,7 @@ export class DeleteUserFrame extends JinFrame {
 | `method`           | `string`                                                                             | 내부적으로 설정되지만, 커스텀 메서드가 필요하면 명시 가능                       |
 | `contentType`      | `'application/json' \| 'multipart/form-data' \| 'application/x-www-form-urlencoded'` | 전송 포맷 지정                                                                  |
 | `customBody`       | `unknown`                                                                            | 데코레이터/필드 바디 대신 **커스텀 바디**를 직접 지정                           |
-| `transformRequest` | `AxiosRequestTransformer \| AxiosRequestTransformer[]`                               | axios 변환기. `x-www-form-urlencoded` 기본 변환기가 자동 주입됨(옵션 미설정 시) |
-| `validateStatus`   | `(status: number) => boolean`                                                        | axios 상태 검증기. 재시도 조건과 함께 사용 가능                                 |
+| `validateStatus`   | `(status: number) => boolean`                                                        | 상태 코드 검증 함수. 재시도 조건과 함께 사용 가능                               |
 | `userAgent`        | `string`                                                                             | User-Agent 지정. 브라우저 보안 제약으로 무시될 수 있음(옵션으로는 설정 가능)    |
 | `authorization`    | `string` or `{ usename: string; password: string }`                                  | Header Authorization 필드 값을 설정하거나 Basic Auth 설정을 설정                |
 | `validator`        | `Validator`                                                                          | `Validator` 클래스를 상속하여 Validator를 전달합니다                            |
@@ -123,13 +122,11 @@ export class DeleteUserFrame extends JinFrame {
 ## Body 전송 규칙 & Content-Type
 
 - `application/json` (기본): 바디 객체를 JSON으로 전송합니다.
-- `multipart/form-data`: **POST 요청에서만** 내부 FormData 생성 로직이 동작합니다.
+- `multipart/form-data`: **POST, PUT, PATCH** 요청에서 내부 FormData 생성 로직이 동작합니다.
   - `JinFile`/`JinFile[]`은 파일 파트로 추가됩니다.
   - 문자열/숫자/불리언/객체는 적절히 문자열화하여 파트로 추가됩니다.
-- `application/x-www-form-urlencoded`: 라이브러리가 기본 `transformRequest`를 주입해 `key=value&…`로 변환합니다.
-  - 사용자 정의 `transformRequest`가 있으면 그 값을 우선합니다.
-
-> 참고: 코드상 `multipart/form-data` 자동 변환은 **POST**에 한해 동작합니다. `PUT/PATCH/DELETE`에서 멀티파트가 필요하면 `customBody` 또는 `transformRequest`를 활용하세요.
+  - `Content-Type` 헤더(멀티파트 boundary 포함)는 런타임이 자동으로 설정합니다.
+- `application/x-www-form-urlencoded`: 네이티브 `URLSearchParams`를 사용해 `key=value&…` 형태로 변환합니다.
 
 ## 메서드별 관례(Idempotency)
 
@@ -138,7 +135,7 @@ export class DeleteUserFrame extends JinFrame {
 - `PUT`/`PATCH`: 갱신. 바디 전송 가능.
 - `DELETE`: 삭제. 필요 시 바디/쿼리 사용(서버 규약에 따름).
 
-라이브러리는 axios에 `data`를 전달하므로, 서버가 허용한다면 `PUT/PATCH/DELETE`에도 바디 전송이 가능합니다.
+라이브러리는 `fetch`의 `body`에 데이터를 전달하므로, 서버가 허용한다면 `PUT/PATCH/DELETE`에도 바디 전송이 가능합니다.
 
 ## 디버깅 팁
 
@@ -150,8 +147,8 @@ console.log(frame.getOption('method')); // 설정된 HTTP 메서드
 console.log(frame.getData('param')); // 최종 Path Params
 console.log(frame.getData('query')); // 최종 Query
 console.log(frame.getData('header')); // 최종 Header (직렬화 전)
-console.log(req); // axios 최종 요청 설정
+console.log(req); // 최종 요청 설정 (JinRequestConfig)
 ```
 
-> 요청 중간 상태를 확인하고 싶으면 `.request()`로 axios 설정 객체를 받아보세요.  
+> 요청 중간 상태를 확인하고 싶으면 `.request()`로 요청 설정 객체를 받아보세요.  
 > `.execute()`는 실제 네트워크 호출을 수행합니다.

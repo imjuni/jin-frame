@@ -131,14 +131,6 @@ class PokemonFrame extends JinFrame {
 }
 ```
 
-### Axios version
-
-| jin-frame | axios     |
-| --------- | --------- |
-| 2.x       | <= 0.27.x |
-| 3.x       | >= 1.1.x  |
-| 4.x       | >= 1.4.x  |
-
 ### 정리
 
 `declare public readonly`는 **타입 안정성**과 **불변성**을 보장하면서도, 런타임에는 jin-frame이 알아서 값을 채워 넣도록 하기 위한 관용적 패턴입니다. 따라서 jin-frame을 사용할 때는 항상 이 구문을 함께 사용하는 것이 권장됩니다.

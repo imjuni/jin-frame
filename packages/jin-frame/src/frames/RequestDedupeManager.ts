@@ -38,7 +38,7 @@ export class RequestDedupeManager {
    *
    * const result = await RequestDedupeManager.dedupe(
    *   cacheKey,
-   *   () => axios.get('/users/123')
+   *   () => fetch('/users/123')
    * );
    * console.log(result.isDeduped); // false for original request, true for duplicates
    * ```

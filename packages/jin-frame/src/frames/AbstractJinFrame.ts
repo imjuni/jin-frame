@@ -170,7 +170,12 @@ export abstract class AbstractJinFrame {
 
     if (
       this.#option.contentType === 'multipart/form-data' &&
-      (this.#option.method === 'post' || this.#option.method === 'POST') &&
+      (this.#option.method === 'post' ||
+        this.#option.method === 'POST' ||
+        this.#option.method === 'put' ||
+        this.#option.method === 'PUT' ||
+        this.#option.method === 'patch' ||
+        this.#option.method === 'PATCH') &&
       typeof bodies === 'object' &&
       bodies != null
     ) {

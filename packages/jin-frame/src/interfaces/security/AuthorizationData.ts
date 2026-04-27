@@ -20,6 +20,9 @@
  *
  * // API key object
  * const apiKeyAuth: AuthorizationData = { key: 'x-api-key', value: 'my-api-key' };
+ *
+ * // Access token (e.g. OAuth2 bearer)
+ * const tokenAuth: AuthorizationData = { accessToken: 'token-xyz' };
  * ```
  */
 export type AuthorizationData =
@@ -27,5 +30,5 @@ export type AuthorizationData =
   | (() => string | Promise<string>)
   | { username: string; password: string }
   | { key: string; value: string }
-  | { accessToken: string; refreshToken?: string }
+  | { accessToken: string }
   | Record<string, unknown>;
