@@ -33,6 +33,10 @@ const getThemeConfig = (_locale?: string) => {
           link: `${locale}/usage-method.md`,
           items: [
             {
+              text: 'Naming Convention',
+              link: `${locale}/method/naming-convention.md`,
+            },
+            {
               text: 'Authorization',
               link: `${locale}/method/authorization.md`,
             },
