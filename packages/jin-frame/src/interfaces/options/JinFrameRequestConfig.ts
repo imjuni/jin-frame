@@ -14,6 +14,23 @@ export interface JinFrameRequestConfig {
 
   url?: string;
 
+  /**
+   * Overrides the host defined in the frame decorator for this request only.
+   * Supports URI template syntax (e.g. `https://{tenant}.api.example.com`).
+   */
+  host?: string;
+
+  /**
+   * Overrides the pathPrefix defined in the frame decorator for this request only.
+   */
+  pathPrefix?: string;
+
+  /**
+   * Overrides the path defined in the frame decorator for this request only.
+   * Supports URI template syntax (e.g. `/users/{id}`).
+   */
+  path?: string;
+
   customBody?: unknown;
 
   auth?: JinBasicAuth;

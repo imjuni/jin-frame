@@ -189,3 +189,36 @@ describe('AbstractJinFrame', () => {
     expect(frame._getData('param')).toMatchObject({ passing: 'pass,fail' });
   });
 });
+
+describe('_request with runtime host/pathPrefix/path override', () => {
+  it('should override host at runtime', () => {
+    const frame = Test001PostFrame.of({ username: 'ironman', password: 'avengers', passing: 'pass' });
+    const req = frame._request({ host: 'http://staging.api.google.com' });
+    expect(req.url).toContain('staging.api.google.com');
+    expect(req.url).not.toContain('some.api.google.com');
+  });
+
+  it('should override path at runtime while keeping decorator pathPrefix', () => {
+    const frame = Test001PostFrame.of({ username: 'ironman', password: 'avengers', passing: 'pass' });
+    const req = frame._request({ path: '/override/{passing}' });
+    expect(req.url).toContain('/override/pass');
+    expect(req.url).toContain('/jinframe/');
+  });
+
+  it('should override pathPrefix at runtime', () => {
+    const frame = Test001PostFrame.of({ username: 'ironman', password: 'avengers', passing: 'pass' });
+    const req = frame._request({ pathPrefix: '/v2' });
+    expect(req.url).toContain('/v2/');
+    expect(req.url).not.toContain('/jinframe/');
+  });
+
+  it('should override all three at runtime', () => {
+    const frame = Test001PostFrame.of({ username: 'ironman', password: 'avengers', passing: 'pass' });
+    const req = frame._request({
+      host: 'http://staging.api.google.com',
+      pathPrefix: '/v2',
+      path: '/override/{passing}',
+    });
+    expect(req.url).toBe('http://staging.api.google.com/v2/override/pass');
+  });
+});
