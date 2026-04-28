@@ -5,9 +5,10 @@ import { runAndUnwrap } from '#tools/runAndUnwrap';
 
 export class BaseValidator<TOrigin = unknown, TData = TOrigin, TError = unknown> {
   /**
-   * exception 인 경우 validation error 발생하면 JinValidationError 예외 발생
-   * value 인 경우 validation error 발생하면 validation error 결과를 reply 데이터에 추가
-   * */
+   * Controls how a validation failure is surfaced.
+   * - 'exception': throws JinValidationError on failure
+   * - 'value': attaches the validation result to the reply object instead of throwing
+   */
   #type: ValidationResultType;
 
   constructor({ type }: { type: ValidationResultType }) {

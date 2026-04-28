@@ -13,6 +13,7 @@ export function getFrameOption(method: Method, option?: Partial<Omit<FrameOption
     retry: option?.retry,
     timeout: option?.timeout,
     validators: option?.validators,
+    validateStatus: option?.validateStatus,
     dedupe: option?.dedupe,
     security: option?.security,
     authorization: option?.authorization,

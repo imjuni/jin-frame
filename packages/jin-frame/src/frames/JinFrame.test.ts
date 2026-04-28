@@ -1375,3 +1375,52 @@ describe('Dedupe Request', () => {
     console.log(reply03.data.message);
   });
 });
+
+describe('validateStatus in FrameOption', () => {
+  @Post({
+    host: 'http://some.api.google.com/validate-status-frame',
+    validateStatus: (_ok, status) => status === 200 || status === 404,
+  })
+  class ValidateStatusFrame extends JinFrame<{ message: string }> {
+    @Body()
+    declare public readonly username: string;
+  }
+
+  const server = setupServer();
+
+  beforeEach(() => server.listen());
+  afterEach(() => {
+    server.resetHandlers();
+    server.close();
+  });
+
+  it('should treat 404 as success when validateStatus is set on FrameOption', async () => {
+    server.use(
+      http.post(
+        'http://some.api.google.com/validate-status-frame',
+        () => new HttpResponse('Not Found', { status: 404 }),
+      ),
+    );
+
+    const frame = ValidateStatusFrame.of({ username: 'ironman' });
+    const reply = await frame._execute();
+
+    expect(reply.ok).toBe(true);
+    expect(reply.status).toBe(404);
+  });
+
+  it('should allow _execute validateStatus to override FrameOption validateStatus', async () => {
+    server.use(
+      http.post(
+        'http://some.api.google.com/validate-status-frame',
+        () => new HttpResponse('Not Found', { status: 404 }),
+      ),
+    );
+
+    const frame = ValidateStatusFrame.of({ username: 'ironman' });
+
+    await expect(frame._execute({ validateStatus: (ok) => ok })).rejects.toMatchObject({
+      resp: { status: 404 },
+    });
+  });
+});

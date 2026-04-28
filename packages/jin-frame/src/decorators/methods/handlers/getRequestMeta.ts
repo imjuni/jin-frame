@@ -7,18 +7,21 @@ import { mergeFrameOption } from '#tools/mergeFrameOption';
 import { mergeRetryOption } from '#tools/mergeRetryOption';
 
 /**
+ * Resolves and merges all method decorator metadata for a class constructor,
+ * walking the inheritance chain. When a parent and child both apply a decorator,
+ * the parent receives a higher index — child metadata takes precedence.
  *
- * 상속관계가 만들어지는 경우, 부모가 뒷번호 index를 받는다. 아래와 같은 경우
- * IamDecorateParentGetClass가 01, IamDecorateChildGetClass가 00 이다.
- *
+ * @example
+ * ```typescript
  * @Delete({ host: 'i-am-host' })
- * class IamDecorateParentGetClass {}
+ * class ParentFrame {}
  *
  * @Get({ host: 'i-am-host' })
- * class IamDecorateChildGetClass extends IamDecorateParentGetClass {}
+ * class ChildFrame extends ParentFrame {}
+ * // ParentFrame → index 01, ChildFrame → index 00
+ * ```
  *
  * @param ctor Constructor function
- * @returns
  */
 export function getRequestMeta(ctor: AbstractConstructor<unknown> | Constructor<unknown>): MethodEntry {
   const metas = getAllRequestMetaInherited(ctor);

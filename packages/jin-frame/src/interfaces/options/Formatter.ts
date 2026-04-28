@@ -10,7 +10,8 @@ export interface Formatter {
   order?: ('string' | 'number' | 'dateTime')[];
 
   /**
-   * 오류가 발생했을 때 값을 버립니다. false를 전달하면 exception이 발생합니다
+   * When true, silently discards the value on formatter error.
+   * When false, throws an exception on error.
    */
   ignoreError?: boolean;
 
