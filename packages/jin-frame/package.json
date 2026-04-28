@@ -1,6 +1,6 @@
 {
   "name": "jin-frame",
-  "version": "5.0.3",
+  "version": "5.0.4",
   "description": "Reusable HTTP API request definition library",
   "packageManager": "pnpm@10.16.0",
   "scripts": {
