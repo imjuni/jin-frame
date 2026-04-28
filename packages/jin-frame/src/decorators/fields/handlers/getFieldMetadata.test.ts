@@ -125,6 +125,18 @@ class ChildRequest extends BaseRequest {
   readonly childBody!: string;
 }
 
+@Post({ host: 'https://api.somesite.com', path: 'override/base' })
+class OverrideBaseRequest extends JinFrame {
+  @Query()
+  readonly sharedField!: string;
+}
+
+@Get({ host: 'https://api.somesite.com', path: 'override/child' })
+class OverrideChildRequest extends OverrideBaseRequest {
+  @Body()
+  declare readonly sharedField: string;
+}
+
 describe('getFieldMetadata with inheritance', () => {
   it('should include parent class field metadata in child class', () => {
     const r = ChildRequest.of({
@@ -147,5 +159,17 @@ describe('getFieldMetadata with inheritance', () => {
       expect.arrayContaining([expect.objectContaining({ key: 'childParam', type: 'param' })]),
     );
     expect(metas.body).toEqual(expect.arrayContaining([expect.objectContaining({ key: 'childBody', type: 'body' })]));
+  });
+
+  it('should use child decorator when child overrides a field from parent', () => {
+    const r = OverrideChildRequest.of({ sharedField: 'value' });
+
+    const metas = getFieldMetadata(
+      r.constructor.prototype,
+      Object.entries(r).map(([key, value]) => ({ key, value })),
+    );
+
+    expect(metas.body).toEqual(expect.arrayContaining([expect.objectContaining({ key: 'sharedField', type: 'body' })]));
+    expect(metas.query).toHaveLength(0);
   });
 });
