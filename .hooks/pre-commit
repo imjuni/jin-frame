@@ -15,8 +15,8 @@ pnpm --filter jin-frame run build
 echo -e "\n ${yellow}* code build end.${no_color}"
 
 echo -e "\n ${yellow}* code test start.${no_color}"
-pnpm --filter @jin-frame/generator-core run test
-pnpm --filter jin-frame run test
+pnpm --filter @jin-frame/generator-core run test:silent
+pnpm --filter jin-frame run test:silent
 echo -e "\n ${yellow}* code test end.${no_color}"
 
 echo -e "\n ${green}* pre-commit hook was SUCCESSFUL${no_color} \n"
