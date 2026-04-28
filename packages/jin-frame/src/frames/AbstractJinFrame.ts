@@ -254,10 +254,13 @@ export abstract class AbstractJinFrame {
     return safeStringify(data);
   }
 
-  public _getBaseUrlString(paths: Record<string, string>): string {
-    const host = getUrlValue(this.#option.host);
-    const pathPrefix = getUrlValue(this.#option.pathPrefix);
-    const path = getUrlValue(this.#option.path);
+  public _getBaseUrlString(
+    paths: Record<string, string>,
+    override?: { host?: string; pathPrefix?: string; path?: string },
+  ): string {
+    const host = override?.host ?? getUrlValue(this.#option.host);
+    const pathPrefix = override?.pathPrefix ?? getUrlValue(this.#option.pathPrefix);
+    const path = override?.path ?? getUrlValue(this.#option.path);
 
     // Expand URI templates before creating URL object to avoid encoding
     const expandedHost = host ? parseTemplate(host).expand(paths) : host;
@@ -309,7 +312,9 @@ export abstract class AbstractJinFrame {
     this.#data.param = paths;
 
     // stage 05. url endpoint build and path parameter evaluation
-    const baseUrlString = option?.url ?? this._getBaseUrlString(paths);
+    const baseUrlString =
+      option?.url ??
+      this._getBaseUrlString(paths, { host: option?.host, pathPrefix: option?.pathPrefix, path: option?.path });
 
     // Expand URI template for option.url case
     const expandedUrlString = option?.url != null ? parseTemplate(baseUrlString).expand(paths) : baseUrlString;
