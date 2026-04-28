@@ -28,7 +28,7 @@ export function getFieldMetadata(type: object, keys: { key: string; value: unkno
   const fields: { key: string; meta: FieldEntry }[] = [];
 
   for (const key of keys) {
-    const raw = Reflect.getOwnMetadata(REQUEST_FIELD_DECORATOR, type, key.key) as FieldEntry[] | undefined;
+    const raw = Reflect.getMetadata(REQUEST_FIELD_DECORATOR, type, key.key) as FieldEntry[] | undefined;
 
     if (raw != null) {
       for (const entry of raw) {
