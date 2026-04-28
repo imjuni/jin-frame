@@ -3,6 +3,7 @@ import { getFieldMetadata } from '#decorators/fields/handlers/getFieldMetadata';
 import { Param } from '#decorators/fields/Param';
 import { Query } from '#decorators/fields/Query';
 import { Post } from '#decorators/methods/Post';
+import { Get } from '#decorators/methods/Get';
 import { describe, expect, it } from 'vitest';
 import { Body } from '#decorators/fields/Body';
 import { ObjectBody } from '#decorators/fields/ObjectBody';
@@ -103,5 +104,48 @@ describe('getFieldMetadata', () => {
         },
       ],
     });
+  });
+});
+
+@Post({ host: 'https://api.somesite.com', path: 'base/path' })
+class BaseRequest extends JinFrame {
+  @Query()
+  readonly baseField!: string;
+
+  @Header({ replaceAt: 'X-Base-Header' })
+  readonly baseHeader!: string;
+}
+
+@Get({ host: 'https://api.somesite.com', path: 'child/path' })
+class ChildRequest extends BaseRequest {
+  @Param()
+  readonly childParam!: string;
+
+  @Body()
+  readonly childBody!: string;
+}
+
+describe('getFieldMetadata with inheritance', () => {
+  it('should include parent class field metadata in child class', () => {
+    const r = ChildRequest.of({
+      baseField: 'base-value',
+      baseHeader: 'base-header-value',
+      childParam: 'child-param-value',
+      childBody: 'child-body-value',
+    });
+
+    const metas = getFieldMetadata(
+      r.constructor.prototype,
+      Object.entries(r).map(([key, value]) => ({ key, value })),
+    );
+
+    expect(metas.query).toEqual(expect.arrayContaining([expect.objectContaining({ key: 'baseField', type: 'query' })]));
+    expect(metas.header).toEqual(
+      expect.arrayContaining([expect.objectContaining({ key: 'baseHeader', replaceAt: 'X-Base-Header' })]),
+    );
+    expect(metas.param).toEqual(
+      expect.arrayContaining([expect.objectContaining({ key: 'childParam', type: 'param' })]),
+    );
+    expect(metas.body).toEqual(expect.arrayContaining([expect.objectContaining({ key: 'childBody', type: 'body' })]));
   });
 });
