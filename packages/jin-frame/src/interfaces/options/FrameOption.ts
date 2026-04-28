@@ -7,17 +7,16 @@ import type { Milliseconds } from '#interfaces/options/Milliseconds';
 
 export interface FrameOption {
   /**
-   * host and path of API Request endpoint
+   * Base URL of the API endpoint.
    *
-   * 원한다면 protocol://host/path 전체를 host에 전달해도 정상 동작한다. 그럼에도 불구하고
-   * 굳이 host와 path를 분리한 이유는 Parent Class에 host를 설정하고 그것을 계속 상속을 받아서
-   * 사용하는 방식으로 확장하는 경우, Child Class에서는 path만 설정할 수 있어야 하기 때문에
-   * 둘을 분리해서 처리할 수도 있어야 한다.
-   * */
+   * You may pass the full `protocol://host/path` in this field alone, but separating `host`
+   * and `path` is recommended so that a parent class can define the host and child classes
+   * only override the path.
+   */
   host?: string | (() => string);
 
   /**
-   * Path prefix of API Request endpoint
+   * Path prefix of API Request endpoint.
    *
    * For example, you can set the relative path defined in the OpenAPI Spec's servers field to pathPrefix.
    * When set, this path will be prepended to the pathname when generating the Request URL.
@@ -37,37 +36,37 @@ export interface FrameOption {
    */
   pathPrefix?: string | (() => string);
 
-  /** path of API Request endpoint */
+  /** Path of the API endpoint. Supports path-parameter placeholders such as `:id`. */
   path?: string | (() => string);
 
-  /** method of API Request endpoint */
+  /** HTTP method of the endpoint. */
   method: Method;
 
-  /** content-type of API Request endpoint */
+  /** Content-Type of the request body. */
   contentType: string;
 
-  /** user agent of API Request endpoint */
+  /** User-Agent string sent with each request. */
   userAgent?: string;
 
-  /** custom object of POST Request body data */
+  /** Custom request body that bypasses decorator-based body assembly. */
   customBody?: unknown;
 
-  /** retry configuration */
+  /** Retry configuration. */
   retry?: FrameRetry;
 
-  /** timeout of the request */
+  /** Request timeout in milliseconds. */
   timeout?: Milliseconds;
 
   /**
-   * Security providers for authentication
-   * Can be a single provider or array of providers for multiple authentication schemes
-   * */
+   * Security providers for authentication.
+   * Can be a single provider or an array of providers for multiple authentication schemes.
+   */
   security?: SecurityProvider | SecurityProvider[];
 
   /**
-   * Authorization data that will be passed to security providers
-   * This data can be used by providers to generate authentication information
-   * */
+   * Authorization data passed to security providers.
+   * Used by providers to generate authentication headers or query parameters.
+   */
   authorization?: AuthorizationData;
 
   /**
@@ -78,14 +77,30 @@ export interface FrameOption {
   validators?: { pass?: BaseValidator; fail?: BaseValidator };
 
   /**
-   * 이 값을 활성화 하는 경우 동일 요청이 반복되는 경우 dedupe 처리를 합니다
+   * Determines whether a response status code is considered successful.
+   * When not provided, defaults to `response.ok` (i.e. 200–299).
+   *
+   * Setting this at the decorator level applies it as the default for all executions of the frame.
+   * A `validateStatus` passed to `_execute()` takes precedence over this value.
+   *
+   * @example
+   * ```typescript
+   * // Treat 404 as a success (e.g. idempotent DELETE)
+   * validateStatus: (ok, status) => ok || status === 404
+   * ```
+   */
+  validateStatus?: (ok: boolean, status: number) => boolean;
+
+  /**
+   * When enabled, identical concurrent requests are deduplicated — only one network call
+   * is made and the result is shared with all callers.
    */
   dedupe?: boolean;
 
   /**
    * When true, clones the raw Response before consuming the body.
-   * Allows reading reap.raw after the stream is consumed.
-   * Incurs memory overhead - use only when raw access is needed.
+   * Allows reading resp.raw after the stream is consumed.
+   * Incurs memory overhead — use only when raw access is needed.
    */
   cloneRaw?: boolean;
 
@@ -94,7 +109,7 @@ export interface FrameOption {
    *
    * Receives the raw response text and returns the parsed value.
    * Useful for handling non-standard JSON (e.g. BigInt values).
-   * If not provided, JSON.parse is used.
+   * If not provided, JSON.parse is used with a plain-string fallback.
    */
   deserialize?: (text: string) => unknown;
 }

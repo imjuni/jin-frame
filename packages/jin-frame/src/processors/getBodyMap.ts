@@ -45,9 +45,9 @@ export function getBodyMap<T extends Record<string, unknown>>(
   }
 
   // ------------------------------------------------------------------------------------
-  // merge.recursive 함수는 primitive type array, user defined type array, primitive 타입을
-  // merge 할 수 없다. 그래서 objectBody로 위에 열거한 3가지 형식이 전달될 경우, 별도의 처리가 필요하다.
-  // 또한 의도적으로 위에 열거한 3가지 형식을 먼저 처리한다. 즉, 기본 자료형을 먼저 처리하는 것을 원칙으로 한다.
+  // merge.recursive cannot merge primitive arrays, user-defined type arrays, or primitives
+  // directly. When objectBody receives any of these three forms, they must be handled
+  // separately. Primitives are always processed first.
   // ------------------------------------------------------------------------------------
   // primitive type array
   const primitiveTypes = objectBodies.filter((item): item is SupportArrayType => isValidPrimitiveType(item));
@@ -56,8 +56,8 @@ export function getBodyMap<T extends Record<string, unknown>>(
     return atOrThrow(primitiveTypes, 0);
   }
 
-  // ObjectBody에서 배열은 하나만 처리할 수 있다. 그래서 ObjectBody 인데 배열이 있는 경우, 배열을 전부 합쳐서 반환한다
-  // 반면 Body는 이름으로 배열을 분리하기 때문에 여러개를 처리할 수 있다
+  // ObjectBody supports only one array entry — all arrays are flattened and merged into one.
+  // Body, by contrast, separates arrays by field name so multiple arrays can coexist.
   const customArrayTypes = objectBodies.filter((item): item is unknown[] => Array.isArray(item));
   if (customArrayTypes.length > 0) {
     return customArrayTypes.reduce<unknown[]>((merged, item) => [...merged, ...item], []);

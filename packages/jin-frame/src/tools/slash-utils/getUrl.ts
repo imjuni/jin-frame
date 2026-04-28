@@ -3,7 +3,7 @@ import { removeBothSlash } from '#tools/slash-utils/removeBothSlash';
 // 1) protocol + hostname[:port] + path (RFC 3986 scheme, path value is case-sensitive)
 const pattern1 = /^([A-Za-z][A-Za-z0-9+.-]*:\/\/)([A-Za-z0-9.-]+(:\d+)?)(\/.*)?$/i;
 
-// 2) hostname + path (hostname은 TLD 포함, ignore case / path는 case-sensitive)
+// 2) hostname + path (hostname includes TLD, case-insensitive / path is case-sensitive)
 const pattern2 = /^([A-Za-z0-9-]+\.[A-Za-z]{2,})(\/.*)?$/i;
 
 // 3) only path (case-sensitive)

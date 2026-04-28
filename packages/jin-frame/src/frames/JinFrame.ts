@@ -104,7 +104,7 @@ export class JinFrame<Pass = unknown, Fail = Pass> extends AbstractJinFrame impl
     }
   > {
     const req = this._requestWrap(option);
-    const isValidateStatus = option?.validateStatus ?? isValidateStatusDefault;
+    const isValidateStatus = option?.validateStatus ?? this._option.validateStatus ?? isValidateStatusDefault;
 
     const jinFrameHandle = async (): Promise<
       JinPassResp<Pass> & {
