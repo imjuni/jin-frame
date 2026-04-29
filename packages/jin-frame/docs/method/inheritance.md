@@ -33,7 +33,7 @@ class PokemonAPI<PASS = unknown, FAIL = unknown> extends JinFrame<PASS, FAIL> {
 ### Child Class Definition
 
 ```ts
-@Get({ path: '/api/v2/pokemon/:name' })
+@Get({ path: '/api/v2/pokemon/{name}' })
 class PokemonByNameId extends PokemonAPI<IPokemonData> {
   @Param()
   declare public readonly name: string;
@@ -71,7 +71,7 @@ class PokeBaseFrame<P = unknown, F = unknown> extends JinFrame<P, F> {
 
 @Retry({ max: 5, interval: 1000 })
 @Timeout(10_000) // timeout overwrite 5,000 > 10,000
-@Get({ path: '/api/v2/pokemon/:name' })
+@Get({ path: '/api/v2/pokemon/{name}' })
 class PokemonByNameId extends PokeBaseFrame {
   @Param()
   declare public readonly name: string;
@@ -123,7 +123,7 @@ The reason hook methods use the `_` prefix is that `jin-frame` applies this to a
 ### Extending Hook in Child Class
 
 ```ts
-@Get({ path: '/api/v2/pokemon/:name' })
+@Get({ path: '/api/v2/pokemon/{name}' })
 class PokemonByNameId extends PokemonAPI<IPokemonData> {
   @Param()
   public declare readonly name: string;

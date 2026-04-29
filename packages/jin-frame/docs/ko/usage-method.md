@@ -18,7 +18,7 @@ outline: deep
 @Timeout(10_000) // 10s timeout
 @Get({
   host: 'https://api.example.com',
-  path: '/orgs/:orgId/users',
+  path: '/orgs/{orgId}/users',
   authorization: process.env.YOUR_AUTH_TOKEN,
 })
 export class ListUsersFrame extends JinFrame {
@@ -80,7 +80,7 @@ await frame.execute();
 ```ts
 @Patch({
   host: 'https://api.example.com',
-  path: '/users/:id',
+  path: '/users/{id}',
 })
 export class UpdateUserFrame extends JinFrame {
   @Param()
@@ -92,7 +92,7 @@ export class UpdateUserFrame extends JinFrame {
 
 @Delete({
   host: 'https://api.example.com',
-  path: '/users/:id',
+  path: '/users/{id}',
 })
 export class DeleteUserFrame extends JinFrame {
   @Param()
@@ -107,7 +107,7 @@ export class DeleteUserFrame extends JinFrame {
 | 옵션               | 타입                                                                                 | 설명                                                                            |
 | ------------------ | ------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------- |
 | `host`             | `string`                                                                             | 베이스 URL(프로토콜 포함). 예: `https://api.example.com`                        |
-| `path`             | `string`                                                                             | 경로. `:id` 처럼 **Path Param** 플레이스홀더 지원                               |
+| `path`             | `string`                                                                             | 경로. `{id}` 처럼 **Path Param** 플레이스홀더 지원 (RFC 6570 URI Template)      |
 | `pathPrefix`       | `string`                                                                             | `/api` 와 같이 path에 추가할 prefix를 설정할 수 있습니다.                       |
 | `timeout`          | `number`                                                                             | 요청 타임아웃(ms). 미설정 시 라이브러리 기본값 사용                             |
 | `retry`            | `{ max: number; interval?: number }` \*                                              | 재시도 설정. `max`는 최대 시도 횟수, `interval`은 시도 간 대기(ms)              |

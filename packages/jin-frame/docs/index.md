@@ -35,5 +35,5 @@ features:
     details: Built on the native fetch API — no third-party HTTP client dependency.
   - title: Path Parameter Support
     icon: 🎪
-    details: Supports path parameter substitution via URLs, e.g., example.com/:id.
+    details: Supports path parameter substitution via URLs, e.g., example.com/{id}.
 ---

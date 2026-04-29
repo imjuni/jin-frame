@@ -25,7 +25,7 @@ It goes beyond simply defining requests by providing a variety of features frequ
   Built on the native `fetch` API, with no third-party HTTP client dependency.
 
 - 🎪 **Path Parameter Support**  
-  Safely replace path parameters like `example.com/:id` with strong typing guarantees.
+  Safely replace path parameters like `example.com/{id}` with strong typing guarantees.
 
 ## Features
 
@@ -77,7 +77,7 @@ class PokemonPagingFrame extends JinFrame {
 
 @Get({
   host: 'https://pokeapi.co',
-  path: '/api/v2/pokemon/:name',
+  path: '/api/v2/pokemon/{name}',
   timeout: 2_000, // 2 seconds
   retry: { max: 3, inteval: 1000 }, // retry up to 3 times, 1s interval
 })

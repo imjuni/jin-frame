@@ -32,7 +32,7 @@ import { randomUUID } from 'node:crypto';
 
 @Get({ 
   host: 'https://pokeapi.co',
-  path: '/api/v2/pokemon/:name',
+  path: '/api/v2/pokemon/{name}',
 })
 export class PokemonFrame extends JinFrame {
   @Param()
@@ -78,7 +78,7 @@ class PokemonPagingFrame extends JinFrame {
 @Timeout(2_000)  // 2s timeout
 @Get({
   host: 'https://pokeapi.co',
-  path: '/api/v2/pokemon/:name',
+  path: '/api/v2/pokemon/{name}',
 })
 export class PokemonDetailFrame extends JinFrame {
   @Param()
@@ -91,7 +91,7 @@ export class PokemonDetailFrame extends JinFrame {
 When defining Frame classes in jin-frame, fields typically use `declare public readonly`.
 
 ```ts
-@Get({ path: '/api/v2/pokemon/:name' })
+@Get({ path: '/api/v2/pokemon/{name}' })
 class PokemonFrame extends JinFrame {
   @Param()
   declare public readonly name: string;

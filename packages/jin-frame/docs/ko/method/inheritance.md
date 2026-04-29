@@ -33,7 +33,7 @@ class PokemonAPI<PASS = unknown, FAIL = unknown> extends JinFrame<PASS, FAIL> {
 ### 자식 클래스 정의
 
 ```ts
-@Get({ path: '/api/v2/pokemon/:name' })
+@Get({ path: '/api/v2/pokemon/{name}' })
 class PokemonByNameId extends PokemonAPI<IPokemonData> {
   @Param()
   public declare readonly name: string;
@@ -71,7 +71,7 @@ class PokeBaseFrame<P = unknown, F = unknown> extends JinFrame<P, F> {
 
 @Retry({ max: 5, interval: 1000 }) // 재시도 설정 추가
 @Timeout(10_000) // 타임아웃 변경 5,000 > 10,000
-@Get({ path: '/api/v2/pokemon/:name' })
+@Get({ path: '/api/v2/pokemon/{name}' })
 class PokemonByNameId extends PokeBaseFrame<IPokemonData> {
   @Param()
   public declare readonly name: string;
@@ -123,7 +123,7 @@ Hook 함수명에 `_` 접두사가 붙는 이유는 모든 인스턴스 메서�
 ### 자식 클래스 Hook 확장
 
 ```ts
-@Get({ path: '/api/v2/pokemon/:name' })
+@Get({ path: '/api/v2/pokemon/{name}' })
 class PokemonByNameId extends PokemonAPI<IPokemonData> {
   @Param()
   public declare readonly name: string;

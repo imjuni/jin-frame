@@ -21,7 +21,7 @@ import { BearerTokenProvider } from 'jin-frame/providers';
 @Security(new BearerTokenProvider(), 'my-bearer-token')
 @Get({
   host: 'https://api.example.com',
-  path: '/user/:id',
+  path: '/user/{id}',
 })
 export class UserProfileFrame extends JinFrame {
   @Param()
@@ -159,7 +159,7 @@ export class DataFrame extends JinFrame {}
 ```ts
 @Security(new BearerTokenProvider('my-auth'))
 @Authorization('user-token-12345')
-@Get({ host: 'https://api.example.com', path: '/user/:id' })
+@Get({ host: 'https://api.example.com', path: '/user/{id}' })
 export class UserProfileFrame extends JinFrame {
   @Param()
   declare public readonly id: string;
@@ -170,7 +170,7 @@ export class UserProfileFrame extends JinFrame {
 
 ```ts
 @Security(new BearerTokenProvider(), 'user-token-12345')
-@Get({ host: 'https://api.example.com', path: '/user/:id' })
+@Get({ host: 'https://api.example.com', path: '/user/{id}' })
 export class UserProfileFrame extends JinFrame {
   @Param()
   declare public readonly id: string;
