@@ -22,25 +22,31 @@ A reusable, declarative, type-safe, and extendable HTTP request library built on
 
 Why `jin-frame`?
 
-1. Declarative API Definition
-2. Type Safety
+1. Declarative API Definition — HTTP requests as TypeScript classes with decorators
+2. Type Safety — discriminated union response (`ok: true | false`) with full TypeScript generics
 3. Retry, Hooks, File Upload, Timeout, and AbortSignal support
 4. Built on native `fetch` — no extra HTTP client dependency
 5. RFC 6570 URI Template path parameters (`{param}`)
 6. Builder pattern with compile-time field completeness checking
+7. Inheritance-friendly — share host/auth in a base class, override path in subclasses
+8. Runtime URL override — change host, pathPrefix, or path per `_execute()` call
 
 ## Table of Contents <!-- omit in toc -->
 
 - [Install](#install)
 - [Usage](#usage)
+- [Decorators](#decorators)
+- [Inheritance](#inheritance)
 - [Builder Pattern](#builder-pattern)
 - [Pass / Fail Response](#pass--fail-response)
 - [Validation](#validation)
 - [Retry, Timeout](#retry-timeout)
 - [Authorization](#authorization)
-- [Custom validateStatus](#custom-validatestatus)
+- [validateStatus](#validatestatus)
+- [Runtime URL Override](#runtime-url-override)
+- [Naming Convention](#naming-convention)
 - [Requirements](#requirements)
-- [Example](#example)
+- [Documentation](#documentation)
 - [License](#license)
 
 ## Install
@@ -78,7 +84,57 @@ export class PokemonFrame extends JinFrame {
 const frame = PokemonFrame.of({ name: 'pikachu', tid: randomUUID() });
 const reply = await frame._execute();
 
-console.log(reply.data);
+if (reply.ok) {
+  console.log(reply.data);
+}
+```
+
+## Decorators
+
+### Method decorators
+
+| Decorator | Description |
+|-----------|-------------|
+| `@Get` | HTTP GET |
+| `@Post` | HTTP POST |
+| `@Put` | HTTP PUT |
+| `@Patch` | HTTP PATCH |
+| `@Delete` | HTTP DELETE |
+| `@Head` | HTTP HEAD |
+| `@Options` | HTTP OPTIONS |
+| `@Retry` | Retry configuration |
+| `@Timeout` | Request timeout |
+| `@Dedupe` | Deduplicate concurrent identical requests |
+| `@Security` | Security provider for authentication |
+| `@Validator` | Response validators |
+
+### Field decorators
+
+| Decorator | Mapped to |
+|-----------|-----------|
+| `@Param` | URL path parameter (`{name}`) |
+| `@Query` | URL query string |
+| `@Body` | Request body field |
+| `@ObjectBody` | Request body (entire object merged) |
+| `@Header` | Request header |
+| `@Cookie` | `Cookie` request header |
+
+## Inheritance
+
+Define shared settings (host, auth, pathPrefix) in a base class and override only the path in each subclass:
+
+```ts
+@Post({ host: 'https://api.example.com', pathPrefix: '/v2' })
+class BaseApiFrame extends JinFrame {
+  @Header({ replaceAt: 'Authorization' })
+  declare public readonly token: string;
+}
+
+@Get({ path: '/pokemon/{name}' })
+class PokemonFrame extends BaseApiFrame {
+  @Param()
+  declare public readonly name: string;
+}
 ```
 
 ## Builder Pattern
@@ -139,8 +195,6 @@ Fail validators never throw `JinValidationError`. `JinValidationError` is only t
 ## Retry, Timeout
 
 ```ts
-import { Get, Param, Query, Retry, Timeout, JinFrame } from 'jin-frame';
-
 @Timeout(2000)
 @Retry({ max: 5, interval: 1000 })
 @Get({
@@ -159,8 +213,6 @@ export class PokemonFrame extends JinFrame {
 ## Authorization
 
 ```ts
-import { Get, Param, Query, JinFrame } from 'jin-frame';
-
 @Get({
   host: 'https://pokeapi.co',
   path: '/api/v2/pokemon/{name}',
@@ -175,17 +227,56 @@ export class PokemonFrame extends JinFrame {
 }
 ```
 
-## Custom validateStatus
+## validateStatus
 
-`validateStatus` receives both `ok` (native `fetch` `Response.ok`) and the raw `status` code, giving full control over what counts as a successful response.
+`validateStatus` can be set at the decorator level as a default, or overridden per `_execute()` call. It receives both `ok` (native `Response.ok`) and the raw `status` code.
 
 ```ts
+// decorator-level default
+@Get({
+  host: 'https://pokeapi.co',
+  path: '/api/v2/pokemon/{name}',
+  validateStatus: (ok, status) => ok || status === 404,
+})
+export class PokemonFrame extends JinFrame { ... }
+
+// _execute()-level override (takes precedence over decorator)
 const reply = await frame._execute({
   validateStatus: (ok, status) => ok || status === 304,
 });
 ```
 
 The default (`isValidateStatusDefault`) simply returns `ok`.
+
+## Runtime URL Override
+
+`host`, `pathPrefix`, and `path` can be overridden per `_execute()` call without changing the decorator:
+
+```ts
+// staging environment override
+const reply = await frame._execute({
+  host: 'https://staging.api.example.com',
+});
+
+// override all three at once
+const reply = await frame._execute({
+  host: 'https://staging.api.example.com',
+  pathPrefix: '/v3',
+  path: '/pokemon/{name}',
+});
+```
+
+## Naming Convention
+
+jin-frame applies a strict prefix strategy to avoid name collisions between user-defined fields and framework internals:
+
+| Prefix | Used for |
+|--------|----------|
+| `#` | Internal state (JavaScript private fields) — invisible to subclasses |
+| `_` | All instance methods — public API, hooks, and helpers |
+| _(none)_ | Static methods |
+
+See the full [Naming Convention](https://imjuni.github.io/jin-frame/method/naming-convention) documentation for details.
 
 ## Requirements
 
@@ -202,9 +293,18 @@ The default (`isValidateStatusDefault`) simply returns `ok`.
 }
 ```
 
-## Example
+## Documentation
 
-You can find more examples in the [examples directory](https://github.com/imjuni/jin-frame/tree/master/examples).
+Full documentation is available at **[https://imjuni.github.io/jin-frame/](https://imjuni.github.io/jin-frame/)**.
+
+- [Getting Started](https://imjuni.github.io/jin-frame/getting-to-start)
+- [Inheritance](https://imjuni.github.io/jin-frame/method/inheritance)
+- [Builder Pattern](https://imjuni.github.io/jin-frame/method/builder)
+- [Form / File Upload](https://imjuni.github.io/jin-frame/method/form)
+- [Retry](https://imjuni.github.io/jin-frame/method/retry)
+- [Authorization](https://imjuni.github.io/jin-frame/method/authorization)
+- [Validation](https://imjuni.github.io/jin-frame/method/validation)
+- [Naming Convention](https://imjuni.github.io/jin-frame/method/naming-convention)
 
 ## License
 
