@@ -200,7 +200,7 @@ class ProductValidator extends BaseValidator<
 @Validator(new ProductValidator()) // 검증기 등록
 @Get({
   host: 'https://api.shop.com',
-  path: '/products/:id',
+  path: '/products/{id}',
 })
 class GetProductFrame extends JinFrame<Product> {
   @Param()

@@ -32,6 +32,6 @@ features:
     details: 네이티브 fetch API 위에 구축 — 서드파티 HTTP 클라이언트 의존성 없음.
   - title: Path Parameter Support
     icon: 🎪 
-    details: Supports path parameter substitution via URLs, e.g., example.com/:id.
+    details: Supports path parameter substitution via URLs, e.g., example.com/{id}.
 ---
 

@@ -23,7 +23,7 @@
   서드파티 HTTP 클라이언트 없이 네이티브 `fetch` API 위에 구축되어 있습니다.
 
 - 🎪 **Path Parameter 지원**  
-  `example.com/:id`와 같은 path parameter를 타입 안정성을 보장하며 치환할 수 있습니다.
+  `example.com/{id}`와 같은 path parameter를 타입 안정성을 보장하며 치환할 수 있습니다.
 
 ## 제공 기능
 
@@ -74,7 +74,7 @@ class PokemonPagingFrame extends JinFrame {
 
 @Get({
   host: 'https://pokeapi.co',
-  path: '/api/v2/pokemon/:name',
+  path: '/api/v2/pokemon/{name}',
   timeout: 2_000, // 2초
   retry: { max: 3, inteval: 1000 }, // 1초 간격으로 3회 재시도
 })
