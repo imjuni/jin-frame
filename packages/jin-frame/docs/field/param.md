@@ -6,10 +6,12 @@ outline: deep
 
 In **`jin-frame`**, when you declare a class field with the `@Param()` decorator, the field value is **bound to the URL path parameter** and included in the request.
 
+> Path parameters use **RFC 6570 URI Template** syntax (`{variable}`, not `:variable`). See [URL Template](../method/url-template.md) for details.
+
 ## Quick Example
 
 ```ts
-@Get({ host: 'https://api.example.com', path: '/users/:userId/posts/:postId' })
+@Get({ host: 'https://api.example.com', path: '/users/{userId}/posts/{postId}' })
 export class UserPostFrame extends JinFrame {
   @Param() declare readonly userId: string;
   @Param() declare readonly postId: number;
@@ -49,7 +51,7 @@ The types supported by `@Param()` and their serialized results are as follows:
 Arrays without options are serialized as JSON-like strings.
 
 ```ts
-@Get({ host: 'https://api.example.com', path: '/users/:tags' })
+@Get({ host: 'https://api.example.com', path: '/users/{tags}' })
 export class ArrayParamFrame extends JinFrame {
   @Param() declare readonly tags?: string[];
 }
@@ -63,7 +65,7 @@ await ArrayParamFrame.of({ tags: ['red', 'blue'] }).execute();
 Use `@Param({ comma: true })` to serialize arrays as **comma-separated values**.
 
 ```ts
-@Get({ host: 'https://api.example.com', path: '/users/:tags' })
+@Get({ host: 'https://api.example.com', path: '/users/{tags}' })
 export class CommaParamFrame extends JinFrame {
   @Param({ comma: true })
   declare readonly tags?: string[];
@@ -78,7 +80,7 @@ await CommaParamFrame.of({ tags: ['red', 'blue', 'green'] }).execute();
 Use `@Param({ bit: { enable: true } })` to serialize numeric arrays as a **bitwise OR sum**.
 
 ```ts
-@Get({ host: 'https://api.example.com', path: '/flags/:flags' })
+@Get({ host: 'https://api.example.com', path: '/flags/{flags}' })
 export class BitwiseParamFrame extends JinFrame {
   @Param({ bit: { enable: true } })
   declare readonly flags?: number[];
@@ -95,7 +97,7 @@ await BitwiseParamFrame.of({ flags: [1, 2, 4] }).execute();
 All param values are URL-safe encoded.
 
 ```ts
-@Get({ host: 'https://api.example.com', path: '/tags/:tag' })
+@Get({ host: 'https://api.example.com', path: '/tags/{tag}' })
 export class EncodedParamFrame extends JinFrame {
   @Param() declare readonly tag: string;
 }
@@ -109,7 +111,7 @@ await EncodedParamFrame.of({ tag: 'hello world & tea' }).execute();
 Path parameters are always **required**. Missing values result in an **error** because the URL cannot be built.
 
 ```ts
-@Get({ host: 'https://api.example.com', path: '/items/:id' })
+@Get({ host: 'https://api.example.com', path: '/items/{id}' })
 export class OptionalParamFrame extends JinFrame {
   @Param() declare readonly id?: number;
 }
@@ -121,7 +123,7 @@ await OptionalParamFrame.of({}).execute();
 ## Combining with Query & Header
 
 ```ts
-@Get({ host: 'https://api.example.com', path: '/orgs/:orgId/users/:userId' })
+@Get({ host: 'https://api.example.com', path: '/orgs/{orgId}/users/{userId}' })
 export class ListUsersParamFrame extends JinFrame {
   @Param() declare readonly orgId: string;
   @Param() declare readonly userId: string;

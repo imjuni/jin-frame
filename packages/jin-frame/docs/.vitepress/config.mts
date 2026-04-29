@@ -37,6 +37,10 @@ const getThemeConfig = (_locale?: string) => {
               link: `${locale}/method/naming-convention.md`,
             },
             {
+              text: 'URL Template',
+              link: `${locale}/method/url-template.md`,
+            },
+            {
               text: 'Authorization',
               link: `${locale}/method/authorization.md`,
             },
