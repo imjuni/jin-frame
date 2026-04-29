@@ -34,6 +34,7 @@ Why `jin-frame`?
 ## Table of Contents <!-- omit in toc -->
 
 - [Install](#install)
+- [Version](#version)
 - [Usage](#usage)
 - [Decorators](#decorators)
 - [Inheritance](#inheritance)
@@ -48,6 +49,13 @@ Why `jin-frame`?
 - [Requirements](#requirements)
 - [Documentation](#documentation)
 - [License](#license)
+
+## Version
+
+| Version | HTTP Client | Notes |
+|---------|-------------|-------|
+| < 5.0   | Axios       | Requires `axios` as a peer dependency |
+| >= 5.0  | native `fetch` | No HTTP client dependency; Node.js >= 22 required |
 
 ## Install
 
@@ -121,20 +129,54 @@ if (reply.ok) {
 
 ## Inheritance
 
-Define shared settings (host, auth, pathPrefix) in a base class and override only the path in each subclass:
+Define shared settings (host, auth, pathPrefix, default field values) in a base class and override only the path in each subclass. This is the most practical pattern for real-world API clients where many endpoints share the same host and authentication headers.
 
 ```ts
-@Post({ host: 'https://api.example.com', pathPrefix: '/v2' })
-class BaseApiFrame extends JinFrame {
-  @Header({ replaceAt: 'Authorization' })
-  declare public readonly token: string;
+import { Get, Post, Param, Query, Header, Body, JinFrame } from 'jin-frame';
+import { randomUUID } from 'node:crypto';
+
+@Get({ host: 'https://pokeapi.co', pathPrefix: '/api/v2' })
+class PokeApiFrame extends JinFrame {
+  @Header({ replaceAt: 'X-Request-Id' })
+  declare public readonly requestId: string;
+
+  // Every subclass gets a default requestId automatically
+  protected static override getDefaultValues() {
+    return { requestId: randomUUID() };
+  }
 }
 
 @Get({ path: '/pokemon/{name}' })
-class PokemonFrame extends BaseApiFrame {
+class GetPokemonFrame extends PokeApiFrame {
   @Param()
   declare public readonly name: string;
 }
+
+@Get({ path: '/type/{id}' })
+class GetTypeFrame extends PokeApiFrame {
+  @Param()
+  declare public readonly id: number;
+}
+
+@Post({ path: '/pokemon' })
+class CreatePokemonFrame extends PokeApiFrame {
+  @Body()
+  declare public readonly name: string;
+
+  @Body()
+  declare public readonly type: string;
+}
+
+// name is required; requestId is filled automatically by getDefaultValues
+const frame = GetPokemonFrame.of({ name: 'pikachu' });
+const reply = await frame._execute();
+```
+
+`getDefaultValues()` is also applied when using the builder pattern:
+
+```ts
+const frame = GetPokemonFrame.builder().set('name', 'pikachu').build();
+// requestId is already set from getDefaultValues — no need to call .set('requestId', ...)
 ```
 
 ## Builder Pattern
@@ -208,6 +250,21 @@ export class PokemonFrame extends JinFrame {
   @Query()
   declare public readonly tid: string;
 }
+```
+
+`getInterval` supports exponential backoff and other dynamic strategies:
+
+```ts
+@Retry({
+  max: 5,
+  getInterval: (retry, _totalDuration, _eachDuration) => Math.min(1000 * 2 ** retry, 30_000),
+})
+```
+
+`timeout` and `retry` can also be overridden per `_execute()` call:
+
+```ts
+const reply = await frame._execute({ timeout: 5000 });
 ```
 
 ## Authorization
