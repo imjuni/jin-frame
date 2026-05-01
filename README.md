@@ -16,7 +16,7 @@ A reusable, declarative, type-safe, and extendable HTTP request library built on
 
 <!-- markdownlint-disable MD033 -->
 <p align="center">
-   <img src="packages/jin-frame/assets/jin-frame-brand-icon.png" alt="brand" width="500"/>
+   <img src="assets/jin-frame-brand-icon.png" alt="brand" width="500"/>
 </p>
 <!-- markdownlint-enable MD033 -->
 
@@ -37,6 +37,8 @@ Why `jin-frame`?
 - [Version](#version)
 - [Usage](#usage)
 - [Decorators](#decorators)
+  - [Method decorators](#method-decorators)
+  - [Field decorators](#field-decorators)
 - [Inheritance](#inheritance)
 - [Builder Pattern](#builder-pattern)
 - [Pass / Fail Response](#pass--fail-response)

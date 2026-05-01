@@ -16,7 +16,7 @@ TypeScript 데코레이터와 클래스를 사용해 HTTP 요청을 선언적으
 
 <!-- markdownlint-disable MD033 -->
 <p align="center">
-   <img src="packages/jin-frame/assets/jin-frame-brand-icon.png" alt="brand" width="500"/>
+   <img src="assets/jin-frame-brand-icon.png" alt="brand" width="500"/>
 </p>
 <!-- markdownlint-enable MD033 -->
 
