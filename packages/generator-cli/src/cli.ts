@@ -2,9 +2,9 @@ import { defineCommand, runMain } from "citty";
 import log from "consola";
 import { isError } from "my-easy-fp";
 import { install as sourceMapSupportInstall } from "source-map-support";
-import { createCommand } from "#src/commands/createCommand.js";
-import { frameCommand } from "#src/commands/frameCommand.js";
-import { CE_COMMAND } from "#src/interfaces/CE_COMMAND.js";
+import { createCommand } from "#commands/createCommand.js";
+import { frameCommand } from "#commands/frameCommand.js";
+import { CE_COMMAND } from "#interfaces/CE_COMMAND.js";
 
 sourceMapSupportInstall();
 

@@ -41,9 +41,33 @@
     "jin-frame-generator": "dist/cjs/cli.cjs"
   },
   "imports": {
-    "#src/*.js": {
-      "types": "./src/*.ts",
-      "default": "./src/*.ts"
+    "#builders/*.js": {
+      "types": "./src/builders/*.ts",
+      "default": "./src/builders/*.ts"
+    },
+    "#commands/*.js": {
+      "types": "./src/commands/*.ts",
+      "default": "./src/commands/*.ts"
+    },
+    "#handlers/*.js": {
+      "types": "./src/handlers/*.ts",
+      "default": "./src/handlers/*.ts"
+    },
+    "#interfaces/*.js": {
+      "types": "./src/interfaces/*.ts",
+      "default": "./src/interfaces/*.ts"
+    },
+    "#schema/*.js": {
+      "types": "./src/schema/*.ts",
+      "default": "./src/schema/*.ts"
+    },
+    "#transforms/*.js": {
+      "types": "./src/transforms/*.ts",
+      "default": "./src/transforms/*.ts"
+    },
+    "#validators/*.js": {
+      "types": "./src/validators/*.ts",
+      "default": "./src/validators/*.ts"
     }
   },
   "bugs": {

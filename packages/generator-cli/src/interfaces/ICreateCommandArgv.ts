@@ -1,1 +1,1 @@
-export type { TCreateCommandArgv } from "#src/schema/args/createCommandArgvSchema.js";
+export type { TCreateCommandArgv } from "#schema/args/createCommandArgvSchema.js";

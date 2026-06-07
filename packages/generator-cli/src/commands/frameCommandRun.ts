@@ -3,9 +3,9 @@ import { convertor, createFrames, load, safePathJoin, validate } from "@jin-fram
 import type { CommandContext } from "citty";
 import consola, { LogLevels, type LogType } from "consola";
 import pathe from "pathe";
-import type { frameCommandArgs } from "#src/schema/args/frameCommandArgs.js";
-import { frameCommandArgvSchema } from "#src/schema/args/frameCommandArgvSchema.js";
-import { loadGeneratorCommandInput } from "#src/schema/args/loadGeneratorCommandInput.js";
+import type { frameCommandArgs } from "#schema/args/frameCommandArgs.js";
+import { frameCommandArgvSchema } from "#schema/args/frameCommandArgvSchema.js";
+import { loadGeneratorCommandInput } from "#schema/args/loadGeneratorCommandInput.js";
 
 export const frameCommandRun = async ({ args }: CommandContext<typeof frameCommandArgs>) => {
   const input = await loadGeneratorCommandInput(args);

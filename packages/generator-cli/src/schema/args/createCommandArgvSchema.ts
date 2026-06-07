@@ -1,11 +1,11 @@
 import { z } from "zod";
-import { CE_COMMAND } from "#src/interfaces/CE_COMMAND.js";
-import { generatorOptionSchema, normalizeGeneratorOptionInput } from "#src/schema/args/generatorOptionSchema.js";
+import { CE_COMMAND } from "#interfaces/CE_COMMAND.js";
+import { generatorOptionSchema, normalizeGeneratorOptionInput } from "#schema/args/generatorOptionSchema.js";
 import {
   normalizeOpenAPITypeScriptOptionInput,
   openapiTypeScriptOptionSchema,
-} from "#src/schema/args/openapiTypeScriptOptionSchema.js";
-import { coercePathOrUrl } from "#src/validators/coercePathOrUrl.js";
+} from "#schema/args/openapiTypeScriptOptionSchema.js";
+import { coercePathOrUrl } from "#validators/coercePathOrUrl.js";
 
 const createCommandSchema = generatorOptionSchema.extend({
   ...openapiTypeScriptOptionSchema.shape,

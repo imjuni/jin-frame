@@ -1,1 +1,1 @@
-export type { TGeneratorOption as IGeneratorOption } from "#src/schema/args/generatorOptionSchema.js";
+export type { TGeneratorOption as IGeneratorOption } from "#schema/args/generatorOptionSchema.js";

@@ -1,7 +1,7 @@
 import { loadConfig } from "c12";
 import { defu } from "defu";
-import { normalizeGeneratorOptionInput } from "#src/schema/args/generatorOptionSchema.js";
-import { normalizeOpenAPITypeScriptOptionInput } from "#src/schema/args/openapiTypeScriptOptionSchema.js";
+import { normalizeGeneratorOptionInput } from "#schema/args/generatorOptionSchema.js";
+import { normalizeOpenAPITypeScriptOptionInput } from "#schema/args/openapiTypeScriptOptionSchema.js";
 
 type TCommandInput = Record<string, unknown>;
 

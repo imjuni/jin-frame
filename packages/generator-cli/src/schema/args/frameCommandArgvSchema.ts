@@ -1,12 +1,12 @@
 import { z } from "zod";
-import { CE_COMMAND } from "#src/interfaces/CE_COMMAND.js";
-import { generatorOptionSchema, normalizeGeneratorOptionInput } from "#src/schema/args/generatorOptionSchema.js";
+import { CE_COMMAND } from "#interfaces/CE_COMMAND.js";
+import { generatorOptionSchema, normalizeGeneratorOptionInput } from "#schema/args/generatorOptionSchema.js";
 import {
   normalizeOpenAPITypeScriptOptionInput,
   openapiTypeScriptOptionSchema,
-} from "#src/schema/args/openapiTypeScriptOptionSchema.js";
-import { coercePathOrUrl } from "#src/validators/coercePathOrUrl.js";
-import { getCoercePath } from "#src/validators/getCoercePath.js";
+} from "#schema/args/openapiTypeScriptOptionSchema.js";
+import { coercePathOrUrl } from "#validators/coercePathOrUrl.js";
+import { getCoercePath } from "#validators/getCoercePath.js";
 
 const frameCommandSchema = generatorOptionSchema.extend({
   ...openapiTypeScriptOptionSchema.shape,

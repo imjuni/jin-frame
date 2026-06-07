@@ -1,7 +1,7 @@
 import { defineCommand } from "citty";
-import { createCommandRun } from "#src/commands/createCommandRun.js";
-import { CE_COMMAND } from "#src/interfaces/CE_COMMAND.js";
-import { createCommandArgs } from "#src/schema/args/createCommandArgs.js";
+import { createCommandRun } from "#commands/createCommandRun.js";
+import { CE_COMMAND } from "#interfaces/CE_COMMAND.js";
+import { createCommandArgs } from "#schema/args/createCommandArgs.js";
 
 export const createCommand = defineCommand({
   meta: {

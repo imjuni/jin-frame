@@ -1,7 +1,7 @@
 import { z } from "zod";
-import { endpointOverridesSchema, type TEndpointRetry } from "#src/schema/args/generatorConfigSchema.js";
-import { parseEndpointOverrideMap, parseRetryOverride } from "#src/schema/args/parseEndpointOverride.js";
-import { coerceIdentifier } from "#src/validators/coerceIdentifier.js";
+import { endpointOverridesSchema, type TEndpointRetry } from "#schema/args/generatorConfigSchema.js";
+import { parseEndpointOverrideMap, parseRetryOverride } from "#schema/args/parseEndpointOverride.js";
+import { coerceIdentifier } from "#validators/coerceIdentifier.js";
 
 function mergeRecords<T>(left?: Record<string, T>, right?: Record<string, T>): Record<string, T> | undefined {
   const merged = { ...(left ?? {}), ...(right ?? {}) };
