@@ -2,7 +2,7 @@ import fs from "node:fs";
 import os from "node:os";
 import pathe from "pathe";
 import { describe, expect, it } from "vitest";
-import { loadGeneratorCommandInput } from "#src/schema/args/loadGeneratorCommandInput.js";
+import { loadGeneratorCommandInput } from "#schema/args/loadGeneratorCommandInput.js";
 
 describe("loadGeneratorCommandInput", () => {
   it("should merge config file endpoint overrides with cli endpoint overrides", async () => {

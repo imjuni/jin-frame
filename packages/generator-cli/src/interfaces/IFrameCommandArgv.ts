@@ -1,1 +1,1 @@
-export type { TFrameCommandArgv } from "#src/schema/args/frameCommandArgvSchema.js";
+export type { TFrameCommandArgv } from "#schema/args/frameCommandArgvSchema.js";

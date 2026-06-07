@@ -1,5 +1,5 @@
 import type { createOpenapiTs } from "@jin-frame/generator-core";
-import type { TCreateCommandArgv } from "#src/interfaces/ICreateCommandArgv.js";
+import type { TCreateCommandArgv } from "#interfaces/ICreateCommandArgv.js";
 
 type TOpenAPITSOptions = NonNullable<Parameters<typeof createOpenapiTs>[1]>;
 

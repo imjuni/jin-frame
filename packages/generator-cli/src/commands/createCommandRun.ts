@@ -11,10 +11,10 @@ import {
 import type { CommandContext } from "citty";
 import consola, { LogLevels, type LogType } from "consola";
 import pathe from "pathe";
-import type { createCommandArgs } from "#src/schema/args/createCommandArgs.js";
-import { createCommandArgvSchema } from "#src/schema/args/createCommandArgvSchema.js";
-import { loadGeneratorCommandInput } from "#src/schema/args/loadGeneratorCommandInput.js";
-import { transformArgvToOpenapiTsOptions } from "#src/transforms/transformArgvToOpenapiTsOptions.js";
+import type { createCommandArgs } from "#schema/args/createCommandArgs.js";
+import { createCommandArgvSchema } from "#schema/args/createCommandArgvSchema.js";
+import { loadGeneratorCommandInput } from "#schema/args/loadGeneratorCommandInput.js";
+import { transformArgvToOpenapiTsOptions } from "#transforms/transformArgvToOpenapiTsOptions.js";
 
 export const createCommandRun = async ({ args }: CommandContext<typeof createCommandArgs>) => {
   const input = await loadGeneratorCommandInput(args);
