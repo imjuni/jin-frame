@@ -1,7 +1,7 @@
 import urlJoin from "url-join";
-import type { IGetServerUrlParams } from "#/generators/hosts/interfaces/IGetServerUrlParams";
-import type { IGetServerUrlReturn } from "#/generators/hosts/interfaces/IGetServerUrlReturn";
-import { safeUrl } from "#/tools/safeUrl";
+import type { IGetServerUrlParams } from "#/generators/hosts/interfaces/IGetServerUrlParams.js";
+import type { IGetServerUrlReturn } from "#/generators/hosts/interfaces/IGetServerUrlReturn.js";
+import { safeUrl } from "#/tools/safeUrl.js";
 
 export function getServerUrl({ specUrl, server }: IGetServerUrlParams): IGetServerUrlReturn {
   const serverUrl = safeUrl(server.url);

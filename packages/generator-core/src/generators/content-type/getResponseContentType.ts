@@ -1,6 +1,6 @@
 import type { OpenAPIV3 } from "openapi-types";
-import { getFirstContentType } from "#/generators/content-type/getFirstContentType";
-import { preferredContentTypes } from "#/generators/content-type/preferredContentTypes";
+import { getFirstContentType } from "#/generators/content-type/getFirstContentType.js";
+import { preferredContentTypes } from "#/generators/content-type/preferredContentTypes.js";
 
 export function getResponseContentType(
   responses?: OpenAPIV3.ResponsesObject,

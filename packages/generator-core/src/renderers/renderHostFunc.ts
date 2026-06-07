@@ -1,6 +1,6 @@
 import util from "node:util";
 import { Project } from "ts-morph";
-import { randomFilename } from "#/tools/randomFilename";
+import { randomFilename } from "#/tools/randomFilename.js";
 
 /**
  * host 반환 함수를 생성하는 함수

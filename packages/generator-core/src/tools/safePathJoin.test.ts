@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { safePathJoin } from "#/tools/safePathJoin";
+import { safePathJoin } from "#/tools/safePathJoin.js";
 
 describe("safePathJoin", () => {
   it("should join all string arguments when all arguments are strings", () => {

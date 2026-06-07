@@ -1,4 +1,4 @@
-import type { IGetJsonArgumentProps } from "#/generators/json/interface/IGetJsonArgumentProps";
+import type { IGetJsonArgumentProps } from "#/generators/json/interface/IGetJsonArgumentProps.js";
 
 export function getJsonArgument(_params?: IGetJsonArgumentProps): string | undefined {
   const params = (_params?.values ?? []).filter((param) => param != null);

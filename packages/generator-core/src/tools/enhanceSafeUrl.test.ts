@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { enhanceSafeUrl } from "#/tools/enhanceSafeUrl";
+import { enhanceSafeUrl } from "#/tools/enhanceSafeUrl.js";
 
 describe("enhanceSafeUrl", () => {
   it("should return key and url when pass only pathname", () => {

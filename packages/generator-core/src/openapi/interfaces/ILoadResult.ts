@@ -1,5 +1,5 @@
 import type { JsonValue } from "type-fest";
-import type { IMultiParse } from "#/tools/interfaces/IMultiParse";
+import type { IMultiParse } from "#/tools/interfaces/IMultiParse.js";
 
 /**
  * load 함수 실행 결과

@@ -1,5 +1,5 @@
 import type { OpenAPIV3 } from "openapi-types";
-import { getParameterJsDocExamplesContent } from "#/generators/parameters/getParameterJsDocExamplesContent";
+import { getParameterJsDocExamplesContent } from "#/generators/parameters/getParameterJsDocExamplesContent.js";
 
 export function getParameterJsDoc(
   params: Pick<OpenAPIV3.ParameterObject, "description" | "example" | "examples">,

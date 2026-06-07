@@ -1,5 +1,5 @@
 import { toArray } from "my-easy-fp";
-import type { IGetClassJsDocProps } from "#/generators/interfaces/IGetClassJsDocProps";
+import type { IGetClassJsDocProps } from "#/generators/interfaces/IGetClassJsDocProps.js";
 
 export function getClassJsDoc(params: IGetClassJsDocProps): string {
   const seeBlock = `@see ${params.method} ${params.pathKey}`;

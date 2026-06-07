@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { getParameterDecorator } from "#/generators/parameters/getParameterDecorator";
+import { getParameterDecorator } from "#/generators/parameters/getParameterDecorator.js";
 
 describe("getParameterDecorator", () => {
   it("should return Query when pass in: 'query'", () => {

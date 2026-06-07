@@ -1,12 +1,11 @@
-/* eslint-disable @typescript-eslint/ban-ts-comment */
-
 import type { OpenAPIV3 } from "openapi-types";
 import { describe, expect, it } from "vitest";
-import { createFrames } from "#/generators/createFrames";
+import { createFrames } from "#/generators/createFrames.js";
 
 describe("createFrames", async () => {
-  // @ts-expect-error
-  const document = await import("../../../../examples/openapi/v3.json");
+  const { default: document } = (await import("../../../../examples/openapi/v3.json")) as unknown as {
+    default: OpenAPIV3.Document;
+  };
 
   it("should return variety frame when pass v3 document", async () => {
     const frames = await createFrames({
@@ -111,7 +110,7 @@ describe("createFrames", async () => {
     expect(frames).toHaveLength(2);
     expect(frames.at(0)?.frame.filePath).toBe("ServerHostFrame.ts");
     expect(frames.at(0)?.frame.source).toContain("@Get({ host: 'https://api.example.com', pathPrefix: '/v1' })");
-    expect(frames.at(1)?.frame.source).toContain('import { ServerHostFrame } from "./ServerHostFrame";');
+    expect(frames.at(1)?.frame.source).toContain('import { ServerHostFrame } from "./ServerHostFrame.js";');
     expect(frames.at(1)?.frame.source).toContain("@Get({ path: '/users/{userId}' })");
     expect(frames.at(1)?.frame.source).toContain(
       "export class GetUserFrame extends ServerHostFrame<paths['/users/{userId}']['get']['responses']['200']['content']['application/json']>",

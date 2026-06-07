@@ -1,5 +1,5 @@
-import { getExampleValue } from "#/generators/parameters/getExampleValue";
-import type { IGetParameterJsDocExamplesContentProps } from "#/generators/parameters/interfaces/IGetParameterJsDocExamplesContentProps";
+import { getExampleValue } from "#/generators/parameters/getExampleValue.js";
+import type { IGetParameterJsDocExamplesContentProps } from "#/generators/parameters/interfaces/IGetParameterJsDocExamplesContentProps.js";
 
 export function getParameterJsDocExamplesContent(params: IGetParameterJsDocExamplesContentProps): string {
   const { summary, description, value } = params.example;

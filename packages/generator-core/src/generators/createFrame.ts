@@ -2,19 +2,19 @@ import { randomUUID } from "node:crypto";
 import { pascalCase } from "change-case";
 import type { OpenAPIV3 } from "openapi-types";
 import type { Project } from "ts-morph";
-import { getMethodDecorator } from "#/generators/content-type/getMethodDecorator";
-import { getRequestContentType } from "#/generators/content-type/getRequestContentType";
-import { getResponseContentType } from "#/generators/content-type/getResponseContentType";
-import { getResponseTypeMappedAccessPath } from "#/generators/content-type/getResponseTypeMappedAccessPath";
-import type { ICreateFrameProps } from "#/generators/frame/interfaces/ICreateFrameProps";
-import type { ICreateFrameResult } from "#/generators/frame/interfaces/ICreateFrameResult";
-import { getClassJsDoc } from "#/generators/getClassJsDoc";
-import { getFrameName } from "#/generators/getFrameName";
-import { getBodyParameter } from "#/generators/parameters/getBodyParameter";
-import { getParameter } from "#/generators/parameters/getParameter";
-import { dotRelative } from "#/tools/dotRelative";
-import { removeExt } from "#/tools/removeExt";
-import { safePathJoin } from "#/tools/safePathJoin";
+import { getMethodDecorator } from "#/generators/content-type/getMethodDecorator.js";
+import { getRequestContentType } from "#/generators/content-type/getRequestContentType.js";
+import { getResponseContentType } from "#/generators/content-type/getResponseContentType.js";
+import { getResponseTypeMappedAccessPath } from "#/generators/content-type/getResponseTypeMappedAccessPath.js";
+import type { ICreateFrameProps } from "#/generators/frame/interfaces/ICreateFrameProps.js";
+import type { ICreateFrameResult } from "#/generators/frame/interfaces/ICreateFrameResult.js";
+import { getClassJsDoc } from "#/generators/getClassJsDoc.js";
+import { getFrameName } from "#/generators/getFrameName.js";
+import { getBodyParameter } from "#/generators/parameters/getBodyParameter.js";
+import { getParameter } from "#/generators/parameters/getParameter.js";
+import { dotRelative } from "#/tools/dotRelative.js";
+import { removeExt } from "#/tools/removeExt.js";
+import { safePathJoin } from "#/tools/safePathJoin.js";
 
 export function createFrame(project: Project, params: ICreateFrameProps): ICreateFrameResult {
   const aliasFilePath = `${randomUUID()}-${randomUUID()}.ts`;
@@ -80,10 +80,10 @@ export function createFrame(project: Project, params: ICreateFrameProps): ICreat
       namedImports: jinFrameNamedImports,
     });
     sourceFile.addImportDeclaration({
-      moduleSpecifier: dotRelative(
+      moduleSpecifier: `${dotRelative(
         safePathJoin(params.output, firstTag),
         safePathJoin(params.output, params.baseFrame),
-      ),
+      )}.js`,
       namedImports: [params.baseFrame],
     });
   } else {
@@ -94,7 +94,7 @@ export function createFrame(project: Project, params: ICreateFrameProps): ICreat
   }
 
   sourceFile.addImportDeclaration({
-    moduleSpecifier: dotRelative(safePathJoin(params.output, firstTag), removeExt(params.specTypeFilePath)),
+    moduleSpecifier: `${dotRelative(safePathJoin(params.output, firstTag), removeExt(params.specTypeFilePath))}.js`,
     namedImports: ["paths"],
   });
 

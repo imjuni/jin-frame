@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { getServerUrl } from "./getServerUrl";
+import { getServerUrl } from "./getServerUrl.js";
 
 describe("getServerUrl", () => {
   it("should return server url when server url is a full url", () => {

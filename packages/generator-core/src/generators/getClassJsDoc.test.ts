@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { getClassJsDoc } from "#/generators/getClassJsDoc";
+import { getClassJsDoc } from "#/generators/getClassJsDoc.js";
 
 describe("getClassJsDoc", () => {
   it("should return @see when summary, description, tags is undefined", () => {

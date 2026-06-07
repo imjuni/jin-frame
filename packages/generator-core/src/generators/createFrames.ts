@@ -1,15 +1,15 @@
 import $RefParser from "@apidevtools/json-schema-ref-parser";
 import type { OpenAPIV3 } from "openapi-types";
 import { Project } from "ts-morph";
-import { createBaseFrame } from "#/generators/createBaseFrame";
-import { createFrame } from "#/generators/createFrame";
-import { generateHostValue } from "#/generators/hosts/generateHostValue";
-import { getInlineHost } from "#/generators/frames/getInlineHost";
-import { getServerFrameEndpoint } from "#/generators/frames/getServerFrameEndpoint";
-import type { ICreateFramesProps } from "#/generators/frames/interfaces/ICreateFramesProps";
-import type { ICreateFramesResult } from "#/generators/frames/interfaces/ICreateFramesResult";
-import { mergeParameters } from "#/generators/frames/mergeParameters";
-import type { THttpMethod } from "#/https/method";
+import { createBaseFrame } from "#/generators/createBaseFrame.js";
+import { createFrame } from "#/generators/createFrame.js";
+import { generateHostValue } from "#/generators/hosts/generateHostValue.js";
+import { getInlineHost } from "#/generators/frames/getInlineHost.js";
+import { getServerFrameEndpoint } from "#/generators/frames/getServerFrameEndpoint.js";
+import type { ICreateFramesProps } from "#/generators/frames/interfaces/ICreateFramesProps.js";
+import type { ICreateFramesResult } from "#/generators/frames/interfaces/ICreateFramesResult.js";
+import { mergeParameters } from "#/generators/frames/mergeParameters.js";
+import type { THttpMethod } from "#/https/method.js";
 
 export async function createFrames(params: ICreateFramesProps): Promise<ICreateFramesResult[]> {
   const document = await $RefParser.dereference<OpenAPIV3.Document>(params.document);

@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { getMethodDecorator } from "#/generators/content-type/getMethodDecorator";
+import { getMethodDecorator } from "#/generators/content-type/getMethodDecorator.js";
 
 describe("getMethodDecorator", () => {
   it("should return decorator when empty content-type", () => {

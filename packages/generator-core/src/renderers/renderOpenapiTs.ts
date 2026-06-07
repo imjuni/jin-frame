@@ -1,5 +1,5 @@
 import ts from "typescript";
-import { randomFilename } from "#/tools/randomFilename";
+import { randomFilename } from "#/tools/randomFilename.js";
 
 export function renderOpenapiTs(nodes: ts.Node[]): string {
   // Use the TypeScript printer to handle synthesized nodes.

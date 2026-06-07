@@ -2,8 +2,8 @@ import fs from "node:fs";
 import axios from "axios";
 import { exists } from "my-node-fp";
 import type { JsonValue } from "type-fest";
-import type { ILoadResult } from "#/openapi/interfaces/ILoadResult";
-import { multiParse } from "#/tools/multiParse";
+import type { ILoadResult } from "#/openapi/interfaces/ILoadResult.js";
+import { multiParse } from "#/tools/multiParse.js";
 
 export async function load(filePath: string): Promise<ILoadResult | undefined> {
   if (await exists(filePath)) {

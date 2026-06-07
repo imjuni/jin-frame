@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { dotRelative } from "#/tools/dotRelative";
+import { dotRelative } from "#/tools/dotRelative.js";
 
 describe("dotRelative", () => {
   it("should add dot prefix when target is in same directory", () => {

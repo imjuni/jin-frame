@@ -1,8 +1,8 @@
 import type { OpenAPIV2, OpenAPIV3 } from "openapi-types";
 import pathe from "pathe";
 import { describe, expect, it } from "vitest";
-import { convertor } from "#/openapi/convertor";
-import { load } from "#/openapi/load";
+import { convertor } from "#/openapi/convertor.js";
+import { load } from "#/openapi/load.js";
 
 describe("convertor", () => {
   it("should return openapi v3 document when pass openapi v2 document", async () => {

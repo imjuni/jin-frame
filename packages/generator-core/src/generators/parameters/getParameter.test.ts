@@ -1,6 +1,6 @@
 import type { OpenAPIV3 } from "openapi-types";
 import { describe, expect, it } from "vitest";
-import { getParameter } from "#/generators/parameters/getParameter";
+import { getParameter } from "#/generators/parameters/getParameter.js";
 
 describe("getParameter", () => {
   const parameter: OpenAPIV3.ParameterObject = {
