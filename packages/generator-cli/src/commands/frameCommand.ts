@@ -1,27 +1,13 @@
-import type { CommandModule } from "yargs";
-import { frameCommandBuilder } from "#src/builders/frameCommandBuilder.js";
-import { generatorOptionBuilder } from "#src/builders/generatorOptionBuilder.js";
-import { openAPITypescriptOptionBuilder } from "#src/builders/openAPITypescriptOptionBuilder.js";
-import { frameCommandHandler } from "#src/handlers/frameCommandHandler.js";
+import { defineCommand } from "citty";
+import { frameCommandRun } from "#src/commands/frameCommandRun.js";
 import { CE_COMMAND } from "#src/interfaces/CE_COMMAND.js";
-import type { TFrameCommandArgv } from "#src/interfaces/IFrameCommandArgv.js";
-import { frameCommandArgvSchema } from "#src/schema/args/frameCommandArgvSchema.js";
+import { frameCommandArgs } from "#src/schema/args/frameCommandArgs.js";
 
-export const frameCommandModule: CommandModule<TFrameCommandArgv, TFrameCommandArgv> = {
-  command: [CE_COMMAND.FRAME, "<spec>"].join(" "),
-  describe: "Generate jin-frame API client classes from existing TypeScript type definitions",
-  builder: (yargs) => {
-    const generatorArgv = generatorOptionBuilder(yargs) as unknown as Parameters<
-      typeof openAPITypescriptOptionBuilder
-    >[0];
-    const openapiTypescriptArgv = openAPITypescriptOptionBuilder(generatorArgv) as unknown as Parameters<
-      typeof frameCommandBuilder
-    >[0];
-    const frameCommandArgv = frameCommandBuilder(openapiTypescriptArgv);
-
-    return frameCommandArgv;
+export const frameCommand = defineCommand({
+  meta: {
+    name: CE_COMMAND.FRAME,
+    description: "Generate jin-frame API client classes from existing TypeScript type definitions",
   },
-  handler: async (argv) => {
-    await frameCommandHandler(frameCommandArgvSchema.parse(argv));
-  },
-};
+  args: frameCommandArgs,
+  run: frameCommandRun,
+});

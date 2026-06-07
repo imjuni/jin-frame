@@ -1,5 +1,40 @@
 import { z } from "zod";
 
+const kebabToCamelEntries = [
+  ["oat-additional-properties", "oatAdditionalProperties"],
+  ["oat-alphabetize", "oatAlphabetize"],
+  ["oat-array-length", "oatArrayLength"],
+  ["oat-default-non-nullable", "oatDefaultNonNullable"],
+  ["oat-properties-required-by-default", "oatPropertiesRequiredByDefault"],
+  ["oat-empty-objects-unknown", "oatEmptyObjectsUnknown"],
+  ["oat-enum", "oatEnum"],
+  ["oat-enum-values", "oatEnumValues"],
+  ["oat-dedupe-enums", "oatDedupeEnums"],
+  ["oat-check", "oatCheck"],
+  ["oat-exclude-deprecated", "oatExcludeDeprecated"],
+  ["oat-export-type", "oatExportType"],
+  ["oat-immutable", "oatImmutable"],
+  ["oat-root-types", "oatRootTypes"],
+  ["oat-root-types-no-schema-prefix", "oatRootTypesNoSchemaPrefix"],
+  ["oat-make-paths-enum", "oatMakePathsEnum"],
+  ["oat-generate-path-params", "oatGeneratePathParams"],
+] as const;
+
+export const normalizeOpenAPITypeScriptOptionInput = (value: unknown) => {
+  if (value == null || typeof value !== "object" || Array.isArray(value)) {
+    return value;
+  }
+
+  const record = value as Record<string, unknown>;
+  const normalized = { ...record };
+
+  for (const [kebabKey, camelKey] of kebabToCamelEntries) {
+    normalized[camelKey] = record[kebabKey] ?? record[camelKey];
+  }
+
+  return normalized;
+};
+
 export const openapiTypeScriptOptionSchema = z.object({
   oatAdditionalProperties: z.boolean().default(false),
   oatAlphabetize: z.boolean().default(false),
