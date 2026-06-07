@@ -2,7 +2,7 @@ import type { OpenAPIV3 } from "openapi-types";
 
 export function getParameterDecorator(
   _parameterIn: OpenAPIV3.ParameterObject["in"],
-): { decorator: "Query" | "Param" | "Header"; in: "query" | "path" | "header" } | undefined {
+): { decorator: "Query" | "Param" | "Header" | "Cookie"; in: "query" | "path" | "header" | "cookie" } | undefined {
   const parameterIn = _parameterIn.toLocaleLowerCase();
 
   switch (parameterIn) {
@@ -12,6 +12,8 @@ export function getParameterDecorator(
       return { decorator: "Param", in: parameterIn };
     case "header":
       return { decorator: "Header", in: parameterIn };
+    case "cookie":
+      return { decorator: "Cookie", in: parameterIn };
     default:
       return undefined;
   }

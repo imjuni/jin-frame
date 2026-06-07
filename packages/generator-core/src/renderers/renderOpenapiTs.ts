@@ -22,3 +22,5 @@ export function renderOpenapiTs(nodes: ts.Node[]): string {
 
   return [header, sourceCode].join("\n");
 }
+
+export const printOpenapiTs = renderOpenapiTs;

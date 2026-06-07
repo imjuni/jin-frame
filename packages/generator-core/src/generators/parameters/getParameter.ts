@@ -10,7 +10,7 @@ interface IProps {
 }
 
 interface IResult {
-  decorator: "Query" | "Param" | "Header";
+  decorator: "Query" | "Param" | "Header" | "Cookie";
   property: PropertyDeclarationStructure;
 }
 

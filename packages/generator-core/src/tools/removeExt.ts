@@ -6,5 +6,9 @@ export function removeExt(filePath: string): string {
   }
 
   const ext = pathe.extname(filePath);
+  if (ext === "") {
+    return filePath;
+  }
+
   return filePath.slice(0, -ext.length);
 }

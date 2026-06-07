@@ -107,7 +107,7 @@ describe("Host Strategy Integration Test", () => {
       });
 
       expect(frames).toHaveLength(1);
-      expect(frames[0].frame.source).toContain("'https://dev.api.example.com/v1'");
+      expect(frames.at(0)?.frame.source).toContain("'https://dev.api.example.com/v1'");
     });
 
     it("should create frames with function host strategy", async () => {
@@ -121,7 +121,7 @@ describe("Host Strategy Integration Test", () => {
       });
 
       expect(frames).toHaveLength(1);
-      expect(frames[0].frame.source).toContain("getApiEndpoint");
+      expect(frames.at(0)?.frame.source).toContain("getApiEndpoint");
     });
 
     it("should create frames with env-function host strategy", async () => {
@@ -135,10 +135,10 @@ describe("Host Strategy Integration Test", () => {
       });
 
       expect(frames).toHaveLength(1);
-      expect(frames[0].frame.source).toContain("process.env.NODE_ENV");
-      expect(frames[0].frame.source).toContain("development:");
-      expect(frames[0].frame.source).toContain("staging:");
-      expect(frames[0].frame.source).toContain("production:");
+      expect(frames.at(0)?.frame.source).toContain("process.env.NODE_ENV");
+      expect(frames.at(0)?.frame.source).toContain("development:");
+      expect(frames.at(0)?.frame.source).toContain("staging:");
+      expect(frames.at(0)?.frame.source).toContain("production:");
     });
   });
 });

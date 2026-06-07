@@ -24,10 +24,10 @@ export function generatorOptionBuilder(argv: Argv<IGeneratorOption>): Argv<IGene
     })
     .option("base-frame", {
       type: "string",
-      default: "BaseFrame",
+      default: "ServerHostFrame",
       coerce: coerceIdentifier,
       demandOption: false,
-      describe: "Base frame class name to extend from (use --no-base-frame to disable)",
+      describe: "Server host frame class name to extend from (use --no-base-frame to disable)",
     })
     .option("timeout", {
       type: "number",

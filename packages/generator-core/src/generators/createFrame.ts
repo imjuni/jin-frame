@@ -84,11 +84,17 @@ export function createFrame(project: Project, params: IProps): IResult {
     ...parameters.map((parameter) => parameter.decorator),
     ...bodies.map((body) => body.decorator),
   ];
+  const usesJinFile = properties.some((property) => property.type?.toString().includes("JinFile"));
+  const jinFrameNamedImports = [
+    method,
+    ...Array.from(new Set<string>(bodyNamedImports)),
+    ...(usesJinFile ? ["JinFile"] : []),
+  ];
 
   if (params.baseFrame != null) {
     sourceFile.addImportDeclaration({
       moduleSpecifier: "jin-frame",
-      namedImports: [method, ...Array.from(new Set<string>(bodyNamedImports))],
+      namedImports: jinFrameNamedImports,
     });
     sourceFile.addImportDeclaration({
       moduleSpecifier: dotRelative(
@@ -100,7 +106,7 @@ export function createFrame(project: Project, params: IProps): IResult {
   } else {
     sourceFile.addImportDeclaration({
       moduleSpecifier: "jin-frame",
-      namedImports: [method, ...Array.from(new Set<string>(bodyNamedImports)), "JinFrame"],
+      namedImports: [...jinFrameNamedImports, "JinFrame"],
     });
   }
 

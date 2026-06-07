@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/ban-ts-comment */
 
-import { describe, it } from "vitest";
+import type { OpenAPIV3 } from "openapi-types";
+import { describe, expect, it } from "vitest";
 import { createFrames } from "#/generators/createFrames";
 
 describe("createFrames", async () => {
@@ -15,6 +16,155 @@ describe("createFrames", async () => {
       useCodeFence: true,
       document,
     });
-    console.log(frames);
+    expect(frames.length).toBeGreaterThan(0);
+  });
+
+  it("should include path-level parameters in operation frames", async () => {
+    const frames = await createFrames({
+      specTypeFilePath: "/a/b/paths.d.ts",
+      host: "https://pokeapi.co",
+      output: "/a/b",
+      useCodeFence: false,
+      document: {
+        openapi: "3.0.0",
+        info: { title: "Test API", version: "1.0.0" },
+        paths: {
+          "/users/{userId}": {
+            parameters: [
+              {
+                name: "userId",
+                in: "path",
+                required: true,
+                schema: { type: "string" },
+              },
+              {
+                name: "session",
+                in: "cookie",
+                schema: { type: "string" },
+              },
+            ],
+            get: {
+              operationId: "getUser",
+              responses: {
+                "200": {
+                  description: "Success",
+                  content: {
+                    "application/json": {
+                      schema: { type: "object" },
+                    },
+                  },
+                },
+              },
+            },
+          },
+        },
+      } satisfies OpenAPIV3.Document,
+    });
+
+    expect(frames).toHaveLength(1);
+    const frame = frames.at(0);
+    expect(frame?.frame.source).toContain('import { Get, Param, Cookie, JinFrame } from "jin-frame";');
+    expect(frame?.frame.source).toContain("@Param()");
+    expect(frame?.frame.source).toContain("@Cookie()");
+  });
+
+  it("should create server host frame and inherit endpoint frames from it", async () => {
+    const frames = await createFrames({
+      specTypeFilePath: "/a/b/paths.d.ts",
+      specFilePath: "https://docs.example.com/openapi.json",
+      host: undefined,
+      output: "/a/b",
+      baseFrame: "ServerHostFrame",
+      useCodeFence: false,
+      document: {
+        openapi: "3.0.0",
+        info: { title: "Test API", version: "1.0.0" },
+        servers: [{ url: "https://api.example.com/v1" }],
+        paths: {
+          "/users/{userId}": {
+            get: {
+              operationId: "getUser",
+              parameters: [
+                {
+                  name: "userId",
+                  in: "path",
+                  required: true,
+                  schema: { type: "string" },
+                },
+              ],
+              responses: {
+                "200": {
+                  description: "Success",
+                  content: {
+                    "application/json": {
+                      schema: { type: "object" },
+                    },
+                  },
+                },
+              },
+            },
+          },
+        },
+      } satisfies OpenAPIV3.Document,
+    });
+
+    expect(frames).toHaveLength(2);
+    expect(frames.at(0)?.frame.filePath).toBe("ServerHostFrame.ts");
+    expect(frames.at(0)?.frame.source).toContain("@Get({ host: 'https://api.example.com', pathPrefix: '/v1' })");
+    expect(frames.at(1)?.frame.source).toContain('import { ServerHostFrame } from "./ServerHostFrame";');
+    expect(frames.at(1)?.frame.source).toContain("@Get({ path: '/users/{userId}' })");
+    expect(frames.at(1)?.frame.source).toContain(
+      "export class GetUserFrame extends ServerHostFrame<paths['/users/{userId}']['get']['responses']['200']['content']['application/json']>",
+    );
+  });
+
+  it("should create server variable parameters on server host frame", async () => {
+    const frames = await createFrames({
+      specTypeFilePath: "/a/b/paths.d.ts",
+      output: "/a/b",
+      baseFrame: "ServerHostFrame",
+      useCodeFence: false,
+      document: {
+        openapi: "3.0.0",
+        info: { title: "Test API", version: "1.0.0" },
+        servers: [
+          {
+            url: "https://{tenant}.api.example.com/v{version}",
+            variables: {
+              tenant: {
+                default: "dev",
+                description: "Tenant subdomain",
+              },
+              version: {
+                default: "1",
+                enum: ["1", "2"],
+              },
+            },
+          },
+        ],
+        paths: {
+          "/users": {
+            get: {
+              operationId: "listUsers",
+              responses: {
+                "200": {
+                  description: "Success",
+                },
+              },
+            },
+          },
+        },
+      } satisfies OpenAPIV3.Document,
+    });
+
+    const serverHostFrame = frames.at(0)?.frame.source;
+
+    expect(serverHostFrame).toContain('import { Get, Param, JinFrame, Timeout } from "jin-frame";');
+    expect(serverHostFrame).toContain("@Get({ host: 'https://{tenant}.api.example.com', pathPrefix: '/v{version}' })");
+    expect(serverHostFrame).toContain("@Param()");
+    expect(serverHostFrame).toContain("declare public readonly tenant?: string;");
+    expect(serverHostFrame).toContain("declare public readonly version?: '1' | '2';");
+    expect(serverHostFrame).toContain("protected static override getDefaultValues(): Partial<ServerHostFrame>");
+    expect(serverHostFrame).toContain('return { "tenant": "dev", "version": "1" };');
   });
 });

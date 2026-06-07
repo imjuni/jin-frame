@@ -32,7 +32,10 @@ function buildServerMappingFromServers(servers: OpenAPIV3.ServerObject[]): Recor
   });
 
   if (!mapping.development && servers.length > 0) {
-    mapping.development = servers[0].url;
+    const firstServer = servers.at(0);
+    if (firstServer != null) {
+      mapping.development = firstServer.url;
+    }
   }
 
   return mapping;
@@ -49,7 +52,7 @@ function generateEnvFunction(
     .map(([env, url]) => `    ${env}: '${url}'`)
     .join(",\n");
 
-  const defaultServer = servers[0].url;
+  const defaultServer = servers.at(0)?.url ?? "";
 
   return `() => {
     const env = process.env.${envVar} ?? 'development';
