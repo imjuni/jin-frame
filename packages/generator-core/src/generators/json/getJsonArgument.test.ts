@@ -15,7 +15,7 @@ describe("getJsonArgument", () => {
     expect(result).toEqual("{ host: 'localhost', timeout: 5000, useInstance: false }");
   });
 
-  it("should exclude complex object values when generating object literal string", () => {
+  it("should generate nested object literal values", () => {
     const result = getJsonArgument({
       values: [
         { key: "host", value: "localhost" },
@@ -25,7 +25,7 @@ describe("getJsonArgument", () => {
         },
       ],
     });
-    expect(result).toEqual("{ host: 'localhost' }");
+    expect(result).toEqual("{ host: 'localhost', timeout: { a: 1, b: 2 } }");
   });
 
   it("should return undefined when values parameter is undefined", () => {

@@ -10,6 +10,7 @@ import type { ICreateFrameProps } from "#/generators/frame/interfaces/ICreateFra
 import type { ICreateFrameResult } from "#/generators/frame/interfaces/ICreateFrameResult.js";
 import { getClassJsDoc } from "#/generators/getClassJsDoc.js";
 import { getFrameName } from "#/generators/getFrameName.js";
+import { getJsonArgument } from "#/generators/json/getJsonArgument.js";
 import { getBodyParameter } from "#/generators/parameters/getBodyParameter.js";
 import { getParameter } from "#/generators/parameters/getParameter.js";
 import { dotRelative } from "#/tools/dotRelative.js";
@@ -33,6 +34,7 @@ export function createFrame(project: Project, params: ICreateFrameProps): ICreat
   const methodDecorator = getMethodDecorator({
     host: params.host,
     hostCode: params.hostCode,
+    hostOverride: params.hostOverride,
     path: params.pathKey,
     baseFrame: params.baseFrame,
     method,
@@ -72,6 +74,8 @@ export function createFrame(project: Project, params: ICreateFrameProps): ICreat
     method,
     ...Array.from(new Set<string>(bodyNamedImports)),
     ...(usesJinFile ? ["JinFile"] : []),
+    ...(params.timeout != null ? ["Timeout"] : []),
+    ...(params.retry != null ? ["Retry"] : []),
   ];
 
   if (params.baseFrame != null) {
@@ -109,7 +113,25 @@ export function createFrame(project: Project, params: ICreateFrameProps): ICreat
   sourceFile.addClass({
     name,
     docs: [{ description }],
-    decorators: [methodDecorator],
+    decorators: [
+      methodDecorator,
+      params.timeout != null
+        ? {
+            name: "Timeout",
+            arguments: [`${params.timeout}`],
+          }
+        : undefined,
+      params.retry != null
+        ? {
+            name: "Retry",
+            arguments: [
+              getJsonArgument({
+                values: Object.entries(params.retry).map(([key, value]) => ({ key, value })),
+              }) ?? "{}",
+            ],
+          }
+        : undefined,
+    ].filter((decorator) => decorator != null),
     properties,
     isExported: true,
     extends: `${parentFrame}<paths${responseTypeMappedAccessPath}>`,

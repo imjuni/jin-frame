@@ -14,44 +14,45 @@ export const generatorOptionArgs = {
   },
   "log-level": {
     type: "enum",
-    default: "info",
     options: ["info", "debug", "error"],
     description: "Log level for controlling verbosity of output messages",
+  },
+  config: {
+    type: "string",
+    description: "Path to jin-frame config file. Defaults to jin-frame.config.* when omitted",
   },
   host: {
     type: "string",
     alias: "h",
-    description: "API server hostname or base URL",
+    description: 'API server hostname or base URL, or endpoint override like "/pets/{petId}=https://api.example.com"',
   },
   "base-frame": {
     type: "string",
-    default: "ServerHostFrame",
     description: "Server host frame class name to extend from",
   },
   timeout: {
     type: "string",
-    default: "60000",
-    description: "HTTP request timeout in milliseconds",
+    description: 'HTTP request timeout in milliseconds, or endpoint override like "/pets/{petId}=3000"',
+  },
+  retry: {
+    type: "string",
+    description: 'Endpoint retry override like "/pets/{petId}={\\"max\\":3,\\"interval\\":500}"',
   },
   "code-fence": {
     type: "boolean",
-    default: true,
     description: "Whether to wrap generated code with markdown code fences",
   },
   "host-strategy": {
     type: "enum",
-    default: "string",
     options: ["string", "function", "env-function"],
     description: "Strategy for generating host configuration",
   },
   "host-env-var": {
     type: "string",
-    default: "NODE_ENV",
     description: "Environment variable name for host selection (when using env-function)",
   },
   "host-function-name": {
     type: "string",
-    default: "getApiHost",
     description: "Custom function name for host resolution (when using function)",
   },
   "server-mapping": {

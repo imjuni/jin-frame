@@ -61,6 +61,11 @@ export async function createCommandHandler(params: TCreateCommandArgv): Promise<
     hostEnvVar: params.hostEnvVar,
     hostFunctionName: params.hostFunctionName,
     serverMapping: params.serverMapping,
+    overrides: {
+      hosts: params.hosts,
+      retries: params.retries,
+      timeouts: params.timeouts,
+    },
   });
   consola.debug(`Frames: ${frames.length}`);
 

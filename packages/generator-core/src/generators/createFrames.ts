@@ -58,6 +58,9 @@ export async function createFrames(params: ICreateFramesProps): Promise<ICreateF
     const operations = methods
       .map((method) => {
         const operation = apiPath?.[method];
+        const hostOverride = params.overrides?.hosts?.[pathKey];
+        const retry = params.overrides?.retries?.[pathKey];
+        const timeout = params.overrides?.timeouts?.[pathKey];
         const mergedOperation =
           operation == null
             ? undefined
@@ -73,10 +76,13 @@ export async function createFrames(params: ICreateFramesProps): Promise<ICreateF
                 output: params.output,
                 host,
                 hostCode,
+                hostOverride,
                 baseFrame: params.baseFrame,
                 pathKey,
                 method,
                 operation: mergedOperation,
+                retry,
+                timeout,
               });
         return { method, pathKey, frame };
       })
