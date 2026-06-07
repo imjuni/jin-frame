@@ -1,4 +1,4 @@
-import { Scope, StructureKind, type MethodDeclarationStructure } from "ts-morph";
+import { type MethodDeclarationStructure, Scope, StructureKind } from "ts-morph";
 
 export function getServerVariableDefaultMethods(
   name: string,

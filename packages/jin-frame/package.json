@@ -37,8 +37,8 @@
     "docs:build:prod": "BASE_DIR='/jin-frame/' vitepress build docs",
     "docs:preview": "vitepress preview docs",
     "biome": "biome",
-    "check": "biome check --config-path=biome.json --assist-enabled=false .",
-    "check:write": "biome check --config-path=biome.json --assist-enabled=false --write .",
+    "check": "biome check --config-path=biome.json .",
+    "check:write": "biome check --config-path=biome.json --write .",
     "format": "biome format --config-path=biome.json --write .",
     "format:check": "biome format --config-path=biome.json ."
   },

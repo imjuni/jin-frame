@@ -1,4 +1,4 @@
-import { Scope, StructureKind, type PropertyDeclarationStructure } from "ts-morph";
+import { type PropertyDeclarationStructure, Scope, StructureKind } from "ts-morph";
 import { getServerVariableDocs } from "#/generators/base-frame/getServerVariableDocs.js";
 import { getServerVariableName } from "#/generators/base-frame/getServerVariableName.js";
 import { getServerVariableType } from "#/generators/base-frame/getServerVariableType.js";
