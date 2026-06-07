@@ -182,7 +182,7 @@ export class GetPetFindByStatusStatusFrame extends JinFrame<paths['/pet/findBySt
         type: "string",
         format: "binary",
       },
-    } as any;
+    } satisfies OpenAPIV3.ArraySchemaObject;
 
     const frame = createFrame(project, {
       specTypeFilePath: "/a/b/petstore.d.ts",

@@ -1,23 +1,12 @@
-import type { OpenAPIV3 } from "openapi-types";
 import { type PropertyDeclarationStructure, Scope, StructureKind } from "ts-morph";
 import { getFileUploadKeyMap } from "#/generators/octet-stream/getFileUploadKeyMap";
 import { isFileSchema } from "#/generators/octet-stream/isFileSchema";
 import { getBodyDecorator } from "#/generators/parameters/getBodyDecorator";
 import { getParameterJsDoc } from "#/generators/parameters/getParameterJsDoc";
+import type { IGetBodyParameterProps } from "#/generators/parameters/interfaces/IGetBodyParameterProps";
+import type { IGetBodyParameterResult } from "#/generators/parameters/interfaces/IGetBodyParameterResult";
 
-interface IProps {
-  method: string;
-  pathKey: string;
-  contentType?: string;
-  requestBody?: OpenAPIV3.ReferenceObject | OpenAPIV3.RequestBodyObject;
-}
-
-interface IResult {
-  decorator: "Body" | "ObjectBody";
-  property: PropertyDeclarationStructure;
-}
-
-export function getBodyParameter(params: IProps): IResult[] {
+export function getBodyParameter(params: IGetBodyParameterProps): IGetBodyParameterResult[] {
   const { requestBody, contentType } = params;
 
   if (requestBody == null || "$ref" in requestBody || contentType == null || requestBody.content[contentType] == null) {
@@ -59,7 +48,7 @@ export function getBodyParameter(params: IProps): IResult[] {
       const omitKeys = Array.from(fileUploadMap.keys())
         .map((key) => `'${key}'`)
         .join(" | ");
-      const objectBody: IResult = {
+      const objectBody: IGetBodyParameterResult = {
         decorator: "ObjectBody",
         property: {
           decorators,
@@ -76,7 +65,7 @@ export function getBodyParameter(params: IProps): IResult[] {
 
       const bodyDecorators = getBodyDecorator("Body");
       const bodies = Array.from(fileUploadMap.entries()).map(([name, isFile]) => {
-        const body: IResult = {
+        const body: IGetBodyParameterResult = {
           decorator: "Body",
           property: {
             decorators: bodyDecorators,
@@ -98,7 +87,7 @@ export function getBodyParameter(params: IProps): IResult[] {
     }
   }
 
-  const property: IResult = {
+  const property: IGetBodyParameterResult = {
     decorator: "ObjectBody",
     property: {
       decorators,

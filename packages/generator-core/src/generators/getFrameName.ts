@@ -1,13 +1,7 @@
 import { pascalCase, snakeCase } from "change-case";
-import type { THttpMethod } from "#/https/method";
+import type { IGetFrameNameProps } from "#/generators/interfaces/IGetFrameNameProps";
 
-interface IProps {
-  pathKey: string;
-  method: THttpMethod;
-  operationId?: string;
-}
-
-export function getFrameName(params: IProps): string {
+export function getFrameName(params: IGetFrameNameProps): string {
   if (params.operationId != null) {
     return pascalCase(`${params.operationId}_Frame`);
   }

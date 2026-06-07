@@ -21,7 +21,7 @@ describe("getJsonArgument", () => {
         { key: "host", value: "localhost" },
         {
           key: "timeout",
-          value: { a: 1, b: 2 } as any,
+          value: { a: 1, b: 2 },
         },
       ],
     });

@@ -177,7 +177,7 @@ describe("getBodyParameter", () => {
     multipartFormDataRequestBody.schema.properties.photoUrls = {
       type: "string",
       format: "binary",
-    } as any;
+    } satisfies OpenAPIV3.NonArraySchemaObject;
 
     const result = getBodyParameter({
       method: "get",
@@ -234,7 +234,7 @@ describe("getBodyParameter", () => {
     multipartFormDataRequestBody.schema.properties.photoUrls.items = {
       type: "string",
       format: "binary",
-    } as any;
+    } satisfies OpenAPIV3.NonArraySchemaObject;
 
     const result = getBodyParameter({
       method: "get",

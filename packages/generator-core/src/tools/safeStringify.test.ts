@@ -8,8 +8,8 @@ describe("safeStringify", () => {
   });
 
   it("should return empty string when circular reference occurs", () => {
-    const obj: any = { name: "test" };
-    obj.self = obj; // recursive reference
+    const obj: { name: string; self?: unknown } = { name: "test" };
+    obj.self = obj; // Recursive reference.
     const result = safeStringify(obj);
     expect(result).toEqual("");
   });

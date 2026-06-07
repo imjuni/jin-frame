@@ -1,27 +1,7 @@
-import type { OpenAPIV3 } from "openapi-types";
-import { safeStringify } from "#/tools/safeStringify";
+import { getExampleValue } from "#/generators/parameters/getExampleValue";
+import type { IGetParameterJsDocExamplesContentProps } from "#/generators/parameters/interfaces/IGetParameterJsDocExamplesContentProps";
 
-interface IProps {
-  contentType: string;
-  example: OpenAPIV3.ExampleObject;
-  options: {
-    useCodeFence: boolean;
-  };
-}
-
-function getExampleValue(params: { isJsonish: boolean; useCodeFence: boolean; value: unknown }): string {
-  if (params.isJsonish || params.useCodeFence) {
-    return `\`\`\`json\n${safeStringify(params.value, undefined, 2)}\n\`\`\``;
-  }
-
-  if (typeof params.value === "string") {
-    return params.value;
-  }
-
-  return safeStringify(params.value);
-}
-
-export function getParameterJsDocExamplesContent(params: IProps): string {
+export function getParameterJsDocExamplesContent(params: IGetParameterJsDocExamplesContentProps): string {
   const { summary, description, value } = params.example;
 
   const stringifiedDescription = [

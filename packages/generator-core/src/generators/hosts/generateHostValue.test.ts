@@ -95,7 +95,7 @@ describe("generateHostValue", () => {
     expect(() => {
       generateHostValue({
         servers: mockServers,
-        options: { hostStrategy: "unknown" as any },
+        options: { hostStrategy: "unknown" as never },
       });
     }).toThrow("Unknown host strategy: unknown");
   });

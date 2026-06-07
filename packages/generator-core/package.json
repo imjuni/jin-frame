@@ -17,6 +17,7 @@
     "esbuild-esm": "FORMAT=esm node .configs/esbuild.mjs",
     "bundle-pack": "run-p esbuild-cjs esbuild-esm dts-pack",
     "bundle": "run-s clean ctix bundle-pack ctix-rm",
+    "swd": "swd",
     "test": "vitest run --coverage",
     "ctix": "ctix build --config .configs/.ctirc",
     "ctix-rm": "ctix remove --force-yes --remove-backup",

@@ -1,16 +1,7 @@
-import type { OpenAPIV3 } from "openapi-types";
 import urlJoin from "url-join";
+import type { IGetServerUrlParams } from "#/generators/hosts/interfaces/IGetServerUrlParams";
+import type { IGetServerUrlReturn } from "#/generators/hosts/interfaces/IGetServerUrlReturn";
 import { safeUrl } from "#/tools/safeUrl";
-
-interface IGetServerUrlParams {
-  specUrl: URL;
-  server: OpenAPIV3.ServerObject;
-}
-
-interface IGetServerUrlReturn {
-  url: URL;
-  prefix?: string;
-}
 
 export function getServerUrl({ specUrl, server }: IGetServerUrlParams): IGetServerUrlReturn {
   const serverUrl = safeUrl(server.url);

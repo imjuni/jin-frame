@@ -1,20 +1,10 @@
-import type { OpenAPIV3 } from "openapi-types";
 import { type PropertyDeclarationStructure, Scope, StructureKind } from "ts-morph";
 import { getParameterDecorator } from "#/generators/parameters/getParameterDecorator";
 import { getParameterJsDoc } from "#/generators/parameters/getParameterJsDoc";
+import type { IGetParameterProps } from "#/generators/parameters/interfaces/IGetParameterProps";
+import type { IGetParameterResult } from "#/generators/parameters/interfaces/IGetParameterResult";
 
-interface IProps {
-  method: string;
-  pathKey: string;
-  parameter: OpenAPIV3.ParameterObject;
-}
-
-interface IResult {
-  decorator: "Query" | "Param" | "Header" | "Cookie";
-  property: PropertyDeclarationStructure;
-}
-
-export function getParameter(params: IProps): IResult | undefined {
+export function getParameter(params: IGetParameterProps): IGetParameterResult | undefined {
   const decorator = getParameterDecorator(params.parameter.in);
 
   if (decorator == null) {
