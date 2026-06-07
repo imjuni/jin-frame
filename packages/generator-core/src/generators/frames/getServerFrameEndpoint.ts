@@ -1,10 +1,10 @@
 import type { OpenAPIV3 } from "openapi-types";
-import { generateHostValue } from "#/generators/hosts/generateHostValue.js";
-import { getHost } from "#/generators/hosts/getHost.js";
-import { getServerUrl } from "#/generators/hosts/getServerUrl.js";
 import type { ICreateFramesProps } from "#/generators/frames/interfaces/ICreateFramesProps.js";
 import type { IServerFrameEndpoint } from "#/generators/frames/interfaces/IServerFrameEndpoint.js";
 import { splitServerUrl } from "#/generators/frames/splitServerUrl.js";
+import { generateHostValue } from "#/generators/hosts/generateHostValue.js";
+import { getHost } from "#/generators/hosts/getHost.js";
+import { getServerUrl } from "#/generators/hosts/getServerUrl.js";
 import { safeUrl } from "#/tools/safeUrl.js";
 
 export function getServerFrameEndpoint(params: ICreateFramesProps, document: OpenAPIV3.Document): IServerFrameEndpoint {
