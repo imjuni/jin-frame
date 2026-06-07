@@ -1,12 +1,12 @@
-import type { BodyFieldOption } from '#interfaces/field/body/BodyFieldOption';
-import type { ObjectBodyFieldOption } from '#interfaces/field/body/ObjectBodyFieldOption';
-import { getBodyField } from '#processors/getBodyField';
-import { getObjectBodyField } from '#processors/getObjectBodyField';
-import { isValidPrimitiveType } from '#tools/type-narrowing/isValidPrimitiveType';
-import type { SupportArrayType } from '#tools/type-utilities/SupportArrayType';
-import type { SupportPrimitiveType } from '#tools/type-utilities/SupportPrimitiveType';
-import { recursive } from 'merge';
-import { atOrThrow } from 'my-easy-fp';
+import { recursive } from "merge";
+import { atOrThrow } from "my-easy-fp";
+import type { BodyFieldOption } from "#interfaces/field/body/BodyFieldOption";
+import type { ObjectBodyFieldOption } from "#interfaces/field/body/ObjectBodyFieldOption";
+import { getBodyField } from "#processors/getBodyField";
+import { getObjectBodyField } from "#processors/getObjectBodyField";
+import { isValidPrimitiveType } from "#tools/type-narrowing/isValidPrimitiveType";
+import type { SupportArrayType } from "#tools/type-utilities/SupportArrayType";
+import type { SupportPrimitiveType } from "#tools/type-utilities/SupportPrimitiveType";
 
 export function getBodyMap<T extends Record<string, unknown>>(
   thisFrame: T,
@@ -20,7 +20,7 @@ export function getBodyMap<T extends Record<string, unknown>>(
     objectBodies: ObjectBodyFieldOption[];
   }>(
     (aggregated, option) => {
-      if (option.type === 'body') {
+      if (option.type === "body") {
         aggregated.bodies.push(option);
       } else {
         aggregated.objectBodies.push(option);

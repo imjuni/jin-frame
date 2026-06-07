@@ -1,11 +1,11 @@
-import { REQUEST_FIELD_DECORATOR } from '#decorators/fields/handlers/REQUEST_FIELD_DECORATOR';
-import type { QueryFieldOption } from '#interfaces/field/QueryFieldOption';
-import type { ParamFieldOption } from '#interfaces/field/ParamFieldOption';
-import type { ObjectBodyFieldOption } from '#interfaces/field/body/ObjectBodyFieldOption';
-import type { HeaderFieldOption } from '#interfaces/field/HeaderFieldOption';
-import type { BodyFieldOption } from '#interfaces/field/body/BodyFieldOption';
-import type { CookieFieldOption } from '#interfaces/field/CookieFieldOption';
-import 'reflect-metadata';
+import { REQUEST_FIELD_DECORATOR } from "#decorators/fields/handlers/REQUEST_FIELD_DECORATOR";
+import type { BodyFieldOption } from "#interfaces/field/body/BodyFieldOption";
+import type { ObjectBodyFieldOption } from "#interfaces/field/body/ObjectBodyFieldOption";
+import type { CookieFieldOption } from "#interfaces/field/CookieFieldOption";
+import type { HeaderFieldOption } from "#interfaces/field/HeaderFieldOption";
+import type { ParamFieldOption } from "#interfaces/field/ParamFieldOption";
+import type { QueryFieldOption } from "#interfaces/field/QueryFieldOption";
+import "reflect-metadata";
 
 interface IRequestFieldRecord {
   param: ParamFieldOption[];
@@ -33,7 +33,13 @@ export function getFieldMetadata(type: object, keys: { key: string; value: unkno
     if (raw != null) {
       for (const entry of raw) {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        fields.push({ key: key.key, meta: { key: key.key, option: { ...(entry.option as any), key: key.key } } });
+        fields.push({
+          key: key.key,
+          meta: {
+            key: key.key,
+            option: { ...(entry.option as any), key: key.key },
+          },
+        });
       }
     }
   }
@@ -43,15 +49,18 @@ export function getFieldMetadata(type: object, keys: { key: string; value: unkno
       const { option } = field.meta;
 
       switch (option.type) {
-        case 'body':
+        case "body":
           return { ...aggregate, body: [...aggregate.body, option] };
-        case 'object-body':
-          return { ...aggregate, objectBody: [...aggregate.objectBody, option] };
-        case 'param':
+        case "object-body":
+          return {
+            ...aggregate,
+            objectBody: [...aggregate.objectBody, option],
+          };
+        case "param":
           return { ...aggregate, param: [...aggregate.param, option] };
-        case 'header':
+        case "header":
           return { ...aggregate, header: [...aggregate.header, option] };
-        case 'cookie':
+        case "cookie":
           return { ...aggregate, cookie: [...aggregate.cookie, option] };
         default:
           return { ...aggregate, query: [...aggregate.query, option] };

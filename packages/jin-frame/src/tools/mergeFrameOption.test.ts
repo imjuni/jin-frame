@@ -1,28 +1,28 @@
-import { mergeFrameOption } from '#tools/mergeFrameOption';
-import type { FrameOption } from '#interfaces/options/FrameOption';
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it } from "vitest";
+import type { FrameOption } from "#interfaces/options/FrameOption";
+import { mergeFrameOption } from "#tools/mergeFrameOption";
 
-describe('mergeFrameOption', () => {
+describe("mergeFrameOption", () => {
   const prev: FrameOption = {
-    method: 'GET',
-    host: 'https://api.site.com',
-    contentType: 'application/json',
+    method: "GET",
+    host: "https://api.site.com",
+    contentType: "application/json",
   };
 
   const next: FrameOption = {
-    method: 'POST',
-    path: 'api-path/{name}',
-    contentType: 'application/json',
+    method: "POST",
+    path: "api-path/{name}",
+    contentType: "application/json",
   };
 
-  it('should merged value when overwrite method and merged host and path', () => {
+  it("should merged value when overwrite method and merged host and path", () => {
     const merged = mergeFrameOption(structuredClone(prev), structuredClone(next));
 
     expect(merged).toEqual({
-      method: 'POST',
-      host: 'https://api.site.com',
-      path: 'api-path/{name}',
-      contentType: 'application/json',
+      method: "POST",
+      host: "https://api.site.com",
+      path: "api-path/{name}",
+      contentType: "application/json",
     });
   });
 });

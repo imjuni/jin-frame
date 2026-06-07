@@ -1,6 +1,6 @@
-import { REQUEST_VALIDATOR_DECORATOR } from '#decorators/methods/handlers/REQUEST_VALIDATOR_DECORATOR';
-import type { BaseValidator } from '#validators/BaseValidator';
-import 'reflect-metadata';
+import { REQUEST_VALIDATOR_DECORATOR } from "#decorators/methods/handlers/REQUEST_VALIDATOR_DECORATOR";
+import type { BaseValidator } from "#validators/BaseValidator";
+import "reflect-metadata";
 
 export function Validator(_option: { pass?: BaseValidator; fail?: BaseValidator }) {
   return function validatorHandle(target: object): void {

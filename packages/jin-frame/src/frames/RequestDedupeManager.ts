@@ -1,4 +1,4 @@
-import type { DedupeResult } from '#interfaces/DedupeResult';
+import type { DedupeResult } from "#interfaces/DedupeResult";
 
 interface BufferedResponse {
   status: number;
@@ -44,7 +44,7 @@ export class RequestDedupeManager {
    * ```
    */
   static async dedupe(cacheKey: string, requesterFn: () => Promise<Response>): Promise<DedupeResult> {
-    const existingPromise = this.pendingRequests.get(cacheKey);
+    const existingPromise = RequestDedupeManager.pendingRequests.get(cacheKey);
     if (existingPromise) {
       const buffered = await existingPromise;
       const resp = new Response(buffered.body, {
@@ -59,7 +59,7 @@ export class RequestDedupeManager {
     const promise = requesterFn()
       .then(async (reply) => {
         const body = await reply.text();
-        this.pendingRequests.delete(cacheKey);
+        RequestDedupeManager.pendingRequests.delete(cacheKey);
         return {
           status: reply.status,
           statusText: reply.statusText,
@@ -68,12 +68,12 @@ export class RequestDedupeManager {
         } satisfies BufferedResponse;
       })
       .catch((error: unknown) => {
-        this.pendingRequests.delete(cacheKey);
+        RequestDedupeManager.pendingRequests.delete(cacheKey);
         throw error;
       });
 
     // Prevent race condition: register promise immediately after creation
-    this.pendingRequests.set(cacheKey, promise);
+    RequestDedupeManager.pendingRequests.set(cacheKey, promise);
 
     const buffered = await promise;
     const nullBodyStatuses = [101, 103, 204, 205, 304];
@@ -93,7 +93,7 @@ export class RequestDedupeManager {
    * @returns The count of pending requests
    */
   static getPendingRequestsCount(): number {
-    return this.pendingRequests.size;
+    return RequestDedupeManager.pendingRequests.size;
   }
 
   /**
@@ -103,7 +103,7 @@ export class RequestDedupeManager {
    * @warning Use with caution in production as this will affect all pending requests
    */
   static clearAllPendingRequests(): void {
-    this.pendingRequests.clear();
+    RequestDedupeManager.pendingRequests.clear();
   }
 
   /**
@@ -113,6 +113,6 @@ export class RequestDedupeManager {
    * @returns true if a request with this cache key is pending, false otherwise
    */
   static hasPendingRequest(cacheKey: string): boolean {
-    return this.pendingRequests.has(cacheKey);
+    return RequestDedupeManager.pendingRequests.has(cacheKey);
   }
 }

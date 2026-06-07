@@ -7,7 +7,7 @@ export interface Formatter {
    *
    * @default ['number', 'string', 'dateTime']
    *  */
-  order?: ('string' | 'number' | 'dateTime')[];
+  order?: ("string" | "number" | "dateTime")[];
 
   /**
    * When true, silently discards the value on formatter error.

@@ -10,7 +10,7 @@ export interface IBaseUrl {
    * - document-server: OpenAPI spec document의 server 부분
    * - path-server: OpenAPI spec paths에서 개별 endpoint의 server 부분
    * */
-  kind: 'option' | 'spec-url' | 'document-server' | 'path-server';
+  kind: "option" | "spec-url" | "document-server" | "path-server";
 
   /**
    * base-frame에서 사용할 url

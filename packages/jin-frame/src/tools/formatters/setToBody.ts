@@ -1,4 +1,4 @@
-import * as dotProp from 'dot-prop';
+import * as dotProp from "dot-prop";
 
 export function setToBody(initialValue: unknown, formatted: unknown, findFrom?: string): unknown {
   if (Array.isArray(initialValue) || initialValue == null) {
@@ -13,7 +13,7 @@ export function setToBody(initialValue: unknown, formatted: unknown, findFrom?: 
     return initialValue;
   }
 
-  if (typeof initialValue !== 'object') {
+  if (typeof initialValue !== "object") {
     return initialValue;
   }
 

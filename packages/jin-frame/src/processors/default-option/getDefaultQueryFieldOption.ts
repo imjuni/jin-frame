@@ -1,11 +1,11 @@
-import type { QueryFieldOption } from '#interfaces/field/QueryFieldOption';
+import type { QueryFieldOption } from "#interfaces/field/QueryFieldOption";
 
 export function getDefaultQueryFieldOption(
-  option?: Partial<QueryFieldOption> | Omit<Partial<QueryFieldOption>, 'type'>,
+  option?: Partial<QueryFieldOption> | Omit<Partial<QueryFieldOption>, "type">,
 ): QueryFieldOption {
   return {
-    key: '',
-    type: 'query',
+    key: "",
+    type: "query",
     cacheKeyExclude: option?.cacheKeyExclude ?? false,
     formatters: option?.formatters ?? undefined,
     comma: option?.comma ?? false,

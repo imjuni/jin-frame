@@ -1,20 +1,20 @@
-import type { SingleBodyFormatter } from '#interfaces/field/body/SingleBodyFormatter';
-import type { ObjectBodyFieldOption } from '#interfaces/field/body/ObjectBodyFieldOption';
-import { classifyBodyFormatters } from '#tools/formatters/classifyBodyFormatters';
-import { getBodyFormatters } from '#tools/formatters/getBodyFormatters';
-import { isValidArrayType } from '#tools/type-narrowing/isValidArrayType';
-import { isValidPrimitiveWithDateType } from '#tools/type-narrowing/isValidPrimitiveWithDateType';
-import type { SupportPrimitiveType } from '#tools/type-utilities/SupportPrimitiveType';
-import { bodyFormatEach } from '#tools/formatters/bodyFormatEach';
-import { formatEach } from '#tools/formatters/formatEach';
+import type { ObjectBodyFieldOption } from "#interfaces/field/body/ObjectBodyFieldOption";
+import type { SingleBodyFormatter } from "#interfaces/field/body/SingleBodyFormatter";
+import { bodyFormatEach } from "#tools/formatters/bodyFormatEach";
+import { classifyBodyFormatters } from "#tools/formatters/classifyBodyFormatters";
+import { formatEach } from "#tools/formatters/formatEach";
+import { getBodyFormatters } from "#tools/formatters/getBodyFormatters";
+import { isValidArrayType } from "#tools/type-narrowing/isValidArrayType";
+import { isValidPrimitiveWithDateType } from "#tools/type-narrowing/isValidPrimitiveWithDateType";
+import type { SupportPrimitiveType } from "#tools/type-utilities/SupportPrimitiveType";
 
 export function getObjectBodyField(thisFrame: unknown, field: ObjectBodyFieldOption): unknown {
   if (
     isValidPrimitiveWithDateType(thisFrame) ||
-    typeof thisFrame === 'bigint' ||
-    typeof thisFrame === 'function' ||
-    typeof thisFrame === 'symbol' ||
-    (typeof thisFrame === 'object' && Array.isArray(thisFrame))
+    typeof thisFrame === "bigint" ||
+    typeof thisFrame === "function" ||
+    typeof thisFrame === "symbol" ||
+    (typeof thisFrame === "object" && Array.isArray(thisFrame))
   ) {
     return thisFrame;
   }

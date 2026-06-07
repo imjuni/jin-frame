@@ -1,69 +1,69 @@
-import { isFileSchema } from '#/generators/octet-stream/isFileSchema';
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it } from "vitest";
+import { isFileSchema } from "#/generators/octet-stream/isFileSchema";
 
-describe('isFileSchema', () => {
-  it('should return single file when schema binary format', () => {
+describe("isFileSchema", () => {
+  it("should return single file when schema binary format", () => {
     const result = isFileSchema({
-      type: 'string',
-      format: 'binary',
+      type: "string",
+      format: "binary",
     });
 
     expect(result).toEqual({ isArray: false, isFile: true });
   });
 
-  it('should return single file when schema byte format', () => {
+  it("should return single file when schema byte format", () => {
     const result = isFileSchema({
-      type: 'string',
-      format: 'byte',
+      type: "string",
+      format: "byte",
     });
 
     expect(result).toEqual({ isArray: false, isFile: true });
   });
 
-  it('should return single file when array schema byte format', () => {
+  it("should return single file when array schema byte format", () => {
     const result = isFileSchema({
-      type: 'array',
+      type: "array",
       items: {
-        type: 'string',
-        format: 'binary',
+        type: "string",
+        format: "binary",
       },
     });
 
     expect(result).toEqual({ isArray: true, isFile: true });
   });
 
-  it('should return single file when array schema byte format', () => {
+  it("should return single file when array schema byte format", () => {
     const result = isFileSchema({
-      type: 'array',
+      type: "array",
       items: {
-        type: 'string',
-        format: 'byte',
+        type: "string",
+        format: "byte",
       },
     });
 
     expect(result).toEqual({ isArray: true, isFile: true });
   });
 
-  it('should return non file when schema byte format', () => {
+  it("should return non file when schema byte format", () => {
     const result = isFileSchema({
-      type: 'string',
+      type: "string",
     });
 
     expect(result).toEqual({ isArray: false, isFile: false });
   });
 
-  it('should return non file when array schema byte format', () => {
+  it("should return non file when array schema byte format", () => {
     const result = isFileSchema({
-      type: 'array',
+      type: "array",
       items: {
-        type: 'string',
+        type: "string",
       },
     });
 
     expect(result).toEqual({ isArray: true, isFile: false });
   });
 
-  it('should return non file when pass undefined', () => {
+  it("should return non file when pass undefined", () => {
     const result = isFileSchema(undefined);
 
     expect(result).toEqual({ isArray: false, isFile: false });

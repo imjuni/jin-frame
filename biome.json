@@ -1,6 +1,9 @@
 {
   "$schema": "./node_modules/@biomejs/biome/configuration_schema.json",
   "root": true,
+  "files": {
+    "includes": ["**", "!!**/coverage/**", "!!**/dist/**", "!!**/.vitepress/cache/**"]
+  },
   "formatter": {
     "enabled": true,
     "indentStyle": "space",
@@ -13,5 +16,27 @@
     "rules": {
       "recommended": true
     }
-  }
+  },
+  "overrides": [
+    {
+      "includes": ["**/*.test.ts", "**/*.test.tsx"],
+      "linter": {
+        "rules": {
+          "suspicious": {
+            "noExportsInTest": "off"
+          }
+        }
+      }
+    },
+    {
+      "includes": ["packages/jin-frame/src/frames/AbstractJinFrame.ts"],
+      "linter": {
+        "rules": {
+          "complexity": {
+            "noThisInStatic": "off"
+          }
+        }
+      }
+    }
+  ]
 }

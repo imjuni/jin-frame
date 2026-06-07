@@ -1,5 +1,5 @@
-import { isFileSchema } from '#/generators/octet-stream/isFileSchema';
-import type { OpenAPIV3 } from 'openapi-types';
+import type { OpenAPIV3 } from "openapi-types";
+import { isFileSchema } from "#/generators/octet-stream/isFileSchema";
 
 interface IFileKey {
   name: string;
@@ -10,10 +10,10 @@ export function getFileUploadKeyMap(
   _requestBody: OpenAPIV3.ReferenceObject | OpenAPIV3.RequestBodyObject | undefined,
 ): Map<string, IFileKey> {
   const requestBody = _requestBody as OpenAPIV3.RequestBodyObject | undefined;
-  const multipartFormData = requestBody?.content?.['multipart/form-data'];
+  const multipartFormData = requestBody?.content?.["multipart/form-data"];
   const schema = multipartFormData?.schema as OpenAPIV3.SchemaObject | undefined;
 
-  if (schema == null || schema.type !== 'object' || schema.properties == null) {
+  if (schema == null || schema.type !== "object" || schema.properties == null) {
     return new Map();
   }
 

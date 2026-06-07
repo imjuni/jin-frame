@@ -1,7 +1,7 @@
 /* eslint-disable class-methods-use-this */
-import type { ValidationResult } from '#interfaces/ValidationResult';
-import type { ValidationResultType } from '#interfaces/ValidationResultType';
-import { runAndUnwrap } from '#tools/runAndUnwrap';
+import type { ValidationResult } from "#interfaces/ValidationResult";
+import type { ValidationResultType } from "#interfaces/ValidationResultType";
+import { runAndUnwrap } from "#tools/runAndUnwrap";
 
 export class BaseValidator<TOrigin = unknown, TData = TOrigin, TError = unknown> {
   /**

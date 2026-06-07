@@ -1,5 +1,5 @@
-import type { validate } from '#/openapi/validate';
-import swagger2openapi from 'swagger2openapi';
+import swagger2openapi from "swagger2openapi";
+import type { validate } from "#/openapi/validate";
 
 export async function convertor(
   document: Extract<ReturnType<typeof validate>, { valid: true }>,

@@ -1,50 +1,56 @@
-import { JinFrame } from '#frames/JinFrame';
-import type { JinRequestConfig } from '#interfaces/JinRequestConfig';
-import { Get } from '#decorators/methods/Get';
-import { http, HttpResponse, PathParams } from 'msw';
-import { setupServer } from 'msw/node';
-import { afterEach, beforeEach, describe, expect, it } from 'vitest';
-import { Param } from '#decorators/fields/Param';
-import { Query } from '#decorators/fields/Query';
+import { HttpResponse, http, type PathParams } from "msw";
+import { setupServer } from "msw/node";
+import { afterEach, beforeEach, describe, expect, it } from "vitest";
+import { Param } from "#decorators/fields/Param";
+import { Query } from "#decorators/fields/Query";
+import { Get } from "#decorators/methods/Get";
+import { JinFrame } from "#frames/JinFrame";
+import type { JinRequestConfig } from "#interfaces/JinRequestConfig";
 
-@Get({ host: 'http://some.api.google.com/jinframe/{passing}', retry: { max: 3, interval: 20 } })
+@Get({
+  host: "http://some.api.google.com/jinframe/{passing}",
+  retry: { max: 3, interval: 20 },
+})
 class RetryTestGet01Frame extends JinFrame {
   @Param()
-  declare public readonly passing: string;
+  public declare readonly passing: string;
 
   @Query()
-  declare public readonly name: string;
+  public declare readonly name: string;
 
   @Query({ encode: true })
-  declare public readonly skill: string[];
+  public declare readonly skill: string[];
 
   constructor() {
     super();
 
-    this.passing = 'pass';
-    this.name = 'ironman';
-    this.skill = ['beam', 'flying!'];
+    this.passing = "pass";
+    this.name = "ironman";
+    this.skill = ["beam", "flying!"];
   }
 
   get retryData() {
-    return this._getData('retry');
+    return this._getData("retry");
   }
 
   set retryData(value) {
-    this._setData('retry', value);
+    this._setData("retry", value);
   }
 }
 
-@Get({ host: 'http://some.api.google.com/jinframe/{passing}', retry: { max: 2 } })
+@Get({
+  host: "http://some.api.google.com/jinframe/{passing}",
+  retry: { max: 2 },
+})
 class RetryTestGet02Frame extends JinFrame {
   @Param()
-  declare public readonly passing: string;
+  public declare readonly passing: string;
 
   @Query()
-  declare public readonly name: string;
+  public declare readonly name: string;
 
   @Query({ encode: true })
-  declare public readonly skill: string[];
+  public declare readonly skill: string[];
 
   #retryFail: string;
 
@@ -53,7 +59,7 @@ class RetryTestGet02Frame extends JinFrame {
   }
 
   get retryData() {
-    return this._getData('retry');
+    return this._getData("retry");
   }
 
   override async _retryFail(req: JinRequestConfig, res: Response): Promise<void> {
@@ -66,10 +72,10 @@ class RetryTestGet02Frame extends JinFrame {
   constructor() {
     super();
 
-    this.#retryFail = '';
-    this.passing = 'pass';
-    this.name = 'ironman';
-    this.skill = ['beam', 'flying!'];
+    this.#retryFail = "";
+    this.passing = "pass";
+    this.name = "ironman";
+    this.skill = ["beam", "flying!"];
   }
 }
 
@@ -77,7 +83,7 @@ interface RetryTestSuccessResponse {
   message: string;
 }
 
-describe('TestGet9Frame', () => {
+describe("TestGet9Frame", () => {
   // MSW server configuration
   const server = setupServer();
 
@@ -90,13 +96,13 @@ describe('TestGet9Frame', () => {
     server.close();
   });
 
-  it('retry - getter', () => {
+  it("retry - getter", () => {
     const frame = new RetryTestGet01Frame();
     expect(frame.retryData?.max).toEqual(3);
     expect(frame.retryData?.interval).toEqual(20);
   });
 
-  it('retry - setter', () => {
+  it("retry - setter", () => {
     const frame = new RetryTestGet01Frame();
     frame.retryData = { max: 10, interval: 100, try: 1 };
     expect(frame.retryData?.max).toEqual(10);
@@ -104,30 +110,30 @@ describe('TestGet9Frame', () => {
     expect(frame.retryData?.interval).toEqual(100);
   });
 
-  it('under retry count', async () => {
+  it("under retry count", async () => {
     let callCount = 0;
 
     server.use(
-      http.get<PathParams<'passing'>>('http://some.api.google.com/jinframe/pass', ({ request }) => {
+      http.get<PathParams<"passing">>("http://some.api.google.com/jinframe/pass", ({ request }) => {
         const url = new URL(request.url);
-        const name = url.searchParams.get('name');
-        const skills = url.searchParams.getAll('skill');
+        const name = url.searchParams.get("name");
+        const skills = url.searchParams.getAll("skill");
 
-        if (name === 'ironman' && skills.includes('beam') && skills.includes('flying!')) {
+        if (name === "ironman" && skills.includes("beam") && skills.includes("flying!")) {
           callCount += 1;
 
           // First 2 calls return 500 error
           if (callCount <= 2) {
-            return new HttpResponse('Internal Server Error', { status: 500 });
+            return new HttpResponse("Internal Server Error", { status: 500 });
           }
 
           // 3rd call returns success
           return HttpResponse.json<RetryTestSuccessResponse>({
-            message: 'hello',
+            message: "hello",
           });
         }
 
-        return new HttpResponse('Not Found', { status: 404 });
+        return new HttpResponse("Not Found", { status: 404 });
       }),
     );
 
@@ -138,19 +144,19 @@ describe('TestGet9Frame', () => {
     expect(frame.retryData?.try).toEqual(3);
   });
 
-  it('over retry count', async () => {
+  it("over retry count", async () => {
     server.use(
-      http.get<PathParams<'passing'>>('http://some.api.google.com/jinframe/pass', ({ request }) => {
+      http.get<PathParams<"passing">>("http://some.api.google.com/jinframe/pass", ({ request }) => {
         const url = new URL(request.url);
-        const name = url.searchParams.get('name');
-        const skills = url.searchParams.getAll('skill');
+        const name = url.searchParams.get("name");
+        const skills = url.searchParams.getAll("skill");
 
-        if (name === 'ironman' && skills.includes('beam') && skills.includes('flying!')) {
+        if (name === "ironman" && skills.includes("beam") && skills.includes("flying!")) {
           // Always return 500 error (will be called 4 times: initial + 3 retries)
-          return new HttpResponse('Internal Server Error', { status: 500 });
+          return new HttpResponse("Internal Server Error", { status: 500 });
         }
 
-        return new HttpResponse('Not Found', { status: 404 });
+        return new HttpResponse("Not Found", { status: 404 });
       }),
     );
 
@@ -163,21 +169,21 @@ describe('TestGet9Frame', () => {
     console.log(frame.retryData);
   });
 
-  it('retry with hook', async () => {
-    const errorMessage = 'Internal Server Error';
+  it("retry with hook", async () => {
+    const errorMessage = "Internal Server Error";
 
     server.use(
-      http.get<PathParams<'passing'>>('http://some.api.google.com/jinframe/pass', ({ request }) => {
+      http.get<PathParams<"passing">>("http://some.api.google.com/jinframe/pass", ({ request }) => {
         const url = new URL(request.url);
-        const name = url.searchParams.get('name');
-        const skills = url.searchParams.getAll('skill');
+        const name = url.searchParams.get("name");
+        const skills = url.searchParams.getAll("skill");
 
-        if (name === 'ironman' && skills.includes('beam') && skills.includes('flying!')) {
+        if (name === "ironman" && skills.includes("beam") && skills.includes("flying!")) {
           // Always return 500 error (will be called 3 times: initial + 2 retries)
           return new HttpResponse(errorMessage, { status: 500 });
         }
 
-        return new HttpResponse('Not Found', { status: 404 });
+        return new HttpResponse("Not Found", { status: 404 });
       }),
     );
 
@@ -187,7 +193,7 @@ describe('TestGet9Frame', () => {
       await frame._execute();
     }).rejects.toThrowError();
 
-    console.log('A: ', frame.retryData, frame.retryFail);
+    console.log("A: ", frame.retryData, frame.retryFail);
 
     expect(frame.retryFail).toEqual(errorMessage);
   });

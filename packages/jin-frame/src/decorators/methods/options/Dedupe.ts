@@ -1,5 +1,5 @@
-import { REQUEST_DEDUPE_DECORATOR } from '#decorators/methods/handlers/REQUEST_DEDUPE_DECORATOR';
-import 'reflect-metadata';
+import { REQUEST_DEDUPE_DECORATOR } from "#decorators/methods/handlers/REQUEST_DEDUPE_DECORATOR";
+import "reflect-metadata";
 
 export function Dedupe() {
   return function dedupeHandle(target: object): void {

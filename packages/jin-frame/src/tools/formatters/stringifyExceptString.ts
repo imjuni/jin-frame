@@ -1,5 +1,5 @@
 export function stringifyExceptString(value: unknown): string {
-  if (typeof value === 'string') {
+  if (typeof value === "string") {
     return value;
   }
 

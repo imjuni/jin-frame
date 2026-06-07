@@ -4,7 +4,7 @@ export function safeUrl(value?: unknown): URL | undefined {
       return undefined;
     }
 
-    if (typeof value !== 'string') {
+    if (typeof value !== "string") {
       return undefined;
     }
 

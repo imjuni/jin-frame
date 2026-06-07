@@ -1,41 +1,41 @@
-import { JinFile } from '#frames/JinFile';
-import { defaultJinFrameTimeout } from '#frames/defaultJinFrameTimeout';
-import type { JinFrameCreateConfig } from '#interfaces/options/JinFrameCreateConfig';
-import type { JinFrameRequestConfig } from '#interfaces/options/JinFrameRequestConfig';
-import { getBodyMap } from '#processors/getBodyMap';
-import { getQuerystringMap } from '#processors/getQuerystringMap';
-import { startWithSlash } from '#tools/slash-utils/startWithSlash';
-import type { FrameOption } from '#interfaces/options/FrameOption';
-import type { FrameInternal } from '#interfaces/options/FrameInternal';
-import { atOrUndefined, first, isError } from 'my-easy-fp';
-import { parseTemplate } from 'url-template';
-import type { Constructor } from 'type-fest';
-import { flatStringMap } from '#processors/flatStringMap';
-import { getUrl } from '#tools/slash-utils/getUrl';
-import { getRequestMeta } from '#decorators/methods/handlers/getRequestMeta';
-import { getFieldMetadata } from '#decorators/fields/handlers/getFieldMetadata';
-import { getRetryInterval } from '#tools/responses/getRetryInterval';
-import { getDuration } from '#tools/getDuration';
-import { getFrameInternalData } from '#decorators/getFrameInternalData';
-import type { ConstructorFunction } from '#tools/type-utilities/ConstructorFunction';
-import type { PublicFieldsOf } from '#tools/type-utilities/FieldsOf';
-import type { BuilderFor } from '#tools/type-utilities/BuilderFor';
-import type { WithDefaultValues } from '#tools/type-utilities/WithDefaultValues';
-import type { WithBuilder } from '#tools/type-utilities/WithBuilder';
-import { getAuthorization } from '#tools/auth/getAuthorization';
-import { getQuerystringKeyFormat } from '#processors/getQuerystringKeyFormat';
-import { getQuerystringKey } from '#processors/getQuerystringKey';
-import { getRetryAfter } from '#tools/getRetryAfter';
-import { getCachePath } from '#tools/getCachePath';
-import { get, set } from 'dot-prop';
-import { safeStringify } from '#tools/json/safeStringify';
-import { runAndUnwrap } from '#tools/runAndUnwrap';
-import { RequestDedupeManager } from '#frames/RequestDedupeManager';
-import { sleep } from '#tools/sleep';
-import type { DedupeResult } from '#interfaces/DedupeResult';
-import 'reflect-metadata';
-import { getUrlValue } from '#tools/getUrlValue';
-import type { JinRequestConfig } from '#interfaces/JinRequestConfig';
+import { get, set } from "dot-prop";
+import { atOrUndefined, first, isError } from "my-easy-fp";
+import type { Constructor } from "type-fest";
+import { parseTemplate } from "url-template";
+import { getFieldMetadata } from "#decorators/fields/handlers/getFieldMetadata";
+import { getFrameInternalData } from "#decorators/getFrameInternalData";
+import { getRequestMeta } from "#decorators/methods/handlers/getRequestMeta";
+import { defaultJinFrameTimeout } from "#frames/defaultJinFrameTimeout";
+import { JinFile } from "#frames/JinFile";
+import { RequestDedupeManager } from "#frames/RequestDedupeManager";
+import type { DedupeResult } from "#interfaces/DedupeResult";
+import type { FrameInternal } from "#interfaces/options/FrameInternal";
+import type { FrameOption } from "#interfaces/options/FrameOption";
+import type { JinFrameCreateConfig } from "#interfaces/options/JinFrameCreateConfig";
+import type { JinFrameRequestConfig } from "#interfaces/options/JinFrameRequestConfig";
+import { flatStringMap } from "#processors/flatStringMap";
+import { getBodyMap } from "#processors/getBodyMap";
+import { getQuerystringKey } from "#processors/getQuerystringKey";
+import { getQuerystringKeyFormat } from "#processors/getQuerystringKeyFormat";
+import { getQuerystringMap } from "#processors/getQuerystringMap";
+import { getAuthorization } from "#tools/auth/getAuthorization";
+import { getCachePath } from "#tools/getCachePath";
+import { getDuration } from "#tools/getDuration";
+import { getRetryAfter } from "#tools/getRetryAfter";
+import { safeStringify } from "#tools/json/safeStringify";
+import { getRetryInterval } from "#tools/responses/getRetryInterval";
+import { runAndUnwrap } from "#tools/runAndUnwrap";
+import { getUrl } from "#tools/slash-utils/getUrl";
+import { startWithSlash } from "#tools/slash-utils/startWithSlash";
+import { sleep } from "#tools/sleep";
+import type { BuilderFor } from "#tools/type-utilities/BuilderFor";
+import type { ConstructorFunction } from "#tools/type-utilities/ConstructorFunction";
+import type { PublicFieldsOf } from "#tools/type-utilities/FieldsOf";
+import type { WithBuilder } from "#tools/type-utilities/WithBuilder";
+import type { WithDefaultValues } from "#tools/type-utilities/WithDefaultValues";
+import "reflect-metadata";
+import type { JinRequestConfig } from "#interfaces/JinRequestConfig";
+import { getUrlValue } from "#tools/getUrlValue";
 
 export abstract class AbstractJinFrame {
   static getEndpoint(): URL {
@@ -94,7 +94,7 @@ export abstract class AbstractJinFrame {
   ): InstanceType<C> {
     const defaults = (this as unknown as WithDefaultValues<C>).getDefaultValues?.();
 
-    if (typeof args === 'function') {
+    if (typeof args === "function") {
       const b = (this as unknown as WithBuilder<C>).builder(...ctorArgs);
       args(b);
       const built = b.get();
@@ -133,13 +133,13 @@ export abstract class AbstractJinFrame {
     this.#data = getFrameInternalData(this.#option);
   }
 
-  public _getData<K extends keyof Pick<FrameInternal, 'body' | 'param' | 'query' | 'header' | 'retry'>>(
+  public _getData<K extends keyof Pick<FrameInternal, "body" | "param" | "query" | "header" | "retry">>(
     kind: K,
-  ): Pick<FrameInternal, 'body' | 'param' | 'query' | 'header' | 'retry'>[K] {
+  ): Pick<FrameInternal, "body" | "param" | "query" | "header" | "retry">[K] {
     return this.#data[kind];
   }
 
-  protected _setData<K extends keyof Pick<FrameInternal, 'retry'>>(kind: K, value: FrameInternal[K]): void {
+  protected _setData<K extends keyof Pick<FrameInternal, "retry">>(kind: K, value: FrameInternal[K]): void {
     this.#data[kind] = value;
   }
 
@@ -154,8 +154,8 @@ export abstract class AbstractJinFrame {
   }
 
   public _getBodyInit(bodies: unknown): BodyInit | undefined {
-    if (this.#option.contentType === 'application/x-www-form-urlencoded') {
-      if (typeof bodies !== 'object' || bodies == null) {
+    if (this.#option.contentType === "application/x-www-form-urlencoded") {
+      if (typeof bodies !== "object" || bodies == null) {
         return undefined;
       }
 
@@ -163,20 +163,22 @@ export abstract class AbstractJinFrame {
 
       Object.entries(bodies as Record<string, unknown>)
         .filter((entry): entry is [string, string] => atOrUndefined(entry, 1) != null)
-        .forEach(([key, value]) => params.append(key, value));
+        .forEach(([key, value]) => {
+          params.append(key, value);
+        });
 
       return params.toString();
     }
 
     if (
-      this.#option.contentType === 'multipart/form-data' &&
-      (this.#option.method === 'post' ||
-        this.#option.method === 'POST' ||
-        this.#option.method === 'put' ||
-        this.#option.method === 'PUT' ||
-        this.#option.method === 'patch' ||
-        this.#option.method === 'PATCH') &&
-      typeof bodies === 'object' &&
+      this.#option.contentType === "multipart/form-data" &&
+      (this.#option.method === "post" ||
+        this.#option.method === "POST" ||
+        this.#option.method === "put" ||
+        this.#option.method === "PUT" ||
+        this.#option.method === "patch" ||
+        this.#option.method === "PATCH") &&
+      typeof bodies === "object" &&
       bodies != null
     ) {
       const formData = new FormData();
@@ -190,13 +192,13 @@ export abstract class AbstractJinFrame {
         } else if (value instanceof JinFile) {
           const fileData = value.file instanceof Buffer ? new Blob([value.file]) : value.file;
           formData.append(key, fileData, value.name);
-        } else if (typeof value === 'string') {
+        } else if (typeof value === "string") {
           formData.append(key, value);
-        } else if (typeof value === 'number') {
+        } else if (typeof value === "number") {
           formData.append(key, `${value}`);
-        } else if (typeof value === 'boolean') {
+        } else if (typeof value === "boolean") {
           formData.append(key, value.toString());
-        } else if (typeof value === 'object') {
+        } else if (typeof value === "object") {
           formData.append(key, JSON.stringify(value));
         } else {
           throw new Error(
@@ -218,11 +220,14 @@ export abstract class AbstractJinFrame {
   }
 
   public _getCacheKey(): string | undefined {
-    const entries = Object.entries(this).map(([key, value]) => ({ key, value }));
+    const entries = Object.entries(this).map(([key, value]) => ({
+      key,
+      value,
+    }));
 
     // stage 01. extract request parameter and option
     const fields = getFieldMetadata(this.constructor.prototype, entries);
-    const data: Record<'query' | 'param' | 'header' | 'body' | 'cookie', unknown> = {
+    const data: Record<"query" | "param" | "header" | "body" | "cookie", unknown> = {
       query: {},
       param: {},
       header: {},
@@ -243,13 +248,13 @@ export abstract class AbstractJinFrame {
       set(data, getCachePath({ ...input }), value);
 
       input?.cacheKeyExcludePaths?.forEach((cacheKeyExcludePathItem) => {
-        set(data, ['body', cacheKeyExcludePathItem].join('.'), undefined);
+        set(data, ["body", cacheKeyExcludePathItem].join("."), undefined);
       });
     });
 
-    set(data, 'endpoint.host', this.#option.host);
-    set(data, 'endpoint.pathPrefix', this.#option.pathPrefix);
-    set(data, 'endpoint.path', this.#option.path);
+    set(data, "endpoint.host", this.#option.host);
+    set(data, "endpoint.pathPrefix", this.#option.pathPrefix);
+    set(data, "endpoint.path", this.#option.path);
 
     return safeStringify(data);
   }
@@ -278,7 +283,10 @@ export abstract class AbstractJinFrame {
    * @returns created JinRequestConfig
    */
   public _request(option?: JinFrameRequestConfig & JinFrameCreateConfig): JinRequestConfig {
-    const entries = Object.entries(this).map(([key, value]) => ({ key, value }));
+    const entries = Object.entries(this).map(([key, value]) => ({
+      key,
+      value,
+    }));
 
     // stage 01. extract request parameter and option
     const fields = getFieldMetadata(this.constructor.prototype, entries);
@@ -314,7 +322,11 @@ export abstract class AbstractJinFrame {
     // stage 05. url endpoint build and path parameter evaluation
     const baseUrlString =
       option?.url ??
-      this._getBaseUrlString(paths, { host: option?.host, pathPrefix: option?.pathPrefix, path: option?.path });
+      this._getBaseUrlString(paths, {
+        host: option?.host,
+        pathPrefix: option?.pathPrefix,
+        path: option?.path,
+      });
 
     // Expand URI template for option.url case
     const expandedUrlString = option?.url != null ? parseTemplate(baseUrlString).expand(paths) : baseUrlString;
@@ -327,7 +339,11 @@ export abstract class AbstractJinFrame {
 
       if (Array.isArray(value)) {
         value.forEach((val, index) => {
-          const formatted = getQuerystringKey({ key, index, format: keyFormat });
+          const formatted = getQuerystringKey({
+            key,
+            index,
+            format: keyFormat,
+          });
           url.searchParams.append(formatted, val);
         });
       } else {
@@ -339,7 +355,7 @@ export abstract class AbstractJinFrame {
     // because security configuration. So remove user-agent configuration. But user can set this option,
     // not work this code block.
     if (option?.userAgent != null) {
-      headers['User-Agent'] = option.userAgent;
+      headers["User-Agent"] = option.userAgent;
     }
 
     const { authKey, auth, securityHeaders, securityQueries } = getAuthorization(
@@ -350,14 +366,14 @@ export abstract class AbstractJinFrame {
     );
 
     // For multipart/form-data, omit Content-Type so fetch can auto-generate it with the boundary
-    if (this.#option.contentType !== 'multipart/form-data') {
-      headers['Content-Type'] = this.#option.contentType;
+    if (this.#option.contentType !== "multipart/form-data") {
+      headers["Content-Type"] = this.#option.contentType;
     }
 
     // Serialize @Cookie fields as Cookie header (name=value; name2=value2)
     const cookieEntries = Object.entries(cookieMap);
     if (cookieEntries.length > 0) {
-      headers.Cookie = cookieEntries.map(([k, v]) => `${k}=${v}`).join('; ');
+      headers.Cookie = cookieEntries.map(([k, v]) => `${k}=${v}`).join("; ");
     }
 
     if (authKey != null) {
@@ -428,11 +444,14 @@ export abstract class AbstractJinFrame {
             cacheKey != null
               ? // eslint-disable-next-line @typescript-eslint/promise-function-async
                 RequestDedupeManager.dedupe(cacheKey, () => fetch(fetchReq))
-              : (async () => ({ resp: await fetch(fetchReq), isDeduped: false }))();
+              : (async () => ({
+                  resp: await fetch(fetchReq),
+                  isDeduped: false,
+                }))();
 
           const deduped = await promised;
           const { resp } = deduped;
-          const retryAfterValue = resp.headers.get('retry-after') ?? resp.headers.get('Retry-After');
+          const retryAfterValue = resp.headers.get("retry-after") ?? resp.headers.get("Retry-After");
           const retryAfter = getRetryAfter(retry, retryAfterValue ?? undefined);
 
           returnValue = deduped;
@@ -453,7 +472,7 @@ export abstract class AbstractJinFrame {
 
           await sleep(interval);
         } catch (err) {
-          returnValue = isError(err, new Error('unknown error raised'));
+          returnValue = isError(err, new Error("unknown error raised"));
 
           await runAndUnwrap(this._retryException.bind(this), req, returnValue);
 

@@ -1,15 +1,15 @@
-import { JinRespError } from '#exceptions/JinRespError';
-import { getDuration } from '#tools/getDuration';
-import { getReasonPhrase } from 'http-status-codes';
-import { describe, expect, it } from 'vitest';
+import { getReasonPhrase } from "http-status-codes";
+import { describe, expect, it } from "vitest";
+import { JinRespError } from "#exceptions/JinRespError";
+import { getDuration } from "#tools/getDuration";
 
-describe('JinRequestError', () => {
-  it('gettter/setter', () => {
+describe("JinRequestError", () => {
+  it("gettter/setter", () => {
     const jf = new JinRespError({
       debug: {
         ts: {
-          unix: '1674349200',
-          iso: '1674349200',
+          unix: "1674349200",
+          iso: "1674349200",
         },
         duration: getDuration(new Date(2023, 0, 1, 0, 0, 1), new Date(2023, 0, 1, 0, 0, 2)),
         isDeduped: false,
@@ -20,13 +20,13 @@ describe('JinRequestError', () => {
         statusText: getReasonPhrase(500),
       } as any,
       frame: {} as any,
-      message: 'error',
+      message: "error",
     });
 
     expect(jf.debug).toMatchObject({
       ts: {
-        unix: '1674349200',
-        iso: '1674349200',
+        unix: "1674349200",
+        iso: "1674349200",
       },
       duration: 1000,
       req: {},
@@ -36,6 +36,6 @@ describe('JinRequestError', () => {
     expect(jf.resp).toMatchObject({});
     expect(jf.status).toEqual(500);
     expect(jf.statusText).toEqual(getReasonPhrase(500));
-    expect(jf.message).toEqual('error');
+    expect(jf.message).toEqual("error");
   });
 });

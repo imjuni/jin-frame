@@ -1,14 +1,14 @@
-import { getParameterJsDocExamplesContent } from '#/generators/parameters/getParameterJsDocExamplesContent';
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it } from "vitest";
+import { getParameterJsDocExamplesContent } from "#/generators/parameters/getParameterJsDocExamplesContent";
 
-describe('getParameterJsDocExamplesContent', () => {
-  it('should return full application/json when full example', () => {
+describe("getParameterJsDocExamplesContent", () => {
+  it("should return full application/json when full example", () => {
     const result = getParameterJsDocExamplesContent({
-      contentType: 'application/json',
+      contentType: "application/json",
       example: {
-        summary: 'Ironman is strong',
-        description: 'Ironman is strong and cool. I am Ironman.',
-        value: { name: 'Ironman', team: 'advengers' },
+        summary: "Ironman is strong",
+        description: "Ironman is strong and cool. I am Ironman.",
+        value: { name: "Ironman", team: "advengers" },
       },
       options: {
         useCodeFence: true,
@@ -26,13 +26,13 @@ describe('getParameterJsDocExamplesContent', () => {
     expect(result).toEqual(expectation);
   });
 
-  it('should return full application/+json when full example', () => {
+  it("should return full application/+json when full example", () => {
     const result = getParameterJsDocExamplesContent({
-      contentType: 'application/+json',
+      contentType: "application/+json",
       example: {
-        summary: 'Ironman is strong',
-        description: 'Ironman is strong and cool. I am Ironman.',
-        value: { name: 'Ironman', team: 'advengers' },
+        summary: "Ironman is strong",
+        description: "Ironman is strong and cool. I am Ironman.",
+        value: { name: "Ironman", team: "advengers" },
       },
       options: {
         useCodeFence: false,
@@ -50,11 +50,11 @@ describe('getParameterJsDocExamplesContent', () => {
     expect(result).toEqual(expectation);
   });
 
-  it('should return application/json without summary, description when example dont have a summary, description', () => {
+  it("should return application/json without summary, description when example dont have a summary, description", () => {
     const result = getParameterJsDocExamplesContent({
-      contentType: 'application/json',
+      contentType: "application/json",
       example: {
-        value: { name: 'Ironman', team: 'advengers' },
+        value: { name: "Ironman", team: "advengers" },
       },
       options: {
         useCodeFence: false,
@@ -72,12 +72,12 @@ describe('getParameterJsDocExamplesContent', () => {
     expect(result).toEqual(expectation);
   });
 
-  it('should return full application/x-www-form-urlencoded when full example', () => {
+  it("should return full application/x-www-form-urlencoded when full example", () => {
     const result = getParameterJsDocExamplesContent({
-      contentType: 'application/x-www-form-urlencoded',
+      contentType: "application/x-www-form-urlencoded",
       example: {
-        summary: 'Ironman is strong',
-        description: 'Ironman is strong and cool. I am Ironman.',
+        summary: "Ironman is strong",
+        description: "Ironman is strong and cool. I am Ironman.",
         value: '"name": "Ironman","team": "advengers"',
       },
       options: {
@@ -91,13 +91,13 @@ describe('getParameterJsDocExamplesContent', () => {
     expect(result).toEqual(expectation);
   });
 
-  it('should return full application/x-www-form-urlencoded when full example and object example value', () => {
+  it("should return full application/x-www-form-urlencoded when full example and object example value", () => {
     const result = getParameterJsDocExamplesContent({
-      contentType: 'application/x-www-form-urlencoded',
+      contentType: "application/x-www-form-urlencoded",
       example: {
-        summary: 'Ironman is strong',
-        description: 'Ironman is strong and cool. I am Ironman.',
-        value: { name: 'Ironman', team: 'advengers' },
+        summary: "Ironman is strong",
+        description: "Ironman is strong and cool. I am Ironman.",
+        value: { name: "Ironman", team: "advengers" },
       },
       options: {
         useCodeFence: false,

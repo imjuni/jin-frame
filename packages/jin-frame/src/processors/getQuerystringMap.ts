@@ -1,16 +1,16 @@
-import type { HeaderFieldOption } from '#interfaces/field/HeaderFieldOption';
-import type { ParamFieldOption } from '#interfaces/field/ParamFieldOption';
-import type { QueryFieldOption } from '#interfaces/field/QueryFieldOption';
-import type { CookieFieldOption } from '#interfaces/field/CookieFieldOption';
-import { bitwised } from '#tools/bitwised';
-import { encode } from '#tools/encodes/encode';
-import { formatEach } from '#tools/formatters/formatEach';
-import { stringifyExceptString } from '#tools/formatters/stringifyExceptString';
-import { stringifyQuerystring } from '#tools/formatters/stringifyQuerystring';
-import { isValidArrayType } from '#tools/type-narrowing/isValidArrayType';
-import { isValidNumberArray } from '#tools/type-narrowing/isValidNumberArray';
-import { isValidPrimitiveWithDateType } from '#tools/type-narrowing/isValidPrimitiveWithDateType';
-import * as dotProp from 'dot-prop';
+import * as dotProp from "dot-prop";
+import type { CookieFieldOption } from "#interfaces/field/CookieFieldOption";
+import type { HeaderFieldOption } from "#interfaces/field/HeaderFieldOption";
+import type { ParamFieldOption } from "#interfaces/field/ParamFieldOption";
+import type { QueryFieldOption } from "#interfaces/field/QueryFieldOption";
+import { bitwised } from "#tools/bitwised";
+import { encode } from "#tools/encodes/encode";
+import { formatEach } from "#tools/formatters/formatEach";
+import { stringifyExceptString } from "#tools/formatters/stringifyExceptString";
+import { stringifyQuerystring } from "#tools/formatters/stringifyQuerystring";
+import { isValidArrayType } from "#tools/type-narrowing/isValidArrayType";
+import { isValidNumberArray } from "#tools/type-narrowing/isValidNumberArray";
+import { isValidPrimitiveWithDateType } from "#tools/type-narrowing/isValidPrimitiveWithDateType";
 
 export function getQuerystringMap<T extends Record<string, unknown>>(
   thisFrame: T,

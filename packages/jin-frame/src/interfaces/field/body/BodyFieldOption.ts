@@ -1,9 +1,9 @@
-import type { SingleBodyFormatter } from '#interfaces/field/body/SingleBodyFormatter';
-import type { CommonCacheKeyExcludePathOption } from '#interfaces/field/CommonCacheKeyExcludePathOption';
-import type { CommonFieldOption } from '#interfaces/field/CommonFieldOption';
+import type { SingleBodyFormatter } from "#interfaces/field/body/SingleBodyFormatter";
+import type { CommonCacheKeyExcludePathOption } from "#interfaces/field/CommonCacheKeyExcludePathOption";
+import type { CommonFieldOption } from "#interfaces/field/CommonFieldOption";
 
 export interface BodyFieldOption extends CommonFieldOption, CommonCacheKeyExcludePathOption {
-  type: 'body';
+  type: "body";
 
   /**
    * If you want to create depth or rename on field of body

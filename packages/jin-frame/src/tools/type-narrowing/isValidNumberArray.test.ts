@@ -1,19 +1,19 @@
-import { isValidNumberArray } from '#tools/type-narrowing/isValidNumberArray';
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it } from "vitest";
+import { isValidNumberArray } from "#tools/type-narrowing/isValidNumberArray";
 
-describe('isValidNumberArray', () => {
-  it('number array', () => {
+describe("isValidNumberArray", () => {
+  it("number array", () => {
     const r = isValidNumberArray([1, 2, 3, 4]);
     expect(r).toBeTruthy();
   });
 
-  it('complex type array', () => {
-    const r = isValidNumberArray([1, '2', 3, 4]);
+  it("complex type array", () => {
+    const r = isValidNumberArray([1, "2", 3, 4]);
     expect(r).toBeFalsy();
   });
 
-  it('object', () => {
-    const r = isValidNumberArray({ name: 'ironman' });
+  it("object", () => {
+    const r = isValidNumberArray({ name: "ironman" });
     expect(r).toBeFalsy();
   });
 });

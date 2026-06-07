@@ -1,10 +1,10 @@
-import { JinFrame } from '#frames/JinFrame';
-import { Post } from '#decorators/methods/Post';
-import { format, parse } from 'date-fns';
-import { expect, it } from 'vitest';
-import { Param } from '#decorators/fields/Param';
-import { Query } from '#decorators/fields/Query';
-import { Body } from '#decorators/fields/Body';
+import { format, parse } from "date-fns";
+import { expect, it } from "vitest";
+import { Body } from "#decorators/fields/Body";
+import { Param } from "#decorators/fields/Param";
+import { Query } from "#decorators/fields/Query";
+import { Post } from "#decorators/methods/Post";
+import { JinFrame } from "#frames/JinFrame";
 
 interface IFirstBody {
   name: string;
@@ -37,89 +37,91 @@ interface IThirdBody {
 
 const share: { first: IFirstBody; second: ISecondBody; third: IThirdBody } = {
   first: {
-    name: 'fireman',
+    name: "fireman",
     data: {
-      signDate: '2022-07-29T13:44:22',
+      signDate: "2022-07-29T13:44:22",
       age: 33,
       more: {
-        birthday: '2020-07-22T11:22:33',
+        birthday: "2020-07-22T11:22:33",
         weddingAnniversary: new Date(2020, 6, 29, 11, 22, 33),
       },
     },
   },
 
   second: {
-    character: 'angry',
-    major: 'computer science',
+    character: "angry",
+    major: "computer science",
     data: {
-      age: '333',
-      more: { birthday: '2020-02-22T03:11:22' },
+      age: "333",
+      more: { birthday: "2020-02-22T03:11:22" },
     },
   },
 
   third: {
-    name: 'thor',
-    character: 'thunder',
+    name: "thor",
+    character: "thunder",
     data: {
-      age: '111',
+      age: "111",
     },
   },
 };
 
-@Post({ host: 'http://some.api.google.com/jinframe/{passing}' })
+@Post({ host: "http://some.api.google.com/jinframe/{passing}" })
 class Test001PostFrame extends JinFrame {
   @Param()
-  declare public readonly passing: string;
+  public declare readonly passing: string;
 
   @Query()
-  declare public readonly name: string;
+  public declare readonly name: string;
 
   @Query({ encode: true })
-  declare public readonly skill: string[];
+  public declare readonly skill: string[];
 
   @Body({
     formatters: [
       {
-        findFrom: 'data.more.weddingAnniversary',
-        dateTime: (value: Date) => format(value, 'yyyy-MM-dd HH:mm:ss'),
+        findFrom: "data.more.weddingAnniversary",
+        dateTime: (value: Date) => format(value, "yyyy-MM-dd HH:mm:ss"),
       },
       {
-        findFrom: 'data.more.birthday',
+        findFrom: "data.more.birthday",
         string: (value: string) => parse(value, "yyyy-MM-dd'T'HH:mm:ss", new Date()),
-        dateTime: (value: Date) => format(value, 'yyyy-MM-dd HH:mm:ss'),
+        dateTime: (value: Date) => format(value, "yyyy-MM-dd HH:mm:ss"),
       },
       {
-        findFrom: 'data.signDate',
+        findFrom: "data.signDate",
         string: (value: string) => parse(value, "yyyy-MM-dd'T'HH:mm:ss", new Date()),
-        dateTime: (value: Date) => format(value, 'yyyy-MM-dd HH:mm:ss'),
+        dateTime: (value: Date) => format(value, "yyyy-MM-dd HH:mm:ss"),
       },
     ],
   })
-  declare public readonly multipleFormatting: IFirstBody;
+  public declare readonly multipleFormatting: IFirstBody;
 
   constructor({ multipleFormatting }: { multipleFormatting: IFirstBody }) {
     super();
 
-    this.passing = 'pass';
-    this.name = 'ironman';
-    this.skill = ['beam', 'flying!'];
+    this.passing = "pass";
+    this.name = "ironman";
+    this.skill = ["beam", "flying!"];
     this.multipleFormatting = multipleFormatting;
   }
 }
 
-it('T001-object-type-field-multiple-formatting', async () => {
-  const frame = new Test001PostFrame({ multipleFormatting: structuredClone(share.first) });
+it("T001-object-type-field-multiple-formatting", async () => {
+  const frame = new Test001PostFrame({
+    multipleFormatting: structuredClone(share.first),
+  });
   const req = frame._request();
 
   const expectation = {
     multipleFormatting: {
-      name: 'fireman',
+      name: "fireman",
       data: {
-        signDate: '2022-07-29 13:44:22',
+        signDate: "2022-07-29 13:44:22",
         age: 33,
         more: {
-          birthday: '2020-07-22 11:22:33',
-          weddingAnniversary: '2020-07-29 11:22:33',
+          birthday: "2020-07-22 11:22:33",
+          weddingAnniversary: "2020-07-29 11:22:33",
         },
       },
     },
@@ -128,59 +130,59 @@ it('T001-object-type-field-multiple-formatting', async () => {
   expect(JSON.parse(req.body as string)).toEqual(expectation);
 });
 
-@Post({ host: 'http://some.api.google.com/jinframe/{passing}' })
+@Post({ host: "http://some.api.google.com/jinframe/{passing}" })
 class Test002PostFrame extends JinFrame {
   @Param()
-  declare public readonly passing: string;
+  public declare readonly passing: string;
 
   @Query()
-  declare public readonly name: string;
+  public declare readonly name: string;
 
   @Query({ encode: true })
-  declare public readonly skill: string[];
+  public declare readonly skill: string[];
 
   @Body({
     formatters: [
       {
-        findFrom: 'data.more.weddingAnniversary',
-        dateTime: (value: Date) => format(value, 'yyyy-MM-dd HH:mm:ss'),
+        findFrom: "data.more.weddingAnniversary",
+        dateTime: (value: Date) => format(value, "yyyy-MM-dd HH:mm:ss"),
       },
       {
-        findFrom: 'data.more.birthday',
+        findFrom: "data.more.birthday",
         string: (value: string) => parse(value, "yyyy-MM-dd'T'HH:mm:ss", new Date()),
-        dateTime: (value: Date) => format(value, 'yyyy-MM-dd HH:mm:ss'),
+        dateTime: (value: Date) => format(value, "yyyy-MM-dd HH:mm:ss"),
       },
       {
-        findFrom: 'data.signDate',
+        findFrom: "data.signDate",
         string: (value: string) => parse(value, "yyyy-MM-dd'T'HH:mm:ss", new Date()),
-        dateTime: (value: Date) => format(value, 'yyyy-MM-dd HH:mm:ss'),
+        dateTime: (value: Date) => format(value, "yyyy-MM-dd HH:mm:ss"),
       },
     ],
   })
-  declare public readonly hero: IFirstBody;
+  public declare readonly hero: IFirstBody;
 
   @Body({
     formatters: [
       {
-        findFrom: 'data.more.birthday',
+        findFrom: "data.more.birthday",
         string: (value: string) => parse(value, "yyyy-MM-dd'T'HH:mm:ss", new Date()),
-        dateTime: (value: Date) => format(value, 'yyyy-MM-dd HH:mm:ss'),
+        dateTime: (value: Date) => format(value, "yyyy-MM-dd HH:mm:ss"),
       },
     ],
   })
-  declare public readonly heroBio: ISecondBody;
+  public declare readonly heroBio: ISecondBody;
 
   @Body({
-    replaceAt: 'companion',
+    replaceAt: "companion",
   })
-  declare public readonly thirdField: IThirdBody;
+  public declare readonly thirdField: IThirdBody;
 }
 
-it('T0002-many-object-field-multiple-formattin', async () => {
+it("T0002-many-object-field-multiple-formattin", async () => {
   const frame = Test002PostFrame.of({
-    passing: '1',
-    name: '2',
-    skill: ['3'],
+    passing: "1",
+    name: "2",
+    skill: ["3"],
     hero: structuredClone(share.first),
     heroBio: structuredClone(share.second),
     thirdField: structuredClone(share.third),
@@ -189,31 +191,31 @@ it('T0002-many-object-field-multiple-formattin', async () => {
 
   const expectation = {
     hero: {
-      name: 'fireman',
+      name: "fireman",
       data: {
-        signDate: '2022-07-29 13:44:22',
+        signDate: "2022-07-29 13:44:22",
         age: 33,
         more: {
-          birthday: '2020-07-22 11:22:33',
-          weddingAnniversary: '2020-07-29 11:22:33',
+          birthday: "2020-07-22 11:22:33",
+          weddingAnniversary: "2020-07-29 11:22:33",
         },
       },
     },
     heroBio: {
-      character: 'angry',
-      major: 'computer science',
+      character: "angry",
+      major: "computer science",
       data: {
-        age: '333',
+        age: "333",
         more: {
-          birthday: '2020-02-22 03:11:22',
+          birthday: "2020-02-22 03:11:22",
         },
       },
     },
     companion: {
-      name: 'thor',
-      character: 'thunder',
+      name: "thor",
+      character: "thunder",
       data: {
-        age: '111',
+        age: "111",
       },
     },
   };

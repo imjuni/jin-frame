@@ -1,5 +1,5 @@
-import { encode } from '#tools/encodes/encode';
-import { stringifyExceptString } from '#tools/formatters/stringifyExceptString';
+import { encode } from "#tools/encodes/encode";
+import { stringifyExceptString } from "#tools/formatters/stringifyExceptString";
 
 export function stringifyQuerystring(
   values: unknown,
@@ -10,7 +10,7 @@ export function stringifyQuerystring(
   }
 
   if (option?.comma != null && option.comma) {
-    return values.map((value) => encode(option?.encode, stringifyExceptString(value))).join(',');
+    return values.map((value) => encode(option?.encode, stringifyExceptString(value))).join(",");
   }
 
   return values.map((value) => encode(option?.encode, stringifyExceptString(value)));

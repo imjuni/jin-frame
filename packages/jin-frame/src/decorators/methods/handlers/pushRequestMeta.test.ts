@@ -1,15 +1,15 @@
-import { describe, expect, it } from 'vitest';
-import { getRequestMeta } from '#decorators/methods/handlers/getRequestMeta';
-import { pushRequestMeta } from '#decorators/methods/handlers/pushRequestMeta';
-import type { FrameOption } from '#interfaces/options/FrameOption';
-import { getFrameOption } from '#decorators/getFrameOption';
+import { describe, expect, it } from "vitest";
+import { getFrameOption } from "#decorators/getFrameOption";
+import { getRequestMeta } from "#decorators/methods/handlers/getRequestMeta";
+import { pushRequestMeta } from "#decorators/methods/handlers/pushRequestMeta";
+import type { FrameOption } from "#interfaces/options/FrameOption";
 
 class IamClass {}
 
-describe('pushRequestMeta and getRequestMeta', () => {
-  it('should return configuration when pass custom content-type', () => {
-    const contentType = 'my-custom-content-type';
-    const option: FrameOption = getFrameOption('GET', { contentType });
+describe("pushRequestMeta and getRequestMeta", () => {
+  it("should return configuration when pass custom content-type", () => {
+    const contentType = "my-custom-content-type";
+    const option: FrameOption = getFrameOption("GET", { contentType });
 
     pushRequestMeta(IamClass, { option });
     const meta = getRequestMeta(IamClass);

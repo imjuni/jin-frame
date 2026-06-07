@@ -1,11 +1,11 @@
-import type { CookieFieldOption } from '#interfaces/field/CookieFieldOption';
+import type { CookieFieldOption } from "#interfaces/field/CookieFieldOption";
 
 export function getDefaultCookieFieldOption(
-  option?: Partial<CookieFieldOption> | Omit<Partial<CookieFieldOption>, 'type'>,
+  option?: Partial<CookieFieldOption> | Omit<Partial<CookieFieldOption>, "type">,
 ): CookieFieldOption {
   return {
-    key: '',
-    type: 'cookie',
+    key: "",
+    type: "cookie",
     cacheKeyExclude: option?.cacheKeyExclude ?? false,
     bit: {
       enable: option?.bit?.enable ?? false,

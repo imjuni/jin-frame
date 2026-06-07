@@ -1,14 +1,14 @@
-import type { Formatter } from '#interfaces/options/Formatter';
-import { getDefaultParamFieldOption } from '#processors/default-option/getDefaultParamFieldOption';
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it } from "vitest";
+import type { Formatter } from "#interfaces/options/Formatter";
+import { getDefaultParamFieldOption } from "#processors/default-option/getDefaultParamFieldOption";
 
-describe('getDefaultParamFieldOption', () => {
-  it('should return default param field option when no parameters provided', () => {
+describe("getDefaultParamFieldOption", () => {
+  it("should return default param field option when no parameters provided", () => {
     const option = getDefaultParamFieldOption();
 
     expect(option).toEqual({
-      key: '',
-      type: 'param',
+      key: "",
+      type: "param",
       cacheKeyExclude: false,
       formatters: undefined,
       comma: false,
@@ -21,12 +21,12 @@ describe('getDefaultParamFieldOption', () => {
     });
   });
 
-  it('should apply formatter when provided', () => {
+  it("should apply formatter when provided", () => {
     const f: Formatter = { string: (s) => `f:${s}` };
     const option = getDefaultParamFieldOption({ formatters: f });
 
     expect(option).toMatchObject({
-      type: 'param',
+      type: "param",
       cacheKeyExclude: false,
       formatters: f,
       comma: false,
@@ -39,10 +39,10 @@ describe('getDefaultParamFieldOption', () => {
     });
   });
 
-  it('should enable comma when comma option is true', () => {
+  it("should enable comma when comma option is true", () => {
     const r01 = getDefaultParamFieldOption({ comma: true });
     expect(r01).toMatchObject({
-      type: 'param',
+      type: "param",
       cacheKeyExclude: false,
       formatters: undefined,
       comma: true,
@@ -55,10 +55,10 @@ describe('getDefaultParamFieldOption', () => {
     });
   });
 
-  it('should disable encoding when encode option is false', () => {
+  it("should disable encoding when encode option is false", () => {
     const r01 = getDefaultParamFieldOption({ encode: false });
     expect(r01).toMatchObject({
-      type: 'param',
+      type: "param",
       cacheKeyExclude: false,
       formatters: undefined,
       comma: false,
@@ -71,10 +71,12 @@ describe('getDefaultParamFieldOption', () => {
     });
   });
 
-  it('should configure bit options when bit parameters are provided', () => {
-    const r01 = getDefaultParamFieldOption({ bit: { enable: true, withZero: false } });
+  it("should configure bit options when bit parameters are provided", () => {
+    const r01 = getDefaultParamFieldOption({
+      bit: { enable: true, withZero: false },
+    });
     expect(r01).toMatchObject({
-      type: 'param',
+      type: "param",
       cacheKeyExclude: false,
       formatters: undefined,
       comma: false,
@@ -86,9 +88,11 @@ describe('getDefaultParamFieldOption', () => {
       encode: true,
     });
 
-    const r02 = getDefaultParamFieldOption({ bit: { enable: true, withZero: true } });
+    const r02 = getDefaultParamFieldOption({
+      bit: { enable: true, withZero: true },
+    });
     expect(r02).toMatchObject({
-      type: 'param',
+      type: "param",
       cacheKeyExclude: false,
       formatters: undefined,
       comma: false,

@@ -1,5 +1,5 @@
 export function getUrlValue(value?: string | (() => string | undefined)): string | undefined {
-  if (typeof value === 'function') {
+  if (typeof value === "function") {
     return value();
   }
 

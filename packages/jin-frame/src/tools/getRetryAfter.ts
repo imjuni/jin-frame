@@ -1,4 +1,4 @@
-import type { FrameRetry } from '#interfaces/options/FrameRetry';
+import type { FrameRetry } from "#interfaces/options/FrameRetry";
 
 export function getRetryAfter(retry: FrameRetry, rawRetryAfter: string | string[] | undefined): number | undefined {
   try {

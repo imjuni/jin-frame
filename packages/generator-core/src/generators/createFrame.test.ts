@@ -1,90 +1,90 @@
-import { createFrame } from '#/generators/createFrame';
-import type { OpenAPIV3 } from 'openapi-types';
-import { Project } from 'ts-morph';
-import { randomUUID } from 'node:crypto';
-import { beforeEach, describe, expect, it, vitest } from 'vitest';
+import { randomUUID } from "node:crypto";
+import type { OpenAPIV3 } from "openapi-types";
+import { Project } from "ts-morph";
+import { beforeEach, describe, expect, it, vitest } from "vitest";
+import { createFrame } from "#/generators/createFrame";
 
-vitest.mock('node:crypto', () => ({
+vitest.mock("node:crypto", () => ({
   randomUUID: vitest.fn(),
 }));
 
-describe('createFrame', () => {
+describe("createFrame", () => {
   const project = new Project();
   const operationRequestBody = {
-    required: ['name', 'photoUrls'],
-    type: 'object',
+    required: ["name", "photoUrls"],
+    type: "object",
     properties: {
       id: {
-        type: 'integer',
-        format: 'int64',
+        type: "integer",
+        format: "int64",
         example: 10,
       },
       name: {
-        type: 'string',
-        example: 'doggie',
+        type: "string",
+        example: "doggie",
       },
       category: {
-        type: 'object',
+        type: "object",
         properties: {
           id: {
-            type: 'integer',
-            format: 'int64',
+            type: "integer",
+            format: "int64",
             example: 1,
           },
           name: {
-            type: 'string',
-            example: 'Dogs',
+            type: "string",
+            example: "Dogs",
           },
         },
       },
       photoUrls: {
-        type: 'array',
+        type: "array",
         items: {
-          type: 'string',
+          type: "string",
         },
       },
       tags: {
-        type: 'array',
+        type: "array",
         items: {
-          type: 'object',
+          type: "object",
           properties: {
             id: {
-              type: 'integer',
-              format: 'int64',
+              type: "integer",
+              format: "int64",
             },
             name: {
-              type: 'string',
+              type: "string",
             },
           },
         },
       },
       status: {
-        type: 'string',
-        description: 'pet status in the store',
-        enum: ['available', 'pending', 'sold'],
+        type: "string",
+        description: "pet status in the store",
+        enum: ["available", "pending", "sold"],
       },
     },
   };
   const parameters = [
     {
-      name: 'status',
-      in: 'query',
-      description: 'Status values that need to be considered for filter',
+      name: "status",
+      in: "query",
+      description: "Status values that need to be considered for filter",
       required: true,
       explode: true,
-      example: 'ironman',
+      example: "ironman",
       schema: {
-        type: 'string',
-        default: 'available',
-        enum: ['available', 'pending', 'sold'],
+        type: "string",
+        default: "available",
+        enum: ["available", "pending", "sold"],
       },
     },
     {
-      name: 'name',
-      in: 'query',
-      description: 'Name of pet that needs to be updated',
+      name: "name",
+      in: "query",
+      description: "Name of pet that needs to be updated",
       schema: {
-        type: 'string',
+        type: "string",
       },
     },
   ];
@@ -93,43 +93,43 @@ describe('createFrame', () => {
     vitest.clearAllMocks();
   });
 
-  it('should return full frame when pass param with requestBody', () => {
-    const mockUuid = 'mockuuid-fe32-4d5d-923e-68fc16766231';
+  it("should return full frame when pass param with requestBody", () => {
+    const mockUuid = "mockuuid-fe32-4d5d-923e-68fc16766231";
     vitest.mocked(randomUUID).mockReturnValue(mockUuid);
 
     const frame = createFrame(project, {
-      specTypeFilePath: '/a/b/petstore.d.ts',
-      host: 'https://pokeapi.co',
-      output: '/a/b',
-      pathKey: '/pet/findByStatus/{status}',
-      method: 'GET',
+      specTypeFilePath: "/a/b/petstore.d.ts",
+      host: "https://pokeapi.co",
+      output: "/a/b",
+      pathKey: "/pet/findByStatus/{status}",
+      method: "GET",
       operation: {
-        description: 'Multiple tags can be provided with comma separated strings. Use tag1, tag2, tag3 for testing.',
-        summary: 'Finds Pets by tags.',
+        description: "Multiple tags can be provided with comma separated strings. Use tag1, tag2, tag3 for testing.",
+        summary: "Finds Pets by tags.",
         requestBody: {
-          description: 'Update an existent pet in the store',
+          description: "Update an existent pet in the store",
           content: {
-            'application/json': { schema: operationRequestBody },
-            'application/xml': { schema: operationRequestBody },
-            'application/x-www-form-urlencoded': { schema: operationRequestBody },
+            "application/json": { schema: operationRequestBody },
+            "application/xml": { schema: operationRequestBody },
+            "application/x-www-form-urlencoded": { schema: operationRequestBody },
           },
           required: true,
         },
         parameters,
-        tags: ['pet', 'cat'],
+        tags: ["pet", "cat"],
         responses: {
-          '200': {
-            description: 'successful operation',
+          "200": {
+            description: "successful operation",
             content: {
-              'application/json': {
+              "application/json": {
                 schema: {
-                  $ref: '#/components/schemas/Order',
+                  $ref: "#/components/schemas/Order",
                 },
               },
             },
           },
-          '400': {
-            description: 'Invalid input',
+          "400": {
+            description: "Invalid input",
           },
         },
       } as OpenAPIV3.OperationObject,
@@ -164,57 +164,57 @@ export class GetPetFindByStatusStatusFrame extends JinFrame<paths['/pet/findBySt
 
     expect(frame).toEqual({
       aliasFilePath: `${mockUuid}-${mockUuid}.ts`,
-      filePath: 'GetPetFindByStatusStatusFrame.ts',
-      tag: 'pet',
+      filePath: "GetPetFindByStatusStatusFrame.ts",
+      tag: "pet",
       source,
     });
   });
 
-  it('should return full frame when pass param with requestBody', () => {
-    const mockUuid = 'mockuuid-fe32-4d5d-923e-1234567890123';
+  it("should return full frame when pass param with requestBody", () => {
+    const mockUuid = "mockuuid-fe32-4d5d-923e-1234567890123";
     vitest.mocked(randomUUID).mockReturnValue(mockUuid);
 
     const testOperationRequestBody = structuredClone(operationRequestBody);
     testOperationRequestBody.properties.photoUrls = {
       ...testOperationRequestBody.properties.photoUrls,
-      type: 'array',
+      type: "array",
       items: {
-        type: 'string',
-        format: 'binary',
+        type: "string",
+        format: "binary",
       },
     } as any;
 
     const frame = createFrame(project, {
-      specTypeFilePath: '/a/b/petstore.d.ts',
-      host: 'https://pokeapi.co',
-      output: '/a/b',
-      pathKey: '/pet/findByStatus/{status}',
-      method: 'GET',
+      specTypeFilePath: "/a/b/petstore.d.ts",
+      host: "https://pokeapi.co",
+      output: "/a/b",
+      pathKey: "/pet/findByStatus/{status}",
+      method: "GET",
       operation: {
-        description: 'Multiple tags can be provided with comma separated strings. Use tag1, tag2, tag3 for testing.',
-        summary: 'Finds Pets by tags.',
+        description: "Multiple tags can be provided with comma separated strings. Use tag1, tag2, tag3 for testing.",
+        summary: "Finds Pets by tags.",
         requestBody: {
-          description: 'Update an existent pet in the store',
+          description: "Update an existent pet in the store",
           content: {
-            'multipart/form-data': { schema: testOperationRequestBody },
+            "multipart/form-data": { schema: testOperationRequestBody },
           },
           required: true,
         },
         parameters,
-        tags: ['pet', 'cat'],
+        tags: ["pet", "cat"],
         responses: {
-          '200': {
-            description: 'successful operation',
+          "200": {
+            description: "successful operation",
             content: {
-              'application/json': {
+              "application/json": {
                 schema: {
-                  $ref: '#/components/schemas/Order',
+                  $ref: "#/components/schemas/Order",
                 },
               },
             },
           },
-          '400': {
-            description: 'Invalid input',
+          "400": {
+            description: "Invalid input",
           },
         },
       } as OpenAPIV3.OperationObject,
@@ -252,8 +252,8 @@ export class GetPetFindByStatusStatusFrame extends JinFrame<paths['/pet/findBySt
 
     expect(frame).toEqual({
       aliasFilePath: `${mockUuid}-${mockUuid}.ts`,
-      filePath: 'GetPetFindByStatusStatusFrame.ts',
-      tag: 'pet',
+      filePath: "GetPetFindByStatusStatusFrame.ts",
+      tag: "pet",
       source,
     });
   });

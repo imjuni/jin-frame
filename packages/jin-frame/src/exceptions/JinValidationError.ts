@@ -1,11 +1,11 @@
-import type { JinFrame } from '#frames/JinFrame';
-import type { DebugInfo } from '#interfaces/DebugInfo';
-import type { ValidationResult } from '#interfaces/ValidationResult';
-import type { BaseValidator } from '#validators/BaseValidator';
-import type { JinPassResp } from '#interfaces/JinPassResp';
+import type { JinFrame } from "#frames/JinFrame";
+import type { DebugInfo } from "#interfaces/DebugInfo";
+import type { JinPassResp } from "#interfaces/JinPassResp";
+import type { ValidationResult } from "#interfaces/ValidationResult";
+import type { BaseValidator } from "#validators/BaseValidator";
 
 export class JinValidationError<Pass, Fail = unknown, ValidationError = unknown> extends Error {
-  __discriminator = 'JinValidationError';
+  __discriminator = "JinValidationError";
 
   #debug: DebugInfo;
 

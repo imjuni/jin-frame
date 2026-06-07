@@ -1,3 +1,3 @@
-import { makeRequestDecorator } from '#decorators/methods/handlers/makeRequestDecorator';
+import { makeRequestDecorator } from "#decorators/methods/handlers/makeRequestDecorator";
 
-export const Options = makeRequestDecorator('OPTIONS');
+export const Options = makeRequestDecorator("OPTIONS");

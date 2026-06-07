@@ -1,5 +1,5 @@
-import { setFrameOption } from '#tools/setFrameOption';
-import type { FrameOption } from '#interfaces/options/FrameOption';
+import type { FrameOption } from "#interfaces/options/FrameOption";
+import { setFrameOption } from "#tools/setFrameOption";
 
 export function mergeFrameOption(prev: FrameOption, next: FrameOption): FrameOption {
   const merged: FrameOption = { ...prev };

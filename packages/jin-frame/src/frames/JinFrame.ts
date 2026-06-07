@@ -1,30 +1,30 @@
-import { AbstractJinFrame } from '#frames/AbstractJinFrame';
-import { JinCreateError } from '#exceptions/JinCreateError';
-import { JinRespError } from '#exceptions/JinRespError';
-import type { DebugInfo } from '#interfaces/DebugInfo';
-import type { JinFrameCreateConfig } from '#interfaces/options/JinFrameCreateConfig';
-import type { JinFrameFunction } from '#interfaces/options/JinFrameFunction';
-import type { JinFrameRequestConfig } from '#interfaces/options/JinFrameRequestConfig';
-import { getDuration } from '#tools/getDuration';
-import { getError } from '#tools/getError';
-import { isValidateStatusDefault } from '#tools/isValidateStatusDefault';
-import { runAndUnwrap } from '#tools/runAndUnwrap';
-import { JinValidationError } from '#exceptions/JinValidationError';
-import type { GetError } from '#interfaces/GetError';
-import type { ValidationResult } from '#interfaces/ValidationResult';
-import type { JinFailResp } from '#interfaces/JinFailResp';
-import type { JinRequestConfig } from '#interfaces/JinRequestConfig';
-import type { JinResp } from '#interfaces/JinResp';
 // eslint-disable-next-line import-x/no-extraneous-dependencies
-import { formatISO } from 'date-fns/formatISO';
+import { formatISO } from "date-fns/formatISO";
 // eslint-disable-next-line import-x/no-extraneous-dependencies
-import { getUnixTime } from 'date-fns/getUnixTime';
-import 'reflect-metadata';
-import type { JinPassResp } from '#interfaces/JinPassResp';
-import { getStatusFromError } from '#tools/responses/getStatusFromError';
-import { getHeaderObject } from '#tools/getHeaderObject';
-import { safeParse } from '#tools/json/safeParse';
-import type { FrameOption } from '#interfaces/options/FrameOption';
+import { getUnixTime } from "date-fns/getUnixTime";
+import { JinCreateError } from "#exceptions/JinCreateError";
+import { JinRespError } from "#exceptions/JinRespError";
+import { JinValidationError } from "#exceptions/JinValidationError";
+import { AbstractJinFrame } from "#frames/AbstractJinFrame";
+import type { DebugInfo } from "#interfaces/DebugInfo";
+import type { GetError } from "#interfaces/GetError";
+import type { JinFailResp } from "#interfaces/JinFailResp";
+import type { JinRequestConfig } from "#interfaces/JinRequestConfig";
+import type { JinResp } from "#interfaces/JinResp";
+import type { JinFrameCreateConfig } from "#interfaces/options/JinFrameCreateConfig";
+import type { JinFrameFunction } from "#interfaces/options/JinFrameFunction";
+import type { JinFrameRequestConfig } from "#interfaces/options/JinFrameRequestConfig";
+import type { ValidationResult } from "#interfaces/ValidationResult";
+import { getDuration } from "#tools/getDuration";
+import { getError } from "#tools/getError";
+import { isValidateStatusDefault } from "#tools/isValidateStatusDefault";
+import { runAndUnwrap } from "#tools/runAndUnwrap";
+import "reflect-metadata";
+import type { JinPassResp } from "#interfaces/JinPassResp";
+import type { FrameOption } from "#interfaces/options/FrameOption";
+import { getHeaderObject } from "#tools/getHeaderObject";
+import { safeParse } from "#tools/json/safeParse";
+import { getStatusFromError } from "#tools/responses/getStatusFromError";
 
 async function resolveSecurityKey<T extends JinFrameRequestConfig & JinFrameCreateConfig>(
   frameOption: FrameOption,
@@ -32,7 +32,7 @@ async function resolveSecurityKey<T extends JinFrameRequestConfig & JinFrameCrea
 ): Promise<T> {
   if (option?.dynamicAuth != null) return option;
   const frameAuth = frameOption.authorization;
-  if (typeof frameAuth !== 'function') return (option ?? {}) as T;
+  if (typeof frameAuth !== "function") return (option ?? {}) as T;
   const resolved = await frameAuth();
   return { ...(option ?? {}), dynamicAuth: resolved } as T;
 }
@@ -73,7 +73,7 @@ export class JinFrame<Pass = unknown, Fail = Pass> extends AbstractJinFrame impl
     } catch (catched) {
       const source = catched as Error;
       const duration = getDuration(this._startAt, new Date());
-      const debug: Omit<DebugInfo, 'req'> = {
+      const debug: Omit<DebugInfo, "req"> = {
         ts: {
           unix: `${getUnixTime(this._startAt)}.${this._startAt.getMilliseconds()}`,
           iso: formatISO(this._startAt),
@@ -81,7 +81,11 @@ export class JinFrame<Pass = unknown, Fail = Pass> extends AbstractJinFrame impl
         isDeduped: false,
         duration,
       };
-      const err = new JinCreateError<typeof this, Pass, Fail>({ debug, frame: this, message: source.message });
+      const err = new JinCreateError<typeof this, Pass, Fail>({
+        debug,
+        frame: this,
+        message: source.message,
+      });
       err.stack = source.stack;
 
       throw err;
@@ -113,7 +117,7 @@ export class JinFrame<Pass = unknown, Fail = Pass> extends AbstractJinFrame impl
       }
     > => {
       const startAt = new Date();
-      const debug: Omit<DebugInfo, 'duration'> = {
+      const debug: Omit<DebugInfo, "duration"> = {
         ts: {
           unix: `${getUnixTime(startAt)}.${startAt.getMilliseconds()}`,
           iso: formatISO(startAt),
@@ -158,7 +162,11 @@ export class JinFrame<Pass = unknown, Fail = Pass> extends AbstractJinFrame impl
 
           const duration = getDuration(this._startAt, new Date());
 
-          const debugInfo = { ...debug, duration, isDeduped: deduped.isDeduped };
+          const debugInfo = {
+            ...debug,
+            duration,
+            isDeduped: deduped.isDeduped,
+          };
           const err = new JinRespError<Pass, Fail>({
             resp: failResp,
             debug: debugInfo,
@@ -194,12 +202,12 @@ export class JinFrame<Pass = unknown, Fail = Pass> extends AbstractJinFrame impl
 
         await runAndUnwrap(this._postHook.bind(this), req, passResp, debugInfo);
 
-        if (passValidator != null && !validated.valid && passValidator.type === 'exception') {
+        if (passValidator != null && !validated.valid && passValidator.type === "exception") {
           const err = new JinValidationError<Pass, Fail>({
             resp: passResp,
             debug: debugInfo,
             frame: this,
-            message: 'validation error',
+            message: "validation error",
             validator: passValidator,
             validated,
           });
@@ -233,7 +241,7 @@ export class JinFrame<Pass = unknown, Fail = Pass> extends AbstractJinFrame impl
           } as JinFailResp<Fail>,
           debug: { ...debug, duration },
           frame: this,
-          message: caught instanceof Error ? caught.message : 'unknown error raised',
+          message: caught instanceof Error ? caught.message : "unknown error raised",
           cause: caught,
         });
 

@@ -1,8 +1,8 @@
-import { convertor, load, validate, createFrames, safePathJoin } from '@jin-frame/generator-core';
-import consola, { type LogType, LogLevels } from 'consola';
-import fs from 'node:fs';
-import pathe from 'pathe';
-import type { TFrameCommandArgv } from '#/interfaces/IFrameCommandArgv';
+import fs from "node:fs";
+import { convertor, createFrames, load, safePathJoin, validate } from "@jin-frame/generator-core";
+import consola, { LogLevels, type LogType } from "consola";
+import pathe from "pathe";
+import type { TFrameCommandArgv } from "#/interfaces/IFrameCommandArgv";
 
 export async function frameCommandHandler(params: TFrameCommandArgv): Promise<void> {
   consola.level = LogLevels[params.logLevel as LogType];
@@ -23,7 +23,7 @@ export async function frameCommandHandler(params: TFrameCommandArgv): Promise<vo
   }
 
   if (validated.version === 2) {
-    consola.debug('Converting spec v2 > v3');
+    consola.debug("Converting spec v2 > v3");
   }
 
   const converted = await convertor(validated);

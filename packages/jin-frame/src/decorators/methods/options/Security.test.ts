@@ -1,15 +1,15 @@
-import { describe, expect, it } from 'vitest';
-import { getRequestMeta } from '#decorators/methods/handlers/getRequestMeta';
-import { Security } from '#decorators/methods/options/Security';
-import { BearerTokenProvider } from '#providers/security/BearerTokenProvider';
-import { ApiKeyProvider } from '#providers/security/ApiKeyProvider';
-import { BasicAuthProvider } from '#providers/security/BasicAuthProvider';
+import { describe, expect, it } from "vitest";
+import { getRequestMeta } from "#decorators/methods/handlers/getRequestMeta";
+import { Security } from "#decorators/methods/options/Security";
+import { ApiKeyProvider } from "#providers/security/ApiKeyProvider";
+import { BasicAuthProvider } from "#providers/security/BasicAuthProvider";
+import { BearerTokenProvider } from "#providers/security/BearerTokenProvider";
 
-describe('Security', () => {
-  it('should set security metadata correctly when Security decorator applied with single provider', () => {
+describe("Security", () => {
+  it("should set security metadata correctly when Security decorator applied with single provider", () => {
     class TestClass {}
 
-    const provider = new BearerTokenProvider('auth-bearer');
+    const provider = new BearerTokenProvider("auth-bearer");
     const handle = Security(provider);
     handle(TestClass);
 
@@ -18,10 +18,10 @@ describe('Security', () => {
     expect(meta.option.security).toEqual(provider);
   });
 
-  it('should set security metadata correctly when Security decorator applied with multiple providers', () => {
+  it("should set security metadata correctly when Security decorator applied with multiple providers", () => {
     class TestClass {}
 
-    const providers = [new BearerTokenProvider('auth-bearer'), new ApiKeyProvider('api-key', 'X-API-Key', 'header')];
+    const providers = [new BearerTokenProvider("auth-bearer"), new ApiKeyProvider("api-key", "X-API-Key", "header")];
     const handle = Security(providers);
     handle(TestClass);
 
@@ -30,12 +30,12 @@ describe('Security', () => {
     expect(meta.option.security).toEqual(providers);
   });
 
-  it('should support multiple security providers via array parameter', () => {
+  it("should support multiple security providers via array parameter", () => {
     class TestClass {}
 
-    const provider1 = new BearerTokenProvider('auth-bearer');
-    const provider2 = new ApiKeyProvider('api-key', 'X-API-Key', 'header');
-    const provider3 = new BasicAuthProvider('basic-auth');
+    const provider1 = new BearerTokenProvider("auth-bearer");
+    const provider2 = new ApiKeyProvider("api-key", "X-API-Key", "header");
+    const provider3 = new BasicAuthProvider("basic-auth");
 
     const handle = Security([provider1, provider2, provider3]);
     handle(TestClass);
@@ -45,12 +45,12 @@ describe('Security', () => {
     expect(meta.option.security).toEqual([provider1, provider2, provider3]);
   });
 
-  it('should override parent class security in inheritance hierarchy', () => {
+  it("should override parent class security in inheritance hierarchy", () => {
     class ParentClass {}
     class ChildClass extends ParentClass {}
 
-    const parentProvider = new BearerTokenProvider('parent-auth');
-    const childProvider = new ApiKeyProvider('child-auth', 'X-API-Key', 'header');
+    const parentProvider = new BearerTokenProvider("parent-auth");
+    const childProvider = new ApiKeyProvider("child-auth", "X-API-Key", "header");
 
     const parentHandle = Security(parentProvider);
     const childHandle = Security(childProvider);
@@ -65,22 +65,22 @@ describe('Security', () => {
     expect(childMeta.option.security).toEqual(childProvider);
   });
 
-  it('should store static string key as authorization when key is provided', () => {
+  it("should store static string key as authorization when key is provided", () => {
     class TestClass {}
 
     const provider = new BearerTokenProvider();
-    const handle = Security(provider, 'my-static-token');
+    const handle = Security(provider, "my-static-token");
     handle(TestClass);
 
     const meta = getRequestMeta(TestClass);
 
-    expect(meta.option.authorization).toBe('my-static-token');
+    expect(meta.option.authorization).toBe("my-static-token");
   });
 
-  it('should store function key as authorization when key is a function', () => {
+  it("should store function key as authorization when key is a function", () => {
     class TestClass {}
 
-    const keyFn = () => 'dynamic-token';
+    const keyFn = () => "dynamic-token";
     const provider = new BearerTokenProvider();
     const handle = Security(provider, keyFn);
     handle(TestClass);
@@ -90,7 +90,7 @@ describe('Security', () => {
     expect(meta.option.authorization).toBe(keyFn);
   });
 
-  it('should not set authorization when no key is provided', () => {
+  it("should not set authorization when no key is provided", () => {
     class TestClass {}
 
     const provider = new BearerTokenProvider();

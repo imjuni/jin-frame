@@ -6,7 +6,7 @@ export interface IGeneratorOption {
   output: string;
 
   /** Log level for controlling verbosity of output messages */
-  logLevel: 'info' | 'debug' | 'error';
+  logLevel: "info" | "debug" | "error";
 
   /** API server hostname or base URL */
   host?: string;
@@ -21,7 +21,7 @@ export interface IGeneratorOption {
   codeFence: boolean;
 
   /** Strategy for generating host configuration */
-  hostStrategy?: 'string' | 'function' | 'env-function';
+  hostStrategy?: "string" | "function" | "env-function";
 
   /** Environment variable name for host selection (when using env-function) */
   hostEnvVar?: string;

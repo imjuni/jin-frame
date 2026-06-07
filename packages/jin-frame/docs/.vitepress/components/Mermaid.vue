@@ -3,49 +3,49 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, watch } from 'vue'
-import { useData } from 'vitepress'
-import mermaid from 'mermaid'
+import mermaid from "mermaid";
+import { useData } from "vitepress";
+import { onMounted, ref, watch } from "vue";
 
 const props = defineProps<{
-  code: string
-}>()
+  code: string;
+}>();
 
-const mermaidRef = ref<HTMLElement>()
-const { isDark } = useData()
+const mermaidRef = ref<HTMLElement>();
+const { isDark } = useData();
 
 const renderMermaid = async () => {
-  if (!mermaidRef.value) return
+  if (!mermaidRef.value) return;
 
   try {
     // VitePress 테마에 따라 Mermaid 테마 설정
-    const theme = isDark.value ? 'dark' : 'default'
+    const theme = isDark.value ? "dark" : "default";
 
     mermaid.initialize({
       startOnLoad: false,
       theme,
-      securityLevel: 'loose',
-    })
+      securityLevel: "loose",
+    });
 
-    const decodedCode = decodeURIComponent(props.code)
-    const { svg } = await mermaid.render('mermaid-' + Date.now(), decodedCode)
-    mermaidRef.value.innerHTML = svg
+    const decodedCode = decodeURIComponent(props.code);
+    const { svg } = await mermaid.render("mermaid-" + Date.now(), decodedCode);
+    mermaidRef.value.innerHTML = svg;
   } catch (error) {
-    console.error('Mermaid rendering error:', error)
+    console.error("Mermaid rendering error:", error);
     if (mermaidRef.value) {
-      mermaidRef.value.innerHTML = '<p style="color: red;">Error rendering Mermaid diagram</p>'
+      mermaidRef.value.innerHTML = '<p style="color: red;">Error rendering Mermaid diagram</p>';
     }
   }
-}
+};
 
 onMounted(() => {
-  renderMermaid()
-})
+  renderMermaid();
+});
 
 // 테마 변경 시 다시 렌더링
 watch(isDark, () => {
-  renderMermaid()
-})
+  renderMermaid();
+});
 </script>
 
 <style scoped>

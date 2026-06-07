@@ -1,6 +1,6 @@
-import type { OpenAPIV3 } from 'openapi-types';
-import { safeUrl } from '#/tools/safeUrl';
-import urlJoin from 'url-join';
+import type { OpenAPIV3 } from "openapi-types";
+import urlJoin from "url-join";
+import { safeUrl } from "#/tools/safeUrl";
 
 interface IGetServerUrlParams {
   specUrl: URL;

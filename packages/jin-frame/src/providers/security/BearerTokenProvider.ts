@@ -1,6 +1,6 @@
-import type { AuthorizationData } from '#interfaces/security/AuthorizationData';
-import type { SecurityContext } from '#interfaces/security/SecurityContext';
-import type { SecurityProvider } from '#interfaces/security/SecurityProvider';
+import type { AuthorizationData } from "#interfaces/security/AuthorizationData";
+import type { SecurityContext } from "#interfaces/security/SecurityContext";
+import type { SecurityProvider } from "#interfaces/security/SecurityProvider";
 
 /**
  * Bearer Token security provider for HTTP Bearer Token authentication.
@@ -8,13 +8,13 @@ import type { SecurityProvider } from '#interfaces/security/SecurityProvider';
  * Call `setKey()` to update the token at runtime (e.g. after token refresh).
  */
 export class BearerTokenProvider implements SecurityProvider {
-  readonly type = 'http' as const;
+  readonly type = "http" as const;
 
   readonly name: string;
 
   private _internalKey?: string;
 
-  constructor(name = 'bearer') {
+  constructor(name = "bearer") {
     this.name = name;
   }
 
@@ -24,13 +24,13 @@ export class BearerTokenProvider implements SecurityProvider {
   }
 
   createContext(authorization?: AuthorizationData, dynamicKey?: string): SecurityContext {
-    const token = dynamicKey ?? this._internalKey ?? (typeof authorization === 'string' ? authorization : undefined);
+    const token = dynamicKey ?? this._internalKey ?? (typeof authorization === "string" ? authorization : undefined);
 
-    if (token == null || typeof token !== 'string') {
+    if (token == null || typeof token !== "string") {
       return {};
     }
 
-    const bearerToken = token.startsWith('Bearer ') ? token : `Bearer ${token}`;
+    const bearerToken = token.startsWith("Bearer ") ? token : `Bearer ${token}`;
 
     return {
       headers: {

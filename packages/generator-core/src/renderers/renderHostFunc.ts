@@ -1,6 +1,6 @@
-import { Project } from 'ts-morph';
-import util from 'node:util';
-import { randomFilename } from '#/tools/randomFilename';
+import util from "node:util";
+import { Project } from "ts-morph";
+import { randomFilename } from "#/tools/randomFilename";
 
 /**
  * host 반환 함수를 생성하는 함수
@@ -12,16 +12,16 @@ export function renderHostFunc(hosts: string[]): string {
   const filename = randomFilename();
   const project = new Project();
   const sourceFile = project.createSourceFile(filename);
-  const functionNode = sourceFile.addFunction({ name: 'getHost' });
+  const functionNode = sourceFile.addFunction({ name: "getHost" });
 
   functionNode.setBodyText((writer) =>
     writer
       .writeLine(`const hosts = ${util.inspect(hosts)};`)
-      .writeLine('const host = hosts.at(0);')
-      .writeLine('if (host == null) {')
+      .writeLine("const host = hosts.at(0);")
+      .writeLine("if (host == null) {")
       .writeLine("    throw new Error('Cannot found host: undefined');")
-      .writeLine('}')
-      .writeLine('return host;'),
+      .writeLine("}")
+      .writeLine("return host;"),
   );
 
   const sourceCode = functionNode.getText();

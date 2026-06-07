@@ -1,9 +1,9 @@
-import type { FrameRetry } from '#interfaces/options/FrameRetry';
-import type { Method } from '#interfaces/options/Method';
-import type { BaseValidator } from '#validators/BaseValidator';
-import type { SecurityProvider } from '#interfaces/security/SecurityProvider';
-import type { AuthorizationData } from '#interfaces/security/AuthorizationData';
-import type { Milliseconds } from '#interfaces/options/Milliseconds';
+import type { FrameRetry } from "#interfaces/options/FrameRetry";
+import type { Method } from "#interfaces/options/Method";
+import type { Milliseconds } from "#interfaces/options/Milliseconds";
+import type { AuthorizationData } from "#interfaces/security/AuthorizationData";
+import type { SecurityProvider } from "#interfaces/security/SecurityProvider";
+import type { BaseValidator } from "#validators/BaseValidator";
 
 export interface FrameOption {
   /**

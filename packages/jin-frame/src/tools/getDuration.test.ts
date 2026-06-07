@@ -1,8 +1,8 @@
-import { getDuration } from '#tools/getDuration';
-import { describe, expect, it, vitest } from 'vitest';
+import { describe, expect, it, vitest } from "vitest";
+import { getDuration } from "#tools/getDuration";
 
-describe('getDuration', () => {
-  it('duration', () => {
+describe("getDuration", () => {
+  it("duration", () => {
     const s = new Date(2023, 0, 10, 0, 0, 0, 0);
     const e = new Date(2023, 0, 10, 0, 0, 10, 0);
 
@@ -11,7 +11,7 @@ describe('getDuration', () => {
     expect(d).toEqual(10000);
   });
 
-  it('duration - milliseconds', () => {
+  it("duration - milliseconds", () => {
     const s = new Date(2023, 0, 10, 0, 0, 0, 0);
     const e = new Date(2023, 0, 10, 0, 0, 0, 200);
 
@@ -20,7 +20,7 @@ describe('getDuration', () => {
     expect(d).toEqual(200);
   });
 
-  it('duration - second + milliseconds', () => {
+  it("duration - second + milliseconds", () => {
     const s = new Date(2023, 0, 10, 0, 0, 0, 0);
     const e = new Date(2023, 0, 10, 0, 0, 1, 200);
 
@@ -29,7 +29,7 @@ describe('getDuration', () => {
     expect(d).toEqual(1200);
   });
 
-  it('duration - second + milliseconds', () => {
+  it("duration - second + milliseconds", () => {
     const s = new Date(2023, 0, 10, 0, 0, 0, 0);
     const e = new Date(2023, 0, 10, 0, 1, 1, 312);
 
@@ -38,7 +38,7 @@ describe('getDuration', () => {
     expect(d).toEqual(61312);
   });
 
-  it('duration - minutes + second + milliseconds', () => {
+  it("duration - minutes + second + milliseconds", () => {
     const s = new Date(2023, 0, 10, 0, 0, 0, 0);
     const e = new Date(2023, 0, 10, 2, 1, 1, 312);
 
@@ -47,7 +47,7 @@ describe('getDuration', () => {
     expect(d).toEqual(7261312);
   });
 
-  it('exception - start', () => {
+  it("exception - start", () => {
     const s = new Date(2023, 0, 10, 0, 0, 0, 0);
     const e = new Date(NaN);
 
@@ -56,7 +56,7 @@ describe('getDuration', () => {
     expect(d).toEqual(-1);
   });
 
-  it('exception - end', () => {
+  it("exception - end", () => {
     const s = new Date(NaN);
     const e = new Date(2023, 0, 1, 0, 0, 0, 0);
 
@@ -65,9 +65,9 @@ describe('getDuration', () => {
     expect(d).toEqual(-1);
   });
 
-  it('exception', () => {
-    const spy = vitest.spyOn(Number, 'isNaN').mockImplementationOnce(() => {
-      throw new Error('raise Error');
+  it("exception", () => {
+    const spy = vitest.spyOn(Number, "isNaN").mockImplementationOnce(() => {
+      throw new Error("raise Error");
     });
 
     const start = new Date(Date.UTC(2023, 3, 24, 10, 0, 0, 999));

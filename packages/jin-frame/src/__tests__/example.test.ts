@@ -1,10 +1,9 @@
-import { describe, expect, it } from 'vitest';
-import crypto from 'node:crypto';
-
-import { Get } from '#decorators/methods/Get';
-import { Query } from '#decorators/fields/Query';
-import { JinFrame } from '#frames/JinFrame';
-import { Param } from '#decorators/fields/Param';
+import crypto from "node:crypto";
+import { describe, expect, it } from "vitest";
+import { Param } from "#decorators/fields/Param";
+import { Query } from "#decorators/fields/Query";
+import { Get } from "#decorators/methods/Get";
+import { JinFrame } from "#frames/JinFrame";
 
 interface IReqGetPokemonWithPaging {
   limit: number;
@@ -28,7 +27,7 @@ async function getPokemonInfoByName(inp: IReqGetPokemonInfoByName) {
   return response.json() as Promise<Record<string, string>>;
 }
 
-@Get({ host: 'https://pokeapi.co/api/v2/pokemon' })
+@Get({ host: "https://pokeapi.co/api/v2/pokemon" })
 class PokemonPagingFrame extends JinFrame {
   @Query()
   declare readonly limit: number;
@@ -37,17 +36,17 @@ class PokemonPagingFrame extends JinFrame {
   declare readonly offset: number;
 }
 
-@Get({ host: 'https://pokeapi.co/api/v2/pokemon/{name}' })
+@Get({ host: "https://pokeapi.co/api/v2/pokemon/{name}" })
 export class PokemonFrame extends JinFrame {
   @Param()
-  declare public readonly name: string;
+  public declare readonly name: string;
 
   @Query()
-  declare public readonly tid: string;
+  public declare readonly tid: string;
 }
 
-describe('Real Request and Response', () => {
-  it('getPokemonWithPaging', async () => {
+describe("Real Request and Response", () => {
+  it("getPokemonWithPaging", async () => {
     await getPokemonWithPaging({
       limit: 10,
       offset: 0,
@@ -56,9 +55,9 @@ describe('Real Request and Response', () => {
     // console.log(reply);
   });
 
-  it('getPokemonInfoByName', async () => {
+  it("getPokemonInfoByName", async () => {
     const reply = await getPokemonInfoByName({
-      name: 'pikachu',
+      name: "pikachu",
       tid: crypto.randomUUID(),
     });
 
@@ -66,7 +65,7 @@ describe('Real Request and Response', () => {
     // console.log(reply);
   });
 
-  it('PokemonPagingFrame', async () => {
+  it("PokemonPagingFrame", async () => {
     const frame = PokemonPagingFrame.of({
       limit: 10,
       offset: 0,
@@ -78,9 +77,9 @@ describe('Real Request and Response', () => {
     expect(reply).toBeDefined();
   });
 
-  it('PokemonFrame', async () => {
+  it("PokemonFrame", async () => {
     const frame = PokemonFrame.of({
-      name: 'pikachu',
+      name: "pikachu",
       tid: crypto.randomUUID(),
     });
 

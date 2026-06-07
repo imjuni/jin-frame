@@ -1,1 +1,1 @@
-export type ValidationResultType = 'exception' | 'value';
+export type ValidationResultType = "exception" | "value";

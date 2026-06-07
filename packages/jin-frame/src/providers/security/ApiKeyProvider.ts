@@ -1,6 +1,6 @@
-import type { AuthorizationData } from '#interfaces/security/AuthorizationData';
-import type { SecurityContext } from '#interfaces/security/SecurityContext';
-import type { SecurityProvider } from '#interfaces/security/SecurityProvider';
+import type { AuthorizationData } from "#interfaces/security/AuthorizationData";
+import type { SecurityContext } from "#interfaces/security/SecurityContext";
+import type { SecurityProvider } from "#interfaces/security/SecurityProvider";
 
 /**
  * API Key security provider that implements authentication using API keys.
@@ -8,7 +8,7 @@ import type { SecurityProvider } from '#interfaces/security/SecurityProvider';
  */
 export class ApiKeyProvider implements SecurityProvider {
   /** Type identifier for this security provider */
-  readonly type = 'api-key' as const;
+  readonly type = "api-key" as const;
 
   /** Name of this security provider instance */
   readonly name: string;
@@ -17,7 +17,7 @@ export class ApiKeyProvider implements SecurityProvider {
   private readonly keyName: string;
 
   /** Location where the API key should be placed */
-  private readonly location: 'header' | 'query' | 'cookie';
+  private readonly location: "header" | "query" | "cookie";
 
   /**
    * Creates a new API Key provider
@@ -25,7 +25,7 @@ export class ApiKeyProvider implements SecurityProvider {
    * @param keyName - The name of the API key parameter (e.g., 'X-API-Key', 'apikey')
    * @param location - Where to place the API key: 'header', 'query', or 'cookie'
    */
-  constructor(name: string, keyName: string, location: 'header' | 'query' | 'cookie' = 'header') {
+  constructor(name: string, keyName: string, location: "header" | "query" | "cookie" = "header") {
     this.name = name;
     this.keyName = keyName;
     this.location = location;
@@ -45,19 +45,19 @@ export class ApiKeyProvider implements SecurityProvider {
     }
 
     switch (this.location) {
-      case 'header':
+      case "header":
         return {
           headers: {
             [this.keyName]: key,
           },
         };
-      case 'query':
+      case "query":
         return {
           queries: {
             [this.keyName]: key,
           },
         };
-      case 'cookie':
+      case "cookie":
         return {
           headers: {
             Cookie: `${this.keyName}=${key}`,
@@ -74,11 +74,11 @@ export class ApiKeyProvider implements SecurityProvider {
    * @returns The extracted API key or undefined if not found
    */
   private static extractKey(authorization?: AuthorizationData): string | undefined {
-    if (typeof authorization === 'string') {
+    if (typeof authorization === "string") {
       return authorization;
     }
 
-    if (authorization && typeof authorization === 'object' && 'key' in authorization) {
+    if (authorization && typeof authorization === "object" && "key" in authorization) {
       return authorization.key as string;
     }
 

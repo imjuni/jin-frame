@@ -1,14 +1,14 @@
-import type { CommandModule } from 'yargs';
-import { CE_COMMAND } from '#/interfaces/CE_COMMAND';
-import { openAPITypescriptOptionBuilder } from '#/builders/openAPITypescriptOptionBuilder';
-import { generatorOptionBuilder } from '#/builders/generatorOptionBuilder';
-import type { TFrameCommandArgv } from '#/interfaces/IFrameCommandArgv';
-import { frameCommandBuilder } from '#/builders/frameCommandBuilder';
-import { frameCommandHandler } from '#/handlers/frameCommandHandler';
+import type { CommandModule } from "yargs";
+import { frameCommandBuilder } from "#/builders/frameCommandBuilder";
+import { generatorOptionBuilder } from "#/builders/generatorOptionBuilder";
+import { openAPITypescriptOptionBuilder } from "#/builders/openAPITypescriptOptionBuilder";
+import { frameCommandHandler } from "#/handlers/frameCommandHandler";
+import { CE_COMMAND } from "#/interfaces/CE_COMMAND";
+import type { TFrameCommandArgv } from "#/interfaces/IFrameCommandArgv";
 
 export const frameCommandModule: CommandModule<TFrameCommandArgv, TFrameCommandArgv> = {
-  command: [CE_COMMAND.FRAME, '<spec>'].join(' '),
-  describe: 'Generate jin-frame API client classes from existing TypeScript type definitions',
+  command: [CE_COMMAND.FRAME, "<spec>"].join(" "),
+  describe: "Generate jin-frame API client classes from existing TypeScript type definitions",
   builder: (yargs) => {
     const generatorArgv = generatorOptionBuilder(yargs) as unknown as Parameters<
       typeof openAPITypescriptOptionBuilder

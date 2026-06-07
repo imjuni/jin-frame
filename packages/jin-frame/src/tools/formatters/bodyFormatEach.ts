@@ -1,5 +1,5 @@
-import type { SingleBodyFormatter } from '#interfaces/field/body/SingleBodyFormatter';
-import { bodyFormattings } from '#tools/formatters/bodyFormattings';
+import type { SingleBodyFormatter } from "#interfaces/field/body/SingleBodyFormatter";
+import { bodyFormattings } from "#tools/formatters/bodyFormattings";
 
 export function bodyFormatEach(
   initialValue: unknown,

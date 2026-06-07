@@ -1,5 +1,5 @@
-import type { JinRespBase } from '#interfaces/JinRespBase';
-import type { ValidationResult } from '#interfaces/ValidationResult';
+import type { JinRespBase } from "#interfaces/JinRespBase";
+import type { ValidationResult } from "#interfaces/ValidationResult";
 
 export interface JinFailResp<T> extends JinRespBase {
   ok: false;

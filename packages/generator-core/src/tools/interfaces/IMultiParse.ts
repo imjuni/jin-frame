@@ -7,7 +7,7 @@ export interface IMultiParse<T = unknown> {
    * - yaml: yaml 파싱
    * - json: json 파싱
    */
-  kind: 'yaml' | 'json';
+  kind: "yaml" | "json";
 
   /**
    * 파싱한 결과

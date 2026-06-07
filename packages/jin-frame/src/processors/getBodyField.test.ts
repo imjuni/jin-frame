@@ -1,18 +1,18 @@
-import { getBodyField } from '#processors/getBodyField';
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it } from "vitest";
+import { getBodyField } from "#processors/getBodyField";
 
-describe('getBodyField', () => {
-  it('should return original instance when primitive type and array', () => {
+describe("getBodyField", () => {
+  it("should return original instance when primitive type and array", () => {
     function a() {}
     const b = () => {};
     const c = Symbol(1);
 
-    const r01 = getBodyField(1, { key: 'name', type: 'body' });
-    const r02 = getBodyField(BigInt(1), { key: 'name', type: 'body' });
-    const r03 = getBodyField(c, { key: 'name', type: 'body' });
-    const r04 = getBodyField(a, { key: 'name', type: 'body' });
-    const r05 = getBodyField(b, { key: 'name', type: 'body' });
-    const r06 = getBodyField([1], { key: 'name', type: 'body' });
+    const r01 = getBodyField(1, { key: "name", type: "body" });
+    const r02 = getBodyField(BigInt(1), { key: "name", type: "body" });
+    const r03 = getBodyField(c, { key: "name", type: "body" });
+    const r04 = getBodyField(a, { key: "name", type: "body" });
+    const r05 = getBodyField(b, { key: "name", type: "body" });
+    const r06 = getBodyField([1], { key: "name", type: "body" });
 
     expect(r01).toEqual(1);
     expect(r02).toEqual(BigInt(1));
@@ -22,11 +22,11 @@ describe('getBodyField', () => {
     expect(r06).toEqual([1]);
   });
 
-  it('should return origin object instance when key field is null', () => {
+  it("should return origin object instance when key field is null", () => {
     const data = { name: null };
     const results = getBodyField(data, {
-      key: 'name',
-      type: 'body',
+      key: "name",
+      type: "body",
       formatters: {
         number: (v) => `${v}`,
       },
@@ -35,80 +35,80 @@ describe('getBodyField', () => {
     expect(results).toEqual(data);
   });
 
-  it('should return formatted object instance when key field is primitive type', () => {
+  it("should return formatted object instance when key field is primitive type", () => {
     const results = getBodyField(
       { name: 1 },
       {
-        key: 'name',
-        type: 'body',
+        key: "name",
+        type: "body",
         formatters: {
           number: (v) => `${v}`,
         },
       },
     );
 
-    expect(results).toEqual({ name: '1' });
+    expect(results).toEqual({ name: "1" });
   });
 
-  it('should return formatted object instance when key field is primitive type array', () => {
+  it("should return formatted object instance when key field is primitive type array", () => {
     const results = getBodyField(
       { name: [1] },
       {
-        key: 'name',
-        type: 'body',
+        key: "name",
+        type: "body",
         formatters: {
           number: (v) => `${v}`,
         },
       },
     );
 
-    expect(results).toEqual({ name: ['1'] });
+    expect(results).toEqual({ name: ["1"] });
   });
 
-  it('should return formatted object instance when key field is object type array', () => {
+  it("should return formatted object instance when key field is object type array", () => {
     const results = getBodyField(
       { name: [1] },
       {
-        key: 'name',
-        type: 'body',
+        key: "name",
+        type: "body",
         formatters: {
           number: (v) => `${v}`,
         },
       },
     );
 
-    expect(results).toEqual({ name: ['1'] });
+    expect(results).toEqual({ name: ["1"] });
   });
 
-  it('should return formatted object instance when key field is object type array', () => {
+  it("should return formatted object instance when key field is object type array", () => {
     const results = getBodyField(
       { name: { age: 10 } },
       {
-        key: 'name',
-        type: 'body',
+        key: "name",
+        type: "body",
         formatters: {
-          findFrom: 'age',
+          findFrom: "age",
           number: (v) => `${v}`,
         },
       },
     );
 
-    expect(results).toEqual({ name: { age: '10' } });
+    expect(results).toEqual({ name: { age: "10" } });
   });
 
-  it('should return formatted object instance when key field is object type array', () => {
+  it("should return formatted object instance when key field is object type array", () => {
     const results = getBodyField(
       { name: { age: 10 } },
       {
-        key: 'name',
-        type: 'body',
+        key: "name",
+        type: "body",
         formatters: {
-          findFrom: 'age',
+          findFrom: "age",
           number: (v) => `${v}`,
         },
       },
     );
 
-    expect(results).toEqual({ name: { age: '10' } });
+    expect(results).toEqual({ name: { age: "10" } });
   });
 });

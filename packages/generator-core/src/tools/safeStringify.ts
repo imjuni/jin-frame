@@ -6,6 +6,6 @@ export function safeStringify(
   try {
     return JSON.stringify(value, replacer, spacer);
   } catch {
-    return '';
+    return "";
   }
 }

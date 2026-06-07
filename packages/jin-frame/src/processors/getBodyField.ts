@@ -1,21 +1,21 @@
-import type { BodyFieldOption } from '#interfaces/field/body/BodyFieldOption';
-import type { SingleBodyFormatter } from '#interfaces/field/body/SingleBodyFormatter';
-import { classifyBodyFormatters } from '#tools/formatters/classifyBodyFormatters';
-import { formatEach } from '#tools/formatters/formatEach';
-import { getBodyFormatters } from '#tools/formatters/getBodyFormatters';
-import { isValidArrayType } from '#tools/type-narrowing/isValidArrayType';
-import { isValidPrimitiveWithDateType } from '#tools/type-narrowing/isValidPrimitiveWithDateType';
-import type { SupportArrayType } from '#tools/type-utilities/SupportArrayType';
-import type { SupportPrimitiveType } from '#tools/type-utilities/SupportPrimitiveType';
-import * as dotProp from 'dot-prop';
+import * as dotProp from "dot-prop";
+import type { BodyFieldOption } from "#interfaces/field/body/BodyFieldOption";
+import type { SingleBodyFormatter } from "#interfaces/field/body/SingleBodyFormatter";
+import { classifyBodyFormatters } from "#tools/formatters/classifyBodyFormatters";
+import { formatEach } from "#tools/formatters/formatEach";
+import { getBodyFormatters } from "#tools/formatters/getBodyFormatters";
+import { isValidArrayType } from "#tools/type-narrowing/isValidArrayType";
+import { isValidPrimitiveWithDateType } from "#tools/type-narrowing/isValidPrimitiveWithDateType";
+import type { SupportArrayType } from "#tools/type-utilities/SupportArrayType";
+import type { SupportPrimitiveType } from "#tools/type-utilities/SupportPrimitiveType";
 
 export function getBodyField(thisFrame: unknown, field: BodyFieldOption): unknown {
   if (
     isValidPrimitiveWithDateType(thisFrame) ||
-    typeof thisFrame === 'bigint' ||
-    typeof thisFrame === 'function' ||
-    typeof thisFrame === 'symbol' ||
-    (typeof thisFrame === 'object' && Array.isArray(thisFrame))
+    typeof thisFrame === "bigint" ||
+    typeof thisFrame === "function" ||
+    typeof thisFrame === "symbol" ||
+    (typeof thisFrame === "object" && Array.isArray(thisFrame))
   ) {
     return thisFrame;
   }
@@ -63,8 +63,8 @@ export function getBodyField(thisFrame: unknown, field: BodyFieldOption): unknow
   dotProp.set(origin, replaceKey, value);
 
   const formatted = classifed.valid.reduce((processing, formatter) => {
-    const childAccessKey = [accessKey, formatter.findFrom].join('.');
-    const childReplaceKey = [replaceKey, formatter.findFrom].join('.');
+    const childAccessKey = [accessKey, formatter.findFrom].join(".");
+    const childReplaceKey = [replaceKey, formatter.findFrom].join(".");
 
     const childValue = dotProp.get<unknown>(processing, childAccessKey);
     const formatteds = formatEach(childValue, formatter);

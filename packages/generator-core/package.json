@@ -27,10 +27,10 @@
     "pub:prod": "RELEASE_MODE=true pnpm publish",
     "dd": "deps-diff md -d prod -d dev --title-list-type 'm' --deps-list-type 'm' --content-list-type 'm'",
     "biome": "biome",
-    "check": "biome check .",
-    "check:write": "biome check --write .",
-    "format": "biome format --write .",
-    "format:check": "biome format ."
+    "check": "biome check --config-path=biome.json --assist-enabled=false .",
+    "check:write": "biome check --config-path=biome.json --assist-enabled=false --write .",
+    "format": "biome format --config-path=biome.json --write .",
+    "format:check": "biome format --config-path=biome.json ."
   },
   "repository": {
     "type": "git",

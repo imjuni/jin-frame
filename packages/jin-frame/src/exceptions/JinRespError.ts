@@ -1,9 +1,9 @@
-import type { JinFrame } from '#frames/JinFrame';
-import type { DebugInfo } from '#interfaces/DebugInfo';
-import type { JinFailResp } from '#interfaces/JinFailResp';
+import type { JinFrame } from "#frames/JinFrame";
+import type { DebugInfo } from "#interfaces/DebugInfo";
+import type { JinFailResp } from "#interfaces/JinFailResp";
 
 export class JinRespError<TPASS, TFAIL = unknown> extends Error {
-  __discriminator = 'JinRespError';
+  __discriminator = "JinRespError";
 
   #debug: DebugInfo;
 

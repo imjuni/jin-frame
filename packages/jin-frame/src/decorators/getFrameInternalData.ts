@@ -1,7 +1,7 @@
-import type { FrameInternal } from '#interfaces/options/FrameInternal';
-import type { FrameOption } from '#interfaces/options/FrameOption';
+import type { FrameInternal } from "#interfaces/options/FrameInternal";
+import type { FrameOption } from "#interfaces/options/FrameOption";
 
-export function getFrameInternalData(option?: Partial<Omit<FrameOption, 'method'>>): FrameInternal {
+export function getFrameInternalData(option?: Partial<Omit<FrameOption, "method">>): FrameInternal {
   const frameData: FrameInternal = {
     startAt: new Date(),
     eachStartAt: new Date(),

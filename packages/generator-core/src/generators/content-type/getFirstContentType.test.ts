@@ -1,70 +1,70 @@
-import { getFirstContentType } from '#/generators/content-type/getFirstContentType';
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it } from "vitest";
+import { getFirstContentType } from "#/generators/content-type/getFirstContentType";
 
-describe('getFirstContentType', () => {
-  const preferredContentType = ['application/json', 'application/*+json', 'text/plain', 'text/*'];
+describe("getFirstContentType", () => {
+  const preferredContentType = ["application/json", "application/*+json", "text/plain", "text/*"];
 
-  it('should return undefined when pass empty content', () => {
+  it("should return undefined when pass empty content", () => {
     const result = getFirstContentType(preferredContentType, undefined);
     expect(result).toBeUndefined();
   });
 
-  it('should return application/json when match prefered and content-type', () => {
+  it("should return application/json when match prefered and content-type", () => {
     const result = getFirstContentType(preferredContentType, {
-      'application/json': {},
+      "application/json": {},
     });
 
     expect(result).toEqual({
-      mediaType: 'application/json',
+      mediaType: "application/json",
       value: {},
     });
   });
 
-  it('should return text/markdown when match wildcard', () => {
+  it("should return text/markdown when match wildcard", () => {
     const result = getFirstContentType(preferredContentType, {
-      'text/markdown': {},
+      "text/markdown": {},
     });
 
     expect(result).toEqual({
-      mediaType: 'text/markdown',
+      mediaType: "text/markdown",
       value: {},
     });
   });
 
-  it('should return text/markdown when match wildcard', () => {
+  it("should return text/markdown when match wildcard", () => {
     const result = getFirstContentType(preferredContentType, {
-      'text/markdown': {},
+      "text/markdown": {},
     });
 
     expect(result).toEqual({
-      mediaType: 'text/markdown',
+      mediaType: "text/markdown",
       value: {},
     });
   });
 
-  it('should return application/rss+json when match partial wildcard', () => {
+  it("should return application/rss+json when match partial wildcard", () => {
     const result = getFirstContentType(preferredContentType, {
-      'application/rss+json': {},
+      "application/rss+json": {},
     });
 
     expect(result).toEqual({
-      mediaType: 'application/rss+json',
+      mediaType: "application/rss+json",
       value: {},
     });
   });
 
-  it('should return application/x-www-form-urlencoded when non-match in preferred', () => {
+  it("should return application/x-www-form-urlencoded when non-match in preferred", () => {
     const result = getFirstContentType(preferredContentType, {
-      'application/x-www-form-urlencoded': {},
+      "application/x-www-form-urlencoded": {},
     });
 
     expect(result).toEqual({
-      mediaType: 'application/x-www-form-urlencoded',
+      mediaType: "application/x-www-form-urlencoded",
       value: {},
     });
   });
 
-  it('should return undefined when empty content', () => {
+  it("should return undefined when empty content", () => {
     const result = getFirstContentType(preferredContentType, {});
 
     expect(result).toBeUndefined();
