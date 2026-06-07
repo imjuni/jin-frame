@@ -1,5 +1,5 @@
 import type { Argv } from "yargs";
-import type { IOpenAPITypeScriptOption } from "#/interfaces/IOpenAPITypeScriptOption";
+import type { IOpenAPITypeScriptOption } from "#src/interfaces/IOpenAPITypeScriptOption.js";
 
 export function openAPITypescriptOptionBuilder(argv: Argv<IOpenAPITypeScriptOption>): Argv<IOpenAPITypeScriptOption> {
   argv

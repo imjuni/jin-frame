@@ -1,8 +1,8 @@
 import type { Argv } from "yargs";
-import { CE_COMMAND } from "#/interfaces/CE_COMMAND";
-import type { TFrameCommandArgv } from "#/interfaces/IFrameCommandArgv";
-import { coercePathOrUrl } from "#/validators/coercePathOrUrl";
-import { getCoercePath } from "#/validators/getCoercePath";
+import { CE_COMMAND } from "#src/interfaces/CE_COMMAND.js";
+import type { TFrameCommandArgv } from "#src/interfaces/IFrameCommandArgv.js";
+import { coercePathOrUrl } from "#src/validators/coercePathOrUrl.js";
+import { getCoercePath } from "#src/validators/getCoercePath.js";
 
 export function frameCommandBuilder(argv: Argv<TFrameCommandArgv>): Argv<TFrameCommandArgv> {
   argv

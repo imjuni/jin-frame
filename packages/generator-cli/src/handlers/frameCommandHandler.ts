@@ -2,7 +2,7 @@ import fs from "node:fs";
 import { convertor, createFrames, load, safePathJoin, validate } from "@jin-frame/generator-core";
 import consola, { LogLevels, type LogType } from "consola";
 import pathe from "pathe";
-import type { TFrameCommandArgv } from "#/interfaces/IFrameCommandArgv";
+import type { TFrameCommandArgv } from "#src/interfaces/IFrameCommandArgv.js";
 
 export async function frameCommandHandler(params: TFrameCommandArgv): Promise<void> {
   consola.level = LogLevels[params.logLevel as LogType];

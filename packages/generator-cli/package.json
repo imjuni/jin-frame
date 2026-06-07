@@ -40,6 +40,12 @@
   "bin": {
     "jin-frame-generator": "dist/cjs/cli.cjs"
   },
+  "imports": {
+    "#src/*.js": {
+      "types": "./src/*.ts",
+      "default": "./src/*.ts"
+    }
+  },
   "bugs": {
     "url": "https://github.com/imjuni/jin-frame/issues"
   },
@@ -88,6 +94,6 @@
   "peerDependencies": {
     "openapi-typescript": ">=7",
     "ts-morph": ">=26",
-    "typescript": ">=5"
+    "typescript": ">=6"
   }
 }

@@ -10,8 +10,8 @@ import {
 } from "@jin-frame/generator-core";
 import consola, { LogLevels, type LogType } from "consola";
 import pathe from "pathe";
-import type { TCreateCommandArgv } from "#/interfaces/ICreateCommandArgv";
-import { transformArgvToOpenapiTsOptions } from "#/transforms/transformArgvToOpenapiTsOptions";
+import type { TCreateCommandArgv } from "#src/interfaces/ICreateCommandArgv.js";
+import { transformArgvToOpenapiTsOptions } from "#src/transforms/transformArgvToOpenapiTsOptions.js";
 
 export async function createCommandHandler(params: TCreateCommandArgv): Promise<void> {
   consola.level = LogLevels[params.logLevel as LogType];

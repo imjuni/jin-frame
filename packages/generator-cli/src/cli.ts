@@ -3,10 +3,10 @@ import { isError } from "my-easy-fp";
 import { install as sourceMapSupportInstall } from "source-map-support";
 import yargs, { type CommandModule } from "yargs";
 import { hideBin } from "yargs/helpers";
-import { createCommandModule } from "#/commands/createCommand";
-import { frameCommandModule } from "#/commands/frameCommand";
-import type { TCreateCommandArgv } from "#/interfaces/ICreateCommandArgv";
-import type { TFrameCommandArgv } from "#/interfaces/IFrameCommandArgv";
+import { createCommandModule } from "#src/commands/createCommand.js";
+import { frameCommandModule } from "#src/commands/frameCommand.js";
+import type { TCreateCommandArgv } from "#src/interfaces/ICreateCommandArgv.js";
+import type { TFrameCommandArgv } from "#src/interfaces/IFrameCommandArgv.js";
 
 sourceMapSupportInstall();
 

@@ -1,10 +1,10 @@
 import type { CommandModule } from "yargs";
-import { createCommandBuilder } from "#/builders/createCommandBuilder";
-import { generatorOptionBuilder } from "#/builders/generatorOptionBuilder";
-import { openAPITypescriptOptionBuilder } from "#/builders/openAPITypescriptOptionBuilder";
-import { createCommandHandler } from "#/handlers/createCommandHandler";
-import { CE_COMMAND } from "#/interfaces/CE_COMMAND";
-import type { TCreateCommandArgv } from "#/interfaces/ICreateCommandArgv";
+import { createCommandBuilder } from "#src/builders/createCommandBuilder.js";
+import { generatorOptionBuilder } from "#src/builders/generatorOptionBuilder.js";
+import { openAPITypescriptOptionBuilder } from "#src/builders/openAPITypescriptOptionBuilder.js";
+import { createCommandHandler } from "#src/handlers/createCommandHandler.js";
+import { CE_COMMAND } from "#src/interfaces/CE_COMMAND.js";
+import type { TCreateCommandArgv } from "#src/interfaces/ICreateCommandArgv.js";
 
 export const createCommandModule: CommandModule<TCreateCommandArgv, TCreateCommandArgv> = {
   command: [CE_COMMAND.CREATE, "<spec>"].join(" "),
