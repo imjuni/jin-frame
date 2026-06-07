@@ -1,7 +1,7 @@
 import type { Argv } from "yargs";
-import { CE_COMMAND } from "#/interfaces/CE_COMMAND";
-import type { TCreateCommandArgv } from "#/interfaces/ICreateCommandArgv";
-import { coercePathOrUrl } from "#/validators/coercePathOrUrl";
+import { CE_COMMAND } from "#src/interfaces/CE_COMMAND.js";
+import type { TCreateCommandArgv } from "#src/interfaces/ICreateCommandArgv.js";
+import { coercePathOrUrl } from "#src/validators/coercePathOrUrl.js";
 
 export function createCommandBuilder(argv: Argv<TCreateCommandArgv>): Argv<TCreateCommandArgv> {
   argv

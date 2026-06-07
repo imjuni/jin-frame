@@ -1,10 +1,10 @@
 import type { CommandModule } from "yargs";
-import { frameCommandBuilder } from "#/builders/frameCommandBuilder";
-import { generatorOptionBuilder } from "#/builders/generatorOptionBuilder";
-import { openAPITypescriptOptionBuilder } from "#/builders/openAPITypescriptOptionBuilder";
-import { frameCommandHandler } from "#/handlers/frameCommandHandler";
-import { CE_COMMAND } from "#/interfaces/CE_COMMAND";
-import type { TFrameCommandArgv } from "#/interfaces/IFrameCommandArgv";
+import { frameCommandBuilder } from "#src/builders/frameCommandBuilder.js";
+import { generatorOptionBuilder } from "#src/builders/generatorOptionBuilder.js";
+import { openAPITypescriptOptionBuilder } from "#src/builders/openAPITypescriptOptionBuilder.js";
+import { frameCommandHandler } from "#src/handlers/frameCommandHandler.js";
+import { CE_COMMAND } from "#src/interfaces/CE_COMMAND.js";
+import type { TFrameCommandArgv } from "#src/interfaces/IFrameCommandArgv.js";
 
 export const frameCommandModule: CommandModule<TFrameCommandArgv, TFrameCommandArgv> = {
   command: [CE_COMMAND.FRAME, "<spec>"].join(" "),

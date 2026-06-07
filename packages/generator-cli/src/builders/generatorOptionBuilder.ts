@@ -1,6 +1,6 @@
 import type { Argv } from "yargs";
-import type { IGeneratorOption } from "#/interfaces/IGeneratorOption";
-import { coerceIdentifier } from "#/validators/coerceIdentifier";
+import type { IGeneratorOption } from "#src/interfaces/IGeneratorOption.js";
+import { coerceIdentifier } from "#src/validators/coerceIdentifier.js";
 
 export function generatorOptionBuilder(argv: Argv<IGeneratorOption>): Argv<IGeneratorOption> {
   argv

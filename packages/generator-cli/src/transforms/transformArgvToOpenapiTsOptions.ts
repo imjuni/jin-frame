@@ -1,5 +1,5 @@
 import type { OpenAPITSOptions } from "openapi-typescript";
-import type { TCreateCommandArgv } from "#/interfaces/ICreateCommandArgv";
+import type { TCreateCommandArgv } from "#src/interfaces/ICreateCommandArgv.js";
 
 export function transformArgvToOpenapiTsOptions(argv: TCreateCommandArgv): OpenAPITSOptions {
   return {
