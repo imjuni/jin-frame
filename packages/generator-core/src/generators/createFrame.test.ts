@@ -2,7 +2,7 @@ import { randomUUID } from "node:crypto";
 import type { OpenAPIV3 } from "openapi-types";
 import { Project } from "ts-morph";
 import { beforeEach, describe, expect, it, vitest } from "vitest";
-import { createFrame } from "#/generators/createFrame.js";
+import { createFrame } from "#generators/createFrame.js";
 
 vitest.mock("node:crypto", () => ({
   randomUUID: vitest.fn(),

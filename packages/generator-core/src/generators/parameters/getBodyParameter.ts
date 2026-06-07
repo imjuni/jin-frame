@@ -1,10 +1,10 @@
 import { type PropertyDeclarationStructure, Scope, StructureKind } from "ts-morph";
-import { getFileUploadKeyMap } from "#/generators/octet-stream/getFileUploadKeyMap.js";
-import { isFileSchema } from "#/generators/octet-stream/isFileSchema.js";
-import { getBodyDecorator } from "#/generators/parameters/getBodyDecorator.js";
-import { getParameterJsDoc } from "#/generators/parameters/getParameterJsDoc.js";
-import type { IGetBodyParameterProps } from "#/generators/parameters/interfaces/IGetBodyParameterProps.js";
-import type { IGetBodyParameterResult } from "#/generators/parameters/interfaces/IGetBodyParameterResult.js";
+import { getFileUploadKeyMap } from "#generators/octet-stream/getFileUploadKeyMap.js";
+import { isFileSchema } from "#generators/octet-stream/isFileSchema.js";
+import { getBodyDecorator } from "#generators/parameters/getBodyDecorator.js";
+import { getParameterJsDoc } from "#generators/parameters/getParameterJsDoc.js";
+import type { IGetBodyParameterProps } from "#generators/parameters/interfaces/IGetBodyParameterProps.js";
+import type { IGetBodyParameterResult } from "#generators/parameters/interfaces/IGetBodyParameterResult.js";
 
 export function getBodyParameter(params: IGetBodyParameterProps): IGetBodyParameterResult[] {
   const { requestBody, contentType } = params;

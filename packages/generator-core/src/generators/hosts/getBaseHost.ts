@@ -1,6 +1,6 @@
-import type { IGetBaseHostParams } from "#/generators/hosts/interfaces/IGetBaseHostParams.js";
-import type { IBaseUrl } from "#/models/generators/IBaseUrl.js";
-import { safeUrl } from "#/tools/safeUrl.js";
+import type { IGetBaseHostParams } from "#generators/hosts/interfaces/IGetBaseHostParams.js";
+import type { IBaseUrl } from "#models/generators/IBaseUrl.js";
+import { safeUrl } from "#tools/safeUrl.js";
 
 export function getBaseHost({ host, spec }: IGetBaseHostParams): IBaseUrl[] {
   const urls: IBaseUrl[] = [];

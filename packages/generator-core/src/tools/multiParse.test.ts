@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { multiParse } from "#/tools/multiParse.js";
+import { multiParse } from "#tools/multiParse.js";
 
 describe("multiParse", () => {
   it("should return the parsed value when the value is JSON", () => {

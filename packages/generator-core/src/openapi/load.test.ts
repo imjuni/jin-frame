@@ -1,7 +1,7 @@
 import fs from "node:fs";
 import { exists } from "my-node-fp";
 import { afterEach, describe, expect, it, vi } from "vitest";
-import { load } from "#/openapi/load.js";
+import { load } from "#openapi/load.js";
 
 vi.mock("my-node-fp", () => ({
   exists: vi.fn(),

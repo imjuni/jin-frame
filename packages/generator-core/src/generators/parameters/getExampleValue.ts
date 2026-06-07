@@ -1,4 +1,4 @@
-import { safeStringify } from "#/tools/safeStringify.js";
+import { safeStringify } from "#tools/safeStringify.js";
 
 export function getExampleValue(params: { isJsonish: boolean; useCodeFence: boolean; value: unknown }): string {
   if (params.isJsonish || params.useCodeFence) {

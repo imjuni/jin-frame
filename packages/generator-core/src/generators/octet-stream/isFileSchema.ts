@@ -1,5 +1,5 @@
 import type { OpenAPIV3 } from "openapi-types";
-import type { IIsFileSchemaResult } from "#/generators/octet-stream/interfaces/IIsFileSchemaResult.js";
+import type { IIsFileSchemaResult } from "#generators/octet-stream/interfaces/IIsFileSchemaResult.js";
 
 export function isFileSchema(_schema?: OpenAPIV3.ReferenceObject | OpenAPIV3.SchemaObject): IIsFileSchemaResult {
   const schema = _schema as OpenAPIV3.SchemaObject | undefined;

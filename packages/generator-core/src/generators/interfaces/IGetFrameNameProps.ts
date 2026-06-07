@@ -1,4 +1,4 @@
-import type { THttpMethod } from "#/https/method.js";
+import type { THttpMethod } from "#https/method.js";
 
 export interface IGetFrameNameProps {
   pathKey: string;

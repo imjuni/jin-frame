@@ -1,6 +1,6 @@
 import type { OpenAPIV3 } from "openapi-types";
 import { describe, expect, it } from "vitest";
-import { getBodyParameter } from "#/generators/parameters/getBodyParameter.js";
+import { getBodyParameter } from "#generators/parameters/getBodyParameter.js";
 
 describe("getBodyParameter", () => {
   const requestBody = {

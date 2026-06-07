@@ -1,9 +1,9 @@
-import type { IBodyFieldOption } from "#/models/generators/options/IBodyFieldOption.js";
-import type { IFrameOption } from "#/models/generators/options/IFrameOption.js";
-import type { IHeaderFieldOption } from "#/models/generators/options/IHeaderFieldOption.js";
-import type { IObjectBodyFieldOption } from "#/models/generators/options/IObjectBodyFieldOption.js";
-import type { IParamFieldOption } from "#/models/generators/options/IParamFieldOption.js";
-import type { IQueryFieldOption } from "#/models/generators/options/IQueryFieldOption.js";
+import type { IBodyFieldOption } from "#models/generators/options/IBodyFieldOption.js";
+import type { IFrameOption } from "#models/generators/options/IFrameOption.js";
+import type { IHeaderFieldOption } from "#models/generators/options/IHeaderFieldOption.js";
+import type { IObjectBodyFieldOption } from "#models/generators/options/IObjectBodyFieldOption.js";
+import type { IParamFieldOption } from "#models/generators/options/IParamFieldOption.js";
+import type { IQueryFieldOption } from "#models/generators/options/IQueryFieldOption.js";
 
 /**
  * Data structure for jin-frame code generation

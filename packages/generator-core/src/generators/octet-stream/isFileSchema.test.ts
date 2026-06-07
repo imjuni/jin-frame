@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { isFileSchema } from "#/generators/octet-stream/isFileSchema.js";
+import { isFileSchema } from "#generators/octet-stream/isFileSchema.js";
 
 describe("isFileSchema", () => {
   it("should return single file when schema binary format", () => {

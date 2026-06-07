@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { getFirstContentType } from "#/generators/content-type/getFirstContentType.js";
+import { getFirstContentType } from "#generators/content-type/getFirstContentType.js";
 
 describe("getFirstContentType", () => {
   const preferredContentType = ["application/json", "application/*+json", "text/plain", "text/*"];

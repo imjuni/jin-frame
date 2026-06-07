@@ -1,6 +1,6 @@
 import type { OpenAPIV3 } from "openapi-types";
 import { describe, expect, it } from "vitest";
-import { createFrames } from "#/generators/createFrames.js";
+import { createFrames } from "#generators/createFrames.js";
 
 describe("createFrames", async () => {
   const { default: document } = (await import("../../../../examples/openapi/v3.json")) as unknown as {

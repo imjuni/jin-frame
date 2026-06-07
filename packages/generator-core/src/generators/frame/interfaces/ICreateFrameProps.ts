@@ -1,6 +1,6 @@
 import type { OpenAPIV3 } from "openapi-types";
-import type { IFrameOverrideRetry } from "#/generators/frames/interfaces/IFrameOverrideRetry.js";
-import type { THttpMethod } from "#/https/method.js";
+import type { IFrameOverrideRetry } from "#generators/frames/interfaces/IFrameOverrideRetry.js";
+import type { THttpMethod } from "#https/method.js";
 
 export interface ICreateFrameProps {
   specTypeFilePath: string;

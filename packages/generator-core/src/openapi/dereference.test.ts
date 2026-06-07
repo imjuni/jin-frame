@@ -1,8 +1,8 @@
 import type { OpenAPIV3 } from "openapi-types";
 import pathe from "pathe";
 import { describe, expect, it } from "vitest";
-import { dereference } from "#/openapi/dereference.js";
-import { load } from "#/openapi/load.js";
+import { dereference } from "#openapi/dereference.js";
+import { load } from "#openapi/load.js";
 
 describe("dereference", () => {
   it("should return dereferenced openapi spec document when pass valid document", async () => {

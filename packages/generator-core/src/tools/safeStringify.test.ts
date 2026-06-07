@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { safeStringify } from "#/tools/safeStringify.js";
+import { safeStringify } from "#tools/safeStringify.js";
 
 describe("safeStringify", () => {
   it("should return the stringified value", () => {
