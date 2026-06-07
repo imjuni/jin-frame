@@ -6,14 +6,11 @@ export default defineConfig({
     coverage: {
       provider: "v8", // or 'v8'
       exclude: [
-        ".eslintrc.cjs",
         "prepublish.cjs",
         ".configs/**",
         "docs",
         "dist",
         "examples",
-        "eslint.config.mjs",
-        "eslint.config.custom.mjs",
         "vitest.config.mts",
         "src/interfaces",
         "src/tools/type-utilities",
