@@ -1,5 +1,5 @@
-import type { IServerFrameEndpoint } from "#/generators/frames/interfaces/IServerFrameEndpoint";
-import { safeUrl } from "#/tools/safeUrl";
+import type { IServerFrameEndpoint } from "#/generators/frames/interfaces/IServerFrameEndpoint.js";
+import { safeUrl } from "#/tools/safeUrl.js";
 
 export function splitServerUrl(value: string): Pick<IServerFrameEndpoint, "host" | "pathPrefix"> {
   const templateMatched = value.match(/^([A-Za-z][A-Za-z0-9+.-]*:\/\/[^/]+)(\/.*)?$/);

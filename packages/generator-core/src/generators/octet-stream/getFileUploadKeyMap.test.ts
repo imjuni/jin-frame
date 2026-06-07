@@ -1,6 +1,6 @@
 import type { OpenAPIV3 } from "openapi-types";
 import { describe, expect, it } from "vitest";
-import { getFileUploadKeyMap } from "#/generators/octet-stream/getFileUploadKeyMap";
+import { getFileUploadKeyMap } from "#/generators/octet-stream/getFileUploadKeyMap.js";
 
 describe("getFileUploadKeyMap", () => {
   const requestBody: OpenAPIV3.RequestBodyObject = {

@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { getRequestContentType } from "#/generators/content-type/getRequestContentType";
+import { getRequestContentType } from "#/generators/content-type/getRequestContentType.js";
 
 describe("getRequestContentType", () => {
   it("should return undefined when empty requestBody", () => {

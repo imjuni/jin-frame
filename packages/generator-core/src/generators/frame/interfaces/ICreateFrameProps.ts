@@ -1,5 +1,5 @@
 import type { OpenAPIV3 } from "openapi-types";
-import type { THttpMethod } from "#/https/method";
+import type { THttpMethod } from "#/https/method.js";
 
 export interface ICreateFrameProps {
   specTypeFilePath: string;

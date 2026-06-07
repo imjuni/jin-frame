@@ -1,6 +1,6 @@
 import type { OpenAPIV3 } from "openapi-types";
 import { describe, expect, it } from "vitest";
-import { getResponseContentType } from "#/generators/content-type/getResponseContentType";
+import { getResponseContentType } from "#/generators/content-type/getResponseContentType.js";
 
 describe("getResponseContentType", () => {
   const responses: OpenAPIV3.ResponsesObject = {

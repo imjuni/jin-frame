@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { getParameterJsDoc } from "#/generators/parameters/getParameterJsDoc";
+import { getParameterJsDoc } from "#/generators/parameters/getParameterJsDoc.js";
 
 describe("getParameterJsDoc", () => {
   it("should return empty docs when empty object", () => {

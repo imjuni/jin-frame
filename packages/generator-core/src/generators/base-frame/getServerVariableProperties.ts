@@ -1,8 +1,8 @@
 import { Scope, StructureKind, type PropertyDeclarationStructure } from "ts-morph";
-import { getServerVariableDocs } from "#/generators/base-frame/getServerVariableDocs";
-import { getServerVariableName } from "#/generators/base-frame/getServerVariableName";
-import { getServerVariableType } from "#/generators/base-frame/getServerVariableType";
-import type { ICreateBaseFrameProps } from "#/generators/base-frame/interfaces/ICreateBaseFrameProps";
+import { getServerVariableDocs } from "#/generators/base-frame/getServerVariableDocs.js";
+import { getServerVariableName } from "#/generators/base-frame/getServerVariableName.js";
+import { getServerVariableType } from "#/generators/base-frame/getServerVariableType.js";
+import type { ICreateBaseFrameProps } from "#/generators/base-frame/interfaces/ICreateBaseFrameProps.js";
 
 export function getServerVariableProperties(
   serverVariables: [string, NonNullable<ICreateBaseFrameProps["serverVariables"]>[string]][],

@@ -43,6 +43,12 @@
   "main": "dist/cjs/index.cjs",
   "module": "dist/esm/index.mjs",
   "types": "dist/types/index.d.ts",
+  "imports": {
+    "#/*.js": {
+      "types": "./src/*.ts",
+      "default": "./src/*.ts"
+    }
+  },
   "exports": {
     ".": {
       "require": {
@@ -105,6 +111,6 @@
   "peerDependencies": {
     "openapi-typescript": ">=7",
     "ts-morph": ">=26",
-    "typescript": ">=5"
+    "typescript": ">=6"
   }
 }

@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { getJsonArgument } from "#/generators/json/getJsonArgument";
+import { getJsonArgument } from "#/generators/json/getJsonArgument.js";
 
 describe("getJsonArgument", () => {
   it("should generate object literal string filtering out undefined values when values contain primitive types", () => {

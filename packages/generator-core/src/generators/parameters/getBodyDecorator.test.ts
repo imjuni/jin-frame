@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { getBodyDecorator } from "#/generators/parameters/getBodyDecorator";
+import { getBodyDecorator } from "#/generators/parameters/getBodyDecorator.js";
 
 describe("getBodyDecorator", () => {
   it("should return Body decorator", () => {

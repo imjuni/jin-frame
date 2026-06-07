@@ -1,6 +1,6 @@
 import type { OpenAPIV3 } from "openapi-types";
-import { buildServerMappingFromServers } from "#/generators/hosts/buildServerMappingFromServers";
-import type { IHostStrategyOptions } from "#/generators/hosts/interfaces/IHostStrategyOptions";
+import { buildServerMappingFromServers } from "#/generators/hosts/buildServerMappingFromServers.js";
+import type { IHostStrategyOptions } from "#/generators/hosts/interfaces/IHostStrategyOptions.js";
 
 export function generateEnvFunction(
   servers: OpenAPIV3.ServerObject[],

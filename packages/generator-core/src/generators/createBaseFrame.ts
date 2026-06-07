@@ -1,13 +1,13 @@
 import { randomUUID } from "node:crypto";
 import { pascalCase } from "change-case";
 import type { Project } from "ts-morph";
-import { getBaseFrameJsDoc } from "#/generators/base-frame/getBaseFrameJsDoc";
-import { getFrameDecoratorArgument } from "#/generators/base-frame/getFrameDecoratorArgument";
-import { getServerVariableDefaultMethods } from "#/generators/base-frame/getServerVariableDefaultMethods";
-import { getServerVariableDefaults } from "#/generators/base-frame/getServerVariableDefaults";
-import { getServerVariableProperties } from "#/generators/base-frame/getServerVariableProperties";
-import type { ICreateBaseFrameProps } from "#/generators/base-frame/interfaces/ICreateBaseFrameProps";
-import type { ICreateBaseFrameResult } from "#/generators/base-frame/interfaces/ICreateBaseFrameResult";
+import { getBaseFrameJsDoc } from "#/generators/base-frame/getBaseFrameJsDoc.js";
+import { getFrameDecoratorArgument } from "#/generators/base-frame/getFrameDecoratorArgument.js";
+import { getServerVariableDefaultMethods } from "#/generators/base-frame/getServerVariableDefaultMethods.js";
+import { getServerVariableDefaults } from "#/generators/base-frame/getServerVariableDefaults.js";
+import { getServerVariableProperties } from "#/generators/base-frame/getServerVariableProperties.js";
+import type { ICreateBaseFrameProps } from "#/generators/base-frame/interfaces/ICreateBaseFrameProps.js";
+import type { ICreateBaseFrameResult } from "#/generators/base-frame/interfaces/ICreateBaseFrameResult.js";
 
 export function createBaseFrame(project: Project, params: ICreateBaseFrameProps): ICreateBaseFrameResult {
   const name = pascalCase(params.name);

@@ -2,7 +2,7 @@ import { randomUUID } from "node:crypto";
 import type { OpenAPIV3 } from "openapi-types";
 import { Project } from "ts-morph";
 import { beforeEach, describe, expect, it, vitest } from "vitest";
-import { createFrame } from "#/generators/createFrame";
+import { createFrame } from "#/generators/createFrame.js";
 
 vitest.mock("node:crypto", () => ({
   randomUUID: vitest.fn(),
@@ -136,7 +136,7 @@ describe("createFrame", () => {
     });
 
     const source = `import { Get, Query, ObjectBody, JinFrame } from "jin-frame";
-import { paths } from "../petstore";
+import { paths } from "../petstore.js";
 /**
  * Finds Pets by tags.
  * Multiple tags can be provided with comma separated strings. Use tag1, tag2, tag3 for testing.
@@ -174,7 +174,9 @@ export class GetPetFindByStatusStatusFrame extends JinFrame<paths['/pet/findBySt
     const mockUuid = "mockuuid-fe32-4d5d-923e-1234567890123";
     vitest.mocked(randomUUID).mockReturnValue(mockUuid);
 
-    const testOperationRequestBody = structuredClone(operationRequestBody);
+    const testOperationRequestBody = structuredClone(operationRequestBody) as OpenAPIV3.NonArraySchemaObject & {
+      properties: Record<string, OpenAPIV3.SchemaObject>;
+    };
     testOperationRequestBody.properties.photoUrls = {
       ...testOperationRequestBody.properties.photoUrls,
       type: "array",
@@ -221,7 +223,7 @@ export class GetPetFindByStatusStatusFrame extends JinFrame<paths['/pet/findBySt
     });
 
     const source = `import { Get, Query, ObjectBody, Body, JinFile, JinFrame } from "jin-frame";
-import { paths } from "../petstore";
+import { paths } from "../petstore.js";
 /**
  * Finds Pets by tags.
  * Multiple tags can be provided with comma separated strings. Use tag1, tag2, tag3 for testing.

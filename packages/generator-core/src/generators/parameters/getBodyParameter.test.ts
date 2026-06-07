@@ -1,6 +1,6 @@
 import type { OpenAPIV3 } from "openapi-types";
 import { describe, expect, it } from "vitest";
-import { getBodyParameter } from "#/generators/parameters/getBodyParameter";
+import { getBodyParameter } from "#/generators/parameters/getBodyParameter.js";
 
 describe("getBodyParameter", () => {
   const requestBody = {
@@ -140,7 +140,9 @@ describe("getBodyParameter", () => {
   });
 
   it("should return ObjectBody parameter when request body is multipart/form-data and have file upload", () => {
-    const multipartFormDataRequestBody = structuredClone(requestBody);
+    const multipartFormDataRequestBody = structuredClone(requestBody) as Omit<OpenAPIV3.MediaTypeObject, "schema"> & {
+      schema: OpenAPIV3.NonArraySchemaObject & { properties: Record<string, OpenAPIV3.SchemaObject> };
+    };
 
     const result = getBodyParameter({
       method: "get",
@@ -173,7 +175,9 @@ describe("getBodyParameter", () => {
   });
 
   it("should return ObjectBody parameter when request body is multipart/form-data and have file upload", () => {
-    const multipartFormDataRequestBody = structuredClone(requestBody);
+    const multipartFormDataRequestBody = structuredClone(requestBody) as Omit<OpenAPIV3.MediaTypeObject, "schema"> & {
+      schema: OpenAPIV3.NonArraySchemaObject & { properties: Record<string, OpenAPIV3.SchemaObject> };
+    };
     multipartFormDataRequestBody.schema.properties.photoUrls = {
       type: "string",
       format: "binary",
@@ -229,12 +233,16 @@ describe("getBodyParameter", () => {
   });
 
   it("should return ObjectBody parameter when request body is multipart/form-data and have multiple file upload", () => {
-    const multipartFormDataRequestBody = structuredClone(requestBody);
-    multipartFormDataRequestBody.schema.properties.photoUrls.type = "array";
-    multipartFormDataRequestBody.schema.properties.photoUrls.items = {
-      type: "string",
-      format: "binary",
-    } satisfies OpenAPIV3.NonArraySchemaObject;
+    const multipartFormDataRequestBody = structuredClone(requestBody) as Omit<OpenAPIV3.MediaTypeObject, "schema"> & {
+      schema: OpenAPIV3.NonArraySchemaObject & { properties: Record<string, OpenAPIV3.SchemaObject> };
+    };
+    multipartFormDataRequestBody.schema.properties.photoUrls = {
+      type: "array",
+      items: {
+        type: "string",
+        format: "binary",
+      },
+    } satisfies OpenAPIV3.ArraySchemaObject;
 
     const result = getBodyParameter({
       method: "get",

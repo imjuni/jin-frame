@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { safeUrl } from "#/tools/safeUrl";
+import { safeUrl } from "#/tools/safeUrl.js";
 
 describe("safeUrl", () => {
   it("should return URL when given valid URL", () => {

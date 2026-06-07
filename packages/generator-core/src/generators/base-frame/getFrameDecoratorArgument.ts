@@ -1,6 +1,6 @@
-import { getJsonArgument } from "#/generators/json/getJsonArgument";
-import type { IJsonLiteralValue } from "#/generators/json/interface/IJsonLiteralValue";
-import type { ICreateBaseFrameProps } from "#/generators/base-frame/interfaces/ICreateBaseFrameProps";
+import { getJsonArgument } from "#/generators/json/getJsonArgument.js";
+import type { IJsonLiteralValue } from "#/generators/json/interface/IJsonLiteralValue.js";
+import type { ICreateBaseFrameProps } from "#/generators/base-frame/interfaces/ICreateBaseFrameProps.js";
 
 export function getFrameDecoratorArgument(
   params: Pick<ICreateBaseFrameProps, "host" | "hostCode" | "pathPrefix" | "pathPrefixCode">,

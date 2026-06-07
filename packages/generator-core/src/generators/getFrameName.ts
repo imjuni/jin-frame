@@ -1,5 +1,5 @@
 import { pascalCase, snakeCase } from "change-case";
-import type { IGetFrameNameProps } from "#/generators/interfaces/IGetFrameNameProps";
+import type { IGetFrameNameProps } from "#/generators/interfaces/IGetFrameNameProps.js";
 
 export function getFrameName(params: IGetFrameNameProps): string {
   if (params.operationId != null) {

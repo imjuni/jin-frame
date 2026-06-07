@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { safeParse } from "#/tools/safeParse";
+import { safeParse } from "#/tools/safeParse.js";
 
 describe("safeParse", () => {
   it("should return the parsed value", () => {

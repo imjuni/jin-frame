@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { getHost } from "./getHost";
+import { getHost } from "./getHost.js";
 
 describe("getHost", () => {
   const document = {
