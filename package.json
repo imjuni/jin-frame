@@ -1,0 +1,19 @@
+{
+  "name": "jin-frame-workspace",
+  "private": true,
+  "packageManager": "pnpm@10.16.0",
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "biome": "biome",
+    "check": "biome check .",
+    "check:write": "biome check --write .",
+    "format": "biome format --write .",
+    "format:check": "biome format .",
+    "lint": "biome lint ."
+  },
+  "devDependencies": {
+    "@biomejs/biome": "2.4.16"
+  }
+}

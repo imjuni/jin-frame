@@ -22,7 +22,12 @@
     "pub": "pnpm publish --registry http://localhost:8901",
     "unpub": "pnpm unpublish typescript-cli-boilerplate@$npm_package_version --registry http://localhost:8901 --force",
     "pub:prod": "RELEASE_MODE=true pnpm publish",
-    "dd": "deps-diff md -d prod -d dev --title-list-type 'm' --deps-list-type 'm' --content-list-type 'm'"
+    "dd": "deps-diff md -d prod -d dev --title-list-type 'm' --deps-list-type 'm' --content-list-type 'm'",
+    "biome": "biome",
+    "check": "biome check .",
+    "check:write": "biome check --write .",
+    "format": "biome format --write .",
+    "format:check": "biome format ."
   },
   "repository": {
     "type": "git",
