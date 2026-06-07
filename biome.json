@@ -2,7 +2,7 @@
   "$schema": "./node_modules/@biomejs/biome/configuration_schema.json",
   "root": true,
   "files": {
-    "includes": ["**", "!!**/coverage/**", "!!**/dist/**", "!!**/.vitepress/cache/**"]
+    "includes": ["**", "!!**/coverage", "!!**/dist", "!!**/.vitepress/cache"]
   },
   "formatter": {
     "enabled": true,
