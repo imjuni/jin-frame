@@ -1,8 +1,9 @@
 import fs from "node:fs";
-import { convertor, createFrames, load, safePathJoin, validate } from "@jin-frame/generator-core";
+import { createFrames, load, safePathJoin } from "@jin-frame/generator-core";
 import type { CommandContext } from "citty";
 import consola, { LogLevels, type LogType } from "consola";
 import pathe from "pathe";
+import { resolveOpenapiDocument } from "#commands/resolveOpenapiDocument.js";
 import type { frameCommandArgs } from "#schema/args/frameCommandArgs.js";
 import { frameCommandArgvSchema } from "#schema/args/frameCommandArgvSchema.js";
 import { loadGeneratorCommandInput } from "#schema/args/loadGeneratorCommandInput.js";
@@ -21,18 +22,8 @@ export const frameCommandRun = async ({ args }: CommandContext<typeof frameComma
     throw new Error(`Failed to load spec from "${specPath}"`);
   }
 
-  consola.debug(`Validating spec from "${specPath}"`);
-  const validated = validate(spec);
-
-  if (!validated.valid) {
-    throw new Error(`Failed to validate spec from "${specPath}"`);
-  }
-
-  if (validated.version === 2) {
-    consola.debug("Converting spec v2 > v3");
-  }
-
-  const converted = await convertor(validated);
+  consola.debug(`Resolving spec from "${specPath}"`);
+  const converted = await resolveOpenapiDocument(spec.data, specPath);
 
   consola.debug(`Writing to ${params.output}`);
 
