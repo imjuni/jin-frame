@@ -5,6 +5,7 @@ import { openAPITypescriptOptionBuilder } from "#src/builders/openAPITypescriptO
 import { createCommandHandler } from "#src/handlers/createCommandHandler.js";
 import { CE_COMMAND } from "#src/interfaces/CE_COMMAND.js";
 import type { TCreateCommandArgv } from "#src/interfaces/ICreateCommandArgv.js";
+import { createCommandArgvSchema } from "#src/schema/args/createCommandArgvSchema.js";
 
 export const createCommandModule: CommandModule<TCreateCommandArgv, TCreateCommandArgv> = {
   command: [CE_COMMAND.CREATE, "<spec>"].join(" "),
@@ -20,6 +21,6 @@ export const createCommandModule: CommandModule<TCreateCommandArgv, TCreateComma
     return createCommandArgv;
   },
   handler: async (argv) => {
-    await createCommandHandler(argv);
+    await createCommandHandler(createCommandArgvSchema.parse(argv));
   },
 };

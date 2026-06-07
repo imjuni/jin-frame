@@ -5,6 +5,7 @@ import { openAPITypescriptOptionBuilder } from "#src/builders/openAPITypescriptO
 import { frameCommandHandler } from "#src/handlers/frameCommandHandler.js";
 import { CE_COMMAND } from "#src/interfaces/CE_COMMAND.js";
 import type { TFrameCommandArgv } from "#src/interfaces/IFrameCommandArgv.js";
+import { frameCommandArgvSchema } from "#src/schema/args/frameCommandArgvSchema.js";
 
 export const frameCommandModule: CommandModule<TFrameCommandArgv, TFrameCommandArgv> = {
   command: [CE_COMMAND.FRAME, "<spec>"].join(" "),
@@ -21,6 +22,6 @@ export const frameCommandModule: CommandModule<TFrameCommandArgv, TFrameCommandA
     return frameCommandArgv;
   },
   handler: async (argv) => {
-    await frameCommandHandler(argv);
+    await frameCommandHandler(frameCommandArgvSchema.parse(argv));
   },
 };
