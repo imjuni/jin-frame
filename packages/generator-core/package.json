@@ -94,7 +94,6 @@
   },
   "dependencies": {
     "@apidevtools/json-schema-ref-parser": "^14.2.0",
-    "axios": "^1.11.0",
     "change-case": "^5.4.4",
     "jin-frame": "workspace:*",
     "my-easy-fp": "^0.22.0",
