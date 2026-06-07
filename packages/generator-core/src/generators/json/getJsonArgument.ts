@@ -4,6 +4,51 @@ export function getJsonArgument(_params?: IGetJsonArgumentProps): string | undef
   const params = (_params?.values ?? []).filter((param) => param != null);
   const quote = _params?.quote ?? "'";
 
+  const stringifyValue = (value: unknown): string | undefined => {
+    if (typeof value === "function") {
+      return value.toString();
+    }
+
+    if (Array.isArray(value)) {
+      const values = value.map((entry) => stringifyValue(entry));
+
+      if (values.some((entry) => entry == null)) {
+        return undefined;
+      }
+
+      return `[${values.join(", ")}]`;
+    }
+
+    switch (typeof value) {
+      case "string":
+        return `${quote}${value}${quote}`;
+      case "number":
+        return `${value}`;
+      case "boolean":
+        return `${value}`;
+      case "object": {
+        if (value == null) {
+          return undefined;
+        }
+
+        const entries = Object.entries(value)
+          .map(([key, entry]) => {
+            const stringified = stringifyValue(entry);
+            return stringified == null ? undefined : `${key}: ${stringified}`;
+          })
+          .filter((entry) => entry != null);
+
+        if (entries.length === 0) {
+          return "{}";
+        }
+
+        return `{ ${entries.join(", ")} }`;
+      }
+      default:
+        return undefined;
+    }
+  };
+
   const joined = params
     .map((param) => {
       // Handle function values
@@ -12,16 +57,8 @@ export function getJsonArgument(_params?: IGetJsonArgumentProps): string | undef
         return `${param.key}: ${functionCode}`;
       }
 
-      switch (typeof param.value) {
-        case "string":
-          return `${param.key}: ${quote}${param.value}${quote}`;
-        case "number":
-          return `${param.key}: ${param.value}`;
-        case "boolean":
-          return `${param.key}: ${param.value}`;
-        default:
-          return undefined;
-      }
+      const stringified = stringifyValue(param.value);
+      return stringified == null ? undefined : `${param.key}: ${stringified}`;
     })
     .filter((param) => param != null)
     .join(", ");

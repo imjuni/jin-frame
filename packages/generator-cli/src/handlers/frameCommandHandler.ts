@@ -46,6 +46,11 @@ export async function frameCommandHandler(params: TFrameCommandArgv): Promise<vo
     hostEnvVar: params.hostEnvVar,
     hostFunctionName: params.hostFunctionName,
     serverMapping: params.serverMapping,
+    overrides: {
+      hosts: params.hosts,
+      retries: params.retries,
+      timeouts: params.timeouts,
+    },
   });
   consola.debug(`Frames: ${frames.length}`);
 

@@ -24,4 +24,20 @@ describe("getMethodDecorator", () => {
       arguments: ["{ host: 'host', path: 'path', contentType: 'application/x-www-form-urlencoded' }"],
     });
   });
+
+  it("should include host override when base frame is configured", () => {
+    const decorator = getMethodDecorator({
+      baseFrame: "ServerHostFrame",
+      host: "host",
+      hostOverride: "https://override.example.com",
+      path: "/pets/{petId}",
+      method: "Get",
+    });
+
+    expect(decorator).toEqual({
+      name: "Get",
+      kind: 7,
+      arguments: ["{ host: 'https://override.example.com', path: '/pets/{petId}' }"],
+    });
+  });
 });

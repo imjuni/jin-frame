@@ -166,4 +166,51 @@ describe("createFrames", async () => {
     expect(serverHostFrame).toContain("protected static override getDefaultValues(): Partial<ServerHostFrame>");
     expect(serverHostFrame).toContain('return { "tenant": "dev", "version": "1" };');
   });
+
+  it("should apply endpoint overrides by OpenAPI path key", async () => {
+    const frames = await createFrames({
+      specTypeFilePath: "/a/b/paths.d.ts",
+      host: "https://api.example.com",
+      output: "/a/b",
+      baseFrame: "ServerHostFrame",
+      useCodeFence: false,
+      overrides: {
+        hosts: {
+          "/pets/{petId}": "https://override.example.com",
+        },
+        retries: {
+          "/pets/{petId}": {
+            max: 3,
+            interval: 500,
+          },
+        },
+        timeouts: {
+          "/pets/{petId}": 3000,
+        },
+      },
+      document: {
+        openapi: "3.0.0",
+        info: { title: "Test API", version: "1.0.0" },
+        paths: {
+          "/pets/{petId}": {
+            get: {
+              operationId: "getPet",
+              responses: {
+                "200": {
+                  description: "Success",
+                },
+              },
+            },
+          },
+        },
+      } satisfies OpenAPIV3.Document,
+    });
+
+    const frame = frames.at(1)?.frame.source;
+
+    expect(frame).toContain('import { Get, Timeout, Retry } from "jin-frame";');
+    expect(frame).toContain("@Get({ host: 'https://override.example.com', path: '/pets/{petId}' })");
+    expect(frame).toContain("@Timeout(3000)");
+    expect(frame).toContain("@Retry({ max: 3, interval: 500 })");
+  });
 });

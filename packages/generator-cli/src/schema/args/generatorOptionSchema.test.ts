@@ -1,0 +1,31 @@
+import { describe, expect, it } from "vitest";
+import { z } from "zod";
+import { generatorOptionSchema, normalizeGeneratorOptionInput } from "#src/schema/args/generatorOptionSchema.js";
+
+describe("generatorOptionSchema", () => {
+  it("should parse endpoint override arguments by OpenAPI path key", () => {
+    const schema = z.preprocess(normalizeGeneratorOptionInput, generatorOptionSchema);
+    const parsed = schema.parse({
+      spec: "/openapi.yml",
+      output: "/generated",
+      host: ["/pets/{petId}=https://override.example.com", "https://api.example.com"],
+      retry: '/pets/{petId}={"max":3,"interval":500}',
+      timeout: ["/pets/{petId}=3000", "60000"],
+    });
+
+    expect(parsed.host).toBe("https://api.example.com");
+    expect(parsed.timeout).toBe(60_000);
+    expect(parsed.hosts).toEqual({
+      "/pets/{petId}": "https://override.example.com",
+    });
+    expect(parsed.retries).toEqual({
+      "/pets/{petId}": {
+        max: 3,
+        interval: 500,
+      },
+    });
+    expect(parsed.timeouts).toEqual({
+      "/pets/{petId}": 3000,
+    });
+  });
+});

@@ -3,6 +3,7 @@ export interface IGetMethodDecoratorProps {
   contentType?: string;
   host: string | (() => string);
   hostCode?: string;
+  hostOverride?: string;
   path: string;
   baseFrame?: string;
 }
