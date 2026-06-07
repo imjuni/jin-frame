@@ -25,8 +25,8 @@ export function getHost(params: IGetHostParams): string {
 
   // Fall back to relative server URL as-is (e.g. "/api/v3") when specTypeFilePath is a local path
   if (params.document.servers != null && params.document.servers.length > 0) {
-    const firstServer = params.document.servers[0];
-    if (firstServer.url) {
+    const firstServer = params.document.servers.at(0);
+    if (firstServer?.url) {
       // Try to resolve with specUrl if available
       const specUrl = safeUrl(params.specTypeFilePath);
       if (specUrl != null) {

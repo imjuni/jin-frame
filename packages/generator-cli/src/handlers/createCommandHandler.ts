@@ -51,11 +51,16 @@ export async function createCommandHandler(params: TCreateCommandArgv): Promise<
   const frames = await createFrames({
     document: converted.document,
     specTypeFilePath: specFilePath,
+    specFilePath: specPath,
     host: params.host,
     output: params.output,
     useCodeFence: params.codeFence ?? false,
     timeout: params.timeout,
     baseFrame: params.baseFrame,
+    hostStrategy: params.hostStrategy,
+    hostEnvVar: params.hostEnvVar,
+    hostFunctionName: params.hostFunctionName,
+    serverMapping: params.serverMapping,
   });
   consola.debug(`Frames: ${frames.length}`);
 

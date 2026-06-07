@@ -1,11 +1,9 @@
-import type {
-  IBodyFieldOption,
-  IFrameOption,
-  IHeaderFieldOption,
-  IObjectBodyFieldOption,
-  IParamFieldOption,
-  IQueryFieldOption,
-} from "jin-frame";
+type IBodyFieldOption = Record<string, unknown>;
+type IFrameOption = Record<string, unknown>;
+type IHeaderFieldOption = Record<string, unknown>;
+type IObjectBodyFieldOption = Record<string, unknown>;
+type IParamFieldOption = Record<string, unknown>;
+type IQueryFieldOption = Record<string, unknown>;
 
 /**
  * Data structure for jin-frame code generation

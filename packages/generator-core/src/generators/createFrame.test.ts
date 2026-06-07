@@ -220,7 +220,7 @@ export class GetPetFindByStatusStatusFrame extends JinFrame<paths['/pet/findBySt
       } as OpenAPIV3.OperationObject,
     });
 
-    const source = `import { Get, Query, ObjectBody, Body, JinFrame } from "jin-frame";
+    const source = `import { Get, Query, ObjectBody, Body, JinFile, JinFrame } from "jin-frame";
 import { paths } from "../petstore";
 /**
  * Finds Pets by tags.

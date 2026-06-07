@@ -17,6 +17,11 @@ describe("getParameterDecorator", () => {
     expect(result).toEqual({ decorator: "Header", in: "header" });
   });
 
+  it("should return Cookie when pass in: 'cookie'", () => {
+    const result = getParameterDecorator("cookie");
+    expect(result).toEqual({ decorator: "Cookie", in: "cookie" });
+  });
+
   it("should return undefined when pass in: 'body'", () => {
     const result = getParameterDecorator("body");
     expect(result).toBeUndefined();
