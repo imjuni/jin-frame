@@ -1,7 +1,9 @@
-import type { OpenAPITSOptions } from "openapi-typescript";
+import type { createOpenapiTs } from "@jin-frame/generator-core";
 import type { TCreateCommandArgv } from "#src/interfaces/ICreateCommandArgv.js";
 
-export function transformArgvToOpenapiTsOptions(argv: TCreateCommandArgv): OpenAPITSOptions {
+type TOpenAPITSOptions = NonNullable<Parameters<typeof createOpenapiTs>[1]>;
+
+export function transformArgvToOpenapiTsOptions(argv: TCreateCommandArgv): TOpenAPITSOptions {
   return {
     // Boolean options - map from oat* prefixed properties to openapi-typescript options
     additionalProperties: argv.oatAdditionalProperties,
