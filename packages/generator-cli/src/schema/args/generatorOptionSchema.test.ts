@@ -28,4 +28,19 @@ describe("generatorOptionSchema", () => {
       "/pets/{petId}": 3000,
     });
   });
+
+  it("should keep non endpoint values as global options", () => {
+    const schema = z.preprocess(normalizeGeneratorOptionInput, generatorOptionSchema);
+    const parsed = schema.parse({
+      spec: "/openapi.yml",
+      output: "/generated",
+      host: "https://api.example.com?version=2026",
+      timeout: "30000",
+    });
+
+    expect(parsed.host).toBe("https://api.example.com?version=2026");
+    expect(parsed.timeout).toBe(30_000);
+    expect(parsed.hosts).toBeUndefined();
+    expect(parsed.timeouts).toBeUndefined();
+  });
 });

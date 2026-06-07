@@ -1,5 +1,4 @@
 import fs from "node:fs";
-import axios from "axios";
 import { exists } from "my-node-fp";
 import type { JsonValue } from "type-fest";
 import type { ILoadResult } from "#/openapi/interfaces/ILoadResult.js";
@@ -20,8 +19,19 @@ export async function load(filePath: string): Promise<ILoadResult | undefined> {
 
   if (filePath.startsWith("http")) {
     // load openapi spec from the http
-    const reply = await axios.get(filePath);
-    return { from: "url", kind: "json", data: reply.data };
+    const reply = await fetch(filePath);
+
+    if (!reply.ok) {
+      throw new Error(`Failed to load spec from "${filePath}": ${reply.status} ${reply.statusText}`);
+    }
+
+    const parsed = multiParse<JsonValue>(await reply.text());
+
+    if (parsed == null) {
+      return parsed;
+    }
+
+    return { from: "url", ...parsed };
   }
 
   return undefined;
