@@ -1,4 +1,4 @@
-import type { ICreateBaseFrameProps } from "#/generators/base-frame/interfaces/ICreateBaseFrameProps.js";
+import type { ICreateBaseFrameProps } from "#generators/base-frame/interfaces/ICreateBaseFrameProps.js";
 
 export function getBaseFrameJsDoc(params: Pick<ICreateBaseFrameProps, "timeout" | "host" | "pathPrefix">): string {
   const endpoint = [params.host ?? "", params.pathPrefix ?? ""].filter((part) => part !== "").join("");

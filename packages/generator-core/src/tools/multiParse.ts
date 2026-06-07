@@ -1,6 +1,6 @@
-import type { IMultiParse } from "#/tools/interfaces/IMultiParse.js";
-import { safeParse } from "#/tools/safeParse.js";
-import { safeYamlParse } from "#/tools/safeYamlParse.js";
+import type { IMultiParse } from "#tools/interfaces/IMultiParse.js";
+import { safeParse } from "#tools/safeParse.js";
+import { safeYamlParse } from "#tools/safeYamlParse.js";
 
 export function multiParse<T = unknown>(value: string): IMultiParse<T> | undefined {
   const json = safeParse<T>(value);

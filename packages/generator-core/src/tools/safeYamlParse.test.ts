@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { safeYamlParse } from "#/tools/safeYamlParse.js";
+import { safeYamlParse } from "#tools/safeYamlParse.js";
 
 describe("safeYamlParse", () => {
   it("should return the parsed value", () => {

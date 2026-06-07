@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { renderHostFunc } from "#/renderers/renderHostFunc.js";
+import { renderHostFunc } from "#renderers/renderHostFunc.js";
 
 describe("renderHostFunc", () => {
   it("should return array host function when pass array hosts", () => {

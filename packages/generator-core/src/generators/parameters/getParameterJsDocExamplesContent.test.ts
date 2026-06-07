@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { getParameterJsDocExamplesContent } from "#/generators/parameters/getParameterJsDocExamplesContent.js";
+import { getParameterJsDocExamplesContent } from "#generators/parameters/getParameterJsDocExamplesContent.js";
 
 describe("getParameterJsDocExamplesContent", () => {
   it("should return full application/json when full example", () => {

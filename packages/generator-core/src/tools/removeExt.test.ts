@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { removeExt } from "#/tools/removeExt.js";
+import { removeExt } from "#tools/removeExt.js";
 
 describe("removeExt", () => {
   it("should remove double extension when file has .d.ts extension", () => {

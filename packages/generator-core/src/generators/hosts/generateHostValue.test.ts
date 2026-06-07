@@ -1,6 +1,6 @@
 import type { OpenAPIV3 } from "openapi-types";
 import { describe, expect, it } from "vitest";
-import { generateHostValue } from "#/generators/hosts/generateHostValue.js";
+import { generateHostValue } from "#generators/hosts/generateHostValue.js";
 
 describe("generateHostValue", () => {
   const mockServers: OpenAPIV3.ServerObject[] = [

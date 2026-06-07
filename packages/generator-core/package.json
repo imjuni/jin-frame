@@ -44,9 +44,29 @@
   "module": "dist/esm/index.mjs",
   "types": "dist/types/index.d.ts",
   "imports": {
-    "#/*.js": {
-      "types": "./src/*.ts",
-      "default": "./src/*.ts"
+    "#generators/*.js": {
+      "types": "./src/generators/*.ts",
+      "default": "./src/generators/*.ts"
+    },
+    "#https/*.js": {
+      "types": "./src/https/*.ts",
+      "default": "./src/https/*.ts"
+    },
+    "#models/*.js": {
+      "types": "./src/models/*.ts",
+      "default": "./src/models/*.ts"
+    },
+    "#openapi/*.js": {
+      "types": "./src/openapi/*.ts",
+      "default": "./src/openapi/*.ts"
+    },
+    "#renderers/*.js": {
+      "types": "./src/renderers/*.ts",
+      "default": "./src/renderers/*.ts"
+    },
+    "#tools/*.js": {
+      "types": "./src/tools/*.ts",
+      "default": "./src/tools/*.ts"
     }
   },
   "exports": {
@@ -89,11 +109,11 @@
     "tsc-alias": "^1.8.8",
     "tslib": "^2.5.2",
     "tsx": "^4.20.3",
-    "vite-tsconfig-paths": "^5.1.4",
-    "vitest": "^3.2.4"
+    "vite-tsconfig-paths": "^6.1.1",
+    "vitest": "^4.1.8"
   },
   "dependencies": {
-    "@apidevtools/json-schema-ref-parser": "^14.2.0",
+    "@apidevtools/json-schema-ref-parser": "^15.3.5",
     "change-case": "^5.4.4",
     "jin-frame": "workspace:*",
     "my-easy-fp": "^0.22.0",
@@ -103,7 +123,7 @@
     "pathe": "^2.0.3",
     "source-map-support": "^0.5.21",
     "swagger2openapi": "^7.0.8",
-    "type-fest": "^4.41.0",
+    "type-fest": "^5.7.0",
     "url-join": "^5.0.0",
     "yaml": "^2.8.1"
   },

@@ -1,6 +1,6 @@
-import { getServerUrl } from "#/generators/hosts/getServerUrl.js";
-import type { IGetHostParams } from "#/generators/hosts/interfaces/IGetHostParams.js";
-import { safeUrl } from "#/tools/safeUrl.js";
+import { getServerUrl } from "#generators/hosts/getServerUrl.js";
+import type { IGetHostParams } from "#generators/hosts/interfaces/IGetHostParams.js";
+import { safeUrl } from "#tools/safeUrl.js";
 
 export function getHost(params: IGetHostParams): string {
   if (params.host != null) {

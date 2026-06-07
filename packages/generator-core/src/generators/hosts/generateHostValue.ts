@@ -1,5 +1,5 @@
-import { generateEnvFunction } from "#/generators/hosts/generateEnvFunction.js";
-import type { IGenerateHostValueParams } from "#/generators/hosts/interfaces/IGenerateHostValueParams.js";
+import { generateEnvFunction } from "#generators/hosts/generateEnvFunction.js";
+import type { IGenerateHostValueParams } from "#generators/hosts/interfaces/IGenerateHostValueParams.js";
 
 export function generateHostValue(params: IGenerateHostValueParams): string {
   const { servers, options } = params;

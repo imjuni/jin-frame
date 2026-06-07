@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { getFrameName } from "#/generators/getFrameName.js";
+import { getFrameName } from "#generators/getFrameName.js";
 
 describe("getFrameName", () => {
   it("should return operationId when non nullable operationId", () => {

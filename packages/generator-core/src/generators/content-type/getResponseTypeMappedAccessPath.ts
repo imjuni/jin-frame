@@ -1,4 +1,4 @@
-import type { IGetResponseTypeMappedAccessPathProps } from "#/generators/content-type/interfaces/IGetResponseTypeMappedAccessPathProps.js";
+import type { IGetResponseTypeMappedAccessPathProps } from "#generators/content-type/interfaces/IGetResponseTypeMappedAccessPathProps.js";
 
 export function getResponseTypeMappedAccessPath(params: IGetResponseTypeMappedAccessPathProps): string {
   const contentPath =

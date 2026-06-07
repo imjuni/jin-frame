@@ -1,4 +1,4 @@
-import type { IFrameOverrideRetry } from "#/generators/frames/interfaces/IFrameOverrideRetry.js";
+import type { IFrameOverrideRetry } from "#generators/frames/interfaces/IFrameOverrideRetry.js";
 
 export interface IFrameOverrides {
   hosts?: Record<string, string>;

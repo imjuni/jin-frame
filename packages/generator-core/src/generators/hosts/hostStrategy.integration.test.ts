@@ -1,7 +1,7 @@
 import type { OpenAPIV3 } from "openapi-types";
 import { describe, expect, it } from "vitest";
-import { createFrames } from "#/generators/createFrames.js";
-import { generateHostValue } from "#/generators/hosts/generateHostValue.js";
+import { createFrames } from "#generators/createFrames.js";
+import { generateHostValue } from "#generators/hosts/generateHostValue.js";
 
 describe("Host Strategy Integration Test", () => {
   const mockOpenApiDoc: OpenAPIV3.Document = {

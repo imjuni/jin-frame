@@ -1,3 +1,3 @@
-import { renderOpenapiTs } from "#/renderers/renderOpenapiTs.js";
+import { renderOpenapiTs } from "#renderers/renderOpenapiTs.js";
 
 export const printOpenapiTs = renderOpenapiTs;

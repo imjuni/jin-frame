@@ -1,5 +1,5 @@
 import type { OpenAPIV3 } from "openapi-types";
-import type { IFrameOverrides } from "#/generators/frames/interfaces/IFrameOverrides.js";
+import type { IFrameOverrides } from "#generators/frames/interfaces/IFrameOverrides.js";
 
 export interface ICreateFramesProps {
   specTypeFilePath: string;

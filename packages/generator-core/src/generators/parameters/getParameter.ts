@@ -1,8 +1,8 @@
 import { type PropertyDeclarationStructure, Scope, StructureKind } from "ts-morph";
-import { getParameterDecorator } from "#/generators/parameters/getParameterDecorator.js";
-import { getParameterJsDoc } from "#/generators/parameters/getParameterJsDoc.js";
-import type { IGetParameterProps } from "#/generators/parameters/interfaces/IGetParameterProps.js";
-import type { IGetParameterResult } from "#/generators/parameters/interfaces/IGetParameterResult.js";
+import { getParameterDecorator } from "#generators/parameters/getParameterDecorator.js";
+import { getParameterJsDoc } from "#generators/parameters/getParameterJsDoc.js";
+import type { IGetParameterProps } from "#generators/parameters/interfaces/IGetParameterProps.js";
+import type { IGetParameterResult } from "#generators/parameters/interfaces/IGetParameterResult.js";
 
 export function getParameter(params: IGetParameterProps): IGetParameterResult | undefined {
   const decorator = getParameterDecorator(params.parameter.in);

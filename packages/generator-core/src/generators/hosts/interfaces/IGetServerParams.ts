@@ -1,5 +1,5 @@
 import type { OpenAPIV3 } from "openapi-types";
-import type { ILoadResult } from "#/openapi/interfaces/ILoadResult.js";
+import type { ILoadResult } from "#openapi/interfaces/ILoadResult.js";
 
 export interface IGetServerParams {
   host?: string;
