@@ -1,5 +1,5 @@
+import fs from "node:fs";
 import * as esbuild from "esbuild";
-import fs from "fs";
 
 if (process.env.FORMAT !== "cjs" && process.env.FORMAT !== "esm") {
   console.log(`support "cjs" or "esm"`);

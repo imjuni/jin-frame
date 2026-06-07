@@ -57,7 +57,6 @@
     "@types/source-map-support": "^0.5.10",
     "@types/swagger2openapi": "^7.0.4",
     "@types/traverse": "^0.6.37",
-    "@types/yargs": "^17.0.33",
     "@vitest/coverage-v8": "3.2.4",
     "cross-env": "^10.0.0",
     "deps-diff": "^1.0.2",
@@ -93,7 +92,6 @@
     "swagger2openapi": "^7.0.8",
     "type-fest": "^4.41.0",
     "yaml": "^2.8.1",
-    "yargs": "^18.0.0",
     "zod": "^4.4.3"
   },
   "peerDependencies": {

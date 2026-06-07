@@ -1,29 +1,26 @@
+import { defineCommand, runMain } from "citty";
 import log from "consola";
 import { isError } from "my-easy-fp";
 import { install as sourceMapSupportInstall } from "source-map-support";
-import yargs, { type CommandModule } from "yargs";
-import { hideBin } from "yargs/helpers";
-import { createCommandModule } from "#src/commands/createCommand.js";
-import { frameCommandModule } from "#src/commands/frameCommand.js";
-import type { TCreateCommandArgv } from "#src/interfaces/ICreateCommandArgv.js";
-import type { TFrameCommandArgv } from "#src/interfaces/IFrameCommandArgv.js";
+import { createCommand } from "#src/commands/createCommand.js";
+import { frameCommand } from "#src/commands/frameCommand.js";
+import { CE_COMMAND } from "#src/interfaces/CE_COMMAND.js";
 
 sourceMapSupportInstall();
 
-const handler = async () => {
-  const parser = yargs(hideBin(process.argv));
+const main = defineCommand({
+  meta: {
+    name: "jin-frame-generator",
+    version: "1.0.0",
+    description: "A CLI tool for generating jin-frame classes from an OpenAPI specification.",
+  },
+  subCommands: {
+    [CE_COMMAND.CREATE]: createCommand,
+    [CE_COMMAND.FRAME]: frameCommand,
+  },
+});
 
-  parser
-    .command(createCommandModule as CommandModule<object, TCreateCommandArgv>)
-    .command(frameCommandModule as CommandModule<object, TFrameCommandArgv>)
-    .demandCommand()
-    .recommendCommands()
-    .help();
-
-  await parser.argv;
-};
-
-handler().catch((caught) => {
+runMain(main).catch((caught) => {
   const err = isError(caught, new Error("unknown error raised"));
 
   log.error(err.message);
