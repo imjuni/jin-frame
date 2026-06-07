@@ -6,34 +6,17 @@ import { getMethodDecorator } from "#/generators/content-type/getMethodDecorator
 import { getRequestContentType } from "#/generators/content-type/getRequestContentType";
 import { getResponseContentType } from "#/generators/content-type/getResponseContentType";
 import { getResponseTypeMappedAccessPath } from "#/generators/content-type/getResponseTypeMappedAccessPath";
+import type { ICreateFrameProps } from "#/generators/frame/interfaces/ICreateFrameProps";
+import type { ICreateFrameResult } from "#/generators/frame/interfaces/ICreateFrameResult";
 import { getClassJsDoc } from "#/generators/getClassJsDoc";
 import { getFrameName } from "#/generators/getFrameName";
 import { getBodyParameter } from "#/generators/parameters/getBodyParameter";
 import { getParameter } from "#/generators/parameters/getParameter";
-import type { THttpMethod } from "#/https/method";
 import { dotRelative } from "#/tools/dotRelative";
 import { removeExt } from "#/tools/removeExt";
 import { safePathJoin } from "#/tools/safePathJoin";
 
-interface IProps {
-  specTypeFilePath: string;
-  baseFrame?: string;
-  output: string;
-  host: string | (() => string);
-  hostCode?: string;
-  pathKey: string;
-  operation: OpenAPIV3.OperationObject;
-  method: THttpMethod;
-}
-
-interface IResult {
-  filePath: string;
-  tag?: string;
-  aliasFilePath: string;
-  source: string;
-}
-
-export function createFrame(project: Project, params: IProps): IResult {
+export function createFrame(project: Project, params: ICreateFrameProps): ICreateFrameResult {
   const aliasFilePath = `${randomUUID()}-${randomUUID()}.ts`;
   const name = getFrameName({
     pathKey: params.pathKey,

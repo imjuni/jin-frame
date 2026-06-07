@@ -2,17 +2,17 @@ import ts from "typescript";
 import { randomFilename } from "#/tools/randomFilename";
 
 export function renderOpenapiTs(nodes: ts.Node[]): string {
-  // TypeScript Printer를 사용하여 synthesized node 문제 해결
+  // Use the TypeScript printer to handle synthesized nodes.
   const printer = ts.createPrinter({
     newLine: ts.NewLineKind.LineFeed,
     removeComments: false,
   });
 
-  // SourceFile 생성 (synthesized node를 위해 필요)
+  // Create a source file for synthesized nodes.
   const filename = randomFilename();
   const sourceFile = ts.createSourceFile(filename, "", ts.ScriptTarget.Latest, false, ts.ScriptKind.TS);
 
-  // Printer를 사용하여 각 노드를 문자열로 변환
+  // Print each node through the TypeScript printer.
   const sourceCode = nodes.map((node) => printer.printNode(ts.EmitHint.Unspecified, node, sourceFile)).join("\n");
 
   const header = `/**
@@ -22,5 +22,3 @@ export function renderOpenapiTs(nodes: ts.Node[]): string {
 
   return [header, sourceCode].join("\n");
 }
-
-export const printOpenapiTs = renderOpenapiTs;

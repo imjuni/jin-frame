@@ -22,7 +22,7 @@ describe("getResponseContentType", () => {
 
   it("should return application/json when responses is 400", () => {
     const specificResponses = structuredClone(responses);
-    specificResponses["200"] = undefined as any;
+    delete specificResponses["200"];
     specificResponses["400"] = {
       description: "fail and 400 status code",
       content: { "application/json": {} },

@@ -1,12 +1,6 @@
-import type { OpenAPIV3 } from "openapi-types";
 import { getServerUrl } from "#/generators/hosts/getServerUrl";
+import type { IGetHostParams } from "#/generators/hosts/interfaces/IGetHostParams";
 import { safeUrl } from "#/tools/safeUrl";
-
-interface IGetHostParams {
-  host?: string;
-  specTypeFilePath: string;
-  document: OpenAPIV3.Document;
-}
 
 export function getHost(params: IGetHostParams): string {
   if (params.host != null) {

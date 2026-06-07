@@ -1,9 +1,9 @@
-type IBodyFieldOption = Record<string, unknown>;
-type IFrameOption = Record<string, unknown>;
-type IHeaderFieldOption = Record<string, unknown>;
-type IObjectBodyFieldOption = Record<string, unknown>;
-type IParamFieldOption = Record<string, unknown>;
-type IQueryFieldOption = Record<string, unknown>;
+import type { IBodyFieldOption } from "#/models/generators/options/IBodyFieldOption";
+import type { IFrameOption } from "#/models/generators/options/IFrameOption";
+import type { IHeaderFieldOption } from "#/models/generators/options/IHeaderFieldOption";
+import type { IObjectBodyFieldOption } from "#/models/generators/options/IObjectBodyFieldOption";
+import type { IParamFieldOption } from "#/models/generators/options/IParamFieldOption";
+import type { IQueryFieldOption } from "#/models/generators/options/IQueryFieldOption";
 
 /**
  * Data structure for jin-frame code generation

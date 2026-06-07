@@ -1,10 +1,6 @@
-interface IProps {
-  pathKey: string;
-  method: string;
-  responseContentType?: { statusCode: string; mediaType: string };
-}
+import type { IGetResponseTypeMappedAccessPathProps } from "#/generators/content-type/interfaces/IGetResponseTypeMappedAccessPathProps";
 
-export function getResponseTypeMappedAccessPath(params: IProps): string {
+export function getResponseTypeMappedAccessPath(params: IGetResponseTypeMappedAccessPathProps): string {
   const contentPath =
     params.responseContentType?.mediaType != null && params.responseContentType?.mediaType !== ""
       ? "content"

@@ -1,19 +1,11 @@
 import type { DecoratorStructure } from "ts-morph";
 import { StructureKind } from "ts-morph";
-import { applicationJsonContentType } from "#/generators/content-type/preferredContentTypes";
+import { applicationJsonContentType } from "#/generators/content-type/applicationJsonContentType";
+import type { IGetMethodDecoratorProps } from "#/generators/content-type/interfaces/IGetMethodDecoratorProps";
 import { getJsonArgument } from "#/generators/json/getJsonArgument";
 import type { IJsonLiteralValue } from "#/generators/json/interface/IJsonLiteralValue";
 
-interface IProps {
-  method: string;
-  contentType?: string;
-  host: string | (() => string);
-  hostCode?: string;
-  path: string;
-  baseFrame?: string;
-}
-
-export function getMethodDecorator(params: IProps): DecoratorStructure {
+export function getMethodDecorator(params: IGetMethodDecoratorProps): DecoratorStructure {
   const jsonLiteralValue: IJsonLiteralValue[] = [];
 
   if (params.baseFrame == null) {

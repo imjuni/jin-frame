@@ -1,10 +1,6 @@
 import type { OpenAPIV3 } from "openapi-types";
+import type { IFileKey } from "#/generators/octet-stream/interfaces/IFileKey";
 import { isFileSchema } from "#/generators/octet-stream/isFileSchema";
-
-interface IFileKey {
-  name: string;
-  isArray: boolean;
-}
 
 export function getFileUploadKeyMap(
   _requestBody: OpenAPIV3.ReferenceObject | OpenAPIV3.RequestBodyObject | undefined,

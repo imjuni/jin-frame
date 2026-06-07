@@ -1,14 +1,7 @@
 import { toArray } from "my-easy-fp";
-import type { OpenAPIV3 } from "openapi-types";
-import type { THttpMethod } from "#/https/method";
+import type { IGetClassJsDocProps } from "#/generators/interfaces/IGetClassJsDocProps";
 
-interface IProps {
-  pathKey: string;
-  method: THttpMethod;
-  operation?: Pick<OpenAPIV3.OperationObject, "description" | "summary" | "tags">;
-}
-
-export function getClassJsDoc(params: IProps): string {
+export function getClassJsDoc(params: IGetClassJsDocProps): string {
   const seeBlock = `@see ${params.method} ${params.pathKey}`;
   const description = [params.operation?.summary, params.operation?.description]
     .filter((desc) => desc != null && desc !== "")

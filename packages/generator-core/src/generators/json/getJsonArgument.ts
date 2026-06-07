@@ -1,11 +1,6 @@
-import type { IJsonLiteralValue } from "#/generators/json/interface/IJsonLiteralValue";
+import type { IGetJsonArgumentProps } from "#/generators/json/interface/IGetJsonArgumentProps";
 
-interface IProps {
-  values?: (IJsonLiteralValue | null | undefined)[];
-  quote?: '"' | "'" | "`";
-}
-
-export function getJsonArgument(_params?: IProps): string | undefined {
+export function getJsonArgument(_params?: IGetJsonArgumentProps): string | undefined {
   const params = (_params?.values ?? []).filter((param) => param != null);
   const quote = _params?.quote ?? "'";
 
