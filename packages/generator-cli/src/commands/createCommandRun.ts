@@ -1,16 +1,9 @@
 import fs from "node:fs";
-import {
-  convertor,
-  createFrames,
-  createOpenapiTs,
-  load,
-  printOpenapiTs,
-  safePathJoin,
-  validate,
-} from "@jin-frame/generator-core";
+import { createFrames, createOpenapiTs, load, printOpenapiTs, safePathJoin } from "@jin-frame/generator-core";
 import type { CommandContext } from "citty";
 import consola, { LogLevels, type LogType } from "consola";
 import pathe from "pathe";
+import { resolveOpenapiDocument } from "#commands/resolveOpenapiDocument.js";
 import type { createCommandArgs } from "#schema/args/createCommandArgs.js";
 import { createCommandArgvSchema } from "#schema/args/createCommandArgvSchema.js";
 import { loadGeneratorCommandInput } from "#schema/args/loadGeneratorCommandInput.js";
@@ -30,18 +23,8 @@ export const createCommandRun = async ({ args }: CommandContext<typeof createCom
     throw new Error(`Failed to load spec from "${specPath}"`);
   }
 
-  consola.debug(`Validating spec from "${specPath}"`);
-  const validated = validate(spec);
-
-  if (!validated.valid) {
-    throw new Error(`Failed to validate spec from "${specPath}"`);
-  }
-
-  if (validated.version === 2) {
-    consola.debug("Converting spec v2 > v3");
-  }
-
-  const converted = await convertor(validated);
+  consola.debug(`Resolving spec from "${specPath}"`);
+  const converted = await resolveOpenapiDocument(spec.data, specPath);
 
   const nodes = await createOpenapiTs(converted.document, transformArgvToOpenapiTsOptions(params));
   consola.debug(`API endpoints: ${nodes.length}`);
