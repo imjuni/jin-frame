@@ -1,8 +1,8 @@
-import { describe, expect, it } from 'vitest';
-import { sleep } from '#tools/sleep';
+import { describe, expect, it } from "vitest";
+import { sleep } from "#tools/sleep";
 
-describe('sleep', () => {
-  it('should resolve after the specified interval', async () => {
+describe("sleep", () => {
+  it("should resolve after the specified interval", async () => {
     const startTime = Date.now();
     const interval = 100; // 100ms
 
@@ -16,7 +16,7 @@ describe('sleep', () => {
     expect(elapsed).toBeLessThan(interval + 50);
   });
 
-  it('should work with negative interval (treated as 1)', async () => {
+  it("should work with negative interval (treated as 1)", async () => {
     const startTime = Date.now();
 
     await sleep(-100);
@@ -28,7 +28,7 @@ describe('sleep', () => {
     expect(elapsed).toBeLessThan(10);
   });
 
-  it('should work with NaN (treated as 1)', async () => {
+  it("should work with NaN (treated as 1)", async () => {
     const startTime = Date.now();
 
     await sleep(NaN);
@@ -40,7 +40,7 @@ describe('sleep', () => {
     expect(elapsed).toBeLessThan(10);
   });
 
-  it('should work with floating point intervals', async () => {
+  it("should work with floating point intervals", async () => {
     const startTime = Date.now();
     const interval = 50.5; // 50.5ms
 
@@ -54,7 +54,7 @@ describe('sleep', () => {
     expect(elapsed).toBeLessThan(80);
   });
 
-  it('should handle large intervals correctly', async () => {
+  it("should handle large intervals correctly", async () => {
     const startTime = Date.now();
     const interval = 200; // 200ms
 
@@ -67,7 +67,7 @@ describe('sleep', () => {
     expect(elapsed).toBeLessThan(interval + 50);
   });
 
-  it('should work with concurrent sleep calls', async () => {
+  it("should work with concurrent sleep calls", async () => {
     const startTime = Date.now();
     const interval = 100;
     const maxInterval = 200;

@@ -1,7 +1,7 @@
-import type { Formatter } from '#interfaces/options/Formatter';
-import { applyFormat } from '#tools/formatters/applyFormat';
-import { isValidPrimitiveWithDateType } from '#tools/type-narrowing/isValidPrimitiveWithDateType';
-import type { SupportPrimitiveType } from '#tools/type-utilities/SupportPrimitiveType';
+import type { Formatter } from "#interfaces/options/Formatter";
+import { applyFormat } from "#tools/formatters/applyFormat";
+import { isValidPrimitiveWithDateType } from "#tools/type-narrowing/isValidPrimitiveWithDateType";
+import type { SupportPrimitiveType } from "#tools/type-utilities/SupportPrimitiveType";
 
 export function formatting(initialValue: unknown, formatter: Formatter): SupportPrimitiveType | undefined {
   try {

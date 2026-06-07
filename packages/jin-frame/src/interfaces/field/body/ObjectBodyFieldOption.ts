@@ -1,9 +1,9 @@
-import type { SingleBodyFormatter } from '#interfaces/field/body/SingleBodyFormatter';
-import type { CommonFieldOption } from '#interfaces/field/CommonFieldOption';
-import type { CommonCacheKeyExcludePathOption } from '#interfaces/field/CommonCacheKeyExcludePathOption';
+import type { SingleBodyFormatter } from "#interfaces/field/body/SingleBodyFormatter";
+import type { CommonCacheKeyExcludePathOption } from "#interfaces/field/CommonCacheKeyExcludePathOption";
+import type { CommonFieldOption } from "#interfaces/field/CommonFieldOption";
 
 export interface ObjectBodyFieldOption extends CommonFieldOption, CommonCacheKeyExcludePathOption {
-  type: 'object-body';
+  type: "object-body";
 
   /**
    * merge order of object-body. Sorted in ascending order. Objects with fast numbers are overwritten by

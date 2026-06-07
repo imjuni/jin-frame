@@ -1,7 +1,5 @@
 {
-  "entryPoints": [
-    "../src"
-  ],
+  "entryPoints": ["../src"],
   "tsconfig": "../tsconfig.prod.json",
   "entryPointStrategy": "expand",
   "plugin": ["typedoc-plugin-markdown", "typedoc-vitepress-theme"],
@@ -9,13 +7,7 @@
   "excludePrivate": true,
   "excludeInternal": true,
   "readme": "none",
-  "exclude": [
-    "**/__tests__/*",
-    "**/*.test.ts",
-    "**/*.test.tsx",
-    "**/*.spec.ts",
-    "**/*.spec.tsx",
-  ],
+  "exclude": ["**/__tests__/*", "**/*.test.ts", "**/*.test.tsx", "**/*.spec.ts", "**/*.spec.tsx"],
   "docsRoot": "../docs",
   "sidebar": { "autoConfiguration": true }
 }

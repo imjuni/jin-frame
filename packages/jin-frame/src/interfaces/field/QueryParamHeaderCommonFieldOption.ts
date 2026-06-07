@@ -1,4 +1,4 @@
-import type { Formatter } from '#interfaces/options/Formatter';
+import type { Formatter } from "#interfaces/options/Formatter";
 
 export interface QueryParamHeaderCommonFieldOption {
   /**

@@ -1,3 +1,3 @@
-import { makeRequestDecorator } from '#decorators/methods/handlers/makeRequestDecorator';
+import { makeRequestDecorator } from "#decorators/methods/handlers/makeRequestDecorator";
 
-export const Put = makeRequestDecorator('PUT');
+export const Put = makeRequestDecorator("PUT");

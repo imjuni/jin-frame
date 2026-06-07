@@ -1,6 +1,6 @@
-import { getFirstContentType } from '#/generators/content-type/getFirstContentType';
-import { preferredContentTypes } from '#/generators/content-type/preferredContentTypes';
-import type { OpenAPIV3 } from 'openapi-types';
+import type { OpenAPIV3 } from "openapi-types";
+import { getFirstContentType } from "#/generators/content-type/getFirstContentType";
+import { preferredContentTypes } from "#/generators/content-type/preferredContentTypes";
 
 export function getResponseContentType(
   responses?: OpenAPIV3.ResponsesObject,
@@ -10,15 +10,15 @@ export function getResponseContentType(
   }
 
   const statusCodes = Object.keys(responses);
-  const statusCodesWithout200 = statusCodes.filter((statusCode) => statusCode !== '200');
+  const statusCodesWithout200 = statusCodes.filter((statusCode) => statusCode !== "200");
 
   const successContentCode = getFirstContentType(
     preferredContentTypes,
-    (responses['200'] as OpenAPIV3.ResponseObject | undefined)?.content,
+    (responses["200"] as OpenAPIV3.ResponseObject | undefined)?.content,
   );
 
   if (successContentCode != null) {
-    return { statusCode: '200', mediaType: successContentCode.mediaType };
+    return { statusCode: "200", mediaType: successContentCode.mediaType };
   }
 
   const otherContentTypes = statusCodesWithout200
@@ -39,8 +39,8 @@ export function getResponseContentType(
     })
     .filter((contentType) => contentType != null);
 
-  if (otherContentTypes.length <= 0 && statusCodes.includes('200')) {
-    return { statusCode: '200', mediaType: '' };
+  if (otherContentTypes.length <= 0 && statusCodes.includes("200")) {
+    return { statusCode: "200", mediaType: "" };
   }
 
   const firstContentType = otherContentTypes.at(0);

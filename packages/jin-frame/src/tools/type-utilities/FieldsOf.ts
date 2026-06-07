@@ -3,7 +3,9 @@ type AnyFn = (...a: any[]) => unknown;
 
 // Extracts all keys whose value type includes a function signature.
 // Used to distinguish method members from plain data properties.
-type FunctionKeys<T> = { [K in keyof T]-?: Extract<T[K], AnyFn> extends never ? never : K }[keyof T];
+type FunctionKeys<T> = {
+  [K in keyof T]-?: Extract<T[K], AnyFn> extends never ? never : K;
+}[keyof T];
 
 // Strips all method keys from T, leaving only data properties.
 type NonFunctionProps<T> = Omit<T, FunctionKeys<T>>;

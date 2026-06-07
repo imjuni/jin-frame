@@ -1,4 +1,4 @@
-import type { OpenAPIV3 } from 'openapi-types';
+import type { OpenAPIV3 } from "openapi-types";
 
 export function getFirstContentType(
   preferreds: string[],
@@ -18,22 +18,17 @@ export function getFirstContentType(
       }
 
       // wildcard matching
-      if (preferred.endsWith('/*') && mediaType.startsWith(preferred.slice(0, -1))) {
+      if (preferred.endsWith("/*") && mediaType.startsWith(preferred.slice(0, -1))) {
         return {
           mediaType,
           value: content[mediaType],
         };
       }
 
-      if (preferred.includes('*+')) {
-        const [pre, post] = preferred.split('*+');
+      if (preferred.includes("*+")) {
+        const [pre, post] = preferred.split("*+");
 
-        if (
-          pre != null &&
-          post != null &&
-          mediaType.startsWith(pre) &&
-          mediaType.endsWith(`+${post}`)
-        ) {
+        if (pre != null && post != null && mediaType.startsWith(pre) && mediaType.endsWith(`+${post}`)) {
           return { mediaType, value: content[mediaType] };
         }
       }

@@ -1,6 +1,6 @@
-import type { Formatter } from '#interfaces/options/Formatter';
-import { formattings } from '#tools/formatters/formattings';
-import type { SupportPrimitiveType } from '#tools/type-utilities/SupportPrimitiveType';
+import type { Formatter } from "#interfaces/options/Formatter";
+import { formattings } from "#tools/formatters/formattings";
+import type { SupportPrimitiveType } from "#tools/type-utilities/SupportPrimitiveType";
 
 export function formatEach(
   initialValue: unknown,

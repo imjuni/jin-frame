@@ -1,22 +1,22 @@
-import { formatEach } from '#tools/formatters/formatEach';
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it } from "vitest";
+import { formatEach } from "#tools/formatters/formatEach";
 
-describe('formatEach', () => {
-  it('should return string when singular value and singular formatter', () => {
+describe("formatEach", () => {
+  it("should return string when singular value and singular formatter", () => {
     const results = formatEach(1, {
-      order: ['string', 'number', 'dateTime'],
+      order: ["string", "number", "dateTime"],
       string: (str) => `ABC:${str}`,
     });
 
-    expect(results).toEqual('ABC:1');
+    expect(results).toEqual("ABC:1");
   });
 
-  it('should return string array when array value and singular formatter', () => {
+  it("should return string array when array value and singular formatter", () => {
     const results = formatEach([1, 2, 3], {
-      order: ['string', 'number', 'dateTime'],
+      order: ["string", "number", "dateTime"],
       string: (str) => `ABC:${str}`,
     });
 
-    expect(results).toEqual(['ABC:1', 'ABC:2', 'ABC:3']);
+    expect(results).toEqual(["ABC:1", "ABC:2", "ABC:3"]);
   });
 });

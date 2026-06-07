@@ -1,19 +1,19 @@
-import type { THttpMethod } from '#/https/method';
-import type { Project } from 'ts-morph';
-import { pascalCase } from 'change-case';
-import { getFrameName } from '#/generators/getFrameName';
-import { getClassJsDoc } from '#/generators/getClassJsDoc';
-import type { OpenAPIV3 } from 'openapi-types';
-import { getParameter } from '#/generators/parameters/getParameter';
-import { getRequestContentType } from '#/generators/content-type/getRequestContentType';
-import { getResponseContentType } from '#/generators/content-type/getResponseContentType';
-import { getBodyParameter } from '#/generators/parameters/getBodyParameter';
-import { randomUUID } from 'node:crypto';
-import { getMethodDecorator } from '#/generators/content-type/getMethodDecorator';
-import { dotRelative } from '#/tools/dotRelative';
-import { safePathJoin } from '#/tools/safePathJoin';
-import { removeExt } from '#/tools/removeExt';
-import { getResponseTypeMappedAccessPath } from '#/generators/content-type/getResponseTypeMappedAccessPath';
+import { randomUUID } from "node:crypto";
+import { pascalCase } from "change-case";
+import type { OpenAPIV3 } from "openapi-types";
+import type { Project } from "ts-morph";
+import { getMethodDecorator } from "#/generators/content-type/getMethodDecorator";
+import { getRequestContentType } from "#/generators/content-type/getRequestContentType";
+import { getResponseContentType } from "#/generators/content-type/getResponseContentType";
+import { getResponseTypeMappedAccessPath } from "#/generators/content-type/getResponseTypeMappedAccessPath";
+import { getClassJsDoc } from "#/generators/getClassJsDoc";
+import { getFrameName } from "#/generators/getFrameName";
+import { getBodyParameter } from "#/generators/parameters/getBodyParameter";
+import { getParameter } from "#/generators/parameters/getParameter";
+import type { THttpMethod } from "#/https/method";
+import { dotRelative } from "#/tools/dotRelative";
+import { removeExt } from "#/tools/removeExt";
+import { safePathJoin } from "#/tools/safePathJoin";
 
 interface IProps {
   specTypeFilePath: string;
@@ -87,7 +87,7 @@ export function createFrame(project: Project, params: IProps): IResult {
 
   if (params.baseFrame != null) {
     sourceFile.addImportDeclaration({
-      moduleSpecifier: 'jin-frame',
+      moduleSpecifier: "jin-frame",
       namedImports: [method, ...Array.from(new Set<string>(bodyNamedImports))],
     });
     sourceFile.addImportDeclaration({
@@ -99,17 +99,17 @@ export function createFrame(project: Project, params: IProps): IResult {
     });
   } else {
     sourceFile.addImportDeclaration({
-      moduleSpecifier: 'jin-frame',
-      namedImports: [method, ...Array.from(new Set<string>(bodyNamedImports)), 'JinFrame'],
+      moduleSpecifier: "jin-frame",
+      namedImports: [method, ...Array.from(new Set<string>(bodyNamedImports)), "JinFrame"],
     });
   }
 
   sourceFile.addImportDeclaration({
     moduleSpecifier: dotRelative(safePathJoin(params.output, firstTag), removeExt(params.specTypeFilePath)),
-    namedImports: ['paths'],
+    namedImports: ["paths"],
   });
 
-  const parentFrame = params.baseFrame ?? 'JinFrame';
+  const parentFrame = params.baseFrame ?? "JinFrame";
 
   const responseTypeMappedAccessPath = getResponseTypeMappedAccessPath({
     method: originMethod,

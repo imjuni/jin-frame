@@ -1,4 +1,4 @@
-export const tsFiles = ['**/*.ts', '**/*.cts', '**/*.mts', '**/*.tsx', '**/*.d.ts'];
+export const tsFiles = ["**/*.ts", "**/*.cts", "**/*.mts", "**/*.tsx", "**/*.d.ts"];
 
 export const customEslintRule = [
   {
@@ -6,8 +6,8 @@ export const customEslintRule = [
       // ----------------------------------------------------------------------------------------------------------
       // eslint
       // ----------------------------------------------------------------------------------------------------------
-      'max-len': [
-        'error',
+      "max-len": [
+        "error",
         {
           ignoreUrls: true,
           ignoreStrings: true,
@@ -17,37 +17,37 @@ export const customEslintRule = [
           code: 120,
         },
       ],
-      'no-underscore-dangle': [
-        'error',
+      "no-underscore-dangle": [
+        "error",
         {
           allowAfterThis: true,
           allowAfterSuper: true,
           allow: [
-            '_request',
-            '_requestWrap',
-            '_create',
-            '_execute',
-            '_retry',
-            '_getData',
-            '_getOption',
-            '_setFields',
-            '_setData',
-            '_getBodyInit',
-            '_getCacheKey',
-            '_getBaseUrlString',
-            '_retryFail',
-            '_retryException',
-            '_preHook',
-            '_postHook',
-            '_startAt',
-            '_option',
+            "_request",
+            "_requestWrap",
+            "_create",
+            "_execute",
+            "_retry",
+            "_getData",
+            "_getOption",
+            "_setFields",
+            "_setData",
+            "_getBodyInit",
+            "_getCacheKey",
+            "_getBaseUrlString",
+            "_retryFail",
+            "_retryException",
+            "_preHook",
+            "_postHook",
+            "_startAt",
+            "_option",
           ],
         },
       ],
-      'no-restricted-syntax': [
-        'error',
+      "no-restricted-syntax": [
+        "error",
         {
-          selector: 'TSEnumDeclaration:not([const=true])',
+          selector: "TSEnumDeclaration:not([const=true])",
           message: "Don't declare non-const enums",
         },
       ],
@@ -61,111 +61,111 @@ export const customOverrideImportXPlugin = [
   // ----------------------------------------------------------------------------------------------------------
   {
     rules: {
-      'import-x/prefer-default-export': 'off',
-      'import-x/no-default-export': 'error',
+      "import-x/prefer-default-export": "off",
+      "import-x/no-default-export": "error",
     },
   },
   {
-    files: ['src/app/**/*.tsx'],
+    files: ["src/app/**/*.tsx"],
     rules: {
-      'import-x/prefer-default-export': ['error'],
-      'import-x/no-default-export': ['off'],
+      "import-x/prefer-default-export": ["error"],
+      "import-x/no-default-export": ["off"],
     },
   },
   {
-    files: ['next.config.ts', 'vitest.config.{ts,mts}', 'postcss.config.mjs'],
+    files: ["next.config.ts", "vitest.config.{ts,mts}", "postcss.config.mjs"],
     rules: {
-      'import-x/prefer-default-export': ['error'],
-      'import-x/no-default-export': ['off'],
+      "import-x/prefer-default-export": ["error"],
+      "import-x/no-default-export": ["off"],
     },
   },
 ];
 
 export const customOverrideEslintRule = [
   {
-    files: ['**/*.ts'],
+    files: ["**/*.ts"],
     rules: {
-      'no-restricted-syntax': [
-        'error',
+      "no-restricted-syntax": [
+        "error",
         {
-          selector: 'ForInStatement',
-          message: 'Avoid for..in; it iterates over the entire prototype chain.',
+          selector: "ForInStatement",
+          message: "Avoid for..in; it iterates over the entire prototype chain.",
         },
         {
-          selector: 'ForStatement',
-          message: 'Avoid classic for loops; prefer Array methods or for..of when appropriate.',
+          selector: "ForStatement",
+          message: "Avoid classic for loops; prefer Array methods or for..of when appropriate.",
         },
         {
-          selector: 'WhileStatement',
-          message: 'Avoid while loops; prefer for..of or Array methods.',
+          selector: "WhileStatement",
+          message: "Avoid while loops; prefer for..of or Array methods.",
         },
         {
-          selector: 'DoWhileStatement',
-          message: 'Avoid do..while loops; prefer for..of or Array methods.',
+          selector: "DoWhileStatement",
+          message: "Avoid do..while loops; prefer for..of or Array methods.",
         },
         {
-          selector: 'LabeledStatement',
-          message: 'Labels are a form of GOTO.',
+          selector: "LabeledStatement",
+          message: "Labels are a form of GOTO.",
         },
         {
-          selector: 'WithStatement',
-          message: '`with` is disallowed.',
+          selector: "WithStatement",
+          message: "`with` is disallowed.",
         },
       ],
     },
   },
   {
-    files: ['vitest.config.mts', 'eslint.config.mjs', 'eslint.custom.config.mjs'],
+    files: ["vitest.config.mts", "eslint.config.mjs", "eslint.custom.config.mjs"],
     rules: {
-      'import-x/no-extraneous-dependencies': 'off',
-      '@typescript-eslint/no-unsafe-call': 'off',
-      '@typescript-eslint/no-var-requires': 'off',
-      '@typescript-eslint/no-unsafe-argument': 'off',
-      '@typescript-eslint/no-unsafe-assignment': 'off',
-      '@typescript-eslint/no-unsafe-member-access': 'off',
+      "import-x/no-extraneous-dependencies": "off",
+      "@typescript-eslint/no-unsafe-call": "off",
+      "@typescript-eslint/no-var-requires": "off",
+      "@typescript-eslint/no-unsafe-argument": "off",
+      "@typescript-eslint/no-unsafe-assignment": "off",
+      "@typescript-eslint/no-unsafe-member-access": "off",
     },
   },
   {
-    files: ['vitest.config.mts'],
+    files: ["vitest.config.mts"],
     rules: {
-      'import-x/no-default-export': 'off',
+      "import-x/no-default-export": "off",
     },
   },
   {
-    files: ['eslint.config.mjs'],
+    files: ["eslint.config.mjs"],
     rules: {
-      'import-x/no-default-export': 'off',
-      'import-x/extensions': 'off',
-      'import-x/no-rename-default': 'off',
+      "import-x/no-default-export": "off",
+      "import-x/extensions": "off",
+      "import-x/no-rename-default": "off",
     },
   },
   {
-    files: ['**/CE_*.ts'],
+    files: ["**/CE_*.ts"],
     rules: {
-      '@typescript-eslint/naming-convention': 'off',
-      '@typescript-eslint/no-redeclare': 'off',
-      'no-restricted-syntax': 'off',
+      "@typescript-eslint/naming-convention": "off",
+      "@typescript-eslint/no-redeclare": "off",
+      "no-restricted-syntax": "off",
     },
   },
   {
-    files: ['**/*.spec.ts', '**/*.spec.tsx', '**/*.test.ts', '**/*.test.tsx'],
+    files: ["**/*.spec.ts", "**/*.spec.tsx", "**/*.test.ts", "**/*.test.tsx"],
     rules: {
-      'max-classes-per-file': 'off',
-      '@typescript-eslint/no-unsafe-assignment': 'off',
-      '@typescript-eslint/no-explicit-any': 'off',
-      'import-x/no-extraneous-dependencies': 'off',
-      'import-x/no-namespace': 'off',
-      'class-methods-use-this': 'off',
-      'n/no-sync': 'off',
-      'no-console': 'off',
-      'no-underscore-dangle': 'off',
+      "max-classes-per-file": "off",
+      "@typescript-eslint/no-unsafe-assignment": "off",
+      "@typescript-eslint/no-explicit-any": "off",
+      "import-x/no-extraneous-dependencies": "off",
+      "import-x/no-namespace": "off",
+      "class-methods-use-this": "off",
+      "n/no-sync": "off",
+      "no-console": "off",
+      "no-underscore-dangle": "off",
     },
   },
   {
-    files: ['prepublish.cjs'],
+    files: ["prepublish.cjs"],
     rules: {
-      'no-console': 'off',
-      'n/no-process-exit': 'off',
+      "no-console": "off",
+      "n/no-process-exit": "off",
     },
   },
 ];
@@ -173,16 +173,16 @@ export const customOverrideEslintRule = [
 export const customIgnore = [
   {
     ignores: [
-      './.configs/**',
-      './docs/.vitepress/cache/**',
-      './docs/.vitepress/dist/**',
-      './docs/.vitepress/config.mts',
-      './docs/.vitepress/theme/index.ts',
-      '**/dist/**/*',
-      'examples/*',
-      'eslint.config.mjs',
-      'eslint.config.custom.mjs',
-      'vitest.config.mts',
+      "./.configs/**",
+      "./docs/.vitepress/cache/**",
+      "./docs/.vitepress/dist/**",
+      "./docs/.vitepress/config.mts",
+      "./docs/.vitepress/theme/index.ts",
+      "**/dist/**/*",
+      "examples/*",
+      "eslint.config.mjs",
+      "eslint.config.custom.mjs",
+      "vitest.config.mts",
     ],
   },
 ];
@@ -192,8 +192,8 @@ export const customTsconfig = {
   languageOptions: {
     parserOptions: {
       projectService: {
-        allowDefaultProject: ['*.mjs', '*.cjs'],
-        defaultProject: './tsconfig.eslint.json',
+        allowDefaultProject: ["*.mjs", "*.cjs"],
+        defaultProject: "./tsconfig.eslint.json",
       },
     },
   },
@@ -201,7 +201,7 @@ export const customTsconfig = {
 
 export const customTypescriptRule = [
   {
-    name: 'project/custom/typescript/rules',
+    name: "project/custom/typescript/rules",
     files: tsFiles,
     rules: {
       // ----------------------------------------------------------------------------------------------------------
@@ -226,30 +226,30 @@ export const customTypescriptRule = [
       //     },
       //   },
       // ],
-      '@typescript-eslint/member-delimiter-style': [
-        'off',
+      "@typescript-eslint/member-delimiter-style": [
+        "off",
         {
           multiline: {
-            delimiter: 'none',
+            delimiter: "none",
             requireLast: true,
           },
           singleline: {
-            delimiter: 'semi',
+            delimiter: "semi",
             requireLast: false,
           },
         },
       ],
-      '@typescript-eslint/no-unused-vars': [
-        'error',
+      "@typescript-eslint/no-unused-vars": [
+        "error",
         {
-          varsIgnorePattern: '^_.+$',
-          argsIgnorePattern: '^_.+$',
+          varsIgnorePattern: "^_.+$",
+          argsIgnorePattern: "^_.+$",
         },
       ],
-      '@typescript-eslint/consistent-type-imports': [
-        'error',
+      "@typescript-eslint/consistent-type-imports": [
+        "error",
         {
-          prefer: 'type-imports',
+          prefer: "type-imports",
         },
       ],
     },

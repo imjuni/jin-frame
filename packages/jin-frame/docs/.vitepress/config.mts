@@ -1,108 +1,108 @@
-import { defineConfig } from 'vitepress';
-import typedocSidebar from '../api/typedoc-sidebar.json';
+import { defineConfig } from "vitepress";
+import typedocSidebar from "../api/typedoc-sidebar.json";
 
 const base = process.env.BASE_DIR;
 
 const getThemeConfig = (_locale?: string) => {
-  const locale = _locale != null ? `/${_locale}` : '';
+  const locale = _locale != null ? `/${_locale}` : "";
 
   const logo = {
-    light: '/assets/jin-frame-brand-icon.png',
-    dark: '/assets/jin-frame-brand-icon.png',
+    light: "/assets/jin-frame-brand-icon.png",
+    dark: "/assets/jin-frame-brand-icon.png",
   };
 
   const nav = [
-    { text: 'Home', link: '/' },
-    { text: 'Document', link: '/what-is-jin-frame' },
-    { text: 'Github', link: 'https://github.com/imjuni/jin-frame' },
+    { text: "Home", link: "/" },
+    { text: "Document", link: "/what-is-jin-frame" },
+    { text: "Github", link: "https://github.com/imjuni/jin-frame" },
   ];
 
   const socialLinks = [
-    { icon: 'npm', link: 'https://www.npmjs.com/package/jin-frame' },
-    { icon: 'github', link: 'https://github.com/imjuni/jin-frame' },
+    { icon: "npm", link: "https://www.npmjs.com/package/jin-frame" },
+    { icon: "github", link: "https://github.com/imjuni/jin-frame" },
   ];
 
   const sidebar = [
     {
-      text: 'Document',
+      text: "Document",
       items: [
-        { text: 'What is jin-frame?', link: `${locale}/what-is-jin-frame` },
-        { text: 'Getting To Start', link: `${locale}/getting-to-start` },
+        { text: "What is jin-frame?", link: `${locale}/what-is-jin-frame` },
+        { text: "Getting To Start", link: `${locale}/getting-to-start` },
         {
-          text: 'Method',
+          text: "Method",
           link: `${locale}/usage-method.md`,
           items: [
             {
-              text: 'Naming Convention',
+              text: "Naming Convention",
               link: `${locale}/method/naming-convention.md`,
             },
             {
-              text: 'URL Template',
+              text: "URL Template",
               link: `${locale}/method/url-template.md`,
             },
             {
-              text: 'Authorization',
+              text: "Authorization",
               link: `${locale}/method/authorization.md`,
             },
             {
-              text: 'Inheritance',
+              text: "Inheritance",
               link: `${locale}/method/inheritance.md`,
             },
             {
-              text: 'Retry',
+              text: "Retry",
               link: `${locale}/method/retry.md`,
             },
             {
-              text: 'Mocking',
+              text: "Mocking",
               link: `${locale}/method/mocking.md`,
             },
             {
-              text: 'Form',
+              text: "Form",
               link: `${locale}/method/form.md`,
             },
             {
-              text: 'Validation',
+              text: "Validation",
               link: `${locale}/method/validation.md`,
             },
             {
-              text: 'Dedupe',
+              text: "Dedupe",
               link: `${locale}/method/dedupe.md`,
             },
             {
-              text: 'Hook',
+              text: "Hook",
               link: `${locale}/method/hook.md`,
             },
             {
-              text: 'Builder',
+              text: "Builder",
               link: `${locale}/method/builder.md`,
             },
           ],
         },
         {
-          text: 'Field',
+          text: "Field",
           items: [
             {
-              text: 'Query',
+              text: "Query",
               link: `${locale}/field/query.md`,
             },
             {
-              text: 'Param',
+              text: "Param",
               link: `${locale}/field/param.md`,
             },
             {
-              text: 'Body',
+              text: "Body",
               link: `${locale}/field/body.md`,
             },
             {
-              text: 'ObjectBody',
+              text: "ObjectBody",
               link: `${locale}/field/objectbody.md`,
             },
             {
-              text: 'Header',
+              text: "Header",
               link: `${locale}/field/header.md`,
             },
             {
-              text: 'Formatters',
+              text: "Formatters",
               link: `${locale}/field/formatters.md`,
             },
           ],
@@ -110,7 +110,7 @@ const getThemeConfig = (_locale?: string) => {
       ],
     },
     {
-      text: 'API',
+      text: "API",
       items: typedocSidebar,
     },
   ];
@@ -125,37 +125,37 @@ const getThemeConfig = (_locale?: string) => {
 
 // https://vitepress.dev/reference/site-config
 export default defineConfig({
-  title: 'jin-frame',
-  description: 'Declarative API definition',
+  title: "jin-frame",
+  description: "Declarative API definition",
   base,
   ignoreDeadLinks: true,
   markdown: {
     config: (md) => {
-      const fence = md.renderer.rules.fence!
+      const fence = md.renderer.rules.fence!;
       md.renderer.rules.fence = (...args) => {
-        const [tokens, idx] = args
-        const token = tokens[idx]
-        if (token.info === 'mermaid') {
-          return `<Mermaid code="${encodeURIComponent(token.content)}" />`
+        const [tokens, idx] = args;
+        const token = tokens[idx];
+        if (token.info === "mermaid") {
+          return `<Mermaid code="${encodeURIComponent(token.content)}" />`;
         }
-        return fence(...args)
-      }
-    }
+        return fence(...args);
+      };
+    },
   },
   locales: {
     root: {
-      label: 'English',
-      lang: 'en',
-      link: '/',
+      label: "English",
+      lang: "en",
+      link: "/",
       // https://vitepress.dev/reference/default-theme-config
       themeConfig: getThemeConfig(),
     },
     ko: {
-      label: '한국어',
-      lang: 'ko',
-      link: '/ko/',
+      label: "한국어",
+      lang: "ko",
+      link: "/ko/",
       // https://vitepress.dev/reference/default-theme-config
-      themeConfig: getThemeConfig('ko'),
+      themeConfig: getThemeConfig("ko"),
     },
   },
 });

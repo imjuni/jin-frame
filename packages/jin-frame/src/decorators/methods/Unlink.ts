@@ -1,3 +1,3 @@
-import { makeRequestDecorator } from '#decorators/methods/handlers/makeRequestDecorator';
+import { makeRequestDecorator } from "#decorators/methods/handlers/makeRequestDecorator";
 
-export const Unlink = makeRequestDecorator('UNLINK');
+export const Unlink = makeRequestDecorator("UNLINK");

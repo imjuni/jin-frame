@@ -1,1 +1,1 @@
-export const REQUEST_AUTHORIZATION_DECORATOR = Symbol('jinframe:class-request-authorization-decorator');
+export const REQUEST_AUTHORIZATION_DECORATOR = Symbol("jinframe:class-request-authorization-decorator");

@@ -1,12 +1,12 @@
-import { describe, expect, it } from 'vitest';
-import { getRequestMeta } from '#decorators/methods/handlers/getRequestMeta';
-import { Patch } from '#decorators/methods/Patch';
+import { describe, expect, it } from "vitest";
+import { getRequestMeta } from "#decorators/methods/handlers/getRequestMeta";
+import { Patch } from "#decorators/methods/Patch";
 
 class IamClass {}
 
-describe('Patch', () => {
-  it('should return configuration when pass custom content-type', () => {
-    const contentType = 'custom content type';
+describe("Patch", () => {
+  it("should return configuration when pass custom content-type", () => {
+    const contentType = "custom content type";
     const hanlde = Patch({ contentType });
     hanlde(IamClass);
 

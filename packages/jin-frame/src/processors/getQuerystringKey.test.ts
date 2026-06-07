@@ -1,39 +1,39 @@
-import { getQuerystringKey } from '#processors/getQuerystringKey';
-import { describe, it, expect } from 'vitest';
+import { describe, expect, it } from "vitest";
+import { getQuerystringKey } from "#processors/getQuerystringKey";
 
-describe('getQuerystringKey', () => {
-  it('should original key when not format', () => {
+describe("getQuerystringKey", () => {
+  it("should original key when not format", () => {
     const result = getQuerystringKey({
-      key: 'ironman',
+      key: "ironman",
       index: 0,
     });
-    expect(result).toEqual('ironman');
+    expect(result).toEqual("ironman");
   });
 
-  it('should original key when brackets format', () => {
+  it("should original key when brackets format", () => {
     const result = getQuerystringKey({
-      key: 'ironman',
+      key: "ironman",
       index: 0,
-      format: 'brackets',
+      format: "brackets",
     });
-    expect(result).toEqual('ironman[]');
+    expect(result).toEqual("ironman[]");
   });
 
-  it('should original key when indices format', () => {
+  it("should original key when indices format", () => {
     const result = getQuerystringKey({
-      key: 'ironman',
+      key: "ironman",
       index: 0,
-      format: 'indices',
+      format: "indices",
     });
-    expect(result).toEqual('ironman[0]');
+    expect(result).toEqual("ironman[0]");
   });
 
-  it('should original key when one-indices format', () => {
+  it("should original key when one-indices format", () => {
     const result = getQuerystringKey({
-      key: 'ironman',
+      key: "ironman",
       index: 0,
-      format: 'one-indices',
+      format: "one-indices",
     });
-    expect(result).toEqual('ironman[1]');
+    expect(result).toEqual("ironman[1]");
   });
 });

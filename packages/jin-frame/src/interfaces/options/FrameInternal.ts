@@ -1,4 +1,4 @@
-import type { FrameRetry } from '#interfaces/options/FrameRetry';
+import type { FrameRetry } from "#interfaces/options/FrameRetry";
 
 export interface FrameInternal {
   query?: Record<string, string | string[]>;

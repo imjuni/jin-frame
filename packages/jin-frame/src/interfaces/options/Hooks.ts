@@ -1,8 +1,8 @@
-import type { DebugInfo } from '#interfaces/DebugInfo';
-import type { JinFailResp } from '#interfaces/JinFailResp';
-import type { JinPassResp } from '#interfaces/JinPassResp';
-import type { JinRequestConfig } from '#interfaces/JinRequestConfig';
-import type { JinResp } from '#interfaces/JinResp';
+import type { DebugInfo } from "#interfaces/DebugInfo";
+import type { JinFailResp } from "#interfaces/JinFailResp";
+import type { JinPassResp } from "#interfaces/JinPassResp";
+import type { JinRequestConfig } from "#interfaces/JinRequestConfig";
+import type { JinResp } from "#interfaces/JinResp";
 
 /**
  * Execute before request. If you can change request object that is affected request.

@@ -1,5 +1,5 @@
-import type { AuthorizationData } from '#interfaces/security/AuthorizationData';
-import type { SecurityContext } from '#interfaces/security/SecurityContext';
+import type { AuthorizationData } from "#interfaces/security/AuthorizationData";
+import type { SecurityContext } from "#interfaces/security/SecurityContext";
 
 /**
  * Security provider interface for handling different authentication schemes
@@ -34,7 +34,7 @@ import type { SecurityContext } from '#interfaces/security/SecurityContext';
  */
 export interface SecurityProvider {
   /** The type of security scheme (following OpenAPI 3.0 security scheme types) */
-  readonly type: 'api-key' | 'http' | 'oauth2' | 'open-id-connect';
+  readonly type: "api-key" | "http" | "oauth2" | "open-id-connect";
 
   /** Unique name for this security provider instance */
   readonly name: string;

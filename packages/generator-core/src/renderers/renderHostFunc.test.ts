@@ -1,9 +1,9 @@
-import { renderHostFunc } from '#/renderers/renderHostFunc';
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it } from "vitest";
+import { renderHostFunc } from "#/renderers/renderHostFunc";
 
-describe('renderHostFunc', () => {
-  it('should return array host function when pass array hosts', () => {
-    const result = renderHostFunc(['https://www.apple.com', 'https://www.google.com']);
+describe("renderHostFunc", () => {
+  it("should return array host function when pass array hosts", () => {
+    const result = renderHostFunc(["https://www.apple.com", "https://www.google.com"]);
     const expectation = `function getHost() {
     const hosts = [ 'https://www.apple.com', 'https://www.google.com' ];
     const host = hosts.at(0);

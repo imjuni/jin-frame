@@ -1,5 +1,5 @@
-import type { JsonValue } from 'type-fest';
-import type { IMultiParse } from '#/tools/interfaces/IMultiParse';
+import type { JsonValue } from "type-fest";
+import type { IMultiParse } from "#/tools/interfaces/IMultiParse";
 
 /**
  * load 함수 실행 결과
@@ -12,9 +12,9 @@ export interface ILoadResult<T = JsonValue> {
    * - file: 파일에서 OpenAPI Spec 문서를 읽음
    * - url: url에서 OpenAPI Spec 문서를 읽음
    * */
-  from: 'file' | 'url';
+  from: "file" | "url";
 
-  kind: IMultiParse<T>['kind'];
+  kind: IMultiParse<T>["kind"];
 
   /**
    * load 함수 실행 결과로 읽은 데이터

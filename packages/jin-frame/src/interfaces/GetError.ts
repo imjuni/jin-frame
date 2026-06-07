@@ -1,7 +1,7 @@
-import type { JinCreateError } from '#exceptions/JinCreateError';
-import type { JinRespError } from '#exceptions/JinRespError';
-import type { JinValidationError } from '#exceptions/JinValidationError';
-import type { JinFrame } from '#frames/JinFrame';
+import type { JinCreateError } from "#exceptions/JinCreateError";
+import type { JinRespError } from "#exceptions/JinRespError";
+import type { JinValidationError } from "#exceptions/JinValidationError";
+import type { JinFrame } from "#frames/JinFrame";
 
 export type GetError<TFRAME extends JinFrame<TPASS, TFAIL>, TPASS, TFAIL, TValidationError = unknown> = (
   err:

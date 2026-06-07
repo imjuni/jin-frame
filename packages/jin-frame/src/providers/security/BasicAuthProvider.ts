@@ -1,6 +1,6 @@
-import type { AuthorizationData } from '#interfaces/security/AuthorizationData';
-import type { SecurityContext } from '#interfaces/security/SecurityContext';
-import type { SecurityProvider } from '#interfaces/security/SecurityProvider';
+import type { AuthorizationData } from "#interfaces/security/AuthorizationData";
+import type { SecurityContext } from "#interfaces/security/SecurityContext";
+import type { SecurityProvider } from "#interfaces/security/SecurityProvider";
 
 /**
  * Basic Authentication security provider that implements HTTP Basic Auth.
@@ -8,7 +8,7 @@ import type { SecurityProvider } from '#interfaces/security/SecurityProvider';
  */
 export class BasicAuthProvider implements SecurityProvider {
   /** Type identifier for this security provider */
-  readonly type = 'http' as const;
+  readonly type = "http" as const;
 
   /** Name of this security provider instance */
   readonly name: string;
@@ -17,7 +17,7 @@ export class BasicAuthProvider implements SecurityProvider {
    * Creates a new Basic Authentication provider
    * @param name - Name of this security provider instance
    */
-  constructor(name = 'basic') {
+  constructor(name = "basic") {
     this.name = name;
   }
 
@@ -42,7 +42,7 @@ export class BasicAuthProvider implements SecurityProvider {
    * @returns Security context with Authorization header
    */
   private static handleDynamicKey(dynamicKey: string): SecurityContext {
-    if (dynamicKey.startsWith('Basic ')) {
+    if (dynamicKey.startsWith("Basic ")) {
       return {
         headers: {
           Authorization: dynamicKey,
@@ -63,8 +63,8 @@ export class BasicAuthProvider implements SecurityProvider {
    * @returns Security context with either Authorization header or auth credentials
    */
   private static handleAuthorization(authorization?: AuthorizationData): SecurityContext {
-    if (typeof authorization === 'string') {
-      const basicAuth = authorization.startsWith('Basic ') ? authorization : `Basic ${authorization}`;
+    if (typeof authorization === "string") {
+      const basicAuth = authorization.startsWith("Basic ") ? authorization : `Basic ${authorization}`;
       return {
         headers: {
           Authorization: basicAuth,
@@ -74,9 +74,9 @@ export class BasicAuthProvider implements SecurityProvider {
 
     if (
       authorization &&
-      typeof authorization === 'object' &&
-      'username' in authorization &&
-      'password' in authorization
+      typeof authorization === "object" &&
+      "username" in authorization &&
+      "password" in authorization
     ) {
       return {
         auth: {

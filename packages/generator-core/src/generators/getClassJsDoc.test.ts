@@ -1,23 +1,23 @@
-import { getClassJsDoc } from '#/generators/getClassJsDoc';
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it } from "vitest";
+import { getClassJsDoc } from "#/generators/getClassJsDoc";
 
-describe('getClassJsDoc', () => {
-  it('should return @see when summary, description, tags is undefined', () => {
+describe("getClassJsDoc", () => {
+  it("should return @see when summary, description, tags is undefined", () => {
     const result = getClassJsDoc({
-      method: 'POST',
-      pathKey: '/pet/findByTags',
+      method: "POST",
+      pathKey: "/pet/findByTags",
     });
 
     // console.log(result);
-    expect(result).toEqual('@see POST /pet/findByTags');
+    expect(result).toEqual("@see POST /pet/findByTags");
   });
 
-  it('should return @see, description when summary, tags is undefined', () => {
+  it("should return @see, description when summary, tags is undefined", () => {
     const result = getClassJsDoc({
-      method: 'POST',
-      pathKey: '/pet/findByTags',
+      method: "POST",
+      pathKey: "/pet/findByTags",
       operation: {
-        description: 'Multiple tags can be provided with comma separated strings. Use tag1, tag2, tag3 for testing.',
+        description: "Multiple tags can be provided with comma separated strings. Use tag1, tag2, tag3 for testing.",
       },
     });
 
@@ -26,13 +26,13 @@ describe('getClassJsDoc', () => {
     );
   });
 
-  it('should return @see, summary, description when tags is undefined', () => {
+  it("should return @see, summary, description when tags is undefined", () => {
     const result = getClassJsDoc({
-      method: 'POST',
-      pathKey: '/pet/findByTags',
+      method: "POST",
+      pathKey: "/pet/findByTags",
       operation: {
-        description: 'Multiple tags can be provided with comma separated strings. Use tag1, tag2, tag3 for testing.',
-        summary: 'Finds Pets by tags.',
+        description: "Multiple tags can be provided with comma separated strings. Use tag1, tag2, tag3 for testing.",
+        summary: "Finds Pets by tags.",
       },
     });
 
@@ -41,14 +41,14 @@ describe('getClassJsDoc', () => {
     );
   });
 
-  it('should return summary, description, @see, @tag when every value is not undefined', () => {
+  it("should return summary, description, @see, @tag when every value is not undefined", () => {
     const result = getClassJsDoc({
-      method: 'POST',
-      pathKey: '/pet/findByTags',
+      method: "POST",
+      pathKey: "/pet/findByTags",
       operation: {
-        description: 'Multiple tags can be provided with comma separated strings. Use tag1, tag2, tag3 for testing.',
-        summary: 'Finds Pets by tags.',
-        tags: ['pet', 'cat'],
+        description: "Multiple tags can be provided with comma separated strings. Use tag1, tag2, tag3 for testing.",
+        summary: "Finds Pets by tags.",
+        tags: ["pet", "cat"],
       },
     });
 
@@ -57,12 +57,12 @@ describe('getClassJsDoc', () => {
     );
   });
 
-  it('should return @see, @tag when summary, description is undefined', () => {
+  it("should return @see, @tag when summary, description is undefined", () => {
     const result = getClassJsDoc({
-      method: 'POST',
-      pathKey: '/pet/findByTags',
+      method: "POST",
+      pathKey: "/pet/findByTags",
       operation: {
-        tags: ['pet', 'cat'],
+        tags: ["pet", "cat"],
       },
     });
 

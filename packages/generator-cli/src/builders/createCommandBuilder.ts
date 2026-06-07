@@ -1,19 +1,19 @@
-import { CE_COMMAND } from '#/interfaces/CE_COMMAND';
-import type { TCreateCommandArgv } from '#/interfaces/ICreateCommandArgv';
-import { coercePathOrUrl } from '#/validators/coercePathOrUrl';
-import type { Argv } from 'yargs';
+import type { Argv } from "yargs";
+import { CE_COMMAND } from "#/interfaces/CE_COMMAND";
+import type { TCreateCommandArgv } from "#/interfaces/ICreateCommandArgv";
+import { coercePathOrUrl } from "#/validators/coercePathOrUrl";
 
 export function createCommandBuilder(argv: Argv<TCreateCommandArgv>): Argv<TCreateCommandArgv> {
   argv
-    .option('action', {
-      type: 'string',
+    .option("action", {
+      type: "string",
       default: CE_COMMAND.CREATE,
       hidden: true,
     })
-    .positional('spec', {
-      type: 'string',
+    .positional("spec", {
+      type: "string",
       demandOption: true,
-      describe: 'Path to the OpenAPI specification file (JSON or YAML)',
+      describe: "Path to the OpenAPI specification file (JSON or YAML)",
       coerce: coercePathOrUrl,
     });
 

@@ -1,7 +1,7 @@
-import type { SingleBodyFormatter } from '#interfaces/field/body/SingleBodyFormatter';
-import { applyFormat } from '#tools/formatters/applyFormat';
-import { findFromBody } from '#tools/formatters/findFromBody';
-import { setToBody } from '#tools/formatters/setToBody';
+import type { SingleBodyFormatter } from "#interfaces/field/body/SingleBodyFormatter";
+import { applyFormat } from "#tools/formatters/applyFormat";
+import { findFromBody } from "#tools/formatters/findFromBody";
+import { setToBody } from "#tools/formatters/setToBody";
 
 export function bodyFormatting(initialValue: unknown, formatter: SingleBodyFormatter): unknown {
   const origin = findFromBody(initialValue, formatter.findFrom);

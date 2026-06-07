@@ -3,7 +3,7 @@ export function encode(enable: boolean | undefined | null, value: string | numbe
     return encodeURIComponent(value);
   }
 
-  if (typeof value === 'number') {
+  if (typeof value === "number") {
     return `${value}`;
   }
 

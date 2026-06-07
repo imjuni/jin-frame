@@ -1,88 +1,88 @@
-import { generateHostValue } from '#/generators/hosts/generateHostValue';
-import type { OpenAPIV3 } from 'openapi-types';
-import { describe, expect, it } from 'vitest';
+import type { OpenAPIV3 } from "openapi-types";
+import { describe, expect, it } from "vitest";
+import { generateHostValue } from "#/generators/hosts/generateHostValue";
 
-describe('generateHostValue', () => {
+describe("generateHostValue", () => {
   const mockServers: OpenAPIV3.ServerObject[] = [
-    { url: 'https://dev.api.example.com/v1', description: 'Development server' },
-    { url: 'https://staging.api.example.com/v1', description: 'Staging server' },
-    { url: 'https://api.example.com/v1', description: 'Production server' },
+    { url: "https://dev.api.example.com/v1", description: "Development server" },
+    { url: "https://staging.api.example.com/v1", description: "Staging server" },
+    { url: "https://api.example.com/v1", description: "Production server" },
   ];
 
-  it('should generate string host for string strategy', () => {
+  it("should generate string host for string strategy", () => {
     const result = generateHostValue({
       servers: mockServers,
-      options: { hostStrategy: 'string' },
+      options: { hostStrategy: "string" },
     });
 
     expect(result).toBe("'https://dev.api.example.com/v1'");
   });
 
-  it('should use provided host when specified', () => {
+  it("should use provided host when specified", () => {
     const result = generateHostValue({
       servers: mockServers,
       options: {
-        hostStrategy: 'string',
-        host: 'https://custom.api.com',
+        hostStrategy: "string",
+        host: "https://custom.api.com",
       },
     });
 
     expect(result).toBe("'https://custom.api.com'");
   });
 
-  it('should generate function name for function strategy', () => {
+  it("should generate function name for function strategy", () => {
     const result = generateHostValue({
       servers: mockServers,
       options: {
-        hostStrategy: 'function',
-        hostFunctionName: 'getCustomHost',
+        hostStrategy: "function",
+        hostFunctionName: "getCustomHost",
       },
     });
 
-    expect(result).toBe('getCustomHost');
+    expect(result).toBe("getCustomHost");
   });
 
-  it('should use default function name when not specified', () => {
+  it("should use default function name when not specified", () => {
     const result = generateHostValue({
       servers: mockServers,
-      options: { hostStrategy: 'function' },
+      options: { hostStrategy: "function" },
     });
 
-    expect(result).toBe('getApiHost');
+    expect(result).toBe("getApiHost");
   });
 
-  it('should generate env-function with default mapping', () => {
+  it("should generate env-function with default mapping", () => {
     const result = generateHostValue({
       servers: mockServers,
-      options: { hostStrategy: 'env-function' },
+      options: { hostStrategy: "env-function" },
     });
 
-    expect(result).toContain('process.env.NODE_ENV');
+    expect(result).toContain("process.env.NODE_ENV");
     expect(result).toContain("development: 'https://dev.api.example.com/v1'");
     expect(result).toContain("staging: 'https://staging.api.example.com/v1'");
     expect(result).toContain("production: 'https://api.example.com/v1'");
   });
 
-  it('should generate env-function with custom env var', () => {
+  it("should generate env-function with custom env var", () => {
     const result = generateHostValue({
       servers: mockServers,
       options: {
-        hostStrategy: 'env-function',
-        hostEnvVar: 'API_ENV',
+        hostStrategy: "env-function",
+        hostEnvVar: "API_ENV",
       },
     });
 
-    expect(result).toContain('process.env.API_ENV');
+    expect(result).toContain("process.env.API_ENV");
   });
 
-  it('should use custom server mapping', () => {
+  it("should use custom server mapping", () => {
     const result = generateHostValue({
       servers: mockServers,
       options: {
-        hostStrategy: 'env-function',
+        hostStrategy: "env-function",
         serverMapping: {
-          dev: 'https://localhost:3000',
-          prod: 'https://api.example.com',
+          dev: "https://localhost:3000",
+          prod: "https://api.example.com",
         },
       },
     });
@@ -91,21 +91,21 @@ describe('generateHostValue', () => {
     expect(result).toContain("prod: 'https://api.example.com'");
   });
 
-  it('should throw error for unknown strategy', () => {
+  it("should throw error for unknown strategy", () => {
     expect(() => {
       generateHostValue({
         servers: mockServers,
-        options: { hostStrategy: 'unknown' as any },
+        options: { hostStrategy: "unknown" as any },
       });
-    }).toThrow('Unknown host strategy: unknown');
+    }).toThrow("Unknown host strategy: unknown");
   });
 
-  it('should throw error when no servers provided', () => {
+  it("should throw error when no servers provided", () => {
     expect(() => {
       generateHostValue({
         servers: [],
-        options: { hostStrategy: 'string' },
+        options: { hostStrategy: "string" },
       });
-    }).toThrow('No servers found in OpenAPI specification');
+    }).toThrow("No servers found in OpenAPI specification");
   });
 });

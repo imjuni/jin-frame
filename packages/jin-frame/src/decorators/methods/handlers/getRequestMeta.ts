@@ -1,10 +1,10 @@
-import { getAllRequestMetaInherited } from '#decorators/methods/handlers/getAllMethodMetaInherited';
-import type { AbstractConstructor, Constructor } from 'type-fest';
-import type { FrameOption } from '#interfaces/options/FrameOption';
-import type { MethodEntry } from '#interfaces/options/MethodEntry';
-import type { FrameRetry } from '#interfaces/options/FrameRetry';
-import { mergeFrameOption } from '#tools/mergeFrameOption';
-import { mergeRetryOption } from '#tools/mergeRetryOption';
+import type { AbstractConstructor, Constructor } from "type-fest";
+import { getAllRequestMetaInherited } from "#decorators/methods/handlers/getAllMethodMetaInherited";
+import type { FrameOption } from "#interfaces/options/FrameOption";
+import type { FrameRetry } from "#interfaces/options/FrameRetry";
+import type { MethodEntry } from "#interfaces/options/MethodEntry";
+import { mergeFrameOption } from "#tools/mergeFrameOption";
+import { mergeRetryOption } from "#tools/mergeRetryOption";
 
 /**
  * Resolves and merges all method decorator metadata for a class constructor,
@@ -79,7 +79,7 @@ export function getRequestMeta(ctor: AbstractConstructor<unknown> | Constructor<
   }
 
   if (Object.keys(mergedOption).length <= 0) {
-    throw new Error('You need to configure using method decorators such as Get, Post, Put, Delete, Patch, etc!');
+    throw new Error("You need to configure using method decorators such as Get, Post, Put, Delete, Patch, etc!");
   }
 
   return {

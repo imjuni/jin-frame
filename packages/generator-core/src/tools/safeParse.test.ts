@@ -1,14 +1,14 @@
-import { safeParse } from '#/tools/safeParse';
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it } from "vitest";
+import { safeParse } from "#/tools/safeParse";
 
-describe('safeParse', () => {
-  it('should return the parsed value', () => {
+describe("safeParse", () => {
+  it("should return the parsed value", () => {
     const result = safeParse('{"a": 1}');
     expect(result).toEqual({ a: 1 });
   });
 
-  it('should return undefined when the value is not valid JSON', () => {
-    const result = safeParse('{]');
+  it("should return undefined when the value is not valid JSON", () => {
+    const result = safeParse("{]");
     expect(result).toBeUndefined();
   });
 });

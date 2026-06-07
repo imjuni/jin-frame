@@ -1,4 +1,4 @@
-import type { QueryFieldOption } from '#interfaces/field/QueryFieldOption';
+import type { QueryFieldOption } from "#interfaces/field/QueryFieldOption";
 
 export function getQuerystringKey({
   key,
@@ -7,17 +7,17 @@ export function getQuerystringKey({
 }: {
   key: string;
   index: number;
-  format?: QueryFieldOption['keyFormat'];
+  format?: QueryFieldOption["keyFormat"];
 }): string {
-  if (format === 'brackets') {
+  if (format === "brackets") {
     return `${key}[]`;
   }
 
-  if (format === 'indices') {
+  if (format === "indices") {
     return `${key}[${index}]`;
   }
 
-  if (format === 'one-indices') {
+  if (format === "one-indices") {
     return `${key}[${index + 1}]`;
   }
 

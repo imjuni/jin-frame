@@ -1,6 +1,6 @@
-import type { CE_COMMAND } from '#/interfaces/CE_COMMAND';
-import type { IGeneratorOption } from '#/interfaces/IGeneratorOption';
-import type { IOpenAPITypeScriptOption } from '#/interfaces/IOpenAPITypeScriptOption';
+import type { CE_COMMAND } from "#/interfaces/CE_COMMAND";
+import type { IGeneratorOption } from "#/interfaces/IGeneratorOption";
+import type { IOpenAPITypeScriptOption } from "#/interfaces/IOpenAPITypeScriptOption";
 
 export type TFrameCommandArgv = {
   action: typeof CE_COMMAND.FRAME;

@@ -1,5 +1,5 @@
-import { safeStringify } from '#/tools/safeStringify';
-import type { OpenAPIV3 } from 'openapi-types';
+import type { OpenAPIV3 } from "openapi-types";
+import { safeStringify } from "#/tools/safeStringify";
 
 interface IProps {
   contentType: string;
@@ -14,7 +14,7 @@ function getExampleValue(params: { isJsonish: boolean; useCodeFence: boolean; va
     return `\`\`\`json\n${safeStringify(params.value, undefined, 2)}\n\`\`\``;
   }
 
-  if (typeof params.value === 'string') {
+  if (typeof params.value === "string") {
     return params.value;
   }
 
@@ -29,9 +29,9 @@ export function getParameterJsDocExamplesContent(params: IProps): string {
     description == null ? undefined : ` ${description} `,
   ]
     .filter((element) => element != null)
-    .join('-');
+    .join("-");
 
-  const isJsonish = params.contentType === 'application/json' || params.contentType.endsWith('+json');
+  const isJsonish = params.contentType === "application/json" || params.contentType.endsWith("+json");
 
   const stringifiedValue = getExampleValue({
     isJsonish,

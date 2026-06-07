@@ -1,26 +1,26 @@
-import { setFrameOption } from '#tools/setFrameOption';
-import type { FrameOption } from '#interfaces/options/FrameOption';
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it } from "vitest";
+import type { FrameOption } from "#interfaces/options/FrameOption";
+import { setFrameOption } from "#tools/setFrameOption";
 
-describe('setFrameOption', () => {
+describe("setFrameOption", () => {
   const option: FrameOption = {
-    method: 'GET',
-    contentType: 'application/json',
+    method: "GET",
+    contentType: "application/json",
   };
 
-  it('should set host value when non nullable value', () => {
+  it("should set host value when non nullable value", () => {
     const cloned = structuredClone(option);
 
-    setFrameOption(cloned, 'host', 'host-value');
+    setFrameOption(cloned, "host", "host-value");
 
-    expect(cloned.host).toEqual('host-value');
+    expect(cloned.host).toEqual("host-value");
   });
 
-  it('should set host value when non nullable value', () => {
+  it("should set host value when non nullable value", () => {
     const cloned = structuredClone(option);
 
-    setFrameOption(cloned, 'contentType', undefined);
+    setFrameOption(cloned, "contentType", undefined);
 
-    expect(cloned.contentType).toEqual('application/json');
+    expect(cloned.contentType).toEqual("application/json");
   });
 });

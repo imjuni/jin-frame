@@ -1,38 +1,38 @@
-import { JinCreateError } from '#exceptions/JinCreateError';
-import { getError } from '#tools/getError';
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it } from "vitest";
+import { JinCreateError } from "#exceptions/JinCreateError";
+import { getError } from "#tools/getError";
 
-describe('getError', () => {
-  it('should return error when handler is not provided', () => {
+describe("getError", () => {
+  it("should return error when handler is not provided", () => {
     const error = new JinCreateError({
       debug: {
         ts: {
-          unix: '1674349200',
-          iso: '1674349200',
+          unix: "1674349200",
+          iso: "1674349200",
         },
         isDeduped: false,
         duration: 1000,
       },
       frame: {} as any,
-      message: 'test',
+      message: "test",
     });
 
     const result = getError(error);
     expect(result).toBe(error);
   });
 
-  it('should return error when handler is not provided', () => {
+  it("should return error when handler is not provided", () => {
     const error = new JinCreateError({
       debug: {
         ts: {
-          unix: '1674349200',
-          iso: '1674349200',
+          unix: "1674349200",
+          iso: "1674349200",
         },
         isDeduped: false,
         duration: 1000,
       },
       frame: {} as any,
-      message: 'test',
+      message: "test",
     });
 
     const expectation = new Error(error.message);

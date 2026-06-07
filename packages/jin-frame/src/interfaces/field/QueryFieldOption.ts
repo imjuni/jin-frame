@@ -1,12 +1,12 @@
-import type { CommonCacheKeyExcludeOption } from '#interfaces/field/CommonCacheKeyExcludeOption';
-import type { CommonFieldOption } from '#interfaces/field/CommonFieldOption';
-import type { QueryParamHeaderCommonFieldOption } from '#interfaces/field/QueryParamHeaderCommonFieldOption';
+import type { CommonCacheKeyExcludeOption } from "#interfaces/field/CommonCacheKeyExcludeOption";
+import type { CommonFieldOption } from "#interfaces/field/CommonFieldOption";
+import type { QueryParamHeaderCommonFieldOption } from "#interfaces/field/QueryParamHeaderCommonFieldOption";
 
 export interface QueryFieldOption
   extends CommonFieldOption,
     CommonCacheKeyExcludeOption,
     QueryParamHeaderCommonFieldOption {
-  type: 'query';
+  type: "query";
 
   /**
    * Querystring Array key formatting
@@ -18,5 +18,5 @@ export interface QueryFieldOption
    * - one-indices
    *  - a[1]=x&a[2]=y
    */
-  keyFormat?: 'brackets' | 'indices' | 'one-indices';
+  keyFormat?: "brackets" | "indices" | "one-indices";
 }

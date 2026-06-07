@@ -1,57 +1,57 @@
-import { JinFrame } from '#frames/JinFrame';
-import { Post } from '#decorators/methods/Post';
-import { lightFormat, parse } from 'date-fns';
-import { format } from 'date-fns-tz';
-import { describe, expect, it } from 'vitest';
-import { Param } from '#decorators/fields/Param';
-import { Header } from '#decorators/fields/Header';
+import { lightFormat, parse } from "date-fns";
+import { format } from "date-fns-tz";
+import { describe, expect, it } from "vitest";
+import { Header } from "#decorators/fields/Header";
+import { Param } from "#decorators/fields/Param";
+import { Post } from "#decorators/methods/Post";
+import { JinFrame } from "#frames/JinFrame";
 
-@Post({ host: 'http://some.api.google.com/jinframe/{passing}' })
+@Post({ host: "http://some.api.google.com/jinframe/{passing}" })
 class Test001PostFrame extends JinFrame {
   @Param()
-  declare public readonly passing: string;
+  public declare readonly passing: string;
 
   @Header()
-  declare public readonly username: string;
+  public declare readonly username: string;
 
   @Header({
-    replaceAt: 'send-at',
+    replaceAt: "send-at",
     formatters: {
       dateTime: (value) => lightFormat(value, `yyyyMMdd'T'HHmmss`),
     },
   })
-  declare public readonly sendAt: Date;
+  public declare readonly sendAt: Date;
 }
 
-@Post({ host: 'http://some.api.google.com/jinframe/{passing}' })
+@Post({ host: "http://some.api.google.com/jinframe/{passing}" })
 class Test002PostFrame extends JinFrame {
   @Param()
-  declare public readonly passing: string;
+  public declare readonly passing: string;
 
-  @Header({ replaceAt: 'uuu' })
-  declare public readonly username: string;
+  @Header({ replaceAt: "uuu" })
+  public declare readonly username: string;
 
   @Header({
-    replaceAt: 'send-at',
+    replaceAt: "send-at",
     comma: true,
     encode: false,
     formatters: {
       dateTime: (value) => lightFormat(value, `yyyyMMdd'T'HHmmss`),
     },
   })
-  declare public readonly sendAt: Date[];
+  public declare readonly sendAt: Date[];
 }
 
-@Post({ host: 'http://some.api.google.com/jinframe/{passing}' })
+@Post({ host: "http://some.api.google.com/jinframe/{passing}" })
 class Test003PostFrame extends JinFrame {
   @Param()
-  declare public readonly passing: string;
+  public declare readonly passing: string;
 
   @Header()
-  declare public readonly username: string;
+  public declare readonly username: string;
 
   @Header({
-    replaceAt: 'send-at',
+    replaceAt: "send-at",
     comma: true,
     encode: false,
     formatters: {
@@ -59,47 +59,56 @@ class Test003PostFrame extends JinFrame {
       dateTime: (value) => lightFormat(value, `yyyyMMdd'T'HHmmss`),
     },
   })
-  declare public readonly sendAt: string[];
+  public declare readonly sendAt: string[];
 }
 
-@Post({ host: 'http://some.api.google.com/jinframe/{passing}' })
+@Post({ host: "http://some.api.google.com/jinframe/{passing}" })
 class Test004PostFrame extends JinFrame {
   @Param()
-  declare public readonly passing: string;
+  public declare readonly passing: string;
 
   @Header()
-  declare public readonly username: string;
+  public declare readonly username: string;
 
   @Header({
-    replaceAt: 'send-at',
+    replaceAt: "send-at",
     comma: true,
     encode: false,
     formatters: [
       {
-        order: ['number', 'dateTime'],
-        number: (value) => new Date(new Date(value * 1000).toLocaleString('en-US', { timeZone: 'Asia/Seoul' })),
-        dateTime: (value) => format(value, `yyyyMMdd'T'HHmmss`, { timeZone: 'utc' }),
+        order: ["number", "dateTime"],
+        number: (value) =>
+          new Date(
+            new Date(value * 1000).toLocaleString("en-US", {
+              timeZone: "Asia/Seoul",
+            }),
+          ),
+        dateTime: (value) => format(value, `yyyyMMdd'T'HHmmss`, { timeZone: "utc" }),
       },
     ],
   })
-  declare public readonly sendAt: number[];
+  public declare readonly sendAt: number[];
 }
 
-describe('JinFrame - Header with formatters', () => {
-  it('T001-datetime-formatter', async () => {
+describe("JinFrame - Header with formatters", () => {
+  it("T001-datetime-formatter", async () => {
     const frame = Test001PostFrame.of({
-      passing: 'hello',
-      username: 'ironman',
+      passing: "hello",
+      username: "ironman",
       sendAt: new Date(2022, 7, 10, 11, 22, 33),
     });
     const req = frame._request();
 
     const expectation = {
       timeout: 120000,
-      headers: { 'Content-Type': 'application/json', username: 'ironman', 'send-at': '20220810T112233' },
-      method: 'POST',
+      headers: {
+        "Content-Type": "application/json",
+        username: "ironman",
+        "send-at": "20220810T112233",
+      },
+      method: "POST",
       transformRequest: undefined,
-      url: 'http://some.api.google.com/jinframe/hello',
+      url: "http://some.api.google.com/jinframe/hello",
       validateStatus: undefined,
     };
 
@@ -108,10 +117,10 @@ describe('JinFrame - Header with formatters', () => {
     expect(req).toEqual(expectation);
   });
 
-  it('T002-datetime-array-formatter', async () => {
+  it("T002-datetime-array-formatter", async () => {
     const frame = Test002PostFrame.of({
-      passing: 'hello',
-      username: 'ironman',
+      passing: "hello",
+      username: "ironman",
       sendAt: [new Date(2022, 7, 10, 11, 22, 33), new Date(2022, 7, 11, 12, 23, 34), new Date(2022, 7, 12, 13, 24, 35)],
     });
     const req = frame._request();
@@ -119,37 +128,37 @@ describe('JinFrame - Header with formatters', () => {
     const expectation = {
       timeout: 120000,
       headers: {
-        'Content-Type': 'application/json',
-        uuu: 'ironman',
-        'send-at': '20220810T112233,20220811T122334,20220812T132435',
+        "Content-Type": "application/json",
+        uuu: "ironman",
+        "send-at": "20220810T112233,20220811T122334,20220812T132435",
       },
-      method: 'POST',
+      method: "POST",
       transformRequest: undefined,
-      url: 'http://some.api.google.com/jinframe/hello',
+      url: "http://some.api.google.com/jinframe/hello",
       validateStatus: undefined,
     };
 
     expect(req).toEqual(expectation);
   });
 
-  it('T003-primitive-type-key-replace-at-not-support-dot-props', async () => {
+  it("T003-primitive-type-key-replace-at-not-support-dot-props", async () => {
     const frame = Test003PostFrame.of({
-      passing: 'hello',
-      username: 'ironman',
-      sendAt: ['2022-08-10 11:22:33', '2022-08-11 12:23:34', '2022-08-12 13:24:35'],
+      passing: "hello",
+      username: "ironman",
+      sendAt: ["2022-08-10 11:22:33", "2022-08-11 12:23:34", "2022-08-12 13:24:35"],
     });
     const req = frame._request();
 
     const expectation = {
       timeout: 120000,
       headers: {
-        'Content-Type': 'application/json',
-        'send-at': '20220810T112233,20220811T122334,20220812T132435',
-        username: 'ironman',
+        "Content-Type": "application/json",
+        "send-at": "20220810T112233,20220811T122334,20220812T132435",
+        username: "ironman",
       },
-      method: 'POST',
+      method: "POST",
       transformRequest: undefined,
-      url: 'http://some.api.google.com/jinframe/hello',
+      url: "http://some.api.google.com/jinframe/hello",
       validateStatus: undefined,
     };
 
@@ -158,10 +167,10 @@ describe('JinFrame - Header with formatters', () => {
     expect(req).toEqual(expectation);
   });
 
-  it('T005-plain-object-type-json-serialization', async () => {
+  it("T005-plain-object-type-json-serialization", async () => {
     const frame = Test004PostFrame.of({
-      passing: 'hello',
-      username: 'ironman',
+      passing: "hello",
+      username: "ironman",
       sendAt: [1660036953, 1660044153, 1660062153],
     });
 
@@ -170,13 +179,13 @@ describe('JinFrame - Header with formatters', () => {
     const expectation = {
       timeout: 120000,
       headers: {
-        'Content-Type': 'application/json',
-        username: 'ironman',
-        'send-at': '20220809T182233,20220809T202233,20220810T012233',
+        "Content-Type": "application/json",
+        username: "ironman",
+        "send-at": "20220809T182233,20220809T202233,20220810T012233",
       },
-      method: 'POST',
+      method: "POST",
       transformRequest: undefined,
-      url: 'http://some.api.google.com/jinframe/hello',
+      url: "http://some.api.google.com/jinframe/hello",
       validateStatus: undefined,
     };
 

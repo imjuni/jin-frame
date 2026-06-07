@@ -1,4 +1,4 @@
-import { parse } from 'yaml';
+import { parse } from "yaml";
 
 export function safeYamlParse<T = unknown>(value: string): T | undefined {
   try {

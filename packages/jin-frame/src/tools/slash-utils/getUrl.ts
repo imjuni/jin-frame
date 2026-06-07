@@ -1,4 +1,4 @@
-import { removeBothSlash } from '#tools/slash-utils/removeBothSlash';
+import { removeBothSlash } from "#tools/slash-utils/removeBothSlash";
 
 // 1) protocol + hostname[:port] + path (RFC 3986 scheme, path value is case-sensitive)
 const pattern1 = /^([A-Za-z][A-Za-z0-9+.-]*:\/\/)([A-Za-z0-9.-]+(:\d+)?)(\/.*)?$/i;
@@ -17,15 +17,15 @@ export function getUrl(
   const withPathPrefix =
     pathPrefix == null && path == null
       ? undefined
-      : [pathPrefix ?? '', path ?? '']
+      : [pathPrefix ?? "", path ?? ""]
           .map((part) => part.trim())
           .map((part) => removeBothSlash(part))
-          .join('/');
-  const concatted = [host ?? '', withPathPrefix ?? '']
+          .join("/");
+  const concatted = [host ?? "", withPathPrefix ?? ""]
     .map((part) => part.trim())
     .map((part) => removeBothSlash(part))
-    .join('/');
-  const str = concatted === '/' ? concatted : removeBothSlash(concatted);
+    .join("/");
+  const str = concatted === "/" ? concatted : removeBothSlash(concatted);
 
   // protocol + hostname + path
   if (pattern1.test(str)) {
@@ -45,8 +45,8 @@ export function getUrl(
     return { url, str, pathname: url.pathname, isOnlyPath: true };
   }
 
-  if (str === '/') {
-    const url = new URL('http://localhost');
+  if (str === "/") {
+    const url = new URL("http://localhost");
     return { url, str, pathname: url.pathname, isOnlyPath: true };
   }
 

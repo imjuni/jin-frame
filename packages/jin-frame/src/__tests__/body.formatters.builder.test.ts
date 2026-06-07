@@ -1,43 +1,42 @@
-import { lightFormat } from 'date-fns';
-import { describe, expect, it } from 'vitest';
+import { lightFormat } from "date-fns";
+import { describe, expect, it } from "vitest";
+import { Body } from "#decorators/fields/Body";
+import { Param } from "#decorators/fields/Param";
+import { Post } from "#decorators/methods/Post";
+import { JinFrame } from "#frames/JinFrame";
 
-import { JinFrame } from '#frames/JinFrame';
-import { Post } from '#decorators/methods/Post';
-import { Param } from '#decorators/fields/Param';
-import { Body } from '#decorators/fields/Body';
-
-@Post({ host: 'http://some.api.google.com/jinframe/{passing}' })
+@Post({ host: "http://some.api.google.com/jinframe/{passing}" })
 class Test001PostFrame extends JinFrame {
   @Param()
-  declare public readonly passing: string;
+  public declare readonly passing: string;
 
   @Body({
     formatters: [{ string: (value) => `${value}+111` }, { string: (value) => `${value}+222` }],
   })
-  declare public readonly username: string[];
+  public declare readonly username: string[];
 
   @Body()
-  declare public readonly password: string;
+  public declare readonly password: string;
 }
 
-@Post({ host: 'http://some.api.google.com/jinframe/{passing}' })
+@Post({ host: "http://some.api.google.com/jinframe/{passing}" })
 class Test002PostFrame extends JinFrame {
   @Param()
-  declare public readonly passing: string;
+  public declare readonly passing: string;
 
   @Body({
     formatters: [
       {
-        findFrom: 'name',
+        findFrom: "name",
         string: (value) => `${value}+111`,
       },
       {
-        findFrom: 'bio.birth',
+        findFrom: "bio.birth",
         dateTime: (value) => lightFormat(value, `yyyy-MM-dd'T'HH:mm:ss`),
       },
     ],
   })
-  declare public readonly hero: {
+  public declare readonly hero: {
     name: string;
     age: number;
     bio: {
@@ -46,24 +45,27 @@ class Test002PostFrame extends JinFrame {
   };
 
   @Body()
-  declare public readonly password: string;
+  public declare readonly password: string;
 }
 
-describe('JinFrame', () => {
-  it('T001-primitive-type-multiple-formatters', async () => {
+describe("JinFrame", () => {
+  it("T001-primitive-type-multiple-formatters", async () => {
     const frame = Test001PostFrame.of({
-      passing: 'hello',
-      username: ['ironman', 'thor'],
-      password: 'advengers',
+      passing: "hello",
+      username: ["ironman", "thor"],
+      password: "advengers",
     });
     const req = frame._request();
 
     const expectation = {
       timeout: 120000,
-      headers: { 'Content-Type': 'application/json' },
-      method: 'POST',
-      body: JSON.stringify({ username: ['ironman+111+222', 'thor+111+222'], password: 'advengers' }),
-      url: 'http://some.api.google.com/jinframe/hello',
+      headers: { "Content-Type": "application/json" },
+      method: "POST",
+      body: JSON.stringify({
+        username: ["ironman+111+222", "thor+111+222"],
+        password: "advengers",
+      }),
+      url: "http://some.api.google.com/jinframe/hello",
     };
 
     // console.log(req);
@@ -71,31 +73,35 @@ describe('JinFrame', () => {
     expect(req).toEqual(expectation);
   });
 
-  it('T002-zero-depth-post-frame', async () => {
+  it("T002-zero-depth-post-frame", async () => {
     const frame = Test002PostFrame.of({
-      passing: 'hello',
-      hero: { name: 'ironman', age: 33, bio: { birth: new Date(1978, 2, 3, 11, 22, 33) } },
-      password: 'advengers',
+      passing: "hello",
+      hero: {
+        name: "ironman",
+        age: 33,
+        bio: { birth: new Date(1978, 2, 3, 11, 22, 33) },
+      },
+      password: "advengers",
     });
     const req = frame._request();
 
     const expectedBody = {
       hero: {
-        name: 'ironman+111',
+        name: "ironman+111",
         age: 33,
         bio: {
-          birth: '1978-03-03T11:22:33',
+          birth: "1978-03-03T11:22:33",
         },
       },
-      password: 'advengers',
+      password: "advengers",
     };
 
     const expectation = {
       timeout: 120000,
-      headers: { 'Content-Type': 'application/json' },
-      method: 'POST',
+      headers: { "Content-Type": "application/json" },
+      method: "POST",
       body: expectedBody,
-      url: 'http://some.api.google.com/jinframe/hello',
+      url: "http://some.api.google.com/jinframe/hello",
     };
 
     // console.log(req);

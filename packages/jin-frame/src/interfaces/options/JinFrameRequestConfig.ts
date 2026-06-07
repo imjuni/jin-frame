@@ -1,6 +1,6 @@
-import type { AuthorizationData } from '#interfaces/security/AuthorizationData';
-import type { JinBasicAuth } from '#interfaces/JinBasicAuth';
-import type { Milliseconds } from '#interfaces/options/Milliseconds';
+import type { JinBasicAuth } from "#interfaces/JinBasicAuth";
+import type { Milliseconds } from "#interfaces/options/Milliseconds";
+import type { AuthorizationData } from "#interfaces/security/AuthorizationData";
 
 /**
  * Configuration for JinFrame.

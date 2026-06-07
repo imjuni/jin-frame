@@ -1,6 +1,6 @@
-import type { SecurityProvider } from '#interfaces/security/SecurityProvider';
-import type { SecurityContext } from '#interfaces/security/SecurityContext';
-import type { AuthorizationData } from '#interfaces/security/AuthorizationData';
+import type { AuthorizationData } from "#interfaces/security/AuthorizationData";
+import type { SecurityContext } from "#interfaces/security/SecurityContext";
+import type { SecurityProvider } from "#interfaces/security/SecurityProvider";
 
 /**
  * Applies multiple security providers to generate a unified security context.
@@ -47,7 +47,7 @@ export function applySecurityProviders(
 
   for (const provider of providers) {
     const authData = dynamicAuth ?? authorization;
-    const providerContext = provider.createContext(authData, typeof dynamicAuth === 'string' ? dynamicAuth : undefined);
+    const providerContext = provider.createContext(authData, typeof dynamicAuth === "string" ? dynamicAuth : undefined);
 
     // Merge headers
     if (providerContext.headers) {

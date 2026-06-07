@@ -1,4 +1,4 @@
-import type { JinRequestConfig } from '#interfaces/JinRequestConfig';
+import type { JinRequestConfig } from "#interfaces/JinRequestConfig";
 
 /**
  * Debug information for HTTP requests

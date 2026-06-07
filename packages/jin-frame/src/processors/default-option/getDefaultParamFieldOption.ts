@@ -1,11 +1,11 @@
-import type { ParamFieldOption } from '#interfaces/field/ParamFieldOption';
+import type { ParamFieldOption } from "#interfaces/field/ParamFieldOption";
 
 export function getDefaultParamFieldOption(
-  option?: Partial<ParamFieldOption> | Omit<Partial<ParamFieldOption>, 'type'>,
+  option?: Partial<ParamFieldOption> | Omit<Partial<ParamFieldOption>, "type">,
 ): ParamFieldOption {
   return {
-    key: '',
-    type: 'param',
+    key: "",
+    type: "param",
     cacheKeyExclude: option?.cacheKeyExclude ?? false,
     formatters: option?.formatters ?? undefined,
     comma: option?.comma ?? false,

@@ -1,24 +1,24 @@
-import { getFrameName } from '#/generators/getFrameName';
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it } from "vitest";
+import { getFrameName } from "#/generators/getFrameName";
 
-describe('getFrameName', () => {
-  it('should return operationId when non nullable operationId', () => {
+describe("getFrameName", () => {
+  it("should return operationId when non nullable operationId", () => {
     const result = getFrameName({
-      operationId: 'findPetsByTags',
-      method: 'POST',
-      pathKey: '/pet/findByTags',
+      operationId: "findPetsByTags",
+      method: "POST",
+      pathKey: "/pet/findByTags",
     });
 
-    expect(result).toEqual('FindPetsByTagsFrame');
+    expect(result).toEqual("FindPetsByTagsFrame");
   });
 
-  it('should return method with pathKey when nullable operationId', () => {
+  it("should return method with pathKey when nullable operationId", () => {
     const result = getFrameName({
       operationId: undefined,
-      method: 'POST',
-      pathKey: '/pet/findByTags',
+      method: "POST",
+      pathKey: "/pet/findByTags",
     });
 
-    expect(result).toEqual('PostPetFindByTagsFrame');
+    expect(result).toEqual("PostPetFindByTagsFrame");
   });
 });

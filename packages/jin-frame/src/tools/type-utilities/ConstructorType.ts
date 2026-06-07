@@ -5,7 +5,9 @@
  */
 
 // 1 Transform the type to flag all the undesired keys as 'never'
-type FlagExcludedType<Base, Type> = { [Key in keyof Base]: Base[Key] extends Type ? never : Key };
+type FlagExcludedType<Base, Type> = {
+  [Key in keyof Base]: Base[Key] extends Type ? never : Key;
+};
 
 // 2 Get the keys that are not flagged as 'never'
 type AllowedNames<Base, Type> = FlagExcludedType<Base, Type>[keyof Base];

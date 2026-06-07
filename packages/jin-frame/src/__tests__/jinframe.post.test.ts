@@ -1,40 +1,40 @@
-import { JinFrame } from '#frames/JinFrame';
-import { Post } from '#decorators/methods/Post';
-import { http, HttpResponse, PathParams } from 'msw';
-import { setupServer } from 'msw/node';
-import { afterEach, beforeEach, describe, expect, it } from 'vitest';
-import { Param } from '#decorators/fields/Param';
-import { Body } from '#decorators/fields/Body';
-import { Header } from '#decorators/fields/Header';
+import { HttpResponse, http, type PathParams } from "msw";
+import { setupServer } from "msw/node";
+import { afterEach, beforeEach, describe, expect, it } from "vitest";
+import { Body } from "#decorators/fields/Body";
+import { Header } from "#decorators/fields/Header";
+import { Param } from "#decorators/fields/Param";
+import { Post } from "#decorators/methods/Post";
+import { JinFrame } from "#frames/JinFrame";
 
-@Post({ host: 'http://some.api.google.com/jinframe/{passing}' })
+@Post({ host: "http://some.api.google.com/jinframe/{passing}" })
 class TestPostFrame extends JinFrame {
   @Param()
-  declare public readonly passing: string;
+  public declare readonly passing: string;
 
-  @Body({ replaceAt: 'test.hello.marvel.name' })
-  declare public readonly name: string;
+  @Body({ replaceAt: "test.hello.marvel.name" })
+  public declare readonly name: string;
 
-  @Header({ replaceAt: 'test.hello.marvel.skill' })
-  declare public readonly skill: string;
+  @Header({ replaceAt: "test.hello.marvel.skill" })
+  public declare readonly skill: string;
 
-  @Body({ replaceAt: 'test.hello.marvel.gender' })
-  declare public readonly gender: string;
+  @Body({ replaceAt: "test.hello.marvel.gender" })
+  public declare readonly gender: string;
 }
 
 @Post({
-  host: 'http://some.api.google.com/jinframe/{passing}',
-  contentType: 'application/x-www-form-urlencoded',
+  host: "http://some.api.google.com/jinframe/{passing}",
+  contentType: "application/x-www-form-urlencoded",
 })
 class TestUrlencodedPostFrame extends JinFrame {
   @Param()
-  declare public readonly passing: string;
+  public declare readonly passing: string;
 
   @Body()
-  declare public readonly username: string;
+  public declare readonly username: string;
 
   @Body()
-  declare public readonly password: string;
+  public declare readonly password: string;
 }
 
 interface TestPostFrameBody {
@@ -50,7 +50,7 @@ interface TestUrlencodedPostFrameBody {
   password: string;
 }
 
-describe('jinframe.test', () => {
+describe("jinframe.test", () => {
   // MSW server configuration
   const server = setupServer();
 
@@ -63,76 +63,90 @@ describe('jinframe.test', () => {
     server.close();
   });
 
-  it('msw-post-with-jinframe', async () => {
+  it("msw-post-with-jinframe", async () => {
     server.use(
-      http.post<PathParams<'passing'>, TestPostFrameBody>(
-        'http://some.api.google.com/jinframe/pass',
+      http.post<PathParams<"passing">, TestPostFrameBody>(
+        "http://some.api.google.com/jinframe/pass",
         async ({ request }) => {
           // JSON body validation
           const body = await request.json();
-          if (body?.test?.hello?.marvel?.name === 'ironman' && body?.test?.hello?.marvel?.gender === 'male') {
+          if (body?.test?.hello?.marvel?.name === "ironman" && body?.test?.hello?.marvel?.gender === "male") {
             return HttpResponse.json({
-              message: 'hello',
+              message: "hello",
             });
           }
 
-          return new HttpResponse('Invalid body', { status: 400 });
+          return new HttpResponse("Invalid body", { status: 400 });
         },
       ),
     );
 
-    const frame = TestPostFrame.of({ passing: 'pass', name: 'ironman', skill: 'beam', gender: 'male' });
+    const frame = TestPostFrame.of({
+      passing: "pass",
+      name: "ironman",
+      skill: "beam",
+      gender: "male",
+    });
     const resp = await frame._execute();
 
     expect(resp.status).toEqual(200);
   });
 
-  it('msw-post-without-either-jinframe', async () => {
+  it("msw-post-without-either-jinframe", async () => {
     server.use(
-      http.post<PathParams<'passing'>, TestPostFrameBody>(
-        'http://some.api.google.com/jinframe/pass',
+      http.post<PathParams<"passing">, TestPostFrameBody>(
+        "http://some.api.google.com/jinframe/pass",
         async ({ request }) => {
           // JSON body validation
           const body = await request.json();
-          if (body?.test?.hello?.marvel?.name === 'ironman' && body?.test?.hello?.marvel?.gender === 'male') {
+          if (body?.test?.hello?.marvel?.name === "ironman" && body?.test?.hello?.marvel?.gender === "male") {
             return HttpResponse.json({
-              message: 'hello',
+              message: "hello",
             });
           }
 
-          return new HttpResponse('Invalid body', { status: 400 });
+          return new HttpResponse("Invalid body", { status: 400 });
         },
       ),
     );
 
-    const frame = TestPostFrame.of({ passing: 'pass', name: 'ironman', skill: 'beam', gender: 'male' });
+    const frame = TestPostFrame.of({
+      passing: "pass",
+      name: "ironman",
+      skill: "beam",
+      gender: "male",
+    });
     const resp = await frame._execute();
 
     expect(resp.status).toEqual(200);
   });
 
-  it('msw-post-urlencoded', async () => {
+  it("msw-post-urlencoded", async () => {
     server.use(
-      http.post<PathParams<'passing'>, TestUrlencodedPostFrameBody>(
-        'http://some.api.google.com/jinframe/pass',
+      http.post<PathParams<"passing">, TestUrlencodedPostFrameBody>(
+        "http://some.api.google.com/jinframe/pass",
         async ({ request }) => {
           // URL-encoded body validation
           const formData = await request.formData();
-          const username = formData.get('username');
-          const password = formData.get('password');
+          const username = formData.get("username");
+          const password = formData.get("password");
 
-          if (username === 'ironman' && password === 'marvel') {
+          if (username === "ironman" && password === "marvel") {
             return HttpResponse.json({
-              message: 'hello',
+              message: "hello",
             });
           }
 
-          return new HttpResponse('Invalid form data', { status: 400 });
+          return new HttpResponse("Invalid form data", { status: 400 });
         },
       ),
     );
 
-    const frame = TestUrlencodedPostFrame.of({ passing: 'pass', username: 'ironman', password: 'marvel' });
+    const frame = TestUrlencodedPostFrame.of({
+      passing: "pass",
+      username: "ironman",
+      password: "marvel",
+    });
     const resp = await frame._execute();
 
     expect(resp.status).toEqual(200);

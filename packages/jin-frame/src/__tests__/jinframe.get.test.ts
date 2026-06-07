@@ -1,88 +1,88 @@
-import { JinFrame } from '#frames/JinFrame';
-import { Get } from '#decorators/methods/Get';
-import type { JinRequestConfig } from '#interfaces/JinRequestConfig';
-import type { JinResp } from '#interfaces/JinResp';
-import { http, HttpResponse } from 'msw';
-import { setupServer } from 'msw/node';
-import { afterEach, beforeEach, describe, expect, it } from 'vitest';
-import { Param } from '#decorators/fields/Param';
-import { Query } from '#decorators/fields/Query';
+import { HttpResponse, http } from "msw";
+import { setupServer } from "msw/node";
+import { afterEach, beforeEach, describe, expect, it } from "vitest";
+import { Param } from "#decorators/fields/Param";
+import { Query } from "#decorators/fields/Query";
+import { Get } from "#decorators/methods/Get";
+import { JinFrame } from "#frames/JinFrame";
+import type { JinRequestConfig } from "#interfaces/JinRequestConfig";
+import type { JinResp } from "#interfaces/JinResp";
 
-@Get({ host: 'http://some.api.google.com/jinframe/{passing}' })
+@Get({ host: "http://some.api.google.com/jinframe/{passing}" })
 class TestGet3Frame extends JinFrame {
   @Param()
-  declare public readonly passing: string;
+  public declare readonly passing: string;
 
   @Query()
-  declare public readonly name: string;
+  public declare readonly name: string;
 
   @Query({ encode: true })
-  declare public readonly skill: string[];
+  public declare readonly skill: string[];
 
   override _preHook(req: JinRequestConfig): void {
-    console.log('pre hook trigger: ', req);
+    console.log("pre hook trigger: ", req);
   }
 
   override _postHook(req: JinRequestConfig, reply: JinResp<unknown, unknown>): void {
-    console.log('post hook trigger: ', req);
+    console.log("post hook trigger: ", req);
     console.log(reply);
   }
 }
 
-@Get({ host: 'http://some.api.google.com/jinframe/{passing}' })
+@Get({ host: "http://some.api.google.com/jinframe/{passing}" })
 class TestGet4Frame extends JinFrame {
   @Param()
-  declare public readonly passing: string;
+  public declare readonly passing: string;
 
   @Query()
-  declare public readonly name: string;
+  public declare readonly name: string;
 
   @Query({ encode: true })
-  declare public readonly skill: string[];
+  public declare readonly skill: string[];
 
   override async _preHook(req: JinRequestConfig): Promise<void> {
-    console.log('pre hook trigger: ', req);
+    console.log("pre hook trigger: ", req);
   }
 
   override async _postHook(req: JinRequestConfig, reply: JinResp<unknown, unknown>): Promise<void> {
-    console.log('post hook trigger: ', req);
+    console.log("post hook trigger: ", req);
     console.log(reply);
   }
 }
 
-@Get({ host: 'http://some.api.google.com/jinframe/{passing}' })
+@Get({ host: "http://some.api.google.com/jinframe/{passing}" })
 class TestGet5Frame extends JinFrame {
   @Param()
-  declare public readonly passing: string;
+  public declare readonly passing: string;
 
   @Query()
-  declare public readonly name: string;
+  public declare readonly name: string;
 
-  @Query({ encode: false, keyFormat: 'indices' })
-  declare public readonly skill: string[];
+  @Query({ encode: false, keyFormat: "indices" })
+  public declare readonly skill: string[];
 
   override _preHook(req: JinRequestConfig): void {
-    console.log('pre hook trigger: ', req);
+    console.log("pre hook trigger: ", req);
   }
 }
 
-@Get({ host: 'http://some.api.google.com/jinframe/{passing}' })
+@Get({ host: "http://some.api.google.com/jinframe/{passing}" })
 class TestGet6Frame extends JinFrame {
   @Param()
-  declare public readonly passing: string;
+  public declare readonly passing: string;
 
   @Query()
-  declare public readonly name: string;
+  public declare readonly name: string;
 
-  @Query({ encode: false, keyFormat: 'brackets' })
-  declare public readonly skill: string[];
+  @Query({ encode: false, keyFormat: "brackets" })
+  public declare readonly skill: string[];
 
   override async _preHook(req: JinRequestConfig): Promise<void> {
-    console.log('pre hook trigger: ', req);
+    console.log("pre hook trigger: ", req);
   }
 }
 
-describe('jinframe.test', () => {
+describe("jinframe.test", () => {
   // MSW server configuration
   const server = setupServer();
 
@@ -95,28 +95,28 @@ describe('jinframe.test', () => {
     server.close();
   });
 
-  it('msw-with-fetch', async () => {
+  it("msw-with-fetch", async () => {
     server.use(
-      http.get('http://some.api.google.com/test', () =>
+      http.get("http://some.api.google.com/test", () =>
         HttpResponse.json({
-          message: 'hello',
+          message: "hello",
         }),
       ),
     );
 
-    await fetch('http://some.api.google.com/test');
+    await fetch("http://some.api.google.com/test");
   });
 
-  it('jin-frame pre hook', async () => {
+  it("jin-frame pre hook", async () => {
     server.use(
-      http.get('http://some.api.google.com/jinframe/pass', ({ request }) => {
+      http.get("http://some.api.google.com/jinframe/pass", ({ request }) => {
         const url = new URL(request.url);
-        const name = url.searchParams.get('name');
-        const skills = url.searchParams.getAll('skill');
+        const name = url.searchParams.get("name");
+        const skills = url.searchParams.getAll("skill");
 
-        if (name === 'ironman' && skills.includes('beam') && skills.includes('flying!')) {
+        if (name === "ironman" && skills.includes("beam") && skills.includes("flying!")) {
           return HttpResponse.json({
-            message: 'hello',
+            message: "hello",
           });
         }
 
@@ -124,23 +124,27 @@ describe('jinframe.test', () => {
       }),
     );
 
-    const frame = TestGet3Frame.of({ passing: 'pass', name: 'ironman', skill: ['beam', 'flying!'] });
+    const frame = TestGet3Frame.of({
+      passing: "pass",
+      name: "ironman",
+      skill: ["beam", "flying!"],
+    });
     const resp = await frame._execute();
 
     expect(resp.status).toEqual(200);
   });
 
-  it('jin-frame post hook fail case', async () => {
+  it("jin-frame post hook fail case", async () => {
     server.use(
-      http.get('http://some.api.google.com/jinframe/pass', ({ request }) => {
+      http.get("http://some.api.google.com/jinframe/pass", ({ request }) => {
         const url = new URL(request.url);
-        const name = url.searchParams.get('name');
-        const skills = url.searchParams.getAll('skill');
+        const name = url.searchParams.get("name");
+        const skills = url.searchParams.getAll("skill");
 
-        if (name === 'ironman' && skills.includes('beam') && skills.includes('flying!')) {
+        if (name === "ironman" && skills.includes("beam") && skills.includes("flying!")) {
           return HttpResponse.json(
             {
-              message: 'hello',
+              message: "hello",
             },
             { status: 400 },
           );
@@ -151,23 +155,27 @@ describe('jinframe.test', () => {
     );
 
     try {
-      const frame = TestGet3Frame.of({ passing: 'pass', name: 'ironman', skill: ['beam', 'flying!'] });
+      const frame = TestGet3Frame.of({
+        passing: "pass",
+        name: "ironman",
+        skill: ["beam", "flying!"],
+      });
       await frame._execute();
     } catch (caught) {
       expect(caught).toBeTruthy();
     }
   });
 
-  it('jin-frame with async pre hook', async () => {
+  it("jin-frame with async pre hook", async () => {
     server.use(
-      http.get('http://some.api.google.com/jinframe/pass', ({ request }) => {
+      http.get("http://some.api.google.com/jinframe/pass", ({ request }) => {
         const url = new URL(request.url);
-        const name = url.searchParams.get('name');
-        const skills = url.searchParams.getAll('skill');
+        const name = url.searchParams.get("name");
+        const skills = url.searchParams.getAll("skill");
 
-        if (name === 'ironman' && skills.includes('beam') && skills.includes('flying!')) {
+        if (name === "ironman" && skills.includes("beam") && skills.includes("flying!")) {
           return HttpResponse.json({
-            message: 'hello',
+            message: "hello",
           });
         }
 
@@ -175,23 +183,27 @@ describe('jinframe.test', () => {
       }),
     );
 
-    const frame = TestGet4Frame.of({ passing: 'pass', name: 'ironman', skill: ['beam', 'flying!'] });
+    const frame = TestGet4Frame.of({
+      passing: "pass",
+      name: "ironman",
+      skill: ["beam", "flying!"],
+    });
     const resp = await frame._execute();
 
     expect(resp.status).toEqual(200);
   });
 
-  it('jin-frame async post hook fail case', async () => {
+  it("jin-frame async post hook fail case", async () => {
     server.use(
-      http.get('http://some.api.google.com/jinframe/pass', ({ request }) => {
+      http.get("http://some.api.google.com/jinframe/pass", ({ request }) => {
         const url = new URL(request.url);
-        const name = url.searchParams.get('name');
-        const skills = url.searchParams.getAll('skill');
+        const name = url.searchParams.get("name");
+        const skills = url.searchParams.getAll("skill");
 
-        if (name === 'ironman' && skills.includes('beam') && skills.includes('flying!')) {
+        if (name === "ironman" && skills.includes("beam") && skills.includes("flying!")) {
           return HttpResponse.json(
             {
-              message: 'hello',
+              message: "hello",
             },
             { status: 400 },
           );
@@ -202,24 +214,28 @@ describe('jinframe.test', () => {
     );
 
     try {
-      const frame = TestGet4Frame.of({ passing: 'pass', name: 'ironman', skill: ['beam', 'flying!'] });
+      const frame = TestGet4Frame.of({
+        passing: "pass",
+        name: "ironman",
+        skill: ["beam", "flying!"],
+      });
       await frame._execute();
     } catch (caught) {
       expect(caught).toBeTruthy();
     }
   });
 
-  it('jin-frame with async pre hook - no return', async () => {
+  it("jin-frame with async pre hook - no return", async () => {
     server.use(
-      http.get('http://some.api.google.com/jinframe/pass', ({ request }) => {
+      http.get("http://some.api.google.com/jinframe/pass", ({ request }) => {
         const url = new URL(request.url);
-        const name = url.searchParams.get('name');
-        const skill0 = url.searchParams.get('skill[0]');
-        const skill1 = url.searchParams.get('skill[1]');
+        const name = url.searchParams.get("name");
+        const skill0 = url.searchParams.get("skill[0]");
+        const skill1 = url.searchParams.get("skill[1]");
 
-        if (name === 'ironman' && skill0 === 'beam' && skill1 === 'flying!') {
+        if (name === "ironman" && skill0 === "beam" && skill1 === "flying!") {
           return HttpResponse.json({
-            message: 'hello',
+            message: "hello",
           });
         }
 
@@ -227,22 +243,26 @@ describe('jinframe.test', () => {
       }),
     );
 
-    const frame = TestGet5Frame.of({ passing: 'pass', name: 'ironman', skill: ['beam', 'flying!'] });
+    const frame = TestGet5Frame.of({
+      passing: "pass",
+      name: "ironman",
+      skill: ["beam", "flying!"],
+    });
     const resp = await frame._execute();
 
     expect(resp.status).toEqual(200);
   });
 
-  it('jin-frame with brackets key format', async () => {
+  it("jin-frame with brackets key format", async () => {
     server.use(
-      http.get('http://some.api.google.com/jinframe/pass', ({ request }) => {
+      http.get("http://some.api.google.com/jinframe/pass", ({ request }) => {
         const url = new URL(request.url);
-        const name = url.searchParams.get('name');
-        const skills = url.searchParams.getAll('skill[]');
+        const name = url.searchParams.get("name");
+        const skills = url.searchParams.getAll("skill[]");
 
-        if (name === 'ironman' && skills.includes('beam') && skills.includes('flying!')) {
+        if (name === "ironman" && skills.includes("beam") && skills.includes("flying!")) {
           return HttpResponse.json({
-            message: 'hello',
+            message: "hello",
           });
         }
 
@@ -250,7 +270,11 @@ describe('jinframe.test', () => {
       }),
     );
 
-    const frame = TestGet6Frame.of({ passing: 'pass', name: 'ironman', skill: ['beam', 'flying!'] });
+    const frame = TestGet6Frame.of({
+      passing: "pass",
+      name: "ironman",
+      skill: ["beam", "flying!"],
+    });
     const resp = await frame._execute();
 
     expect(resp.status).toEqual(200);

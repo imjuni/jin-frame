@@ -1,9 +1,9 @@
-import { applySecurityProviders } from '#tools/auth/applySecurityProviders';
-import type { SecurityProvider } from '#interfaces/security/SecurityProvider';
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it } from "vitest";
+import type { SecurityProvider } from "#interfaces/security/SecurityProvider";
+import { applySecurityProviders } from "#tools/auth/applySecurityProviders";
 
-describe('applySecurityProviders', () => {
-  it('should return empty context when no providers provided', () => {
+describe("applySecurityProviders", () => {
+  it("should return empty context when no providers provided", () => {
     const result = applySecurityProviders([]);
 
     expect(result).toEqual({
@@ -12,20 +12,20 @@ describe('applySecurityProviders', () => {
     });
   });
 
-  it('should merge headers from multiple providers', () => {
+  it("should merge headers from multiple providers", () => {
     const provider1: SecurityProvider = {
-      type: 'api-key',
-      name: 'provider1',
+      type: "api-key",
+      name: "provider1",
       createContext: () => ({
-        headers: { 'X-API-Key': 'key1' },
+        headers: { "X-API-Key": "key1" },
       }),
     };
 
     const provider2: SecurityProvider = {
-      type: 'http',
-      name: 'provider2',
+      type: "http",
+      name: "provider2",
       createContext: () => ({
-        headers: { Authorization: 'Bearer token' },
+        headers: { Authorization: "Bearer token" },
       }),
     };
 
@@ -33,27 +33,27 @@ describe('applySecurityProviders', () => {
 
     expect(result).toEqual({
       headers: {
-        'X-API-Key': 'key1',
-        Authorization: 'Bearer token',
+        "X-API-Key": "key1",
+        Authorization: "Bearer token",
       },
       queries: {},
     });
   });
 
-  it('should merge queries from multiple providers', () => {
+  it("should merge queries from multiple providers", () => {
     const provider1: SecurityProvider = {
-      type: 'api-key',
-      name: 'provider1',
+      type: "api-key",
+      name: "provider1",
       createContext: () => ({
-        queries: { api_key: 'key1' },
+        queries: { api_key: "key1" },
       }),
     };
 
     const provider2: SecurityProvider = {
-      type: 'api-key',
-      name: 'provider2',
+      type: "api-key",
+      name: "provider2",
       createContext: () => ({
-        queries: { token: 'token1' },
+        queries: { token: "token1" },
       }),
     };
 
@@ -62,34 +62,34 @@ describe('applySecurityProviders', () => {
     expect(result).toEqual({
       headers: {},
       queries: {
-        api_key: 'key1',
-        token: 'token1',
+        api_key: "key1",
+        token: "token1",
       },
     });
   });
 
-  it('should use auth from last provider that provides it', () => {
+  it("should use auth from last provider that provides it", () => {
     const provider1: SecurityProvider = {
-      type: 'http',
-      name: 'provider1',
+      type: "http",
+      name: "provider1",
       createContext: () => ({
-        auth: { username: 'user1', password: 'pass1' },
+        auth: { username: "user1", password: "pass1" },
       }),
     };
 
     const provider2: SecurityProvider = {
-      type: 'api-key',
-      name: 'provider2',
+      type: "api-key",
+      name: "provider2",
       createContext: () => ({
-        headers: { 'X-API-Key': 'key' },
+        headers: { "X-API-Key": "key" },
       }),
     };
 
     const provider3: SecurityProvider = {
-      type: 'http',
-      name: 'provider3',
+      type: "http",
+      name: "provider3",
       createContext: () => ({
-        auth: { username: 'user3', password: 'pass3' },
+        auth: { username: "user3", password: "pass3" },
       }),
     };
 
@@ -97,44 +97,44 @@ describe('applySecurityProviders', () => {
 
     expect(result).toEqual({
       headers: {
-        'X-API-Key': 'key',
+        "X-API-Key": "key",
       },
       queries: {},
-      auth: { username: 'user3', password: 'pass3' },
+      auth: { username: "user3", password: "pass3" },
     });
   });
 
-  it('should pass authorization data to providers', () => {
+  it("should pass authorization data to providers", () => {
     const mockProvider: SecurityProvider = {
-      type: 'api-key',
-      name: 'mock',
+      type: "api-key",
+      name: "mock",
       createContext: (auth, dynamicKey) => ({
         headers: { Test: `${auth}-${dynamicKey}` },
       }),
     };
 
-    const result = applySecurityProviders([mockProvider], 'static-auth', 'dynamic-auth');
+    const result = applySecurityProviders([mockProvider], "static-auth", "dynamic-auth");
 
     expect(result).toEqual({
       headers: {
-        Test: 'dynamic-auth-dynamic-auth',
+        Test: "dynamic-auth-dynamic-auth",
       },
       queries: {},
     });
   });
 
-  it('should handle providers that return empty contexts', () => {
+  it("should handle providers that return empty contexts", () => {
     const emptyProvider: SecurityProvider = {
-      type: 'api-key',
-      name: 'empty',
+      type: "api-key",
+      name: "empty",
       createContext: () => ({}),
     };
 
     const validProvider: SecurityProvider = {
-      type: 'http',
-      name: 'valid',
+      type: "http",
+      name: "valid",
       createContext: () => ({
-        headers: { Authorization: 'Bearer token' },
+        headers: { Authorization: "Bearer token" },
       }),
     };
 
@@ -142,20 +142,20 @@ describe('applySecurityProviders', () => {
 
     expect(result).toEqual({
       headers: {
-        Authorization: 'Bearer token',
+        Authorization: "Bearer token",
       },
       queries: {},
     });
   });
 
-  it('should merge all context types together', () => {
+  it("should merge all context types together", () => {
     const fullProvider: SecurityProvider = {
-      type: 'oauth2',
-      name: 'full',
+      type: "oauth2",
+      name: "full",
       createContext: () => ({
-        headers: { Authorization: 'Bearer token' },
-        queries: { access_token: 'token123' },
-        auth: { username: 'user', password: 'pass' },
+        headers: { Authorization: "Bearer token" },
+        queries: { access_token: "token123" },
+        auth: { username: "user", password: "pass" },
       }),
     };
 
@@ -163,12 +163,12 @@ describe('applySecurityProviders', () => {
 
     expect(result).toEqual({
       headers: {
-        Authorization: 'Bearer token',
+        Authorization: "Bearer token",
       },
       queries: {
-        access_token: 'token123',
+        access_token: "token123",
       },
-      auth: { username: 'user', password: 'pass' },
+      auth: { username: "user", password: "pass" },
     });
   });
 });

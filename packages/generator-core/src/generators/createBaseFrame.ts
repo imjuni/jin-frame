@@ -1,6 +1,6 @@
-import type { Project } from 'ts-morph';
-import { randomUUID } from 'node:crypto';
-import { pascalCase } from 'change-case';
+import { randomUUID } from "node:crypto";
+import { pascalCase } from "change-case";
+import type { Project } from "ts-morph";
 
 function getBaseFrameJsDoc(timeout?: number): string {
   const defaultTimeout = `Base Frame
@@ -41,8 +41,8 @@ export function createBaseFrame(project: Project, params: IProps): IResult {
   const sourceFile = project.createSourceFile(aliasFilePath);
 
   sourceFile.addImportDeclaration({
-    moduleSpecifier: 'jin-frame',
-    namedImports: ['Get', 'JinFrame', 'Timeout'],
+    moduleSpecifier: "jin-frame",
+    namedImports: ["Get", "JinFrame", "Timeout"],
   });
 
   sourceFile.addClass({
@@ -50,29 +50,29 @@ export function createBaseFrame(project: Project, params: IProps): IResult {
     docs: [{ description: getBaseFrameJsDoc(params?.timeout) }],
     typeParameters: [
       {
-        name: 'SUCCESS',
-        default: 'unknown',
+        name: "SUCCESS",
+        default: "unknown",
       },
       {
-        name: 'FAIL',
-        default: 'unknown',
+        name: "FAIL",
+        default: "unknown",
       },
     ],
     decorators: [
       {
-        name: 'Get',
+        name: "Get",
         arguments: [`{ host: '${params.host}' }`],
       },
       timeout != null
         ? {
-            name: 'Timeout',
+            name: "Timeout",
             arguments: [`${timeout}`],
           }
         : undefined,
     ].filter((decorator) => decorator != null),
     properties: [],
     isExported: true,
-    extends: 'JinFrame<SUCCESS, FAIL>',
+    extends: "JinFrame<SUCCESS, FAIL>",
   });
 
   return {

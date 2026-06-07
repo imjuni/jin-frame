@@ -1,6 +1,6 @@
-import { getServerUrl } from '#/generators/hosts/getServerUrl';
-import { safeUrl } from '#/tools/safeUrl';
-import type { OpenAPIV3 } from 'openapi-types';
+import type { OpenAPIV3 } from "openapi-types";
+import { getServerUrl } from "#/generators/hosts/getServerUrl";
+import { safeUrl } from "#/tools/safeUrl";
 
 interface IGetHostParams {
   host?: string;

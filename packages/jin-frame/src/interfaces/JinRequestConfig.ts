@@ -1,5 +1,5 @@
-import type { Method } from '#interfaces/options/Method';
-import type { Milliseconds } from '#interfaces/options/Milliseconds';
+import type { Method } from "#interfaces/options/Method";
+import type { Milliseconds } from "#interfaces/options/Milliseconds";
 
 export interface JinRequestConfig {
   url: string;

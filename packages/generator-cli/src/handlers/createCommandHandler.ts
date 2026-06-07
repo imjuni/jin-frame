@@ -1,17 +1,17 @@
-import type { TCreateCommandArgv } from '#/interfaces/ICreateCommandArgv';
-import { transformArgvToOpenapiTsOptions } from '#/transforms/transformArgvToOpenapiTsOptions';
+import fs from "node:fs";
 import {
-  safePathJoin,
-  createFrames,
-  validate,
-  load,
   convertor,
+  createFrames,
   createOpenapiTs,
+  load,
   printOpenapiTs,
-} from '@jin-frame/generator-core';
-import consola, { type LogType, LogLevels } from 'consola';
-import fs from 'node:fs';
-import pathe from 'pathe';
+  safePathJoin,
+  validate,
+} from "@jin-frame/generator-core";
+import consola, { LogLevels, type LogType } from "consola";
+import pathe from "pathe";
+import type { TCreateCommandArgv } from "#/interfaces/ICreateCommandArgv";
+import { transformArgvToOpenapiTsOptions } from "#/transforms/transformArgvToOpenapiTsOptions";
 
 export async function createCommandHandler(params: TCreateCommandArgv): Promise<void> {
   consola.level = LogLevels[params.logLevel as LogType];
@@ -32,7 +32,7 @@ export async function createCommandHandler(params: TCreateCommandArgv): Promise<
   }
 
   if (validated.version === 2) {
-    consola.debug('Converting spec v2 > v3');
+    consola.debug("Converting spec v2 > v3");
   }
 
   const converted = await convertor(validated);
@@ -43,7 +43,7 @@ export async function createCommandHandler(params: TCreateCommandArgv): Promise<
   const specSourceCode = printOpenapiTs(nodes);
 
   consola.debug(`Writing to ${params.output}`);
-  const specFilePath = pathe.join(params.output, 'paths.d.ts');
+  const specFilePath = pathe.join(params.output, "paths.d.ts");
 
   await fs.promises.mkdir(params.output, { recursive: true });
   await fs.promises.writeFile(specFilePath, specSourceCode);

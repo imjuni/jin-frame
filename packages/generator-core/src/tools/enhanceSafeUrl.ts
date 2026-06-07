@@ -1,6 +1,6 @@
-import { CE_URL_TEMP_KEY } from '#/tools/const-enum/CE_URL_TEMP_KEY';
-import { safeUrl } from '#/tools/safeUrl';
-import urlJoin from 'url-join';
+import urlJoin from "url-join";
+import { CE_URL_TEMP_KEY } from "#/tools/const-enum/CE_URL_TEMP_KEY";
+import { safeUrl } from "#/tools/safeUrl";
 
 export function enhanceSafeUrl(value: string): { key?: string; url: URL } | undefined {
   try {

@@ -1,15 +1,15 @@
-import { JinFrame } from '#frames/JinFrame';
-import { getFieldMetadata } from '#decorators/fields/handlers/getFieldMetadata';
-import { Param } from '#decorators/fields/Param';
-import { Query } from '#decorators/fields/Query';
-import { Post } from '#decorators/methods/Post';
-import { Get } from '#decorators/methods/Get';
-import { describe, expect, it } from 'vitest';
-import { Body } from '#decorators/fields/Body';
-import { ObjectBody } from '#decorators/fields/ObjectBody';
-import { Header } from '#decorators/fields/Header';
+import { describe, expect, it } from "vitest";
+import { Body } from "#decorators/fields/Body";
+import { Header } from "#decorators/fields/Header";
+import { getFieldMetadata } from "#decorators/fields/handlers/getFieldMetadata";
+import { ObjectBody } from "#decorators/fields/ObjectBody";
+import { Param } from "#decorators/fields/Param";
+import { Query } from "#decorators/fields/Query";
+import { Get } from "#decorators/methods/Get";
+import { Post } from "#decorators/methods/Post";
+import { JinFrame } from "#frames/JinFrame";
 
-@Post({ host: 'https://api.somesite.com', path: 'hello/path' })
+@Post({ host: "https://api.somesite.com", path: "hello/path" })
 class IamRequest extends JinFrame {
   @Param()
   readonly name!: string;
@@ -23,21 +23,24 @@ class IamRequest extends JinFrame {
   @ObjectBody()
   readonly ability!: { name: string; desc: string };
 
-  @Header({ replaceAt: 'Authorization', formatters: { string: (v) => `Authorization ${v}` } })
+  @Header({
+    replaceAt: "Authorization",
+    formatters: { string: (v) => `Authorization ${v}` },
+  })
   readonly authorization!: string;
 }
 
-describe('getFieldMetadata', () => {
-  it('should return metadatas when @Param, @Query, @Body, @ObjectBody, @Header passed', () => {
+describe("getFieldMetadata", () => {
+  it("should return metadatas when @Param, @Query, @Body, @ObjectBody, @Header passed", () => {
     const r = IamRequest.of({
-      name: 'ironman',
+      name: "ironman",
       age: 30,
-      affiliations: 'advengers',
+      affiliations: "advengers",
       ability: {
-        name: 'enegy projection',
-        desc: 'Repulsor rays and the uni-beam projector allow for focused energy attacks',
+        name: "enegy projection",
+        desc: "Repulsor rays and the uni-beam projector allow for focused energy attacks",
       },
-      authorization: 'i-am-key',
+      authorization: "i-am-key",
     });
 
     const metas = getFieldMetadata(
@@ -48,8 +51,8 @@ describe('getFieldMetadata', () => {
     expect(metas).toMatchObject({
       param: [
         {
-          type: 'param',
-          key: 'name',
+          type: "param",
+          key: "name",
           comma: false,
           bit: {
             enable: false,
@@ -62,37 +65,37 @@ describe('getFieldMetadata', () => {
       ],
       body: [
         {
-          type: 'body',
-          key: 'affiliations',
+          type: "body",
+          key: "affiliations",
           replaceAt: undefined,
           encode: true,
         },
       ],
       objectBody: [
         {
-          type: 'object-body',
-          key: 'ability',
+          type: "object-body",
+          key: "ability",
           encode: true,
           order: 9007199254740991,
         },
       ],
       header: [
         {
-          type: 'header',
-          key: 'authorization',
+          type: "header",
+          key: "authorization",
           bit: {
             enable: false,
             withZero: false,
           },
-          replaceAt: 'Authorization',
+          replaceAt: "Authorization",
           comma: false,
           encode: true,
         },
       ],
       query: [
         {
-          key: 'age',
-          type: 'query',
+          key: "age",
+          type: "query",
           comma: false,
           bit: {
             enable: false,
@@ -107,16 +110,16 @@ describe('getFieldMetadata', () => {
   });
 });
 
-@Post({ host: 'https://api.somesite.com', path: 'base/path' })
+@Post({ host: "https://api.somesite.com", path: "base/path" })
 class BaseRequest extends JinFrame {
   @Query()
   readonly baseField!: string;
 
-  @Header({ replaceAt: 'X-Base-Header' })
+  @Header({ replaceAt: "X-Base-Header" })
   readonly baseHeader!: string;
 }
 
-@Get({ host: 'https://api.somesite.com', path: 'child/path' })
+@Get({ host: "https://api.somesite.com", path: "child/path" })
 class ChildRequest extends BaseRequest {
   @Param()
   readonly childParam!: string;
@@ -125,25 +128,25 @@ class ChildRequest extends BaseRequest {
   readonly childBody!: string;
 }
 
-@Post({ host: 'https://api.somesite.com', path: 'override/base' })
+@Post({ host: "https://api.somesite.com", path: "override/base" })
 class OverrideBaseRequest extends JinFrame {
   @Query()
   readonly sharedField!: string;
 }
 
-@Get({ host: 'https://api.somesite.com', path: 'override/child' })
+@Get({ host: "https://api.somesite.com", path: "override/child" })
 class OverrideChildRequest extends OverrideBaseRequest {
   @Body()
   declare readonly sharedField: string;
 }
 
-describe('getFieldMetadata with inheritance', () => {
-  it('should include parent class field metadata in child class', () => {
+describe("getFieldMetadata with inheritance", () => {
+  it("should include parent class field metadata in child class", () => {
     const r = ChildRequest.of({
-      baseField: 'base-value',
-      baseHeader: 'base-header-value',
-      childParam: 'child-param-value',
-      childBody: 'child-body-value',
+      baseField: "base-value",
+      baseHeader: "base-header-value",
+      childParam: "child-param-value",
+      childBody: "child-body-value",
     });
 
     const metas = getFieldMetadata(
@@ -151,25 +154,30 @@ describe('getFieldMetadata with inheritance', () => {
       Object.entries(r).map(([key, value]) => ({ key, value })),
     );
 
-    expect(metas.query).toEqual(expect.arrayContaining([expect.objectContaining({ key: 'baseField', type: 'query' })]));
+    expect(metas.query).toEqual(expect.arrayContaining([expect.objectContaining({ key: "baseField", type: "query" })]));
     expect(metas.header).toEqual(
-      expect.arrayContaining([expect.objectContaining({ key: 'baseHeader', replaceAt: 'X-Base-Header' })]),
+      expect.arrayContaining([
+        expect.objectContaining({
+          key: "baseHeader",
+          replaceAt: "X-Base-Header",
+        }),
+      ]),
     );
     expect(metas.param).toEqual(
-      expect.arrayContaining([expect.objectContaining({ key: 'childParam', type: 'param' })]),
+      expect.arrayContaining([expect.objectContaining({ key: "childParam", type: "param" })]),
     );
-    expect(metas.body).toEqual(expect.arrayContaining([expect.objectContaining({ key: 'childBody', type: 'body' })]));
+    expect(metas.body).toEqual(expect.arrayContaining([expect.objectContaining({ key: "childBody", type: "body" })]));
   });
 
-  it('should use child decorator when child overrides a field from parent', () => {
-    const r = OverrideChildRequest.of({ sharedField: 'value' });
+  it("should use child decorator when child overrides a field from parent", () => {
+    const r = OverrideChildRequest.of({ sharedField: "value" });
 
     const metas = getFieldMetadata(
       r.constructor.prototype,
       Object.entries(r).map(([key, value]) => ({ key, value })),
     );
 
-    expect(metas.body).toEqual(expect.arrayContaining([expect.objectContaining({ key: 'sharedField', type: 'body' })]));
+    expect(metas.body).toEqual(expect.arrayContaining([expect.objectContaining({ key: "sharedField", type: "body" })]));
     expect(metas.query).toHaveLength(0);
   });
 });

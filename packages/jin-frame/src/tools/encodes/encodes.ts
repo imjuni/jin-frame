@@ -1,4 +1,4 @@
-import { encode } from '#tools/encodes/encode';
+import { encode } from "#tools/encodes/encode";
 
 export function encodes(enable: boolean | undefined | null, values: string | number): string;
 export function encodes(enable: boolean | undefined | null, values: string[] | number[]): string[];

@@ -1,7 +1,7 @@
-import { getParameterDecorator } from '#/generators/parameters/getParameterDecorator';
-import { getParameterJsDoc } from '#/generators/parameters/getParameterJsDoc';
-import type { OpenAPIV3 } from 'openapi-types';
-import { StructureKind, Scope, type PropertyDeclarationStructure } from 'ts-morph';
+import type { OpenAPIV3 } from "openapi-types";
+import { type PropertyDeclarationStructure, Scope, StructureKind } from "ts-morph";
+import { getParameterDecorator } from "#/generators/parameters/getParameterDecorator";
+import { getParameterJsDoc } from "#/generators/parameters/getParameterJsDoc";
 
 interface IProps {
   method: string;
@@ -10,7 +10,7 @@ interface IProps {
 }
 
 interface IResult {
-  decorator: 'Query' | 'Param' | 'Header';
+  decorator: "Query" | "Param" | "Header";
   property: PropertyDeclarationStructure;
 }
 
@@ -22,10 +22,10 @@ export function getParameter(params: IProps): IResult | undefined {
   }
 
   const docs = getParameterJsDoc(params.parameter);
-  const decorators: PropertyDeclarationStructure['decorators'] = [
+  const decorators: PropertyDeclarationStructure["decorators"] = [
     {
       name: decorator.decorator,
-      arguments: decorator.decorator === 'Query' && params.parameter.explode ? ['{ comma: true }'] : [],
+      arguments: decorator.decorator === "Query" && params.parameter.explode ? ["{ comma: true }"] : [],
     },
   ];
 

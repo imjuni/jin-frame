@@ -1,4 +1,4 @@
-import type { JinBasicAuth } from '#interfaces/JinBasicAuth';
+import type { JinBasicAuth } from "#interfaces/JinBasicAuth";
 
 /**
  * Security context that contains authentication information to be applied to HTTP requests

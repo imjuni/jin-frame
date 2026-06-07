@@ -1,91 +1,95 @@
-import { getAuthorization } from '#tools/auth/getAuthorization';
-import { BearerTokenProvider } from '#providers/security/BearerTokenProvider';
-import { ApiKeyProvider } from '#providers/security/ApiKeyProvider';
-import { BasicAuthProvider } from '#providers/security/BasicAuthProvider';
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it } from "vitest";
+import { ApiKeyProvider } from "#providers/security/ApiKeyProvider";
+import { BasicAuthProvider } from "#providers/security/BasicAuthProvider";
+import { BearerTokenProvider } from "#providers/security/BearerTokenProvider";
+import { getAuthorization } from "#tools/auth/getAuthorization";
 
-describe('getAuthorization', () => {
-  it('should return authKey undefined and auth undefined when empty header, undefined authorization, undefined auth', () => {
+describe("getAuthorization", () => {
+  it("should return authKey undefined and auth undefined when empty header, undefined authorization, undefined auth", () => {
     const result = getAuthorization({}, {}, undefined);
     expect(result).toEqual({ authKey: undefined, auth: undefined });
   });
 
-  it('should return authKey string and auth undefined when header have Authorization, undefined authorization, undefined auth', () => {
-    const key = 'Bearer i-am-key';
+  it("should return authKey string and auth undefined when header have Authorization, undefined authorization, undefined auth", () => {
+    const key = "Bearer i-am-key";
     const result = getAuthorization({ Authorization: key }, {}, undefined);
     expect(result).toEqual({ authKey: key, auth: undefined });
   });
 
-  it('should return authKey undefined and auth when header is empty, undefined authorization, auth', () => {
-    const auth = { username: 'ironman', password: 'marvel' };
+  it("should return authKey undefined and auth when header is empty, undefined authorization, auth", () => {
+    const auth = { username: "ironman", password: "marvel" };
     const result = getAuthorization({}, {}, auth);
     expect(result).toEqual({ authKey: undefined, auth });
   });
 
-  it('should handle SecurityProvider with Bearer token', () => {
+  it("should handle SecurityProvider with Bearer token", () => {
     const provider = new BearerTokenProvider();
-    const result = getAuthorization({}, { security: provider, authorization: 'my-token' }, undefined);
+    const result = getAuthorization({}, { security: provider, authorization: "my-token" }, undefined);
 
-    expect(result.authKey).toBe('Bearer my-token');
-    expect(result.securityHeaders).toEqual({ Authorization: 'Bearer my-token' });
+    expect(result.authKey).toBe("Bearer my-token");
+    expect(result.securityHeaders).toEqual({
+      Authorization: "Bearer my-token",
+    });
     expect(result.auth).toBeUndefined();
   });
 
-  it('should handle SecurityProvider with API key in header', () => {
-    const provider = new ApiKeyProvider('api-key', 'X-API-Key', 'header');
-    const result = getAuthorization({}, { security: provider, authorization: 'api-key-value' }, undefined);
+  it("should handle SecurityProvider with API key in header", () => {
+    const provider = new ApiKeyProvider("api-key", "X-API-Key", "header");
+    const result = getAuthorization({}, { security: provider, authorization: "api-key-value" }, undefined);
 
-    expect(result.securityHeaders).toEqual({ 'X-API-Key': 'api-key-value' });
+    expect(result.securityHeaders).toEqual({ "X-API-Key": "api-key-value" });
     expect(result.authKey).toBeUndefined();
   });
 
-  it('should handle SecurityProvider with API key in query', () => {
-    const provider = new ApiKeyProvider('api-key', 'api_key', 'query');
-    const result = getAuthorization({}, { security: provider, authorization: 'api-key-value' }, undefined);
+  it("should handle SecurityProvider with API key in query", () => {
+    const provider = new ApiKeyProvider("api-key", "api_key", "query");
+    const result = getAuthorization({}, { security: provider, authorization: "api-key-value" }, undefined);
 
-    expect(result.securityQueries).toEqual({ api_key: 'api-key-value' });
+    expect(result.securityQueries).toEqual({ api_key: "api-key-value" });
     expect(result.authKey).toBeUndefined();
   });
 
-  it('should handle SecurityProvider with Basic auth', () => {
+  it("should handle SecurityProvider with Basic auth", () => {
     const provider = new BasicAuthProvider();
-    const auth = { username: 'user', password: 'pass' };
+    const auth = { username: "user", password: "pass" };
     const result = getAuthorization({}, { security: provider, authorization: auth }, undefined);
 
-    expect(result.auth).toEqual({ username: 'user', password: 'pass' });
+    expect(result.auth).toEqual({ username: "user", password: "pass" });
     expect(result.authKey).toBeUndefined();
   });
 
-  it('should handle multiple SecurityProviders', () => {
+  it("should handle multiple SecurityProviders", () => {
     const bearerProvider = new BearerTokenProvider();
-    const apiKeyProvider = new ApiKeyProvider('api-key', 'X-API-Key', 'header');
+    const apiKeyProvider = new ApiKeyProvider("api-key", "X-API-Key", "header");
 
     const result = getAuthorization(
       {},
       {
         security: [bearerProvider, apiKeyProvider],
-        authorization: 'my-token',
+        authorization: "my-token",
       },
       undefined,
     );
 
-    expect(result.authKey).toBe('Bearer my-token');
+    expect(result.authKey).toBe("Bearer my-token");
     expect(result.securityHeaders).toEqual({
-      Authorization: 'Bearer my-token',
-      'X-API-Key': 'my-token',
+      Authorization: "Bearer my-token",
+      "X-API-Key": "my-token",
     });
   });
 
-  it('should handle dynamic auth overriding frame authorization', () => {
+  it("should handle dynamic auth overriding frame authorization", () => {
     const provider = new BearerTokenProvider();
     const result = getAuthorization(
       {},
-      { security: provider, authorization: 'frame-token' },
+      { security: provider, authorization: "frame-token" },
       undefined,
-      'dynamic-token',
+      "dynamic-token",
     );
 
-    expect(result.authKey).toBe('Bearer dynamic-token');
-    expect(result.securityHeaders).toEqual({ Authorization: 'Bearer dynamic-token' });
+    expect(result.authKey).toBe("Bearer dynamic-token");
+    expect(result.securityHeaders).toEqual({
+      Authorization: "Bearer dynamic-token",
+    });
   });
 });

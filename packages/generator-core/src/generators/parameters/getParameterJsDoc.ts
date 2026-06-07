@@ -1,8 +1,8 @@
-import { getParameterJsDocExamplesContent } from '#/generators/parameters/getParameterJsDocExamplesContent';
-import type { OpenAPIV3 } from 'openapi-types';
+import type { OpenAPIV3 } from "openapi-types";
+import { getParameterJsDocExamplesContent } from "#/generators/parameters/getParameterJsDocExamplesContent";
 
 export function getParameterJsDoc(
-  params: Pick<OpenAPIV3.ParameterObject, 'description' | 'example' | 'examples'>,
+  params: Pick<OpenAPIV3.ParameterObject, "description" | "example" | "examples">,
 ): string[] {
   const docs: string[] = [];
   const exampleDocs: string[] = [];
@@ -36,8 +36,8 @@ export function getParameterJsDoc(
   }
 
   if (exampleDocs.length > 0) {
-    return [[...docs, '', ...exampleDocs].join('\n')];
+    return [[...docs, "", ...exampleDocs].join("\n")];
   }
 
-  return [docs.join('\n')];
+  return [docs.join("\n")];
 }

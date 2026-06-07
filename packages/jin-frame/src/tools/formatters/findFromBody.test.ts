@@ -1,29 +1,29 @@
-import { findFromBody } from '#tools/formatters/findFromBody';
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it } from "vitest";
+import { findFromBody } from "#tools/formatters/findFromBody";
 
-describe('findFromBody', () => {
-  it('should return origin undefined when initial value is undefined', () => {
-    const results = findFromBody(undefined, 'a');
+describe("findFromBody", () => {
+  it("should return origin undefined when initial value is undefined", () => {
+    const results = findFromBody(undefined, "a");
     expect(results).toBeUndefined();
   });
 
-  it('should return origin number when initial value is number', () => {
-    const results = findFromBody(1, 'a');
+  it("should return origin number when initial value is number", () => {
+    const results = findFromBody(1, "a");
     expect(results).toEqual(1);
   });
 
-  it('should return origin array when initial value is array', () => {
-    const results = findFromBody([], 'a');
+  it("should return origin array when initial value is array", () => {
+    const results = findFromBody([], "a");
     expect(results).toEqual([]);
   });
 
-  it('should return origin undefined when initial value is undefined', () => {
+  it("should return origin undefined when initial value is undefined", () => {
     const results = findFromBody(undefined, undefined);
     expect(results).toBeUndefined();
   });
 
-  it('should return finded value when initial value is object and find from key passed', () => {
-    const results = findFromBody({ hero: { name: 'ironman' } }, 'hero.name');
-    expect(results).toEqual('ironman');
+  it("should return finded value when initial value is object and find from key passed", () => {
+    const results = findFromBody({ hero: { name: "ironman" } }, "hero.name");
+    expect(results).toEqual("ironman");
   });
 });

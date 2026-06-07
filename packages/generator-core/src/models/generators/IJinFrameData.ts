@@ -1,11 +1,11 @@
 import type {
-  IFrameOption,
-  IQueryFieldOption,
-  IHeaderFieldOption,
-  IParamFieldOption,
   IBodyFieldOption,
+  IFrameOption,
+  IHeaderFieldOption,
   IObjectBodyFieldOption,
-} from 'jin-frame';
+  IParamFieldOption,
+  IQueryFieldOption,
+} from "jin-frame";
 
 /**
  * Data structure for jin-frame code generation
@@ -48,7 +48,7 @@ export interface IJinFrameData {
   /** HTTP method configuration */
   method: {
     /** HTTP method type */
-    type: 'Delete' | 'Get' | 'Head' | 'Link' | 'Options' | 'Patch' | 'Post' | 'Purge' | 'Put' | 'Search' | 'Unlink';
+    type: "Delete" | "Get" | "Head" | "Link" | "Options" | "Patch" | "Post" | "Purge" | "Put" | "Search" | "Unlink";
     /** Method decorator options */
     arguments?: IFrameOption;
   };
@@ -56,23 +56,23 @@ export interface IJinFrameData {
   /** Field parameter configurations for the frame */
   parameters: (
     | {
-        type: 'Query';
+        type: "Query";
         arguments: IQueryFieldOption;
       }
     | {
-        type: 'Param';
+        type: "Param";
         arguments: IParamFieldOption;
       }
     | {
-        type: 'Header';
+        type: "Header";
         arguments: IHeaderFieldOption;
       }
     | {
-        type: 'Body';
+        type: "Body";
         arguments: IBodyFieldOption;
       }
     | {
-        type: 'ObjectBody';
+        type: "ObjectBody";
         arguments: IObjectBodyFieldOption;
       }
   )[];

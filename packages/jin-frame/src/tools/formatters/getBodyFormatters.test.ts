@@ -1,9 +1,9 @@
-import type { SingleBodyFormatter } from '#interfaces/field/body/SingleBodyFormatter';
-import { getBodyFormatters } from '#tools/formatters/getBodyFormatters';
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it } from "vitest";
+import type { SingleBodyFormatter } from "#interfaces/field/body/SingleBodyFormatter";
+import { getBodyFormatters } from "#tools/formatters/getBodyFormatters";
 
-describe('getBodyFormatters', () => {
-  it('should return multiple formatter when undefined', () => {
+describe("getBodyFormatters", () => {
+  it("should return multiple formatter when undefined", () => {
     const r01 = getBodyFormatters();
     const r02 = getBodyFormatters(undefined);
 
@@ -11,13 +11,13 @@ describe('getBodyFormatters', () => {
     expect(r02).toEqual([]);
   });
 
-  it('should return multiple formatter when singular formatter', () => {
+  it("should return multiple formatter when singular formatter", () => {
     const formatter: SingleBodyFormatter = { number: (v) => `${v}` };
     const result = getBodyFormatters(formatter);
     expect(result).toEqual([formatter]);
   });
 
-  it('should return multiple formatter when singular formatter', () => {
+  it("should return multiple formatter when singular formatter", () => {
     const formatter: SingleBodyFormatter[] = [{ number: (v) => `${v}` }];
     const result = getBodyFormatters(formatter);
     expect(result).toEqual(formatter);

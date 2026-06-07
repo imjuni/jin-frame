@@ -1,5 +1,17 @@
 {
   "$schema": "../../node_modules/@biomejs/biome/configuration_schema.json",
   "root": false,
-  "extends": ["../../biome.json"]
+  "extends": ["../../biome.json"],
+  "overrides": [
+    {
+      "includes": ["src/frames/AbstractJinFrame.ts"],
+      "linter": {
+        "rules": {
+          "complexity": {
+            "noThisInStatic": "off"
+          }
+        }
+      }
+    }
+  ]
 }

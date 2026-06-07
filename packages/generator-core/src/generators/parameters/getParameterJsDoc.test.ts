@@ -1,19 +1,19 @@
-import { getParameterJsDoc } from '#/generators/parameters/getParameterJsDoc';
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it } from "vitest";
+import { getParameterJsDoc } from "#/generators/parameters/getParameterJsDoc";
 
-describe('getParameterJsDoc', () => {
-  it('should return empty docs when empty object', () => {
+describe("getParameterJsDoc", () => {
+  it("should return empty docs when empty object", () => {
     const docs = getParameterJsDoc({});
     expect(docs).toEqual([]);
   });
 
-  it('should return docs when pass only description', () => {
-    const docs = getParameterJsDoc({ description: 'I am Ironman' });
+  it("should return docs when pass only description", () => {
+    const docs = getParameterJsDoc({ description: "I am Ironman" });
     expect(docs).toEqual([`I am Ironman`]);
   });
 
-  it('should return description and example docs when pass description, example', () => {
-    const docs = getParameterJsDoc({ description: 'I am Ironman', example: 'ironman' });
+  it("should return description and example docs when pass description, example", () => {
+    const docs = getParameterJsDoc({ description: "I am Ironman", example: "ironman" });
     expect(docs).toEqual([
       `I am Ironman
 
@@ -21,15 +21,15 @@ describe('getParameterJsDoc', () => {
     ]);
   });
 
-  it('should return docs when pass description, example, examples', () => {
+  it("should return docs when pass description, example, examples", () => {
     const docs = getParameterJsDoc({
-      description: 'I am Ironman',
-      example: 'ironman',
+      description: "I am Ironman",
+      example: "ironman",
       examples: {
-        'application/json': {
-          description: 'description',
-          summary: 'summary',
-          value: { name: 'ironman', team: 'advengers' },
+        "application/json": {
+          description: "description",
+          summary: "summary",
+          value: { name: "ironman", team: "advengers" },
         },
       },
     });
