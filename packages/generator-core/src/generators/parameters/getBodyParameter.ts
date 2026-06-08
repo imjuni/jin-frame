@@ -1,5 +1,5 @@
 import type { OpenAPIV3 } from "openapi-types";
-import { type PropertyDeclarationStructure, Scope, StructureKind } from "ts-morph";
+import type { IPropertyData } from "#generators/interfaces/IPropertyData.js";
 import { getFileUploadKeyMap } from "#generators/octet-stream/getFileUploadKeyMap.js";
 import { isFileSchema } from "#generators/octet-stream/isFileSchema.js";
 import { getBodyDecorator } from "#generators/parameters/getBodyDecorator.js";
@@ -32,7 +32,7 @@ export function getBodyParameter(params: IGetBodyParameterProps): IGetBodyParame
 
     if (fileSchema.isFile) {
       const decorators = getBodyDecorator("ObjectBody");
-      const property: PropertyDeclarationStructure = {
+      const property: IPropertyData = {
         decorators,
         docs: description,
         name: "body",
@@ -40,8 +40,6 @@ export function getBodyParameter(params: IGetBodyParameterProps): IGetBodyParame
         hasDeclareKeyword: true,
         isReadonly: true,
         hasQuestionToken: !(requestBody.required ?? false),
-        scope: Scope.Public,
-        kind: StructureKind.Property,
       };
 
       return [{ decorator: "Body", property }];
@@ -68,8 +66,6 @@ export function getBodyParameter(params: IGetBodyParameterProps): IGetBodyParame
           hasDeclareKeyword: true,
           isReadonly: true,
           hasQuestionToken: !(requestBody.required ?? false),
-          scope: Scope.Public,
-          kind: StructureKind.Property,
         },
       };
 
@@ -89,8 +85,6 @@ export function getBodyParameter(params: IGetBodyParameterProps): IGetBodyParame
             hasDeclareKeyword: true,
             isReadonly: true,
             hasQuestionToken: !(requestBody.required ?? false),
-            scope: Scope.Public,
-            kind: StructureKind.Property,
           },
         };
 
@@ -111,8 +105,6 @@ export function getBodyParameter(params: IGetBodyParameterProps): IGetBodyParame
       hasDeclareKeyword: true,
       isReadonly: true,
       hasQuestionToken: !(requestBody.required ?? false),
-      scope: Scope.Public,
-      kind: StructureKind.Property,
     },
   };
 

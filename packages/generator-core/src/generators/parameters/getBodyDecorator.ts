@@ -1,6 +1,6 @@
-import type { PropertyDeclarationStructure } from "ts-morph";
+import type { IPropertyDecoratorData } from "#generators/interfaces/IPropertyData.js";
 
-export function getBodyDecorator(kind: "Body" | "ObjectBody"): PropertyDeclarationStructure["decorators"] {
+export function getBodyDecorator(kind: "Body" | "ObjectBody"): IPropertyDecoratorData[] {
   return [
     {
       name: kind,

@@ -33,8 +33,6 @@ describe("getParameter", () => {
         hasDeclareKeyword: true,
         isReadonly: true,
         hasQuestionToken: false,
-        scope: "public",
-        kind: 31,
       },
     });
   });
@@ -65,8 +63,6 @@ describe("getParameter", () => {
         hasDeclareKeyword: true,
         isReadonly: true,
         hasQuestionToken: true,
-        scope: "public",
-        kind: 31,
       },
     });
   });

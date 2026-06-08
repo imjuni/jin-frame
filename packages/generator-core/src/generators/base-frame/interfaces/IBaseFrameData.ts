@@ -2,10 +2,10 @@ import type {
   DecoratorStructure,
   MethodDeclarationStructure,
   OptionalKind,
-  PropertyDeclarationStructure,
   TypeParameterDeclarationStructure,
 } from "ts-morph";
 import type { IFrameDataImport } from "#generators/frame/interfaces/IFrameData.js";
+import type { IPropertyData } from "#generators/interfaces/IPropertyData.js";
 
 export interface IBaseFrameData {
   name: string;
@@ -14,7 +14,7 @@ export interface IBaseFrameData {
   imports: IFrameDataImport[];
   typeParameters: OptionalKind<TypeParameterDeclarationStructure>[];
   decorators: OptionalKind<DecoratorStructure>[];
-  properties: OptionalKind<PropertyDeclarationStructure>[];
+  properties: IPropertyData[];
   methods: OptionalKind<MethodDeclarationStructure>[];
   extends: string;
 }
