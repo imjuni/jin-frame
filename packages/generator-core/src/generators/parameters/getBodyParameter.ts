@@ -1,3 +1,4 @@
+import type { OpenAPIV3 } from "openapi-types";
 import { type PropertyDeclarationStructure, Scope, StructureKind } from "ts-morph";
 import { getFileUploadKeyMap } from "#generators/octet-stream/getFileUploadKeyMap.js";
 import { isFileSchema } from "#generators/octet-stream/isFileSchema.js";
@@ -13,11 +14,17 @@ export function getBodyParameter(params: IGetBodyParameterProps): IGetBodyParame
     return [];
   }
 
-  const description = getParameterJsDoc(requestBody);
+  const mediaType = requestBody.content[contentType];
+  const schema = mediaType.schema;
+  const schemaDescription =
+    schema != null && "description" in schema ? (schema as OpenAPIV3.SchemaObject).description : undefined;
+  const description = getParameterJsDoc({
+    ...requestBody,
+    description: requestBody.description ?? schemaDescription,
+  });
   const pathsKey = `NonNullable<paths['${params.pathKey}']['${params.method}']['requestBody']>['content']['${params.contentType}']`;
 
   if (params.contentType === "application/octet-stream") {
-    const mediaType = requestBody?.content?.["application/octet-stream"];
     const fileSchema = isFileSchema(mediaType?.schema);
 
     if (fileSchema.isFile) {
@@ -65,11 +72,15 @@ export function getBodyParameter(params: IGetBodyParameterProps): IGetBodyParame
 
       const bodyDecorators = getBodyDecorator("Body");
       const bodies = Array.from(fileUploadMap.entries()).map(([name, isFile]) => {
+        const propertyDescription =
+          schema != null && "properties" in schema && schema.properties != null
+            ? (schema.properties[name] as OpenAPIV3.SchemaObject | undefined)?.description
+            : undefined;
         const body: IGetBodyParameterResult = {
           decorator: "Body",
           property: {
             decorators: bodyDecorators,
-            docs: description,
+            docs: propertyDescription != null ? getParameterJsDoc({ description: propertyDescription }) : description,
             name,
             type: isFile.isArray ? "JinFile[]" : "JinFile",
             hasDeclareKeyword: true,
