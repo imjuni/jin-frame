@@ -106,6 +106,23 @@ describe("getBodyParameter", () => {
     ]);
   });
 
+  it("should include request body and schema descriptions together", () => {
+    const result = getBodyParameter({
+      method: "get",
+      pathKey: "pa/th/key",
+      contentType: "application/json",
+      requestBody: {
+        description: "Request body description",
+        content: { "application/json": requestBody },
+      },
+    });
+
+    expect(result.at(0)?.property.docs).toEqual([
+      `Request body description
+Create a new pet in the store`,
+    ]);
+  });
+
   it("should return Body parameter when request body is application/octet-stream", () => {
     const octetStreamRequestBody: OpenAPIV3.MediaTypeObject = {
       schema: {
