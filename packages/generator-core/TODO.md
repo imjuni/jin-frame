@@ -1,12 +1,5 @@
 # generator-core TODO
 
-## Practical Follow-up
-
-- [ ] **OpenAPI `integer` + `format: int64` string mapping**
-  - Many production APIs return or accept 64-bit integer IDs that are unsafe as JavaScript numbers.
-  - Add an option to map OpenAPI `integer` schemas with `format: int64` / `i64` to `string` in generated types or generated frame-facing DTOs.
-  - Prefer a generator option so existing users can keep the current OpenAPI TypeScript defaults.
-
 ## Testing
 
 - [ ] **Local packaged CLI smoke test**
@@ -32,6 +25,9 @@
 
 ## Completed
 
+- [x] **OpenAPI `integer` + `format: int64` string mapping**
+  - `--int64-as-string` maps OpenAPI `integer` schemas with `format: int64` / `i64` to `string`.
+  - The mapping is applied through `openapi-typescript` schema transforms, so nested `ObjectBody` fields are covered by generated `paths.d.ts` types.
 - [x] **Swagger/OpenAPI v2 conversion**
   - Swagger v2 documents are validated and converted to OpenAPI v3 through `convertor()`.
 - [x] **`specTypeFilePath` vs `specFilePath`**

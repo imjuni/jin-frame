@@ -1,7 +1,26 @@
-import type { createOpenapiTs } from "@jin-frame/generator-core";
 import type { TCreateCommandArgv } from "#interfaces/ICreateCommandArgv.js";
 
-type TOpenAPITSOptions = NonNullable<Parameters<typeof createOpenapiTs>[1]>;
+interface TOpenAPITSOptions {
+  additionalProperties?: boolean;
+  alphabetize?: boolean;
+  arrayLength?: boolean;
+  defaultNonNullable?: boolean;
+  propertiesRequiredByDefault?: boolean;
+  emptyObjectsUnknown?: boolean;
+  enum?: boolean;
+  enumValues?: boolean;
+  dedupeEnums?: boolean;
+  excludeDeprecated?: boolean;
+  exportType?: boolean;
+  immutable?: boolean;
+  rootTypes?: boolean;
+  rootTypesNoSchemaPrefix?: boolean;
+  makePathsEnum?: boolean;
+  generatePathParams?: boolean;
+  int64AsString?: boolean;
+  silent?: boolean;
+  version?: number;
+}
 
 export function transformArgvToOpenapiTsOptions(argv: TCreateCommandArgv): TOpenAPITSOptions {
   return {
@@ -22,6 +41,7 @@ export function transformArgvToOpenapiTsOptions(argv: TCreateCommandArgv): TOpen
     rootTypesNoSchemaPrefix: argv.oatRootTypesNoSchemaPrefix,
     makePathsEnum: argv.oatMakePathsEnum,
     generatePathParams: argv.oatGeneratePathParams,
+    int64AsString: argv.int64AsString,
 
     // Additional options for better integration
     silent: false, // We want to see openapi-typescript logs

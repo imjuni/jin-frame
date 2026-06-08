@@ -42,6 +42,10 @@ export const generatorOptionArgs = {
     type: "boolean",
     description: "Whether to wrap generated code with markdown code fences",
   },
+  "int64-as-string": {
+    type: "boolean",
+    description: "Map OpenAPI integer schemas with int64/i64 format to TypeScript string",
+  },
   "host-strategy": {
     type: "enum",
     options: ["string", "function", "env-function"],
