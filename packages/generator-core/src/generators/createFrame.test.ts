@@ -167,7 +167,7 @@ export class GetPetFindByStatusStatusFrame extends JinFrame<SuccessResponse> {
      *
      * @example ironman
      */
-    @Query({ comma: true })
+    @Query()
     declare public readonly status: NonNullable<FrameRequestParameter>['status'];
     /** Name of pet that needs to be updated */
     @Query()
@@ -270,7 +270,7 @@ export class GetPetFindByStatusStatusFrame extends JinFrame<SuccessResponse> {
      *
      * @example ironman
      */
-    @Query({ comma: true })
+    @Query()
     declare public readonly status: NonNullable<FrameRequestParameter>['status'];
     /** Name of pet that needs to be updated */
     @Query()
