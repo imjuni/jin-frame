@@ -1,27 +1,32 @@
 # generator-core TODO
 
-## Remaining Features
+## Practical Follow-up
 
-- [ ] **Barrel file generation**
-  - Generate `index.ts` in each tag directory after frame files are written.
-  - This is required for practical imports from generated clients.
+- [ ] **OpenAPI `integer` + `format: int64` string mapping**
+  - Many production APIs return or accept 64-bit integer IDs that are unsafe as JavaScript numbers.
+  - Add an option to map OpenAPI `integer` schemas with `format: int64` / `i64` to `string` in generated types or generated frame-facing DTOs.
+  - Prefer a generator option so existing users can keep the current OpenAPI TypeScript defaults.
 
 ## Testing
 
-- [ ] **Packaged CLI smoke test**
-  - Verify the full `jin-frame-generator create` pipeline against a local Swagger/OpenAPI document after `@jin-frame/generator-core` runtime bundles are available.
+- [ ] **Local packaged CLI smoke test**
+  - Verify the full `jin-frame-generator create` pipeline against a local Swagger/OpenAPI fixture after `@jin-frame/generator-core` runtime bundles are available.
   - Target flow: `load -> validate -> convertor -> createOpenapiTs -> printOpenapiTs -> createFrames -> write files`.
-  - Current source-level attempt is blocked when `@jin-frame/generator-core/dist/cjs/index.cjs` is not built locally.
+  - Do not depend on external public APIs or remote Swagger documents.
 - [ ] **Generated output compilation check**
   - Generate frames into a temporary directory and run `tsc --noEmit` against the output.
-- [ ] **Schema edge case coverage**
-  - `allOf` / `oneOf` / `anyOf` schema types.
+- [ ] **Schema composition smoke coverage**
+  - Ensure frame generation does not crash for request/response schemas using `allOf`, `oneOf`, and `anyOf`.
+  - Type expansion correctness is delegated to `openapi-typescript`.
   - Multi-server specs with mixed absolute and relative URLs.
   - Specs with no `servers` field.
 
-## Design Follow-up
+## Optional Convenience
 
-- [ ] **Relative server URL behavior**
+- [ ] **Barrel file generation**
+  - Optionally generate `index.ts` in each tag directory for grouped imports.
+  - Generated clients are still usable through direct frame file imports.
+- [ ] **Relative server URL behavior documentation**
   - `hostStrategy: "string"` with a relative server URL currently treats the value as a path prefix when possible.
   - Add explicit documentation or a warning if this behavior is surprising in generated output.
 
