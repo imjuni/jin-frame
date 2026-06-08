@@ -18,9 +18,12 @@ export function getBodyParameter(params: IGetBodyParameterProps): IGetBodyParame
   const schema = mediaType.schema;
   const schemaDescription =
     schema != null && "description" in schema ? (schema as OpenAPIV3.SchemaObject).description : undefined;
+  const requestBodyDescription = [requestBody.description, schemaDescription]
+    .filter((desc) => desc != null && desc !== "")
+    .join("\n");
   const description = getParameterJsDoc({
     ...requestBody,
-    description: requestBody.description ?? schemaDescription,
+    description: requestBodyDescription === "" ? undefined : requestBodyDescription,
   });
   const pathsKey = `NonNullable<paths['${params.pathKey}']['${params.method}']['requestBody']>['content']['${params.contentType}']`;
 

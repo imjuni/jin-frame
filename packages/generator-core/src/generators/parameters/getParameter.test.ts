@@ -88,6 +88,25 @@ describe("getParameter", () => {
     expect(result?.property.docs).toEqual(["Status schema description"]);
   });
 
+  it("should include parameter and schema descriptions together", () => {
+    const specificParameter = structuredClone(parameter);
+    specificParameter.schema = {
+      type: "string",
+      description: "Status schema description",
+    };
+
+    const result = getParameter({
+      method: "method",
+      pathKey: "pa/th/key",
+      parameter: specificParameter,
+    });
+
+    expect(result?.property.docs).toEqual([
+      `Status values that need to be considered for filter
+Status schema description`,
+    ]);
+  });
+
   it("should return undefined when parameter in is unknown", () => {
     const specificParameter = structuredClone(parameter);
     specificParameter.in = "unknown";

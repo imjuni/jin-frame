@@ -15,9 +15,12 @@ export function getParameter(params: IGetParameterProps): IGetParameterResult | 
     params.parameter.schema != null && "description" in params.parameter.schema
       ? params.parameter.schema.description
       : undefined;
+  const description = [params.parameter.description, schemaDescription]
+    .filter((desc) => desc != null && desc !== "")
+    .join("\n");
   const docs = getParameterJsDoc({
     ...params.parameter,
-    description: params.parameter.description ?? schemaDescription,
+    description: description === "" ? undefined : description,
   });
   const decorators: PropertyDeclarationStructure["decorators"] = [
     {
