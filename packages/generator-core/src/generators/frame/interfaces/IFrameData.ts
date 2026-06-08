@@ -1,4 +1,9 @@
-import type { DecoratorStructure, OptionalKind, PropertyDeclarationStructure } from "ts-morph";
+import type {
+  DecoratorStructure,
+  OptionalKind,
+  PropertyDeclarationStructure,
+  TypeAliasDeclarationStructure,
+} from "ts-morph";
 
 export interface IFrameDataImport {
   moduleSpecifier: string;
@@ -11,8 +16,9 @@ export interface IFrameData {
   tag?: string;
   docs: string;
   imports: IFrameDataImport[];
+  typeAliases: OptionalKind<TypeAliasDeclarationStructure>[];
   decorators: OptionalKind<DecoratorStructure>[];
   properties: OptionalKind<PropertyDeclarationStructure>[];
   parentFrame: string;
-  responseTypeMappedAccessPath: string;
+  responseTypes: string[];
 }

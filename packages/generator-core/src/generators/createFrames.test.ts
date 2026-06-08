@@ -113,8 +113,12 @@ describe("createFrames", async () => {
     expect(frames.at(1)?.frame.source).toContain('import { ServerHostFrame } from "./ServerHostFrame.js";');
     expect(frames.at(1)?.frame.source).toContain("@Get({ path: '/users/{userId}' })");
     expect(frames.at(1)?.frame.source).toContain(
-      "export class GetUserFrame extends ServerHostFrame<paths['/users/{userId}']['get']['responses']['200']['content']['application/json']>",
+      "type SuccessResponse = paths['/users/{userId}']['get']['responses']['200']['content']['application/json'];",
     );
+    expect(frames.at(1)?.frame.source).toContain(
+      "type FrameRequestParameter = paths['/users/{userId}']['get']['parameters']['path'];",
+    );
+    expect(frames.at(1)?.frame.source).toContain("export class GetUserFrame extends ServerHostFrame<SuccessResponse>");
   });
 
   it("should create server variable parameters on server host frame", async () => {
@@ -212,5 +216,51 @@ describe("createFrames", async () => {
     expect(frame).toContain("@Get({ host: 'https://override.example.com', path: '/pets/{petId}' })");
     expect(frame).toContain("@Timeout(3000)");
     expect(frame).toContain("@Retry({ max: 3, interval: 500 })");
+  });
+
+  it("should render fail response type separately when operation has no success response content", async () => {
+    const frames = await createFrames({
+      specTypeFilePath: "/a/b/paths.d.ts",
+      host: "https://api.example.com",
+      output: "/a/b",
+      baseFrame: "ServerHostFrame",
+      useCodeFence: false,
+      document: {
+        openapi: "3.0.0",
+        info: { title: "Test API", version: "1.0.0" },
+        paths: {
+          "/pet": {
+            post: {
+              operationId: "addPet",
+              requestBody: {
+                description: "Pet object that needs to be added to the store",
+                content: {
+                  "application/json": {
+                    schema: { type: "object" },
+                  },
+                },
+              },
+              responses: {
+                "405": {
+                  description: "Invalid input",
+                  content: {
+                    "application/json": {
+                      schema: { type: "object" },
+                    },
+                  },
+                },
+              },
+            },
+          },
+        },
+      } satisfies OpenAPIV3.Document,
+    });
+
+    const frame = frames.at(1)?.frame.source;
+
+    expect(frame).toContain(
+      "type FailResponse = paths['/pet']['post']['responses']['405']['content']['application/json'];",
+    );
+    expect(frame).toContain("export class AddPetFrame extends ServerHostFrame<void, FailResponse>");
   });
 });

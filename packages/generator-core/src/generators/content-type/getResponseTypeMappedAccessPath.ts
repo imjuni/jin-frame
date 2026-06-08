@@ -1,20 +1,14 @@
 import type { IGetResponseTypeMappedAccessPathProps } from "#generators/content-type/interfaces/IGetResponseTypeMappedAccessPathProps.js";
 
 export function getResponseTypeMappedAccessPath(params: IGetResponseTypeMappedAccessPathProps): string {
-  const contentPath =
-    params.responseContentType?.mediaType != null && params.responseContentType?.mediaType !== ""
-      ? "content"
-      : undefined;
-  const mediaTypePath =
-    params.responseContentType?.mediaType != null && params.responseContentType?.mediaType !== ""
-      ? params.responseContentType?.mediaType
-      : undefined;
+  const contentPath = params.responseContentType.mediaType !== "" ? "content" : undefined;
+  const mediaTypePath = params.responseContentType.mediaType !== "" ? params.responseContentType.mediaType : undefined;
 
   const responseTypeMappedAccessPath = [
     params.pathKey,
     params.method,
     "responses",
-    params.responseContentType?.statusCode,
+    params.responseContentType.statusCode,
     contentPath,
     mediaTypePath,
   ]
