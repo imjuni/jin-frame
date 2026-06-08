@@ -71,6 +71,23 @@ describe("getParameter", () => {
     });
   });
 
+  it("should use schema description when parameter description is omitted", () => {
+    const specificParameter = structuredClone(parameter);
+    specificParameter.description = undefined;
+    specificParameter.schema = {
+      type: "string",
+      description: "Status schema description",
+    };
+
+    const result = getParameter({
+      method: "method",
+      pathKey: "pa/th/key",
+      parameter: specificParameter,
+    });
+
+    expect(result?.property.docs).toEqual(["Status schema description"]);
+  });
+
   it("should return undefined when parameter in is unknown", () => {
     const specificParameter = structuredClone(parameter);
     specificParameter.in = "unknown";
