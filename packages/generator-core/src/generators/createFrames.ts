@@ -1,8 +1,10 @@
 import $RefParser from "@apidevtools/json-schema-ref-parser";
 import type { OpenAPIV3 } from "openapi-types";
 import { Project } from "ts-morph";
-import { createBaseFrame } from "#generators/createBaseFrame.js";
-import { createFrame } from "#generators/createFrame.js";
+import { createBaseFrameData } from "#generators/base-frame/createBaseFrameData.js";
+import { createBaseFrameFromData } from "#generators/base-frame/createBaseFrameFromData.js";
+import { createFrameData } from "#generators/frame/createFrameData.js";
+import { createFrameFromData } from "#generators/frame/createFrameFromData.js";
 import { extractFrameEndpoints } from "#generators/frames/extractFrameEndpoints.js";
 import { getInlineHost } from "#generators/frames/getInlineHost.js";
 import { getServerFrameEndpoint } from "#generators/frames/getServerFrameEndpoint.js";
@@ -42,9 +44,9 @@ export async function createFrames(params: ICreateFramesProps): Promise<ICreateF
     hostCode,
   });
 
-  const baseFrame =
+  const baseFrameData =
     params.baseFrame != null
-      ? createBaseFrame(project, {
+      ? createBaseFrameData({
           output: params.output,
           host: serverFrameEndpoint.host,
           hostCode: serverFrameEndpoint.hostCode,
@@ -54,11 +56,16 @@ export async function createFrames(params: ICreateFramesProps): Promise<ICreateF
           timeout: params.timeout,
         })
       : undefined;
+  const baseFrame = baseFrameData == null ? undefined : createBaseFrameFromData(project, baseFrameData);
 
-  const frames = endpoints.map((endpoint) => ({
+  const frameData = endpoints.map((endpoint) => ({
+    endpoint,
+    data: createFrameData(endpoint),
+  }));
+  const frames = frameData.map(({ endpoint, data }) => ({
     method: endpoint.method,
     pathKey: endpoint.pathKey,
-    frame: createFrame(project, endpoint),
+    frame: createFrameFromData(project, data),
   }));
 
   if (baseFrame != null) {
