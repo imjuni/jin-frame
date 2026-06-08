@@ -25,7 +25,7 @@ export function getParameter(params: IGetParameterProps): IGetParameterResult | 
   const decorators: PropertyDeclarationStructure["decorators"] = [
     {
       name: decorator.decorator,
-      arguments: decorator.decorator === "Query" && params.parameter.explode ? ["{ comma: true }"] : [],
+      arguments: decorator.decorator === "Query" && params.parameter.explode === false ? ["{ comma: true }"] : [],
     },
   ];
 

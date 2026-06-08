@@ -24,7 +24,7 @@ describe("getParameter", () => {
         decorators: [
           {
             name: "Query",
-            arguments: ["{ comma: true }"],
+            arguments: [],
           },
         ],
         docs: ["Status values that need to be considered for filter"],
@@ -56,7 +56,7 @@ describe("getParameter", () => {
         decorators: [
           {
             name: "Query",
-            arguments: [],
+            arguments: ["{ comma: true }"],
           },
         ],
         docs: ["Status values that need to be considered for filter"],
