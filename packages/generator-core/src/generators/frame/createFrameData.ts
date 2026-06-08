@@ -1,6 +1,6 @@
 import { pascalCase } from "change-case";
 import type { OpenAPIV3 } from "openapi-types";
-import type { OptionalKind, PropertyDeclarationStructure, TypeAliasDeclarationStructure } from "ts-morph";
+import type { OptionalKind, TypeAliasDeclarationStructure } from "ts-morph";
 import { getFrameResponseTypes } from "#generators/content-type/getFrameResponseTypes.js";
 import { getMethodDecorator } from "#generators/content-type/getMethodDecorator.js";
 import { getRequestContentType } from "#generators/content-type/getRequestContentType.js";
@@ -8,6 +8,7 @@ import type { ICreateFrameProps } from "#generators/frame/interfaces/ICreateFram
 import type { IFrameData } from "#generators/frame/interfaces/IFrameData.js";
 import { getClassJsDoc } from "#generators/getClassJsDoc.js";
 import { getFrameName } from "#generators/getFrameName.js";
+import type { IPropertyData } from "#generators/interfaces/IPropertyData.js";
 import { getJsonArgument } from "#generators/json/getJsonArgument.js";
 import { getBodyParameter } from "#generators/parameters/getBodyParameter.js";
 import { getParameter } from "#generators/parameters/getParameter.js";
@@ -21,10 +22,6 @@ const parameterAliasMap = {
   Param: { aliasName: "FramePathParameter", location: "path" },
   Query: { aliasName: "FrameQueryParameter", location: "query" },
 } as const;
-
-function getTypeText(type: PropertyDeclarationStructure["type"]): string | undefined {
-  return typeof type === "string" ? type : undefined;
-}
 
 function getParameterAliasName(
   decorator: keyof typeof parameterAliasMap,
@@ -92,13 +89,13 @@ export function createFrameData(params: ICreateFrameProps): IFrameData {
       )
       .filter((parameter) => parameter != null) ?? [];
   const usedParameterAliases = new Set(parameters.map((parameter) => parameter.decorator));
-  const properties: PropertyDeclarationStructure[] = parameters.map((parameter) => {
+  const properties: IPropertyData[] = parameters.map((parameter) => {
     const alias = parameterAliasMap[parameter.decorator];
     const aliasName = getParameterAliasName(parameter.decorator, usedParameterAliases);
 
     return {
       ...parameter.property,
-      type: getTypeText(parameter.property.type)?.replace(
+      type: parameter.property.type?.replace(
         `NonNullable<${operationTypePath}['parameters']['${alias.location}']>`,
         `NonNullable<${aliasName}>`,
       ),
@@ -127,18 +124,12 @@ export function createFrameData(params: ICreateFrameProps): IFrameData {
     requestContentType != null
       ? `NonNullable<${operationTypePath}['requestBody']>['content']['${requestContentType}']`
       : undefined;
-  const bodyProperties: PropertyDeclarationStructure[] = bodies.map((body) => ({
+  const bodyProperties: IPropertyData[] = bodies.map((body) => ({
     ...body.property,
-    type:
-      bodyTypePath != null
-        ? getTypeText(body.property.type)?.replaceAll(bodyTypePath, "FrameRequestBody")
-        : body.property.type,
+    type: bodyTypePath != null ? body.property.type?.replaceAll(bodyTypePath, "FrameRequestBody") : body.property.type,
   }));
 
-  if (
-    bodyTypePath != null &&
-    bodyProperties.some((property) => getTypeText(property.type)?.includes("FrameRequestBody"))
-  ) {
+  if (bodyTypePath != null && bodyProperties.some((property) => property.type?.includes("FrameRequestBody"))) {
     typeAliases.push({
       name: "FrameRequestBody",
       type: bodyTypePath,

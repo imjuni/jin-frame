@@ -1,4 +1,4 @@
-import { type PropertyDeclarationStructure, Scope, StructureKind } from "ts-morph";
+import type { IPropertyData, IPropertyDecoratorData } from "#generators/interfaces/IPropertyData.js";
 import { getParameterDecorator } from "#generators/parameters/getParameterDecorator.js";
 import { getParameterJsDoc } from "#generators/parameters/getParameterJsDoc.js";
 import type { IGetParameterProps } from "#generators/parameters/interfaces/IGetParameterProps.js";
@@ -22,14 +22,14 @@ export function getParameter(params: IGetParameterProps): IGetParameterResult | 
     ...params.parameter,
     description: description === "" ? undefined : description,
   });
-  const decorators: PropertyDeclarationStructure["decorators"] = [
+  const decorators: IPropertyDecoratorData[] = [
     {
       name: decorator.decorator,
       arguments: decorator.decorator === "Query" && params.parameter.explode === false ? ["{ comma: true }"] : [],
     },
   ];
 
-  const property: PropertyDeclarationStructure = {
+  const property: IPropertyData = {
     decorators,
     docs,
     name: params.parameter.name,
@@ -37,8 +37,6 @@ export function getParameter(params: IGetParameterProps): IGetParameterResult | 
     hasDeclareKeyword: true,
     isReadonly: true,
     hasQuestionToken: !(params.parameter.required ?? false),
-    scope: Scope.Public,
-    kind: StructureKind.Property,
   };
 
   return { decorator: decorator.decorator, property };
