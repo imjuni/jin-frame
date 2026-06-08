@@ -36,10 +36,12 @@ describe("generatorOptionSchema", () => {
       output: "/generated",
       host: "https://api.example.com?version=2026",
       timeout: "30000",
+      "int64-as-string": true,
     });
 
     expect(parsed.host).toBe("https://api.example.com?version=2026");
     expect(parsed.timeout).toBe(30_000);
+    expect(parsed.int64AsString).toBe(true);
     expect(parsed.hosts).toBeUndefined();
     expect(parsed.timeouts).toBeUndefined();
   });
