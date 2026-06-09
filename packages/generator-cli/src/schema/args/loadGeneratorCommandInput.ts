@@ -23,7 +23,7 @@ export async function loadGeneratorCommandInput(value: unknown): Promise<TComman
   const cliInput = normalizeCommandInput(value);
   const configFile = typeof cliInput.config === "string" ? cliInput.config : undefined;
   const loaded = await loadConfig<TCommandInput>({
-    name: "jin-frame",
+    name: "frame-cli",
     configFile,
     configFileRequired: configFile != null,
     dotenv: false,

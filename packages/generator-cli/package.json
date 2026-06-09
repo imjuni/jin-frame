@@ -38,7 +38,7 @@
   "license": "MIT",
   "main": "dist/cjs/cli.cjs",
   "bin": {
-    "jin-frame-generator": "dist/cjs/cli.cjs"
+    "frame-cli": "dist/cjs/cli.cjs"
   },
   "imports": {
     "#builders/*.js": {
