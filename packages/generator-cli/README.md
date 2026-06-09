@@ -5,7 +5,7 @@
 The CLI is intentionally a thin input layer:
 
 1. Parse command-line arguments.
-2. Load `jin-frame.config.*` with `c12`.
+2. Load `frame-cli.config.*` with `c12`.
 3. Normalize endpoint override options into objects.
 4. Pass the normalized data to `@jin-frame/generator-core`.
 
@@ -18,7 +18,7 @@ Generation rules and output behavior live in `@jin-frame/generator-core`.
 Generate OpenAPI TypeScript definitions and `jin-frame` classes.
 
 ```sh
-jin-frame-generator create ./openapi.yml --output ./generated
+frame-cli create ./openapi.yml --output ./generated
 ```
 
 ### frame
@@ -26,15 +26,15 @@ jin-frame-generator create ./openapi.yml --output ./generated
 Generate only `jin-frame` classes from an existing `openapi-typescript` definition file.
 
 ```sh
-jin-frame-generator frame ./openapi.yml --type ./generated/paths.d.ts --output ./generated
+frame-cli frame ./openapi.yml --type ./generated/paths.d.ts --output ./generated
 ```
 
 ## Config File
 
-The CLI loads `jin-frame.config.*` automatically from the current working directory. You can also pass an explicit config file:
+The CLI loads `frame-cli.config.*` automatically from the current working directory. You can also pass an explicit config file:
 
 ```sh
-jin-frame-generator create ./openapi.yml --output ./generated --config ./jin-frame.config.ts
+frame-cli create ./openapi.yml --output ./generated --config ./frame-cli.config.ts
 ```
 
 Example:
@@ -66,7 +66,7 @@ Endpoint override keys must match the OpenAPI path key exactly, such as `"/pets/
 Endpoint overrides can be passed through repeated CLI options.
 
 ```sh
-jin-frame-generator create ./openapi.yml \
+frame-cli create ./openapi.yml \
   --output ./generated \
   --timeout "/pets/{petId}=3000" \
   --host "/pets/{petId}=https://pet-api.example.com" \

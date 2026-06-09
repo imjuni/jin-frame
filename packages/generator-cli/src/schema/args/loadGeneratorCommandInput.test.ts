@@ -6,8 +6,8 @@ import { loadGeneratorCommandInput } from "#schema/args/loadGeneratorCommandInpu
 
 describe("loadGeneratorCommandInput", () => {
   it("should merge config file endpoint overrides with cli endpoint overrides", async () => {
-    const dirPath = await fs.promises.mkdtemp(pathe.join(os.tmpdir(), "jin-frame-config-"));
-    const configFile = pathe.join(dirPath, "jin-frame.config.mjs");
+    const dirPath = await fs.promises.mkdtemp(pathe.join(os.tmpdir(), "frame-cli-config-"));
+    const configFile = pathe.join(dirPath, "frame-cli.config.mjs");
 
     await fs.promises.writeFile(
       configFile,

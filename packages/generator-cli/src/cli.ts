@@ -10,7 +10,7 @@ sourceMapSupportInstall();
 
 const main = defineCommand({
   meta: {
-    name: "jin-frame-generator",
+    name: "frame-cli",
     version: "1.0.0",
     description: "A CLI tool for generating jin-frame classes from an OpenAPI specification.",
   },

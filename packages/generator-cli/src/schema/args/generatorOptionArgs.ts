@@ -19,7 +19,7 @@ export const generatorOptionArgs = {
   },
   config: {
     type: "string",
-    description: "Path to jin-frame config file. Defaults to jin-frame.config.* when omitted",
+    description: "Path to frame-cli config file. Defaults to frame-cli.config.* when omitted",
   },
   host: {
     type: "string",
