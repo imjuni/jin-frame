@@ -161,7 +161,7 @@ type FrameRequestBody = NonNullable<paths['/pet/findByStatus/{status}']['get']['
  * @tag pet, cat
  */
 @Get({ host: 'https://pokeapi.co', path: '/pet/findByStatus/{status}' })
-export class GetPetFindByStatusStatusFrame extends JinFrame<SuccessResponse> {
+export class GetPetFindByStatusStatusFrame extends JinFrame<SuccessResponse, void> {
     /**
      * Status values that need to be considered for filter
      *
@@ -264,7 +264,7 @@ type FrameRequestBody = NonNullable<paths['/pet/findByStatus/{status}']['get']['
  * @tag pet, cat
  */
 @Get({ host: 'https://pokeapi.co', path: '/pet/findByStatus/{status}', contentType: 'multipart/form-data' })
-export class GetPetFindByStatusStatusFrame extends JinFrame<SuccessResponse> {
+export class GetPetFindByStatusStatusFrame extends JinFrame<SuccessResponse, void> {
     /**
      * Status values that need to be considered for filter
      *

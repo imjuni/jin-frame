@@ -263,4 +263,43 @@ describe("createFrames", async () => {
     );
     expect(frame).toContain("export class AddPetFrame extends ServerHostFrame<void, FailResponse>");
   });
+
+  it("should render void fail response type when fail response has no content", async () => {
+    const frames = await createFrames({
+      specTypeFilePath: "/a/b/paths.d.ts",
+      host: "https://api.example.com",
+      output: "/a/b",
+      baseFrame: "ServerHostFrame",
+      useCodeFence: false,
+      document: {
+        openapi: "3.0.0",
+        info: { title: "Test API", version: "1.0.0" },
+        paths: {
+          "/pet": {
+            post: {
+              operationId: "addPet",
+              requestBody: {
+                description: "Pet object that needs to be added to the store",
+                content: {
+                  "application/json": {
+                    schema: { type: "object" },
+                  },
+                },
+              },
+              responses: {
+                "405": {
+                  description: "Invalid input",
+                },
+              },
+            },
+          },
+        },
+      } satisfies OpenAPIV3.Document,
+    });
+
+    const frame = frames.at(1)?.frame.source;
+
+    expect(frame).not.toContain("type FailResponse");
+    expect(frame).toContain("export class AddPetFrame extends ServerHostFrame<void, void>");
+  });
 });

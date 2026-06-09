@@ -8,6 +8,14 @@ export interface IGetFrameResponseTypesProps {
   responses?: OpenAPIV3.ResponsesObject;
 }
 
+function hasFailResponse(responses?: OpenAPIV3.ResponsesObject): boolean {
+  if (responses == null) {
+    return false;
+  }
+
+  return Object.keys(responses).some((statusCode) => !/^2\d\d$/.test(statusCode));
+}
+
 export function getFrameResponseTypes(params: IGetFrameResponseTypesProps): string[] {
   const responseContentTypes = getResponseContentTypes(params.responses);
   const successType =
@@ -26,7 +34,9 @@ export function getFrameResponseTypes(params: IGetFrameResponseTypesProps): stri
           pathKey: params.pathKey,
           responseContentType: responseContentTypes.fail,
         })}`
-      : undefined;
+      : hasFailResponse(params.responses)
+        ? "void"
+        : undefined;
 
   return [successType, failType].filter((type) => type != null);
 }

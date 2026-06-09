@@ -36,4 +36,20 @@ describe("getFrameResponseTypes", () => {
 
     expect(result).toEqual(["paths['/pet']['post']['responses']['201']['content']['application/json']"]);
   });
+
+  it("should return void fail type when fail response has no content", () => {
+    const responses: OpenAPIV3.ResponsesObject = {
+      "405": {
+        description: "Invalid input",
+      },
+    };
+
+    const result = getFrameResponseTypes({
+      pathKey: "/pet",
+      method: "post",
+      responses,
+    });
+
+    expect(result).toEqual(["void", "void"]);
+  });
 });
