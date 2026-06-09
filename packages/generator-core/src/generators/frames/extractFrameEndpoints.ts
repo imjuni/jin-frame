@@ -2,6 +2,7 @@ import type { OpenAPIV3 } from "openapi-types";
 import type { ICreateFramesProps } from "#generators/frames/interfaces/ICreateFramesProps.js";
 import type { IFrameEndpoint } from "#generators/frames/interfaces/IFrameEndpoint.js";
 import { mergeParameters } from "#generators/frames/mergeParameters.js";
+import type { ISecurityProviderReference } from "#generators/security/interfaces/ISecurityProviderReference.js";
 import type { THttpMethod } from "#https/method.js";
 
 export interface IExtractFrameEndpointsParams {
@@ -9,6 +10,7 @@ export interface IExtractFrameEndpointsParams {
   document: OpenAPIV3.Document;
   host: string | (() => string);
   hostCode?: string;
+  securityProviders?: Map<string, ISecurityProviderReference>;
 }
 
 export function extractFrameEndpoints({
@@ -16,6 +18,7 @@ export function extractFrameEndpoints({
   document,
   host,
   hostCode,
+  securityProviders,
 }: IExtractFrameEndpointsParams): IFrameEndpoint[] {
   const paths = document.paths ?? {};
   const methods: THttpMethod[] = ["get", "post", "put", "delete", "patch", "head", "options"];
@@ -45,6 +48,8 @@ export function extractFrameEndpoints({
             ...operation,
             parameters: mergeParameters(pathParameters, operation.parameters),
           },
+          rootSecurity: document.security,
+          securityProviders,
           retry: params.overrides?.retries?.[pathKey],
           timeout: params.overrides?.timeouts?.[pathKey],
         };

@@ -63,4 +63,8 @@ export const generatorOptionArgs = {
     type: "string",
     description: "Environment to server URL mapping as JSON string",
   },
+  "security-provider-dir": {
+    type: "string",
+    description: "Directory name for generated security provider classes",
+  },
 } satisfies ArgsDef;

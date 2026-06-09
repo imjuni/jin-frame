@@ -7,6 +7,8 @@ import { extractFrameEndpoints } from "#generators/frames/extractFrameEndpoints.
 import type { ICreateFramesProps } from "#generators/frames/interfaces/ICreateFramesProps.js";
 import type { ICreateFramesResult } from "#generators/frames/interfaces/ICreateFramesResult.js";
 import type { IFrameGenerationContext } from "#generators/frames/interfaces/IFrameGenerationContext.js";
+import { createSecurityProviderData } from "#generators/security/createSecurityProviderData.js";
+import { createSecurityProviderFromData } from "#generators/security/createSecurityProviderFromData.js";
 
 export interface ICreateFramePipelineParams {
   params: ICreateFramesProps;
@@ -19,11 +21,16 @@ export function createFramePipeline({
   context,
   project = new Project(),
 }: ICreateFramePipelineParams): ICreateFramesResult[] {
+  const securityProviderData = createSecurityProviderData(context.document, {
+    securityProviderDir: params.securityProviderDir,
+    securityProviders: params.securityProviders,
+  });
   const endpoints = extractFrameEndpoints({
     params,
     document: context.document,
     host: context.host,
     hostCode: context.hostCode,
+    securityProviders: securityProviderData.references,
   });
   const baseFrameData =
     params.baseFrame != null
@@ -49,10 +56,15 @@ export function createFramePipeline({
       pathKey: endpoint.pathKey,
       frame: createFrameFromData(project, data),
     }));
+  const securityProviders = securityProviderData.providers.map((provider) => ({
+    method: "get" as const,
+    pathKey: "/",
+    frame: createSecurityProviderFromData(project, provider),
+  }));
 
   if (baseFrame != null) {
-    return [{ frame: baseFrame, method: "get", pathKey: "/" }, ...frames];
+    return [{ frame: baseFrame, method: "get", pathKey: "/" }, ...securityProviders, ...frames];
   }
 
-  return frames;
+  return [...securityProviders, ...frames];
 }

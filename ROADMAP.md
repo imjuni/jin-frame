@@ -44,9 +44,15 @@
 
 ## generator-cli
 
-- [ ] Generate jin-frame based on Authorization configuration
 - [ ] Generate multiple BaseFrames when there are multiple servers
   - Properly add host and path when BaseFrame is not used
+
+### Completed
+
+- [x] Generate jin-frame based on Authorization configuration
+  - Generate custom security provider subclasses from OpenAPI `securitySchemes`.
+  - Apply root-level and operation-level security requirements to generated frames.
+  - Allow overriding provider class names and import paths per security scheme.
 
 ## generator-core
 

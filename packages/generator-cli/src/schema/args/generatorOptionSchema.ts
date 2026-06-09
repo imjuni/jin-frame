@@ -1,5 +1,9 @@
 import { z } from "zod";
-import { endpointOverridesSchema, type TEndpointRetry } from "#schema/args/generatorConfigSchema.js";
+import {
+  endpointOverridesSchema,
+  securityProviderSchema,
+  type TEndpointRetry,
+} from "#schema/args/generatorConfigSchema.js";
 import { parseEndpointOverrideMap, parseRetryOverride } from "#schema/args/parseEndpointOverride.js";
 import { coerceIdentifier } from "#validators/coerceIdentifier.js";
 
@@ -29,6 +33,7 @@ export const normalizeGeneratorOptionInput = (value: unknown) => {
     hostEnvVar: record["host-env-var"] ?? record.hostEnvVar,
     hostFunctionName: record["host-function-name"] ?? record.hostFunctionName,
     serverMapping: record["server-mapping"] ?? record.serverMapping,
+    securityProviderDir: record["security-provider-dir"] ?? record.securityProviderDir,
     host: host.rest ?? (host.hasValues ? undefined : record.host),
     hosts: mergeRecords(record.hosts as Record<string, string> | undefined, host.overrides),
     timeout: timeout.rest ?? (timeout.hasValues ? undefined : record.timeout),
@@ -71,6 +76,7 @@ export const generatorOptionSchema = z.object({
     }, z.record(z.string(), z.string()).optional())
     .optional(),
   ...endpointOverridesSchema.shape,
+  ...securityProviderSchema.shape,
 });
 
 export type TGeneratorOption = z.infer<typeof generatorOptionSchema>;

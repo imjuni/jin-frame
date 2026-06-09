@@ -12,6 +12,8 @@ import type { IPropertyData } from "#generators/interfaces/IPropertyData.js";
 import { getJsonArgument } from "#generators/json/getJsonArgument.js";
 import { getBodyParameter } from "#generators/parameters/getBodyParameter.js";
 import { getParameter } from "#generators/parameters/getParameter.js";
+import { getFrameSecurityProviders } from "#generators/security/getFrameSecurityProviders.js";
+import type { ISecurityProviderReference } from "#generators/security/interfaces/ISecurityProviderReference.js";
 import { dotRelative } from "#tools/dotRelative.js";
 import { removeExt } from "#tools/removeExt.js";
 import { safePathJoin } from "#tools/safePathJoin.js";
@@ -51,6 +53,11 @@ export function createFrameData(params: ICreateFrameProps): IFrameData {
     pathKey: params.pathKey,
     responses: params.operation.responses,
   });
+  const securityProviders = getFrameSecurityProviders(
+    params.operation.security,
+    params.rootSecurity,
+    params.securityProviders ?? new Map<string, ISecurityProviderReference>(),
+  );
   const typeAliases: OptionalKind<TypeAliasDeclarationStructure>[] = [];
   const parentFrameResponseTypes = responseTypes.map((responseType, index) => {
     if (responseType === "void") {
@@ -75,6 +82,7 @@ export function createFrameData(params: ICreateFrameProps): IFrameData {
     baseFrame: params.baseFrame,
     method,
     contentType: requestContentType,
+    securityProviderClassNames: securityProviders.map((provider) => provider.className),
   });
   const tag = params.operation.tags?.at(0);
 
@@ -174,6 +182,18 @@ export function createFrameData(params: ICreateFrameProps): IFrameData {
             namedImports: [...jinFrameNamedImports, "JinFrame"],
           },
         ];
+
+  imports.push(
+    ...securityProviders.map((provider) => ({
+      moduleSpecifier:
+        provider.importPath ??
+        `${dotRelative(
+          safePathJoin(params.output, tag),
+          safePathJoin(params.output, provider.tag, removeExt(provider.filePath)),
+        )}.js`,
+      namedImports: [provider.className],
+    })),
+  );
 
   imports.push({
     moduleSpecifier: `${dotRelative(safePathJoin(params.output, tag), removeExt(params.specTypeFilePath))}.js`,

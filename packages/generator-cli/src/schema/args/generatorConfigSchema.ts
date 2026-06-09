@@ -12,5 +12,16 @@ export const endpointOverridesSchema = z.object({
   timeouts: z.record(z.string(), z.coerce.number()).optional(),
 });
 
+export const securityProviderOverrideSchema = z.object({
+  className: z.string().min(1),
+  importPath: z.string().min(1),
+});
+
+export const securityProviderSchema = z.object({
+  securityProviderDir: z.string().min(1).optional(),
+  securityProviders: z.record(z.string(), securityProviderOverrideSchema).optional(),
+});
+
 export type TEndpointRetry = z.infer<typeof endpointRetrySchema>;
 export type TEndpointOverrides = z.infer<typeof endpointOverridesSchema>;
+export type TSecurityProviderOverrides = z.infer<typeof securityProviderSchema>;
