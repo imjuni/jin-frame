@@ -1,7 +1,8 @@
 import type { OpenAPIV3 } from "openapi-types";
 import type { IFrameOverrides } from "#generators/frames/interfaces/IFrameOverrides.js";
+import type { ISecurityProviderOptions } from "#generators/security/interfaces/ISecurityProviderOptions.js";
 
-export interface ICreateFramesProps {
+export interface ICreateFramesProps extends ISecurityProviderOptions {
   specTypeFilePath: string;
   specFilePath?: string;
   baseFrame?: string;

@@ -45,4 +45,27 @@ describe("generatorOptionSchema", () => {
     expect(parsed.hosts).toBeUndefined();
     expect(parsed.timeouts).toBeUndefined();
   });
+
+  it("should parse security provider options", () => {
+    const schema = z.preprocess(normalizeGeneratorOptionInput, generatorOptionSchema);
+    const parsed = schema.parse({
+      spec: "/openapi.yml",
+      output: "/generated",
+      "security-provider-dir": "auth",
+      securityProviders: {
+        bearerAuth: {
+          className: "AppBearerTokenProvider",
+          importPath: "@/auth/AppBearerTokenProvider",
+        },
+      },
+    });
+
+    expect(parsed.securityProviderDir).toBe("auth");
+    expect(parsed.securityProviders).toEqual({
+      bearerAuth: {
+        className: "AppBearerTokenProvider",
+        importPath: "@/auth/AppBearerTokenProvider",
+      },
+    });
+  });
 });

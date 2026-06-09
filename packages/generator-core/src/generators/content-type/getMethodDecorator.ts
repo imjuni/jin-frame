@@ -28,6 +28,14 @@ export function getMethodDecorator(params: IGetMethodDecoratorProps): DecoratorS
     jsonLiteralValue.push({ key: "contentType", value: params.contentType });
   }
 
+  if (params.securityProviderClassNames != null && params.securityProviderClassNames.length > 0) {
+    const securityValue =
+      params.securityProviderClassNames.length === 1
+        ? `new ${params.securityProviderClassNames[0]}()`
+        : `[${params.securityProviderClassNames.map((className) => `new ${className}()`).join(", ")}]`;
+    jsonLiteralValue.push({ key: "security", value: securityValue, isFunction: true });
+  }
+
   const decoratorArguments = getJsonArgument({
     values: jsonLiteralValue,
   });

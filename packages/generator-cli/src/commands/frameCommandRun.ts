@@ -43,6 +43,8 @@ export const frameCommandRun = async ({ args }: CommandContext<typeof frameComma
     hostEnvVar: params.hostEnvVar,
     hostFunctionName: params.hostFunctionName,
     serverMapping: params.serverMapping,
+    securityProviderDir: params.securityProviderDir,
+    securityProviders: params.securityProviders,
     overrides: {
       hosts: params.hosts,
       retries: params.retries,

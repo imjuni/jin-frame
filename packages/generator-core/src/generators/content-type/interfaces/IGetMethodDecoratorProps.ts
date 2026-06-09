@@ -6,4 +6,5 @@ export interface IGetMethodDecoratorProps {
   hostOverride?: string;
   path: string;
   baseFrame?: string;
+  securityProviderClassNames?: string[];
 }

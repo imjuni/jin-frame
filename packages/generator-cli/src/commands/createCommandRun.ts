@@ -50,6 +50,8 @@ export const createCommandRun = async ({ args }: CommandContext<typeof createCom
     hostEnvVar: params.hostEnvVar,
     hostFunctionName: params.hostFunctionName,
     serverMapping: params.serverMapping,
+    securityProviderDir: params.securityProviderDir,
+    securityProviders: params.securityProviders,
     overrides: {
       hosts: params.hosts,
       retries: params.retries,

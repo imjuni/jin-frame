@@ -302,4 +302,113 @@ describe("createFrames", async () => {
     expect(frame).not.toContain("type FailResponse");
     expect(frame).toContain("export class AddPetFrame extends ServerHostFrame<void, void>");
   });
+
+  it("should generate security providers and apply root security to frames", async () => {
+    const frames = await createFrames({
+      specTypeFilePath: "/a/b/paths.d.ts",
+      host: "https://api.example.com",
+      output: "/a/b",
+      baseFrame: "ServerHostFrame",
+      useCodeFence: false,
+      document: {
+        openapi: "3.0.0",
+        info: { title: "Test API", version: "1.0.0" },
+        components: {
+          securitySchemes: {
+            bearerAuth: {
+              type: "http",
+              scheme: "bearer",
+            },
+            apiKey: {
+              type: "apiKey",
+              in: "header",
+              name: "X-API-Key",
+            },
+          },
+        },
+        security: [{ bearerAuth: [], apiKey: [] }],
+        paths: {
+          "/users": {
+            get: {
+              operationId: "listUsers",
+              responses: {
+                "200": {
+                  description: "Success",
+                },
+              },
+            },
+          },
+        },
+      } satisfies OpenAPIV3.Document,
+    });
+
+    expect(frames.map((frame) => frame.frame.filePath)).toEqual([
+      "ServerHostFrame.ts",
+      "BearerAuthProvider.ts",
+      "ApiKeySecurityProvider.ts",
+      "ListUsersFrame.ts",
+    ]);
+    expect(frames.at(1)?.frame.source).toContain('import { BearerTokenProvider } from "jin-frame";');
+    expect(frames.at(1)?.frame.source).toContain("export class BearerAuthProvider extends BearerTokenProvider");
+    expect(frames.at(1)?.frame.source).toContain('super("bearerAuth");');
+    expect(frames.at(2)?.frame.source).toContain('import { ApiKeyProvider } from "jin-frame";');
+    expect(frames.at(2)?.frame.source).toContain("export class ApiKeySecurityProvider extends ApiKeyProvider");
+    expect(frames.at(2)?.frame.source).toContain('super("apiKey", "X-API-Key", "header");');
+    expect(frames.at(3)?.frame.source).toContain(
+      'import { BearerAuthProvider } from "./securities/BearerAuthProvider.js";',
+    );
+    expect(frames.at(3)?.frame.source).toContain(
+      'import { ApiKeySecurityProvider } from "./securities/ApiKeySecurityProvider.js";',
+    );
+    expect(frames.at(3)?.frame.source).toContain(
+      "@Get({ path: '/users', security: [new BearerAuthProvider(), new ApiKeySecurityProvider()] })",
+    );
+  });
+
+  it("should use configured external security provider imports", async () => {
+    const frames = await createFrames({
+      specTypeFilePath: "/a/b/paths.d.ts",
+      host: "https://api.example.com",
+      output: "/a/b",
+      baseFrame: "ServerHostFrame",
+      useCodeFence: false,
+      securityProviders: {
+        bearerAuth: {
+          className: "AppBearerTokenProvider",
+          importPath: "@/auth/AppBearerTokenProvider",
+        },
+      },
+      document: {
+        openapi: "3.0.0",
+        info: { title: "Test API", version: "1.0.0" },
+        components: {
+          securitySchemes: {
+            bearerAuth: {
+              type: "http",
+              scheme: "bearer",
+            },
+          },
+        },
+        paths: {
+          "/users": {
+            get: {
+              operationId: "listUsers",
+              security: [{ bearerAuth: [] }],
+              responses: {
+                "200": {
+                  description: "Success",
+                },
+              },
+            },
+          },
+        },
+      } satisfies OpenAPIV3.Document,
+    });
+
+    expect(frames.map((frame) => frame.frame.filePath)).toEqual(["ServerHostFrame.ts", "ListUsersFrame.ts"]);
+    expect(frames.at(1)?.frame.source).toContain(
+      'import { AppBearerTokenProvider } from "@/auth/AppBearerTokenProvider";',
+    );
+    expect(frames.at(1)?.frame.source).toContain("@Get({ path: '/users', security: new AppBearerTokenProvider() })");
+  });
 });
