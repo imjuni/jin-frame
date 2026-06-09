@@ -122,4 +122,44 @@ describe("createFrameData", () => {
       ],
     });
   });
+
+  it("should use void fail response type when only fail response without content exists", () => {
+    const data = createFrameData({
+      specTypeFilePath: "/a/b/paths.d.ts",
+      host: "https://api.example.com",
+      output: "/a/b",
+      baseFrame: "ServerHostFrame",
+      pathKey: "/pet",
+      method: "post",
+      operation: {
+        operationId: "addPet",
+        tags: ["pet"],
+        requestBody: {
+          description: "Pet object that needs to be added to the store",
+          content: {
+            "application/json": {
+              schema: { type: "object" },
+            },
+          },
+        },
+        responses: {
+          "405": {
+            description: "Invalid input",
+          },
+        },
+      } satisfies OpenAPIV3.OperationObject,
+    });
+
+    expect(data).toMatchObject({
+      name: "AddPetFrame",
+      parentFrame: "ServerHostFrame",
+      responseTypes: ["void", "void"],
+      typeAliases: [
+        {
+          name: "FrameRequestBody",
+          type: "NonNullable<paths['/pet']['post']['requestBody']>['content']['application/json']",
+        },
+      ],
+    });
+  });
 });
