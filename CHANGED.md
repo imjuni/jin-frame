@@ -1,5 +1,55 @@
 # Changed
 
+## 5.1.0
+
+### New Features in 5.1.0
+
+- **Runtime URL overrides in `JinFrameRequestConfig`**: `_execute()` / `_create()` can now override `host`, `pathPrefix`, and `path` at request time.
+  - This makes it possible to reuse the same frame class across environments, tenants, or server component flows without rebuilding the frame definition.
+  - Runtime URL overrides are covered by `AbstractJinFrame` tests.
+
+## 5.0.4
+
+### Bug Fixes in 5.0.4
+
+- **Inherited field metadata lookup**: Field metadata resolution now traverses the prototype chain.
+  - Decorated fields declared on parent frame classes are correctly discovered by child classes.
+  - Override behavior is covered by dedicated inheritance tests.
+
+### Infrastructure in 5.0.4
+
+- **Silent test scripts**: Added silent-mode test scripts and wired the pre-commit hook to use the quieter test command.
+
+## 5.0.3
+
+### New Features in 5.0.3
+
+- **`validateStatus` support in `FrameOption`**: `validateStatus` can now be configured through the frame-level option decorator, not only method-level options.
+
+### Documentation and Code Quality in 5.0.3
+
+- **English comments**: Internal comments were normalized to English for open-source maintainability.
+- **Type utility cleanup**: Removed obsolete builder-related helper types after the v5 type-system refactor.
+
+## 5.0.2
+
+### Bug Fixes in 5.0.2
+
+- **Safe JSON parsing fallback**: `safeParse()` now returns the original raw string when `JSON.parse()` fails instead of losing the response body shape.
+  - This improves handling for text responses and malformed JSON payloads.
+
+## 5.0.1
+
+### Bug Fixes in 5.0.1
+
+- **OAuth2 cleanup after v5 removal**: Removed remaining OAuth2 references after `OAuth2Provider` was removed in 5.0.0.
+- **Multipart PUT/PATCH support**: Multipart request handling now covers PUT and PATCH flows in addition to the existing form upload paths.
+- **Axios reference cleanup**: Remaining Axios-era names and documentation references were cleaned up after the native fetch migration.
+
+### Documentation in 5.0.1
+
+- **Naming convention documentation**: Added naming convention pages in both Korean and English, with updated cross-references from inheritance documentation.
+
 ## 5.0.0
 
 ### Breaking Changes in 5.0.0
