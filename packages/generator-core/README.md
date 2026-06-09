@@ -1,31 +1,114 @@
-# JinFrame Generator Core
+# @jin-frame/generator-core
 
-----
+Core package for generating `jin-frame` request classes from an OpenAPI document.
 
-## Background
+`@jin-frame/generator-cli` uses this package internally. Use `generator-core` directly when you want to build a custom generation pipeline or integrate frame generation into another tool.
 
-JinFrame를 생성하기 위해 필요한 코어 라이브러리.
+## Installation
 
-## Server
+```sh
+pnpm add -D @jin-frame/generator-core openapi-typescript typescript
+pnpm add jin-frame
+```
 
-서버를 어떻게 적용할 것인지를 정리한다. OpenAPI 문서에서 host는 다음과 같이 결정된다.
+`@jin-frame/generator-core` is used at generation time. `jin-frame` is required at runtime by the generated frames.
 
-1. API endpoint에서 Server 섹션이 있는 경우 사용한다
-   1. Server 섹션에 host가 없는 경우 3번에서 얻은 host를 사용한다
-2. Document Server 섹션이 있는 경우 사용한다
-   1. Server 섹션에 host가 없는 경우 3번에서 얻은 host를 사용한다
-3. OpenAPI 스펙을 얻은 endpoint에서 host를 사용한다
+## Basic Flow
 
-## Endpoint Overrides
+```ts
+import fs from "node:fs/promises";
+import pathe from "pathe";
+import {
+  convertor,
+  createFrames,
+  createOpenapiTs,
+  load,
+  renderOpenapiTs,
+  safePathJoin,
+  validate,
+} from "@jin-frame/generator-core";
 
-`generator-core`는 OpenAPI `paths`의 key를 기준으로 endpoint별 옵션을 적용한다. CLI는 문자열 인자와 설정 파일을 파싱해서 object로 넘기고, 실제 생성 정책은 core에서 처리한다.
+const specPath = "./openapi.yml";
+const output = "./generated";
+
+const loaded = await load(specPath);
+if (loaded == null) {
+  throw new Error(`Failed to load spec from ${specPath}`);
+}
+
+const validated = validate(loaded.data);
+if (!validated.valid) {
+  throw new Error("Invalid OpenAPI document");
+}
+
+const converted = await convertor(validated);
+const nodes = await createOpenapiTs(converted.document, {
+  version: 3,
+  int64AsString: true,
+});
+
+const specTypeFilePath = pathe.join(output, "paths.d.ts");
+await fs.mkdir(output, { recursive: true });
+await fs.writeFile(specTypeFilePath, renderOpenapiTs(nodes));
+
+const frames = await createFrames({
+  document: converted.document,
+  specTypeFilePath,
+  specFilePath: specPath,
+  output,
+  useCodeFence: false,
+  baseFrame: "ServerHostFrame",
+});
+
+for (const frame of frames) {
+  const dirPath = safePathJoin(output, frame.frame.tag);
+  const filePath = pathe.join(dirPath, frame.frame.filePath);
+
+  await fs.mkdir(dirPath, { recursive: true });
+  await fs.writeFile(filePath, frame.frame.source);
+}
+```
+
+## Main APIs
+
+| API | Description |
+|---|---|
+| `load()` | Loads an OpenAPI document from a local file or URL. JSON and YAML are supported. |
+| `validate()` | Validates whether the document is OpenAPI v2 or v3. |
+| `convertor()` | Converts Swagger/OpenAPI v2 documents to OpenAPI v3. |
+| `createOpenapiTs()` | Runs `openapi-typescript` and returns TypeScript AST nodes. |
+| `renderOpenapiTs()` | Renders the generated AST nodes as TypeScript source. |
+| `createFrames()` | Generates frame source from an OpenAPI v3 document and a type definition path. |
+
+## Generated Output
+
+By default, the first operation tag is used as the directory name.
+
+```text
+generated/
+├── paths.d.ts
+├── ServerHostFrame.ts
+├── pet/
+│   ├── AddPetFrame.ts
+│   └── GetPetByIdFrame.ts
+└── store/
+    └── GetInventoryFrame.ts
+```
+
+Operations without tags are generated directly under `output`.
+
+## Common Options
 
 ```ts
 await createFrames({
   document,
   specTypeFilePath: "./generated/paths.d.ts",
+  specFilePath: "./openapi.yml",
   output: "./generated",
   useCodeFence: false,
+  baseFrame: "ServerHostFrame",
+  host: "https://api.example.com",
+  timeout: 60_000,
   overrides: {
     timeouts: {
       "/pets/{petId}": 3_000,
@@ -43,12 +126,21 @@ await createFrames({
 });
 ```
 
-override key는 OpenAPI 문서의 path key와 동일해야 한다. 예를 들어 OpenAPI 문서가 `"/pets/{petId}"`를 사용하면 override도 `"/pets/{petId}"`를 사용한다.
+`overrides` keys must match the OpenAPI path keys exactly. For example, if the OpenAPI path is `"/pets/{petId}"`, use the same string as the override key.
 
-적용 규칙은 다음과 같다.
+## int64
 
-- `timeouts[path]`: endpoint frame에 `@Timeout(...)`을 생성한다.
-- `retries[path]`: endpoint frame에 `@Retry(...)`을 생성한다.
-- `hosts[path]`: endpoint method decorator에 `host`를 직접 생성한다.
+Use `int64AsString` when 64-bit integer values should be handled as strings in JavaScript.
 
-base frame을 사용하는 경우에도 endpoint별 host override는 개별 endpoint decorator에 직접 기록한다. 이렇게 해야 공통 base host보다 endpoint override가 우선 적용된다.
+```ts
+const nodes = await createOpenapiTs(document, {
+  version: 3,
+  int64AsString: true,
+});
+```
+
+This maps OpenAPI schemas with `type: integer` and `format: int64` or `format: i64` to TypeScript `string`.
+
+## License
+
+MIT

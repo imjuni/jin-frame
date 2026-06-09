@@ -1,40 +1,55 @@
 # @jin-frame/generator-cli
 
-`@jin-frame/generator-cli` generates `jin-frame` request classes from an OpenAPI document.
+CLI package for generating `jin-frame` request classes from an OpenAPI document.
 
-The CLI is intentionally a thin input layer:
+The CLI command name is `frame-cli`.
 
-1. Parse command-line arguments.
-2. Load `frame-cli.config.*` with `c12`.
-3. Normalize endpoint override options into objects.
-4. Pass the normalized data to `@jin-frame/generator-core`.
+## Installation
 
-Generation rules and output behavior live in `@jin-frame/generator-core`.
+```sh
+pnpm add -D @jin-frame/generator-cli
+pnpm add jin-frame
+```
 
-## Commands
+## create
 
-### create
-
-Generate OpenAPI TypeScript definitions and `jin-frame` classes.
+Generate both `paths.d.ts` and frame files from an OpenAPI document.
 
 ```sh
 frame-cli create ./openapi.yml --output ./generated
 ```
 
-### frame
+The generated output usually looks like this:
 
-Generate only `jin-frame` classes from an existing `openapi-typescript` definition file.
+```text
+generated/
+├── paths.d.ts
+├── ServerHostFrame.ts
+└── pet/
+    ├── AddPetFrame.ts
+    └── GetPetByIdFrame.ts
+```
+
+Swagger/OpenAPI v2 documents are also supported. They are converted to OpenAPI v3 internally before generation.
+
+## frame
+
+Generate only frame files when you already have an `openapi-typescript` type definition file.
 
 ```sh
-frame-cli frame ./openapi.yml --type ./generated/paths.d.ts --output ./generated
+frame-cli frame ./openapi.yml \
+  --type ./generated/paths.d.ts \
+  --output ./generated
 ```
 
 ## Config File
 
-The CLI loads `frame-cli.config.*` automatically from the current working directory. You can also pass an explicit config file:
+The CLI looks for `frame-cli.config.*` in the current working directory. You can also pass an explicit config file with `--config`.
 
 ```sh
-frame-cli create ./openapi.yml --output ./generated --config ./frame-cli.config.ts
+frame-cli create ./openapi.yml \
+  --output ./generated \
+  --config ./frame-cli.config.ts
 ```
 
 Example:
@@ -43,6 +58,42 @@ Example:
 export default {
   host: "https://api.example.com",
   timeout: 60_000,
+  baseFrame: "ServerHostFrame",
+  int64AsString: true,
+};
+```
+
+CLI options take precedence over config file values.
+
+## Main Options
+
+| Option | Description |
+|---|---|
+| `--output`, `-o` | Directory for generated files. |
+| `--type`, `-t` | Path to `paths.d.ts` for the `frame` command. |
+| `--config` | Config file path. |
+| `--host`, `-h` | Default host or endpoint host override. |
+| `--timeout` | Default timeout or endpoint timeout override. |
+| `--retry` | Endpoint retry override. |
+| `--base-frame` | Base frame class name to generate. |
+| `--int64-as-string` | Maps OpenAPI `integer` + `int64`/`i64` schemas to TypeScript `string`. |
+
+## Endpoint Override
+
+You can apply host, timeout, and retry options to specific endpoints.
+
+```sh
+frame-cli create ./openapi.yml \
+  --output ./generated \
+  --timeout "/pets/{petId}=3000" \
+  --host "/pets/{petId}=https://pet-api.example.com" \
+  --retry '/pets/{petId}={"max":3,"interval":500}'
+```
+
+The same values can be set in a config file.
+
+```ts
+export default {
   timeouts: {
     "/pets/{petId}": 3_000,
   },
@@ -53,59 +104,26 @@ export default {
     "/pets/{petId}": {
       max: 3,
       interval: 500,
-      useRetryAfter: true,
     },
   },
 };
 ```
 
-Endpoint override keys must match the OpenAPI path key exactly, such as `"/pets/{petId}"`.
+Override keys must match the OpenAPI path keys exactly.
 
-## Endpoint Overrides
+## OpenAPI TypeScript Options
 
-Endpoint overrides can be passed through repeated CLI options.
+The `create` command can pass some `openapi-typescript` options with the `oat-*` prefix.
 
 ```sh
 frame-cli create ./openapi.yml \
   --output ./generated \
-  --timeout "/pets/{petId}=3000" \
-  --host "/pets/{petId}=https://pet-api.example.com" \
-  --retry '/pets/{petId}={"max":3,"interval":500}'
+  --oat-alphabetize \
+  --oat-export-type
 ```
 
-The CLI converts these arguments into the same object shape as the config file:
+Run `frame-cli create --help` to see the available options.
 
-```ts
-{
-  timeouts: {
-    "/pets/{petId}": 3000,
-  },
-  hosts: {
-    "/pets/{petId}": "https://pet-api.example.com",
-  },
-  retries: {
-    "/pets/{petId}": {
-      max: 3,
-      interval: 500,
-    },
-  },
-}
-```
+## License
 
-## Precedence
-
-CLI values override config file values. For endpoint overrides, CLI entries override config entries for the same OpenAPI path.
-
-```text
-CLI endpoint override > config endpoint override > CLI global option > config global option > default
-```
-
-## Generated Output
-
-Endpoint overrides are applied by `@jin-frame/generator-core`.
-
-- `timeouts[path]` generates `@Timeout(...)` on the endpoint frame.
-- `retries[path]` generates `@Retry(...)` on the endpoint frame.
-- `hosts[path]` writes `host` into the method decorator for that endpoint.
-
-When a base frame is enabled, an endpoint host override still writes `host` directly to the endpoint method decorator so it can override the shared base host.
+MIT
