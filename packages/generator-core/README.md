@@ -4,10 +4,15 @@ Core package for generating `jin-frame` request classes from an OpenAPI document
 
 `@jin-frame/generator-cli` uses this package internally. Use `generator-core` directly when you want to build a custom generation pipeline or integrate frame generation into another tool.
 
+## Requirements
+
+- Node.js 22 or later
+- TypeScript 6 or later
+
 ## Installation
 
 ```sh
-pnpm add -D @jin-frame/generator-core openapi-typescript typescript
+pnpm add -D @jin-frame/generator-core openapi-typescript ts-morph typescript
 pnpm add jin-frame
 ```
 
@@ -88,6 +93,8 @@ By default, the first operation tag is used as the directory name.
 generated/
 ├── paths.d.ts
 ├── ServerHostFrame.ts
+├── securities/
+│   └── ApiKeySecurityProvider.ts
 ├── pet/
 │   ├── AddPetFrame.ts
 │   └── GetPetByIdFrame.ts
@@ -96,6 +103,7 @@ generated/
 ```
 
 Operations without tags are generated directly under `output`.
+Security provider files are generated when the document contains a supported security scheme.
 
 ## Common Options
 
@@ -128,6 +136,53 @@ await createFrames({
 
 `overrides` keys must match the OpenAPI path keys exactly. For example, if the OpenAPI path is `"/pets/{petId}"`, use the same string as the override key.
 
+## Host Strategies
+
+`createFrames()` supports three host strategies:
+
+- `string`: emits the resolved server URL directly.
+- `function`: emits the identifier provided by `hostFunctionName`. Ensure the resolver is in scope in the generated code.
+- `env-function`: emits an inline resolver based on `hostEnvVar` and `serverMapping`.
+
+```ts
+await createFrames({
+  document,
+  specTypeFilePath: "./generated/paths.d.ts",
+  output: "./generated",
+  hostStrategy: "env-function",
+  hostEnvVar: "API_ENV",
+  serverMapping: {
+    development: "https://dev.api.example.com",
+    production: "https://api.example.com",
+  },
+});
+```
+
+Relative OpenAPI server URLs are treated as path prefixes when possible.
+
+## Security Providers
+
+Provider subclasses are generated for OpenAPI `apiKey`, HTTP Bearer, and HTTP Basic security schemes. Root-level and operation-level security requirements are applied to generated frame decorators.
+
+Use `securityProviderDir` to change the default `securities` directory. Use `securityProviders` to reference an application-defined provider for a specific scheme instead of generating one.
+
+```ts
+await createFrames({
+  document,
+  specTypeFilePath: "./generated/paths.d.ts",
+  output: "./generated",
+  securityProviderDir: "auth",
+  securityProviders: {
+    oauth2: {
+      className: "AppOAuthProvider",
+      importPath: "../auth/AppOAuthProvider.js",
+    },
+  },
+});
+```
+
+Each `securityProviders` key must match a security scheme name from the OpenAPI document.
+
 ## int64
 
 Use `int64AsString` when 64-bit integer values should be handled as strings in JavaScript.
@@ -143,4 +198,4 @@ This maps OpenAPI schemas with `type: integer` and `format: int64` or `format: i
 
 ## License
 
-MIT
+[MIT](LICENSE)

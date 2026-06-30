@@ -75,12 +75,12 @@
 - [ ] Barrel file 생성
   - 그룹 import를 위해 각 tag 디렉터리에 `index.ts`를 선택적으로 생성한다.
   - 생성된 client는 직접 frame 파일을 import하는 방식으로도 계속 사용할 수 있다.
-- [ ] 상대 server URL 동작 문서화
-  - `hostStrategy: "string"`에서 상대 server URL은 가능한 경우 path prefix로 처리된다.
-  - 생성 결과에서 이 동작이 예상 밖일 수 있다면 명시적인 문서나 경고를 추가한다.
 
 ### 완료
 
+- [x] 상대 server URL 동작 문서화
+  - `hostStrategy: "string"`에서 상대 server URL은 가능한 경우 path prefix로 처리된다.
+  - generator CLI와 core 패키지 README에 동작을 명시했다.
 - [x] OpenAPI `integer` + `format: int64` string mapping
   - `--int64-as-string`은 OpenAPI `integer` schema 중 `format: int64` / `i64`를 `string`으로 매핑한다.
   - 이 매핑은 `openapi-typescript` schema transform을 통해 적용되므로, 중첩된 `ObjectBody` 필드도 생성된 `paths.d.ts` 타입에 반영된다.

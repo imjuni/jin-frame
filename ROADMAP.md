@@ -75,12 +75,12 @@
 - [ ] Barrel file generation
   - Optionally generate `index.ts` in each tag directory for grouped imports.
   - Generated clients are still usable through direct frame file imports.
-- [ ] Relative server URL behavior documentation
-  - `hostStrategy: "string"` with a relative server URL currently treats the value as a path prefix when possible.
-  - Add explicit documentation or a warning if this behavior is surprising in generated output.
 
 ### Completed
 
+- [x] Relative server URL behavior documentation
+  - `hostStrategy: "string"` with a relative server URL treats the value as a path prefix when possible.
+  - The behavior is documented in the generator CLI and core package READMEs.
 - [x] OpenAPI `integer` + `format: int64` string mapping
   - `--int64-as-string` maps OpenAPI `integer` schemas with `format: int64` / `i64` to `string`.
   - The mapping is applied through `openapi-typescript` schema transforms, so nested `ObjectBody` fields are covered by generated `paths.d.ts` types.
