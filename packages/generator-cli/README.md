@@ -72,7 +72,7 @@ CLI options take precedence over config file values.
 | `--output`, `-o` | Directory for generated files. |
 | `--type`, `-t` | Path to `paths.d.ts` for the `frame` command. |
 | `--config` | Config file path. |
-| `--host`, `-h` | Default host or endpoint host override. |
+| `--host`, `-H` | Default host or endpoint host override. |
 | `--timeout` | Default timeout or endpoint timeout override. |
 | `--retry` | Endpoint retry override. |
 | `--base-frame` | Base frame class name to generate. |

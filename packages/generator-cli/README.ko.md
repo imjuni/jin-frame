@@ -49,7 +49,7 @@ frame-cli frame ./openapi.yml \
 | `--output`, `-o` | 생성 파일을 쓸 디렉터리입니다. |
 | `--type`, `-t` | `frame` 명령에서 사용할 `paths.d.ts` 경로입니다. |
 | `--config` | 설정 파일 경로입니다. |
-| `--host`, `-h` | 기본 host 또는 endpoint별 host override입니다. |
+| `--host`, `-H` | 기본 host 또는 endpoint별 host override입니다. |
 | `--timeout` | 기본 timeout 또는 endpoint별 timeout override입니다. |
 | `--retry` | endpoint별 retry override입니다. |
 | `--base-frame` | 생성할 base frame 클래스 이름입니다. |

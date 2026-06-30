@@ -23,7 +23,7 @@ export const generatorOptionArgs = {
   },
   host: {
     type: "string",
-    alias: "h",
+    alias: "H",
     description: 'API server hostname or base URL, or endpoint override like "/pets/{petId}=https://api.example.com"',
   },
   "base-frame": {

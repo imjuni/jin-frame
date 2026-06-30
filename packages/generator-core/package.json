@@ -31,7 +31,8 @@
     "check": "biome check --config-path=biome.json .",
     "check:write": "biome check --config-path=biome.json --write .",
     "format": "biome format --config-path=biome.json --write .",
-    "format:check": "biome format --config-path=biome.json ."
+    "format:check": "biome format --config-path=biome.json .",
+    "prepublishOnly": "node prepublish.cjs"
   },
   "repository": {
     "type": "git",
