@@ -1,5 +1,11 @@
 import { describe, expect, it } from "vitest";
+import type { AuthorizationData } from "#interfaces/security/AuthorizationData";
+import type { SecurityContext } from "#interfaces/security/SecurityContext";
 import { BasicAuthProvider } from "#providers/security/BasicAuthProvider";
+
+type BasicAuthProviderConstructorInternals = {
+  handleDynamicKey: (dynamicKey: string) => SecurityContext;
+};
 
 describe("BasicAuthProvider", () => {
   it("should create provider with correct type and name", () => {
@@ -16,9 +22,9 @@ describe("BasicAuthProvider", () => {
       const provider = new BasicAuthProvider();
       expect(provider.createContext()).toEqual({});
       expect(provider.createContext(undefined)).toEqual({});
-      expect(provider.createContext(null as any)).toEqual({});
+      expect(provider.createContext(null as unknown as AuthorizationData)).toEqual({});
       expect(provider.createContext({ key: "api-key" })).toEqual({});
-      expect(provider.createContext(123 as any)).toEqual({});
+      expect(provider.createContext(123 as unknown as AuthorizationData)).toEqual({});
     });
 
     it("should apply Basic prefix to string authorization when string is provided", () => {
@@ -80,11 +86,13 @@ describe("BasicAuthProvider", () => {
 
   describe("handleDynamicKey", () => {
     it("should handle dynamic key with and without Basic prefix", () => {
-      expect((BasicAuthProvider as any).handleDynamicKey("encoded-value")).toEqual({
+      const { handleDynamicKey } = BasicAuthProvider as unknown as BasicAuthProviderConstructorInternals;
+
+      expect(handleDynamicKey("encoded-value")).toEqual({
         headers: { Authorization: "Basic encoded-value" },
       });
 
-      expect((BasicAuthProvider as any).handleDynamicKey("Basic encoded-value")).toEqual({
+      expect(handleDynamicKey("Basic encoded-value")).toEqual({
         headers: { Authorization: "Basic encoded-value" },
       });
     });

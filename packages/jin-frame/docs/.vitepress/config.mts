@@ -131,7 +131,8 @@ export default defineConfig({
   ignoreDeadLinks: true,
   markdown: {
     config: (md) => {
-      const fence = md.renderer.rules.fence!;
+      const fence =
+        md.renderer.rules.fence ?? ((tokens, idx, options, _env, self) => self.renderToken(tokens, idx, options));
       md.renderer.rules.fence = (...args) => {
         const [tokens, idx] = args;
         const token = tokens[idx];

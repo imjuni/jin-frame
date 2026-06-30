@@ -12,7 +12,7 @@ describe("flatStringMap", () => {
     const map = flatStringMap({
       name: ["ironman", "hulk"],
       age: undefined,
-    } as any);
+    });
 
     expect(map).toEqual({ name: "ironman,hulk" });
   });

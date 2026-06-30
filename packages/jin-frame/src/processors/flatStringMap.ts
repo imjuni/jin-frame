@@ -1,18 +1,16 @@
 import { stringifyExceptString } from "#tools/formatters/stringifyExceptString";
 
-export function flatStringMap(map: Record<string, string | string[]>): Record<string, string> {
+export function flatStringMap(map: Record<string, string | string[] | undefined>): Record<string, string> {
   return Object.keys(map).reduce<Record<string, string>>((aggregated, key) => {
     const values = map[key];
 
     if (values != null && Array.isArray(values)) {
-      return {
-        ...aggregated,
-        [key]: values.map((value) => stringifyExceptString(value)).join(","),
-      };
+      aggregated[key] = values.map((value) => stringifyExceptString(value)).join(",");
+      return aggregated;
     }
 
     if (values != null) {
-      return { ...aggregated, [key]: values };
+      aggregated[key] = values;
     }
 
     return aggregated;

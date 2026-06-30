@@ -442,12 +442,12 @@ describe("JinFrame", () => {
     try {
       await frame._execute();
     } catch (catched) {
-      expect(catched as JinCreateError<any, any>).toBeDefined();
+      expect(catched as JinCreateError<JinFrame<unknown, unknown>, unknown, unknown>).toBeDefined();
     }
   });
 
   it("should throw 404 not found exception when invalid url", async () => {
-    // 기본 핸들러가 모든 요청에 대해 404를 반환하므로 별도 설정 불필요
+    // The default handler returns 404 for every request.
     await expect(async () => {
       const frame = Test001PostFrame.of({
         username: "ironman",
@@ -847,7 +847,7 @@ describe("hook count either frame test", () => {
       await frame._execute();
     }).rejects.toThrowError();
 
-    // 서버 재시작
+    // Restart the server.
     retryServer.listen({ onUnhandledRequest: "bypass" });
     retryServer.use(http.post(/.*some\.api\.google\.com.*/, () => new HttpResponse("Not Found", { status: 404 })));
   });
@@ -882,7 +882,7 @@ describe("hook count either frame test", () => {
       host: "http://10.255.255.1/api/{passing}",
       timeout: 1,
       retry: { max: 2, interval: 1 },
-    }) // 라우팅되지 않는 IP로 timeout 에러 유발
+    }) // Use a non-routable IP to trigger timeout errors.
     class TimeoutRetryFrame extends JinFrame {
       @Param()
       public declare readonly passing: string;
@@ -893,18 +893,18 @@ describe("hook count either frame test", () => {
       @Body()
       public declare readonly password: string;
 
-      override _retryFail(_req: any, _prevResponse: any) {
+      override _retryFail(_req: JinRequestConfig, _prevResponse: Response) {
         hookCallCount += 1;
         console.log(`Network timeout retry hook executed: ${hookCallCount}`);
       }
 
-      override _retryException(_req: any, _prevResponse: any) {
+      override _retryException(_req: JinRequestConfig, _prevResponse: Error) {
         hookExcpetionCount += 1;
         console.log(`Network timeout retry hook executed: ${hookExcpetionCount}`);
       }
     }
 
-    // MSW 완전 중지
+    // Fully stop MSW.
     retryServer.close();
 
     await expect(async () => {

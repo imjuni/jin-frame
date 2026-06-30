@@ -1,5 +1,14 @@
 import { describe, expect, it } from "vitest";
+import type { AuthorizationData } from "#interfaces/security/AuthorizationData";
 import { ApiKeyProvider } from "#providers/security/ApiKeyProvider";
+
+type ApiKeyProviderInternals = {
+  location: "header" | "query" | "cookie" | "invalid";
+};
+
+type ApiKeyProviderConstructorInternals = {
+  extractKey: (authorization?: AuthorizationData) => string | undefined;
+};
 
 describe("ApiKeyProvider", () => {
   it("should create provider with correct type and name", () => {
@@ -51,7 +60,7 @@ describe("ApiKeyProvider", () => {
     it("should return empty context for invalid location", () => {
       const provider = new ApiKeyProvider("test", "X-API-Key");
       // Force invalid location to test default case
-      (provider as any).location = "invalid";
+      (provider as unknown as ApiKeyProviderInternals).location = "invalid";
 
       expect(provider.createContext("api-key")).toEqual({});
     });
@@ -75,10 +84,12 @@ describe("ApiKeyProvider", () => {
 
   describe("extractKey", () => {
     it("should extract key from string and object", () => {
-      expect((ApiKeyProvider as any).extractKey("test-key")).toBe("test-key");
-      expect((ApiKeyProvider as any).extractKey({ key: "test-key" })).toBe("test-key");
-      expect((ApiKeyProvider as any).extractKey({ other: "value" })).toBeUndefined();
-      expect((ApiKeyProvider as any).extractKey(null)).toBeUndefined();
+      const { extractKey } = ApiKeyProvider as unknown as ApiKeyProviderConstructorInternals;
+
+      expect(extractKey("test-key")).toBe("test-key");
+      expect(extractKey({ key: "test-key" })).toBe("test-key");
+      expect(extractKey({ other: "value" })).toBeUndefined();
+      expect(extractKey(null)).toBeUndefined();
     });
   });
 });
