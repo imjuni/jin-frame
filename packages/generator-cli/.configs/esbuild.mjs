@@ -19,5 +19,8 @@ await esbuild.build({
   format: process.env.FORMAT,
   platform: "node",
   target: "node20",
+  banner: {
+    js: "#!/usr/bin/env node\n",
+  },
   external: [...Object.keys(packageJson.dependencies), ...Object.keys(packageJson.peerDependencies)],
 });

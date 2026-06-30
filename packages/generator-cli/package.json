@@ -15,19 +15,20 @@
     "esbuild-cjs": "FORMAT=cjs node .configs/esbuild.mjs",
     "esbuild-esm": "FORMAT=esm node .configs/esbuild.mjs",
     "bundle-pack": "run-p esbuild-cjs esbuild-esm",
-    "bundle": "run-s bundle-pack",
+    "bundle": "run-s clean bundle-pack",
     "test": "vitest run --coverage",
     "lint": "pnpm run check",
     "lint-staged": "pnpm run check:write",
     "pub": "pnpm publish --registry http://localhost:8901",
     "unpub": "pnpm unpublish typescript-cli-boilerplate@$npm_package_version --registry http://localhost:8901 --force",
-    "pub:prod": "RELEASE_MODE=true pnpm publish",
+    "pub:prod": "RELEASE_MODE=true pnpm publish --access=public",
     "dd": "deps-diff md -d prod -d dev --title-list-type 'm' --deps-list-type 'm' --content-list-type 'm'",
     "biome": "biome",
     "check": "biome check --config-path=biome.json .",
     "check:write": "biome check --config-path=biome.json --write .",
     "format": "biome format --config-path=biome.json --write .",
-    "format:check": "biome format --config-path=biome.json ."
+    "format:check": "biome format --config-path=biome.json .",
+    "prepublishOnly": "node prepublish.cjs"
   },
   "repository": {
     "type": "git",
@@ -37,9 +38,19 @@
   "author": "ByungJoon Lee",
   "license": "MIT",
   "main": "dist/cjs/cli.cjs",
+  "module": "dist/esm/cli.mjs",
   "bin": {
     "frame-cli": "dist/cjs/cli.cjs"
   },
+  "exports": {
+    ".": {
+      "require": "./dist/cjs/cli.cjs",
+      "import": "./dist/esm/cli.mjs"
+    }
+  },
+  "files": [
+    "dist"
+  ],
   "imports": {
     "#builders/*.js": {
       "types": "./src/builders/*.ts",
