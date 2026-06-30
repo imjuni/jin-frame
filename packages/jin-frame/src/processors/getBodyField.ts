@@ -68,7 +68,7 @@ export function getBodyField(thisFrame: unknown, field: BodyFieldOption): unknow
 
     const childValue = dotProp.get<unknown>(processing, childAccessKey);
     const formatteds = formatEach(childValue, formatter);
-    const next: Exclude<object, null | undefined> = { ...processing };
+    const next: Exclude<object, null | undefined> = Object.assign({}, processing);
 
     dotProp.set(next, childReplaceKey, formatteds);
 

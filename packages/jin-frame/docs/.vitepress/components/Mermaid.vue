@@ -18,7 +18,7 @@ const renderMermaid = async () => {
   if (!mermaidRef.value) return;
 
   try {
-    // VitePress 테마에 따라 Mermaid 테마 설정
+    // Set Mermaid theme from the current VitePress theme.
     const theme = isDark.value ? "dark" : "default";
 
     mermaid.initialize({
@@ -28,7 +28,7 @@ const renderMermaid = async () => {
     });
 
     const decodedCode = decodeURIComponent(props.code);
-    const { svg } = await mermaid.render("mermaid-" + Date.now(), decodedCode);
+    const { svg } = await mermaid.render(`mermaid-${Date.now()}`, decodedCode);
     mermaidRef.value.innerHTML = svg;
   } catch (error) {
     console.error("Mermaid rendering error:", error);
@@ -42,7 +42,7 @@ onMounted(() => {
   renderMermaid();
 });
 
-// 테마 변경 시 다시 렌더링
+// Re-render when the theme changes.
 watch(isDark, () => {
   renderMermaid();
 });

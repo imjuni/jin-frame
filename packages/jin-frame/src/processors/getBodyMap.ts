@@ -60,7 +60,7 @@ export function getBodyMap<T extends Record<string, unknown>>(
   // Body, by contrast, separates arrays by field name so multiple arrays can coexist.
   const customArrayTypes = objectBodies.filter((item): item is unknown[] => Array.isArray(item));
   if (customArrayTypes.length > 0) {
-    return customArrayTypes.reduce<unknown[]>((merged, item) => [...merged, ...item], []);
+    return customArrayTypes.flat();
   }
   // ------------------------------------------------------------------------------------
 
