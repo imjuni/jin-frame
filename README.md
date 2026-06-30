@@ -47,6 +47,7 @@ Why `jin-frame`?
 - [validateStatus](#validatestatus)
 - [Runtime URL Override](#runtime-url-override)
 - [Naming Convention](#naming-convention)
+- [OpenAPI Generator](#openapi-generator)
 - [Requirements](#requirements)
 - [Documentation](#documentation)
 - [License](#license)
@@ -274,6 +275,20 @@ const reply = await frame._execute({
 | _(none)_ | Static methods |
 
 See the full [Naming Convention](https://imjuni.github.io/jin-frame/method/naming-convention) documentation for details.
+
+## OpenAPI Generator
+
+The generator packages create type-safe `jin-frame` request classes from Swagger/OpenAPI v2 and OpenAPI v3 documents.
+
+```sh
+pnpm add -D @jin-frame/generator-cli openapi-typescript ts-morph typescript
+pnpm add jin-frame
+
+frame-cli create ./openapi.yml --output ./generated
+```
+
+- [`@jin-frame/generator-cli`](packages/generator-cli/README.md): CLI for generating `paths.d.ts`, frames, base frames, and security providers.
+- [`@jin-frame/generator-core`](packages/generator-core/README.md): Reusable generation APIs for custom tooling and pipelines.
 
 ## Requirements
 

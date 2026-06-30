@@ -1,5 +1,22 @@
 # Changed
 
+## Generator 1.0.0
+
+### Generator CLI
+
+- Added the `frame-cli create` command to generate `paths.d.ts`, base frames, request frames, and security providers from Swagger/OpenAPI v2 and OpenAPI v3 documents.
+- Added the `frame-cli frame` command to generate frames from an existing `openapi-typescript` declaration file.
+- Added config file loading, endpoint host/timeout/retry overrides, OpenAPI TypeScript option forwarding, and `int64`-to-string mapping.
+- Added `string`, `function`, and `env-function` host strategies.
+- Added executable package output, scoped public publishing metadata, package licenses, and generator CI coverage.
+
+### Generator Core
+
+- Added reusable OpenAPI loading, validation, v2-to-v3 conversion, type generation, and frame generation APIs.
+- Added request parameter, body, response, file upload, server variable, and host generation.
+- Added generated or application-provided security providers for API key, HTTP Bearer, and HTTP Basic schemes.
+- Added root-level and operation-level OpenAPI security requirement mapping.
+
 ## 5.1.0
 
 ### New Features in 5.1.0

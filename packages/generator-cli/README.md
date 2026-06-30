@@ -4,10 +4,15 @@ CLI package for generating `jin-frame` request classes from an OpenAPI document.
 
 The CLI command name is `frame-cli`.
 
+## Requirements
+
+- Node.js 22 or later
+- TypeScript 6 or later
+
 ## Installation
 
 ```sh
-pnpm add -D @jin-frame/generator-cli
+pnpm add -D @jin-frame/generator-cli openapi-typescript ts-morph typescript
 pnpm add jin-frame
 ```
 
@@ -25,12 +30,15 @@ The generated output usually looks like this:
 generated/
 ├── paths.d.ts
 ├── ServerHostFrame.ts
+├── securities/
+│   └── ApiKeySecurityProvider.ts
 └── pet/
     ├── AddPetFrame.ts
     └── GetPetByIdFrame.ts
 ```
 
 Swagger/OpenAPI v2 documents are also supported. They are converted to OpenAPI v3 internally before generation.
+The `securities` directory is generated when the document contains a supported security scheme.
 
 ## frame
 
@@ -77,6 +85,11 @@ CLI options take precedence over config file values.
 | `--retry` | Endpoint retry override. |
 | `--base-frame` | Base frame class name to generate. |
 | `--int64-as-string` | Maps OpenAPI `integer` + `int64`/`i64` schemas to TypeScript `string`. |
+| `--host-strategy` | Host generation strategy: `string`, `function`, or `env-function`. |
+| `--host-env-var` | Environment variable used by `env-function`. Defaults to `NODE_ENV`. |
+| `--host-function-name` | Function identifier emitted by the `function` strategy. |
+| `--server-mapping` | Environment-to-server mapping as a JSON object. |
+| `--security-provider-dir` | Directory for generated security provider classes. |
 
 ## Endpoint Override
 
@@ -111,6 +124,51 @@ export default {
 
 Override keys must match the OpenAPI path keys exactly.
 
+## Host Strategy
+
+The default `string` strategy writes the resolved server URL directly into the generated frame.
+
+Use `function` when the generated frame should reference a host resolver defined by your application.
+
+```sh
+frame-cli create ./openapi.yml \
+  --output ./generated \
+  --host-strategy function \
+  --host-function-name getApiHost
+```
+
+Use `env-function` to generate an inline resolver based on an environment variable.
+
+```sh
+frame-cli create ./openapi.yml \
+  --output ./generated \
+  --host-strategy env-function \
+  --host-env-var API_ENV \
+  --server-mapping '{"development":"https://dev.api.example.com","production":"https://api.example.com"}'
+```
+
+Relative OpenAPI server URLs are treated as path prefixes when possible.
+
+## Security Providers
+
+The generator creates provider subclasses for OpenAPI `apiKey`, HTTP Bearer, and HTTP Basic security schemes. Root-level and operation-level security requirements are applied to generated frame decorators.
+
+Generated providers are written to `securities` by default. Use `--security-provider-dir` to change the directory.
+
+Custom providers can be mapped in the config file. Each key must match a security scheme name from the OpenAPI document.
+
+```ts
+export default {
+  securityProviderDir: "auth",
+  securityProviders: {
+    oauth2: {
+      className: "AppOAuthProvider",
+      importPath: "../auth/AppOAuthProvider.js",
+    },
+  },
+};
+```
+
 ## OpenAPI TypeScript Options
 
 The `create` command can pass some `openapi-typescript` options with the `oat-*` prefix.
@@ -126,4 +184,4 @@ Run `frame-cli create --help` to see the available options.
 
 ## License
 
-MIT
+[MIT](LICENSE)
