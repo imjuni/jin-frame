@@ -9,7 +9,7 @@ vi.mock("my-node-fp", () => ({
 
 describe("load", () => {
   afterEach(() => {
-    vi.restoreAllMocks();
+    vi.resetAllMocks();
   });
 
   it("should return openapi spec document object when pass yml spec file", async () => {

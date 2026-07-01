@@ -11,10 +11,15 @@
     "check:write": "biome check --write .",
     "format": "biome format --write .",
     "format:check": "biome format .",
-    "lint": "biome lint ."
+    "lint": "biome lint .",
+    "build": "turbo run build",
+    "test:hook": "turbo run test:hook",
+    "prepare": "husky"
   },
   "devDependencies": {
     "@biomejs/biome": "2.4.16",
-    "jiti": "^2.7.0"
+    "husky": "9.1.7",
+    "jiti": "^2.7.0",
+    "turbo": "^2.10.2"
   }
 }

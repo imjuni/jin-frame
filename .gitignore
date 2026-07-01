@@ -137,3 +137,4 @@ git-short.sh
 **/CLAUDE.local.md
 .aider*
 .pnpm-store
+.turbo
