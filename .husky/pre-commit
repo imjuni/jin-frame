@@ -1,0 +1,2 @@
+pnpm run check
+pnpm exec turbo run test:hook

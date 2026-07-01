@@ -17,6 +17,7 @@
     "bundle-pack": "run-p esbuild-cjs esbuild-esm",
     "bundle": "run-s clean bundle-pack",
     "test": "vitest run --coverage",
+    "test:hook": "vitest run --coverage --silent",
     "lint": "pnpm run check",
     "lint-staged": "pnpm run check:write",
     "pub": "pnpm publish --registry http://localhost:8901",

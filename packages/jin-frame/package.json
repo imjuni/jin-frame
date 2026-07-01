@@ -4,8 +4,7 @@
   "description": "Reusable HTTP API request definition library",
   "packageManager": "pnpm@10.16.0",
   "scripts": {
-    "build:ne": "tsc --noEmit --incremental --project tsconfig.prod.json",
-    "build": "pnpm run clean && tsc --incremental --project tsconfig.prod.json",
+    "build": "tsc --noEmit --incremental --project tsconfig.prod.json",
     "dts": "tsc -p tsconfig.dts.json",
     "dts-alias": "tsc-alias -p tsconfig.dts.json",
     "dts-gen": "rollup --config .configs/rollup.config.mjs",
@@ -23,6 +22,7 @@
     "lint:silent": "pnpm run check",
     "lint-staged": "pnpm run check:write",
     "test:only": "vitest run --coverage",
+    "test:hook": "vitest run --coverage --silent --exclude src/__tests__/example.test.ts",
     "test:silent": "vitest run --coverage --silent",
     "test": "vitest run --coverage",
     "swd": "swd",
