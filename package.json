@@ -13,6 +13,7 @@
     "format:check": "biome format .",
     "lint": "biome lint .",
     "build": "turbo run build",
+    "bundle": "turbo run bundle",
     "test:hook": "turbo run test:hook",
     "prepare": "husky"
   },

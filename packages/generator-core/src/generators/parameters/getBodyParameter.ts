@@ -31,7 +31,7 @@ export function getBodyParameter(params: IGetBodyParameterProps): IGetBodyParame
     const fileSchema = isFileSchema(mediaType?.schema);
 
     if (fileSchema.isFile) {
-      const decorators = getBodyDecorator("ObjectBody");
+      const decorators = getBodyDecorator("Body");
       const property: IPropertyData = {
         decorators,
         docs: description,

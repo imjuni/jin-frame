@@ -4,6 +4,18 @@ OpenAPI 문서에서 `jin-frame` 요청 클래스를 생성하기 위한 core �
 
 `@jin-frame/generator-cli`는 이 패키지를 사용해 CLI 입력과 설정 파일을 처리합니다. 직접 생성 파이프라인을 구성하거나 별도 도구에 붙이고 싶다면 `generator-core`를 사용합니다.
 
+## 패키지 형식
+
+`@jin-frame/generator-core`는 ESM-only 패키지입니다. ESM `import`를 사용하며 CommonJS `require()`는 지원하지 않습니다.
+
+배포 패키지는 ESM runtime bundle과 TypeScript 타입 선언을 포함합니다.
+
+```text
+dist/
+├── esm/index.mjs
+└── types/index.d.ts
+```
+
 ## 요구사항
 
 - Node.js 22 이상

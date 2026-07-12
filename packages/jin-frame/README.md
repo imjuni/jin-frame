@@ -55,7 +55,7 @@ Why `jin-frame`?
 | Version | HTTP Client | Notes |
 |---------|-------------|-------|
 | < 5.0   | Axios       | Requires `axios` as a peer dependency |
-| >= 5.0  | native `fetch` | No HTTP client dependency; Node.js >= 22 required |
+| >= 5.0  | native `fetch` | No HTTP client dependency; Node.js >= 20 required |
 
 ## Install
 
@@ -337,7 +337,7 @@ See the full [Naming Convention](https://imjuni.github.io/jin-frame/method/namin
 
 ## Requirements
 
-- Node.js >= 22
+- Node.js >= 20
 - TypeScript >= 5.0 (tested up to 6.0)
 - `experimentalDecorators` and `emitDecoratorMetadata` enabled in `tsconfig.json`
 

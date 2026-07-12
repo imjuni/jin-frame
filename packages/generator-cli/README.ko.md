@@ -4,6 +4,15 @@ OpenAPI 문서에서 `jin-frame` 요청 클래스를 생성하는 CLI 패키지�
 
 CLI 실행 이름은 `frame-cli`입니다.
 
+## 패키지 형식
+
+`@jin-frame/generator-cli`는 실행 파일 전용 패키지입니다. ESM 실행 파일 `frame-cli`를 제공하며 라이브러리 API나 TypeScript 타입 선언은 제공하지 않습니다.
+
+```text
+dist/
+└── cli.mjs
+```
+
 ## 요구사항
 
 - Node.js 22 이상

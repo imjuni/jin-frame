@@ -8,6 +8,10 @@
     "jin-frame#build": {
       "outputs": []
     },
+    "bundle": {
+      "dependsOn": ["^bundle"],
+      "outputs": ["dist/**"]
+    },
     "test:hook": {
       "dependsOn": ["build"],
       "outputs": ["coverage/**"]

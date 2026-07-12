@@ -140,7 +140,7 @@ Create a new pet in the store`,
       {
         decorator: "Body",
         property: {
-          decorators: [{ name: "ObjectBody", arguments: [] }],
+          decorators: [{ name: "Body", arguments: [] }],
           docs: [],
           name: "body",
           type: "JinFile",

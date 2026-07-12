@@ -16,6 +16,8 @@ await esbuild.build({
   minify: true,
   outfile: process.env.FORMAT === "cjs" ? "dist/cjs/index.cjs" : "dist/esm/index.mjs",
   format: process.env.FORMAT,
+  platform: "node",
+  target: "node20",
   external: [
     "axios",
     "fast-safe-stringify",

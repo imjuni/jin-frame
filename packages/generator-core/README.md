@@ -4,6 +4,18 @@ Core package for generating `jin-frame` request classes from an OpenAPI document
 
 `@jin-frame/generator-cli` uses this package internally. Use `generator-core` directly when you want to build a custom generation pipeline or integrate frame generation into another tool.
 
+## Package Format
+
+`@jin-frame/generator-core` is an ESM-only package. Use ESM `import`; CommonJS `require()` is not supported.
+
+The published package contains the ESM runtime bundle and TypeScript declarations:
+
+```text
+dist/
+├── esm/index.mjs
+└── types/index.d.ts
+```
+
 ## Requirements
 
 - Node.js 22 or later
