@@ -6,16 +6,20 @@
 
 - Added the `frame-cli create` command to generate `paths.d.ts`, base frames, request frames, and security providers from Swagger/OpenAPI v2 and OpenAPI v3 documents.
 - Added the `frame-cli frame` command to generate frames from an existing `openapi-typescript` declaration file.
+- Published the CLI as an ESM executable-only package without a library API or declaration bundle.
 - Added config file loading, endpoint host/timeout/retry overrides, OpenAPI TypeScript option forwarding, and `int64`-to-string mapping.
 - Added `string`, `function`, and `env-function` host strategies.
 - Added executable package output, scoped public publishing metadata, package licenses, and generator CI coverage.
+- Fixed octet-stream generation to emit and import the `Body` decorator consistently.
 
 ### Generator Core
 
 - Added reusable OpenAPI loading, validation, v2-to-v3 conversion, type generation, and frame generation APIs.
+- Published the core library as ESM-only with bundled TypeScript declarations.
 - Added request parameter, body, response, file upload, server variable, and host generation.
 - Added generated or application-provided security providers for API key, HTTP Bearer, and HTTP Basic schemes.
 - Added root-level and operation-level OpenAPI security requirement mapping.
+- Normalized CommonJS validator interop for the ESM runtime bundle.
 
 ## 5.1.0
 
@@ -24,6 +28,7 @@
 - **Runtime URL overrides in `JinFrameRequestConfig`**: `_execute()` / `_create()` can now override `host`, `pathPrefix`, and `path` at request time.
   - This makes it possible to reuse the same frame class across environments, tenants, or server component flows without rebuilding the frame definition.
   - Runtime URL overrides are covered by `AbstractJinFrame` tests.
+- **Node.js 20 compatibility**: `jin-frame` runtime bundles and type-checking target Node.js 20, with dedicated CI coverage.
 
 ## 5.0.4
 

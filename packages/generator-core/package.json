@@ -13,9 +13,8 @@
     "dts-gen": "rollup --config .configs/rollup.config.mjs",
     "dts-pack": "run-s dts dts-alias dts-gen dts-rm",
     "dts-rm": "rimraf dist/types/origin",
-    "esbuild-cjs": "FORMAT=cjs node .configs/esbuild.mjs",
-    "esbuild-esm": "FORMAT=esm node .configs/esbuild.mjs",
-    "bundle-pack": "run-p esbuild-cjs esbuild-esm dts-pack",
+    "esbuild-esm": "node .configs/esbuild.mjs",
+    "bundle-pack": "run-p esbuild-esm dts-pack",
     "bundle": "run-s clean ctix bundle-pack ctix-rm",
     "build": "tsc --incremental --noEmit --project tsconfig.json --tsBuildInfoFile .tsbuildinfo",
     "swd": "swd",
@@ -27,13 +26,14 @@
     "lint-staged": "pnpm run check:write",
     "pub": "pnpm publish --registry http://localhost:8901",
     "unpub": "pnpm unpublish typescript-cli-boilerplate@$npm_package_version --registry http://localhost:8901 --force",
-    "pub:prod": "RELEASE_MODE=true pnpm publish",
+    "pub:prod": "RELEASE_MODE=true pnpm publish --access=public",
     "dd": "deps-diff md -d prod -d dev --title-list-type 'm' --deps-list-type 'm' --content-list-type 'm'",
     "biome": "biome",
     "check": "biome check --config-path=biome.json .",
     "check:write": "biome check --config-path=biome.json --write .",
     "format": "biome format --config-path=biome.json --write .",
     "format:check": "biome format --config-path=biome.json .",
+    "prepack": "run-s bundle",
     "prepublishOnly": "node prepublish.cjs"
   },
   "repository": {
@@ -43,8 +43,7 @@
   "keywords": [],
   "author": "ByungJoon Lee",
   "license": "MIT",
-  "main": "dist/cjs/index.cjs",
-  "module": "dist/esm/index.mjs",
+  "main": "dist/esm/index.mjs",
   "types": "dist/types/index.d.ts",
   "imports": {
     "#generators/*.js": {
@@ -74,16 +73,14 @@
   },
   "exports": {
     ".": {
-      "require": {
-        "types": "./dist/types/index.d.ts",
-        "default": "./dist/cjs/index.cjs"
-      },
-      "import": {
-        "types": "./dist/types/index.d.ts",
-        "default": "./dist/esm/index.mjs"
-      }
+      "types": "./dist/types/index.d.ts",
+      "import": "./dist/esm/index.mjs",
+      "default": "./dist/esm/index.mjs"
     }
   },
+  "files": [
+    "dist"
+  ],
   "bugs": {
     "url": "https://github.com/imjuni/jin-frame/issues"
   },

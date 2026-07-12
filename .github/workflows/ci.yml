@@ -30,15 +30,30 @@ jobs:
           node-version: ${{ matrix.node-version }}
           cache: 'pnpm'
       - run: pnpm i
-      - run: pnpm --filter jin-frame run build
-      - run: pnpm --filter jin-frame run test
-      - run: pnpm --filter generator-core run bundle
-      - run: pnpm --filter generator-core run test
-      - run: pnpm --filter generator-cli run build
-      - run: pnpm --filter generator-cli run bundle
-      - run: pnpm --filter generator-cli run test
+      - run: pnpm run check
+      - run: pnpm run build
+      - run: pnpm run test:hook
+      - run: pnpm run bundle
       - name: Upload coverage to Codecov
         if: matrix.node-version == '22.x'
         uses: codecov/codecov-action@v5
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
+
+  jin-frame-node20:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+      - uses: pnpm/action-setup@v3
+        with:
+          version: 10.16.0
+      - name: Use Node.js 20.x
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20.x
+          cache: 'pnpm'
+      - run: pnpm i
+      - run: pnpm --filter jin-frame run build
+      - run: pnpm --filter jin-frame run test:hook
+      - run: pnpm --filter jin-frame run bundle

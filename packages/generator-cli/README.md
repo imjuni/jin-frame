@@ -4,6 +4,15 @@ CLI package for generating `jin-frame` request classes from an OpenAPI document.
 
 The CLI command name is `frame-cli`.
 
+## Package Format
+
+`@jin-frame/generator-cli` is an executable-only package. It publishes the ESM executable `frame-cli` and does not expose a library API or TypeScript declarations.
+
+```text
+dist/
+└── cli.mjs
+```
+
 ## Requirements
 
 - Node.js 22 or later

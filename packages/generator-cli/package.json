@@ -10,12 +10,9 @@
     "clean": "rimraf dist",
     "dev": "tsx src/cli.ts",
     "debug": "tsx --inspect-brk src/cli.ts",
-    "prebuild": "pnpm run clean",
     "build": "tsc --incremental --noEmit --project tsconfig.json --tsBuildInfoFile .tsbuildinfo",
-    "esbuild-cjs": "FORMAT=cjs node .configs/esbuild.mjs",
-    "esbuild-esm": "FORMAT=esm node .configs/esbuild.mjs",
-    "bundle-pack": "run-p esbuild-cjs esbuild-esm",
-    "bundle": "run-s clean bundle-pack",
+    "esbuild-esm": "node .configs/esbuild.mjs",
+    "bundle": "run-s clean esbuild-esm",
     "test": "vitest run --coverage",
     "test:hook": "vitest run --coverage --silent",
     "lint": "pnpm run check",
@@ -29,6 +26,7 @@
     "check:write": "biome check --config-path=biome.json --write .",
     "format": "biome format --config-path=biome.json --write .",
     "format:check": "biome format --config-path=biome.json .",
+    "prepack": "run-s bundle",
     "prepublishOnly": "node prepublish.cjs"
   },
   "repository": {
@@ -38,16 +36,8 @@
   "keywords": [],
   "author": "ByungJoon Lee",
   "license": "MIT",
-  "main": "dist/cjs/cli.cjs",
-  "module": "dist/esm/cli.mjs",
   "bin": {
-    "frame-cli": "dist/cjs/cli.cjs"
-  },
-  "exports": {
-    ".": {
-      "require": "./dist/cjs/cli.cjs",
-      "import": "./dist/esm/cli.mjs"
-    }
+    "frame-cli": "dist/cli.mjs"
   },
   "files": [
     "dist"
