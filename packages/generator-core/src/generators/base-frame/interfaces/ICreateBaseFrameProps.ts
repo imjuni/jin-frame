@@ -4,6 +4,7 @@ export interface ICreateBaseFrameProps {
   output: string;
   host?: string | (() => string);
   hostCode?: string;
+  hostFunctionImport?: string;
   pathPrefix?: string | (() => string);
   pathPrefixCode?: string;
   name: string;

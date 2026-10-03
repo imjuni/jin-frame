@@ -59,6 +59,10 @@ export const generatorOptionArgs = {
     type: "string",
     description: "Custom function name for host resolution (when using function)",
   },
+  "host-function-import": {
+    type: "string",
+    description: "Module specifier that exports the custom host resolver function",
+  },
   "server-mapping": {
     type: "string",
     description: "Environment to server URL mapping as JSON string",

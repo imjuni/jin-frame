@@ -78,6 +78,7 @@ frame-cli frame ./openapi.yml \
 | `--host-strategy` | Host 생성 전략입니다: `string`, `function`, `env-function`. |
 | `--host-env-var` | `env-function`이 사용할 환경 변수입니다. 기본값은 `NODE_ENV`입니다. |
 | `--host-function-name` | `function` 전략이 생성 코드에 사용할 함수 식별자입니다. |
+| `--host-function-import` | `function` 전략의 resolver를 가져올 모듈 경로입니다. |
 | `--server-mapping` | 환경과 server URL의 매핑을 나타내는 JSON 객체입니다. |
 | `--security-provider-dir` | 생성할 security provider 클래스의 디렉터리입니다. |
 
@@ -145,7 +146,8 @@ override key는 OpenAPI 문서의 path key와 동일해야 합니다.
 frame-cli create ./openapi.yml \
   --output ./generated \
   --host-strategy function \
-  --host-function-name getApiHost
+  --host-function-name getApiHost \
+  --host-function-import ./apiHost.js
 ```
 
 환경 변수에 따라 host를 선택하는 inline resolver를 생성하려면 `env-function` 전략을 사용합니다.
@@ -159,6 +161,9 @@ frame-cli create ./openapi.yml \
 ```
 
 상대 경로 형태의 OpenAPI server URL은 가능한 경우 path prefix로 처리합니다.
+
+생성 파일은 전체 결과의 경로와 충돌을 검증한 뒤 임시 위치에서 준비하여 반영합니다. 이전 실행의 manifest에
+기록된 파일 중 더 이상 생성되지 않는 파일은 정리하며, 사용자가 직접 만든 파일은 삭제하지 않습니다.
 
 ## Security provider
 

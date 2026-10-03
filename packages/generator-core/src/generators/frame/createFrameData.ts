@@ -183,6 +183,13 @@ export function createFrameData(params: ICreateFrameProps): IFrameData {
           },
         ];
 
+  if (params.baseFrame == null && params.hostFunctionImport != null && params.hostCode != null) {
+    const moduleSpecifier = params.hostFunctionImport.startsWith(".")
+      ? dotRelative(safePathJoin(params.output, tag), safePathJoin(params.output, params.hostFunctionImport))
+      : params.hostFunctionImport;
+    imports.push({ moduleSpecifier, namedImports: [params.hostCode] });
+  }
+
   imports.push(
     ...securityProviders.map((provider) => ({
       moduleSpecifier:

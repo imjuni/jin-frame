@@ -21,7 +21,7 @@ export function extractFrameEndpoints({
   securityProviders,
 }: IExtractFrameEndpointsParams): IFrameEndpoint[] {
   const paths = document.paths ?? {};
-  const methods: THttpMethod[] = ["get", "post", "put", "delete", "patch", "head", "options"];
+  const methods: THttpMethod[] = ["get", "post", "put", "delete", "patch", "head", "options", "trace"];
 
   return Object.keys(paths).flatMap((pathKey) => {
     const apiPath = paths[pathKey];
@@ -40,6 +40,7 @@ export function extractFrameEndpoints({
           output: params.output,
           host,
           hostCode,
+          hostFunctionImport: params.hostStrategy === "function" ? params.hostFunctionImport : undefined,
           hostOverride: params.overrides?.hosts?.[pathKey],
           baseFrame: params.baseFrame,
           pathKey,

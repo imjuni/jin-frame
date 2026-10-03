@@ -1,9 +1,8 @@
-import fs from "node:fs";
 import { createFrames, load, safePathJoin } from "@jin-frame/generator-core";
 import type { CommandContext } from "citty";
 import consola, { LogLevels, type LogType } from "consola";
-import pathe from "pathe";
 import { resolveOpenapiDocument } from "#commands/resolveOpenapiDocument.js";
+import { writeGeneratedFiles } from "#commands/writeGeneratedFiles.js";
 import type { frameCommandArgs } from "#schema/args/frameCommandArgs.js";
 import { frameCommandArgvSchema } from "#schema/args/frameCommandArgvSchema.js";
 import { loadGeneratorCommandInput } from "#schema/args/loadGeneratorCommandInput.js";
@@ -28,8 +27,6 @@ export const frameCommandRun = async ({ args }: CommandContext<typeof frameComma
   consola.debug(`Writing to ${params.output}`);
 
   const specTypeFilePath = params.type;
-  await fs.promises.mkdir(params.output, { recursive: true });
-
   const frames = await createFrames({
     document: converted.document,
     specTypeFilePath,
@@ -42,6 +39,7 @@ export const frameCommandRun = async ({ args }: CommandContext<typeof frameComma
     hostStrategy: params.hostStrategy,
     hostEnvVar: params.hostEnvVar,
     hostFunctionName: params.hostFunctionName,
+    hostFunctionImport: params.hostFunctionImport,
     serverMapping: params.serverMapping,
     securityProviderDir: params.securityProviderDir,
     securityProviders: params.securityProviders,
@@ -53,15 +51,12 @@ export const frameCommandRun = async ({ args }: CommandContext<typeof frameComma
   });
   consola.debug(`Frames: ${frames.length}`);
 
-  await Promise.all(
-    frames.map(async (frame) => {
-      const dirPath = safePathJoin(params.output, frame.frame.tag);
-      const filePath = pathe.join(dirPath, frame.frame.filePath);
-
-      consola.debug(`Create directory: ${dirPath}`);
-      await fs.promises.mkdir(dirPath, { recursive: true });
-      consola.debug(`Writing to ${filePath}`);
-      await fs.promises.writeFile(filePath, frame.frame.source);
-    }),
+  await writeGeneratedFiles(
+    params.output,
+    frames.map((frame) => ({
+      relativePath: safePathJoin(frame.frame.tag, frame.frame.filePath),
+      source: frame.frame.source,
+    })),
+    { preservePreviousPaths: ["paths.d.ts"] },
   );
 };

@@ -52,4 +52,28 @@ describe("extractFrameEndpoints", () => {
     });
     expect(endpoints.at(0)?.operation.parameters).toHaveLength(1);
   });
+
+  it("should extract TRACE operations", () => {
+    const endpoints = extractFrameEndpoints({
+      params: {
+        specTypeFilePath: "/a/b/paths.d.ts",
+        output: "/a/b",
+        useCodeFence: false,
+        document: {} as OpenAPIV3.Document,
+      },
+      document: {
+        openapi: "3.0.0",
+        info: { title: "Test API", version: "1.0.0" },
+        paths: {
+          "/diagnostics": {
+            trace: { responses: { "200": { description: "Success" } } },
+          },
+        },
+      },
+      host: "https://api.example.com",
+    });
+
+    expect(endpoints).toHaveLength(1);
+    expect(endpoints.at(0)?.method).toBe("trace");
+  });
 });

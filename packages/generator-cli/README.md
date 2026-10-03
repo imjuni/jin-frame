@@ -102,6 +102,7 @@ CLI options take precedence over config file values.
 | `--host-strategy` | Host generation strategy: `string`, `function`, or `env-function`. |
 | `--host-env-var` | Environment variable used by `env-function`. Defaults to `NODE_ENV`. |
 | `--host-function-name` | Function identifier emitted by the `function` strategy. |
+| `--host-function-import` | Module specifier that exports the resolver used by `function` strategy. |
 | `--server-mapping` | Environment-to-server mapping as a JSON object. |
 | `--security-provider-dir` | Directory for generated security provider classes. |
 
@@ -148,7 +149,8 @@ Use `function` when the generated frame should reference a host resolver defined
 frame-cli create ./openapi.yml \
   --output ./generated \
   --host-strategy function \
-  --host-function-name getApiHost
+  --host-function-name getApiHost \
+  --host-function-import ./apiHost.js
 ```
 
 Use `env-function` to generate an inline resolver based on an environment variable.
@@ -162,6 +164,9 @@ frame-cli create ./openapi.yml \
 ```
 
 Relative OpenAPI server URLs are treated as path prefixes when possible.
+
+Generated paths and collisions are validated before files are staged and applied. A manifest removes files that became
+stale after a later generation while preserving files that were not created by the CLI.
 
 ## Security Providers
 

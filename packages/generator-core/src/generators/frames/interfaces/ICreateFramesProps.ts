@@ -14,6 +14,7 @@ export interface ICreateFramesProps extends ISecurityProviderOptions {
   hostStrategy?: "string" | "function" | "env-function";
   hostEnvVar?: string;
   hostFunctionName?: string;
+  hostFunctionImport?: string;
   serverMapping?: Record<string, string>;
   overrides?: IFrameOverrides;
 }
