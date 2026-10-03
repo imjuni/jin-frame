@@ -22,7 +22,13 @@ export function createBaseFrameData(params: ICreateBaseFrameProps): IBaseFrameDa
         moduleSpecifier: "jin-frame",
         namedImports: ["Get", ...(serverVariables.length > 0 ? ["Param"] : []), "JinFrame", "Timeout"],
       },
-    ],
+      params.hostFunctionImport != null
+        ? {
+            moduleSpecifier: params.hostFunctionImport,
+            namedImports: [params.hostCode ?? "getApiHost"],
+          }
+        : undefined,
+    ].filter((entry) => entry != null),
     typeParameters: [
       {
         name: "SUCCESS",

@@ -38,6 +38,7 @@ export function createFramePipeline({
           output: params.output,
           host: context.serverFrameEndpoint.host,
           hostCode: context.serverFrameEndpoint.hostCode,
+          hostFunctionImport: params.hostStrategy === "function" ? params.hostFunctionImport : undefined,
           pathPrefix: context.serverFrameEndpoint.pathPrefix,
           serverVariables: context.serverFrameEndpoint.serverVariables,
           name: params.baseFrame,

@@ -1,3 +1,4 @@
+import { isIdentifierName } from "@babel/helper-validator-identifier";
 import { z } from "zod";
 import {
   endpointOverridesSchema,
@@ -32,6 +33,7 @@ export const normalizeGeneratorOptionInput = (value: unknown) => {
     hostStrategy: record["host-strategy"] ?? record.hostStrategy,
     hostEnvVar: record["host-env-var"] ?? record.hostEnvVar,
     hostFunctionName: record["host-function-name"] ?? record.hostFunctionName,
+    hostFunctionImport: record["host-function-import"] ?? record.hostFunctionImport,
     serverMapping: record["server-mapping"] ?? record.serverMapping,
     securityProviderDir: record["security-provider-dir"] ?? record.securityProviderDir,
     host: host.rest ?? (host.hasValues ? undefined : record.host),
@@ -57,7 +59,12 @@ export const generatorOptionSchema = z.object({
   int64AsString: z.boolean().default(false),
   hostStrategy: z.enum(["string", "function", "env-function"]).default("string"),
   hostEnvVar: z.string().min(1).default("NODE_ENV"),
-  hostFunctionName: z.string().min(1).default("getApiHost"),
+  hostFunctionName: z
+    .string()
+    .min(1)
+    .refine((value) => isIdentifierName(value), "Host function name must be a valid TypeScript identifier")
+    .default("getApiHost"),
+  hostFunctionImport: z.string().min(1).optional(),
   serverMapping: z
     .preprocess((value) => {
       if (typeof value !== "string") {

@@ -20,4 +20,6 @@ export type THttpMethod =
   | "unlink"
   | "UNLINK"
   | "search"
-  | "SEARCH";
+  | "SEARCH"
+  | "trace"
+  | "TRACE";

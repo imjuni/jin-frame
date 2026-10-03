@@ -124,6 +124,41 @@ describe("Host Strategy Integration Test", () => {
       expect(frames.at(0)?.frame.source).toContain("getApiEndpoint");
     });
 
+    it("should import a configured host resolver function", async () => {
+      const frames = await createFrames({
+        specTypeFilePath: "/test/spec.d.ts",
+        output: "/test/output",
+        useCodeFence: false,
+        document: mockOpenApiDoc,
+        hostStrategy: "function",
+        hostFunctionName: "getApiEndpoint",
+        hostFunctionImport: "@/config/apiHost",
+      });
+
+      expect(frames.at(0)?.frame.source).toContain('import { getApiEndpoint } from "@/config/apiHost";');
+    });
+
+    it("should resolve a relative host resolver import from tagged frames", async () => {
+      const documentWithTag = structuredClone(mockOpenApiDoc);
+      const operation = documentWithTag.paths["/users"]?.get;
+      if (operation != null) {
+        operation.tags = ["users"];
+      }
+
+      const frames = await createFrames({
+        specTypeFilePath: "/test/spec.d.ts",
+        output: "/test/output",
+        useCodeFence: false,
+        baseFrame: undefined,
+        document: documentWithTag,
+        hostStrategy: "function",
+        hostFunctionName: "getApiEndpoint",
+        hostFunctionImport: "./apiHost.js",
+      });
+
+      expect(frames.at(0)?.frame.source).toContain('import { getApiEndpoint } from "../apiHost.js";');
+    });
+
     it("should create frames with env-function host strategy", async () => {
       const frames = await createFrames({
         specTypeFilePath: "/test/spec.d.ts",

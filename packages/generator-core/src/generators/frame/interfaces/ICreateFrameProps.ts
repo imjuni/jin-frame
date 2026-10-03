@@ -9,6 +9,7 @@ export interface ICreateFrameProps {
   output: string;
   host: string | (() => string);
   hostCode?: string;
+  hostFunctionImport?: string;
   hostOverride?: string;
   pathKey: string;
   operation: OpenAPIV3.OperationObject;

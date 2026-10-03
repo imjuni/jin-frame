@@ -20,4 +20,6 @@ export type Method =
   | "unlink"
   | "UNLINK"
   | "SEARCH"
-  | "search";
+  | "search"
+  | "trace"
+  | "TRACE";

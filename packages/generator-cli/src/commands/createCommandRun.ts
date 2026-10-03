@@ -1,9 +1,9 @@
-import fs from "node:fs";
 import { createFrames, createOpenapiTs, load, renderOpenapiTs, safePathJoin } from "@jin-frame/generator-core";
 import type { CommandContext } from "citty";
 import consola, { LogLevels, type LogType } from "consola";
 import pathe from "pathe";
 import { resolveOpenapiDocument } from "#commands/resolveOpenapiDocument.js";
+import { writeGeneratedFiles } from "#commands/writeGeneratedFiles.js";
 import type { createCommandArgs } from "#schema/args/createCommandArgs.js";
 import { createCommandArgvSchema } from "#schema/args/createCommandArgvSchema.js";
 import { loadGeneratorCommandInput } from "#schema/args/loadGeneratorCommandInput.js";
@@ -34,9 +34,6 @@ export const createCommandRun = async ({ args }: CommandContext<typeof createCom
   consola.debug(`Writing to ${params.output}`);
   const specFilePath = pathe.join(params.output, "paths.d.ts");
 
-  await fs.promises.mkdir(params.output, { recursive: true });
-  await fs.promises.writeFile(specFilePath, specSourceCode);
-
   const frames = await createFrames({
     document: converted.document,
     specTypeFilePath: specFilePath,
@@ -49,6 +46,7 @@ export const createCommandRun = async ({ args }: CommandContext<typeof createCom
     hostStrategy: params.hostStrategy,
     hostEnvVar: params.hostEnvVar,
     hostFunctionName: params.hostFunctionName,
+    hostFunctionImport: params.hostFunctionImport,
     serverMapping: params.serverMapping,
     securityProviderDir: params.securityProviderDir,
     securityProviders: params.securityProviders,
@@ -60,15 +58,11 @@ export const createCommandRun = async ({ args }: CommandContext<typeof createCom
   });
   consola.debug(`Frames: ${frames.length}`);
 
-  await Promise.all(
-    frames.map(async (frame) => {
-      const dirPath = safePathJoin(params.output, frame.frame.tag);
-      const filePath = pathe.join(dirPath, frame.frame.filePath);
-
-      consola.debug(`Create directory: ${dirPath}`);
-      await fs.promises.mkdir(dirPath, { recursive: true });
-      consola.debug(`Writing to ${filePath}`);
-      await fs.promises.writeFile(filePath, frame.frame.source);
-    }),
-  );
+  await writeGeneratedFiles(params.output, [
+    { relativePath: "paths.d.ts", source: specSourceCode },
+    ...frames.map((frame) => ({
+      relativePath: safePathJoin(frame.frame.tag, frame.frame.filePath),
+      source: frame.frame.source,
+    })),
+  ]);
 };
