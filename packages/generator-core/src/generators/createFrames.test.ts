@@ -1,4 +1,4 @@
-import type { OpenAPIV3 } from "openapi-types";
+import type { OpenAPIV3, OpenAPIV3_1 } from "openapi-types";
 import { describe, expect, it } from "vitest";
 import { createFrames } from "#generators/createFrames.js";
 
@@ -16,6 +16,29 @@ describe("createFrames", async () => {
       document,
     });
     expect(frames.length).toBeGreaterThan(0);
+  });
+
+  it("should generate frames from an OpenAPI 3.1 document", async () => {
+    const frames = await createFrames({
+      specTypeFilePath: "/a/b/paths.d.ts",
+      output: "/a/b",
+      useCodeFence: false,
+      document: {
+        openapi: "3.1.0",
+        info: { title: "OpenAPI 3.1 API", version: "1.0.0" },
+        servers: [{ url: "https://api.example.com" }],
+        paths: {
+          "/values": {
+            get: {
+              operationId: "getValues",
+              responses: { "2XX": { description: "Success" } },
+            },
+          },
+        },
+      } satisfies OpenAPIV3_1.Document,
+    });
+
+    expect(frames.some((frame) => frame.frame.filePath === "GetValuesFrame.ts")).toBe(true);
   });
 
   it("should include path-level parameters in operation frames", async () => {

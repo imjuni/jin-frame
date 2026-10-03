@@ -68,4 +68,11 @@ describe("isFileSchema", () => {
 
     expect(result).toEqual({ isArray: false, isFile: false });
   });
+
+  it("should detect nullable OpenAPI 3.1 file schemas", () => {
+    expect(isFileSchema({ type: ["string", "null"], format: "binary" } as never)).toEqual({
+      isArray: false,
+      isFile: true,
+    });
+  });
 });

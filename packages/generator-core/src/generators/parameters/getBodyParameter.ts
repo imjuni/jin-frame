@@ -84,7 +84,12 @@ export function getBodyParameter(params: IGetBodyParameterProps): IGetBodyParame
             type: isFile.isArray ? "JinFile[]" : "JinFile",
             hasDeclareKeyword: true,
             isReadonly: true,
-            hasQuestionToken: !(requestBody.required ?? false),
+            hasQuestionToken: !(
+              requestBody.required === true &&
+              schema != null &&
+              "required" in schema &&
+              schema.required?.includes(name)
+            ),
           },
         };
 

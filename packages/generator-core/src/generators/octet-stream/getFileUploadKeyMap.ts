@@ -9,7 +9,10 @@ export function getFileUploadKeyMap(
   const multipartFormData = requestBody?.content?.["multipart/form-data"];
   const schema = multipartFormData?.schema as OpenAPIV3.SchemaObject | undefined;
 
-  if (schema == null || schema.type !== "object" || schema.properties == null) {
+  const schemaTypes = Array.isArray((schema as { type?: unknown })?.type)
+    ? (schema as unknown as { type: string[] }).type
+    : [(schema as { type?: string } | undefined)?.type];
+  if (schema == null || !schemaTypes.includes("object") || schema.properties == null) {
     return new Map();
   }
 

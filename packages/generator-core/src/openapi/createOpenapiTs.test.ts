@@ -90,4 +90,20 @@ describe("createOpenapiTs", () => {
     expect(source).toContain("id: number;");
     expect(source).toContain("legacyId?: number;");
   });
+
+  it("should map nullable OpenAPI 3.1 int64 schemas to nullable strings", async () => {
+    const source = renderOpenapiTs(
+      await createOpenapiTs(
+        {
+          openapi: "3.1.0",
+          info: { title: "Test API", version: "1.0.0" },
+          paths: {},
+          components: { schemas: { NullableId: { type: ["integer", "null"], format: "int64" } } },
+        },
+        { int64AsString: true, silent: true },
+      ),
+    );
+
+    expect(source).toContain("NullableId: string | null;");
+  });
 });

@@ -1,5 +1,5 @@
 import type { OpenAPISchemaValidatorResult } from "openapi-schema-validator";
-import type { OpenAPIV2, OpenAPIV3 } from "openapi-types";
+import type { OpenAPIV2, OpenAPIV3, OpenAPIV3_1 } from "openapi-types";
 
 export type TValidateResult =
   | {
@@ -11,7 +11,7 @@ export type TValidateResult =
   | {
       valid: true;
       version: 3;
-      document: OpenAPIV3.Document;
+      document: OpenAPIV3.Document | OpenAPIV3_1.Document;
       errors: OpenAPISchemaValidatorResult["errors"];
     }
   | {

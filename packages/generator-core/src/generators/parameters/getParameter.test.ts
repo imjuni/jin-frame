@@ -84,6 +84,32 @@ describe("getParameter", () => {
     expect(result?.property.docs).toEqual(["Status schema description"]);
   });
 
+  it("should map supported query array serialization styles", () => {
+    const pipeDelimited = getParameter({
+      method: "get",
+      pathKey: "/pets",
+      parameter: { ...parameter, style: "pipeDelimited", explode: false },
+    });
+    const spaceDelimited = getParameter({
+      method: "get",
+      pathKey: "/pets",
+      parameter: { ...parameter, style: "spaceDelimited", explode: false },
+    });
+
+    expect(pipeDelimited?.property.decorators.at(0)?.arguments).toEqual(['{ separator: "|" }']);
+    expect(spaceDelimited?.property.decorators.at(0)?.arguments).toEqual(['{ separator: " " }']);
+  });
+
+  it("should reject unsupported query serialization styles", () => {
+    expect(() =>
+      getParameter({
+        method: "get",
+        pathKey: "/pets",
+        parameter: { ...parameter, style: "deepObject" },
+      }),
+    ).toThrow("uses deepObject");
+  });
+
   it("should include parameter and schema descriptions together", () => {
     const specificParameter = structuredClone(parameter);
     specificParameter.schema = {

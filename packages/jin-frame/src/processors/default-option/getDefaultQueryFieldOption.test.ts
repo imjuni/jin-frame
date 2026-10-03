@@ -17,6 +17,7 @@ describe("getDefaultQueryFieldOption", () => {
         withZero: false,
       },
       keyFormat: undefined,
+      separator: undefined,
       replaceAt: undefined,
       encode: true,
     });

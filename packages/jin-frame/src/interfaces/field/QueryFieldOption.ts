@@ -19,4 +19,7 @@ export interface QueryFieldOption
    *  - a[1]=x&a[2]=y
    */
   keyFormat?: "brackets" | "indices" | "one-indices";
+
+  /** Join array values with a specific separator. */
+  separator?: "," | " " | "|";
 }

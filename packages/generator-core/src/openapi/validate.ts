@@ -1,5 +1,5 @@
 import OpenapiSchemaValidatorModule from "openapi-schema-validator";
-import type { OpenAPIV2, OpenAPIV3 } from "openapi-types";
+import type { OpenAPIV2, OpenAPIV3, OpenAPIV3_1 } from "openapi-types";
 import type { TValidateResult } from "#openapi/interfaces/TValidateResult.js";
 
 const OpenapiSchemaValidator =
@@ -22,6 +22,25 @@ export function validate(document: unknown): TValidateResult {
       valid: true,
       version: 2,
       document: document as OpenAPIV2.Document,
+      errors: [],
+    };
+  }
+
+  if (
+    document != null &&
+    typeof document === "object" &&
+    "openapi" in document &&
+    typeof document.openapi === "string" &&
+    /^3\.1(?:\.\d+)?$/.test(document.openapi) &&
+    "info" in document &&
+    document.info != null &&
+    typeof document.info === "object" &&
+    ("paths" in document || "webhooks" in document || "components" in document)
+  ) {
+    return {
+      valid: true,
+      version: 3,
+      document: document as OpenAPIV3_1.Document,
       errors: [],
     };
   }

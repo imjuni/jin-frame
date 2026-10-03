@@ -1,5 +1,5 @@
-import { convertor, validate } from "@jin-frame/generator-core";
-import type { OpenAPIV2 } from "openapi-types";
+import { convertor, createOpenapiTs, validate } from "@jin-frame/generator-core";
+import type { OpenAPIV2, OpenAPIV3_1 } from "openapi-types";
 
 function isSwaggerV2Document(document: unknown): document is OpenAPIV2.Document {
   return (
@@ -10,7 +10,27 @@ function isSwaggerV2Document(document: unknown): document is OpenAPIV2.Document 
   );
 }
 
+function isOpenapi31Document(document: unknown): document is OpenAPIV3_1.Document {
+  return (
+    typeof document === "object" &&
+    document != null &&
+    "openapi" in document &&
+    typeof document.openapi === "string" &&
+    document.openapi.startsWith("3.1")
+  );
+}
+
 export async function resolveOpenapiDocument(document: unknown, specPath: string) {
+  if (isOpenapi31Document(document)) {
+    try {
+      await createOpenapiTs(document as unknown as Parameters<typeof createOpenapiTs>[0], { silent: true });
+    } catch (caught) {
+      throw new Error(`Failed to validate OpenAPI 3.1 spec from "${specPath}"`, { cause: caught });
+    }
+
+    return { valid: true as const, version: 3 as const, document, errors: [] };
+  }
+
   const validated = validate(document);
 
   if (validated.valid) {

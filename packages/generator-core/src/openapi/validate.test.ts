@@ -15,4 +15,16 @@ describe("validate", () => {
     expect(result.valid).toBe(true);
     expect(result.version).toBe(3);
   });
+
+  it("should validate an OpenAPI 3.1 document", () => {
+    const result = validate({
+      openapi: "3.1.0",
+      info: { title: "OpenAPI 3.1 test", version: "1.0.0" },
+      paths: {},
+      components: { schemas: { Value: { type: ["string", "null"] } } },
+    });
+
+    expect(result.valid).toBe(true);
+    expect(result.version).toBe(3);
+  });
 });

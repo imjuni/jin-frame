@@ -29,6 +29,11 @@ describe("stringifyQuerystring", () => {
     expect(r01).toEqual("1,2");
   });
 
+  it("should return values joined by the configured separator", () => {
+    expect(stringifyQuerystring(["red", "blue"], { separator: "|" })).toEqual("red|blue");
+    expect(stringifyQuerystring(["red", "blue"], { separator: " " })).toEqual("red blue");
+  });
+
   it("should return comma separated string when array and comma option false", () => {
     const r01 = stringifyQuerystring([1, 2], { comma: false });
     expect(r01).toEqual(["1", "2"]);

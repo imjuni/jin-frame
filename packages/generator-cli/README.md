@@ -47,7 +47,12 @@ generated/
 ```
 
 Swagger/OpenAPI v2 documents are also supported. They are converted to OpenAPI v3 internally before generation.
+OpenAPI 3.0 and 3.1 documents are supported. OpenAPI 3.1 schemas are preserved during type generation.
 The `securities` directory is generated when the document contains a supported security scheme.
+
+Query array serialization supports `form`, `spaceDelimited`, and `pipeDelimited`. Serialization styles that
+cannot currently be represented by `jin-frame`, including `deepObject` and path `matrix` or `label`, fail with a
+clear generation error.
 
 ## frame
 
