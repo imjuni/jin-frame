@@ -60,4 +60,28 @@ describe("getResponseContentTypes", () => {
       fail: { statusCode: "405", mediaType: "application/json" },
     });
   });
+
+  it("should treat a 2XX range response as success", () => {
+    const responses = {
+      "2XX": { description: "Success", content: { "application/json": {} } },
+      default: { description: "Failure", content: { "application/json": {} } },
+    } satisfies OpenAPIV3.ResponsesObject;
+
+    expect(getResponseContentTypes(responses)).toEqual({
+      success: { statusCode: "2XX", mediaType: "application/json" },
+      fail: { statusCode: "default", mediaType: "application/json" },
+    });
+  });
+
+  it("should prefer an explicit success response over a 2XX range", () => {
+    const responses = {
+      "2XX": { description: "Range", content: { "application/json": {} } },
+      "201": { description: "Created", content: { "application/json": {} } },
+    } satisfies OpenAPIV3.ResponsesObject;
+
+    expect(getResponseContentTypes(responses).success).toEqual({
+      statusCode: "201",
+      mediaType: "application/json",
+    });
+  });
 });

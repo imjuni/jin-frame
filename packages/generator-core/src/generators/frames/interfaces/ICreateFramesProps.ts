@@ -1,4 +1,4 @@
-import type { OpenAPIV3 } from "openapi-types";
+import type { OpenAPIV3, OpenAPIV3_1 } from "openapi-types";
 import type { IFrameOverrides } from "#generators/frames/interfaces/IFrameOverrides.js";
 import type { ISecurityProviderOptions } from "#generators/security/interfaces/ISecurityProviderOptions.js";
 
@@ -10,7 +10,7 @@ export interface ICreateFramesProps extends ISecurityProviderOptions {
   output: string;
   useCodeFence: boolean;
   timeout?: number;
-  document: OpenAPIV3.Document;
+  document: OpenAPIV3.Document | OpenAPIV3_1.Document;
   hostStrategy?: "string" | "function" | "env-function";
   hostEnvVar?: string;
   hostFunctionName?: string;

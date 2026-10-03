@@ -47,7 +47,11 @@ generated/
 ```
 
 Swagger/OpenAPI v2 문서도 입력으로 사용할 수 있습니다. 내부에서 OpenAPI v3로 변환한 뒤 생성합니다.
+OpenAPI 3.0과 3.1 문서를 지원하며, 3.1 문서는 원래 스키마를 유지한 채 타입을 생성합니다.
 문서에 지원하는 security scheme이 있으면 `securities` 디렉터리도 생성합니다.
+
+Query 배열 직렬화는 `form`, `spaceDelimited`, `pipeDelimited`를 지원합니다. `deepObject`와 path의
+`matrix`, `label`처럼 현재 `jin-frame`으로 정확히 표현할 수 없는 형식은 생성 중 오류로 알립니다.
 
 ## frame
 

@@ -296,4 +296,21 @@ Create a new pet in the store`,
       },
     ]);
   });
+
+  it("should preserve optional multipart file fields when the request body is required", () => {
+    const multipartFormDataRequestBody = structuredClone(requestBody) as Omit<OpenAPIV3.MediaTypeObject, "schema"> & {
+      schema: OpenAPIV3.NonArraySchemaObject & { properties: Record<string, OpenAPIV3.SchemaObject> };
+    };
+    multipartFormDataRequestBody.schema.required = ["name"];
+    multipartFormDataRequestBody.schema.properties.attachment = { type: "string", format: "binary" };
+
+    const result = getBodyParameter({
+      method: "post",
+      pathKey: "/pets",
+      contentType: "multipart/form-data",
+      requestBody: { required: true, content: { "multipart/form-data": multipartFormDataRequestBody } },
+    });
+
+    expect(result.find((entry) => entry.property.name === "attachment")?.property.hasQuestionToken).toBe(true);
+  });
 });

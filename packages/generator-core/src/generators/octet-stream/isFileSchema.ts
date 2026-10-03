@@ -2,22 +2,25 @@ import type { OpenAPIV3 } from "openapi-types";
 import type { IIsFileSchemaResult } from "#generators/octet-stream/interfaces/IIsFileSchemaResult.js";
 
 export function isFileSchema(_schema?: OpenAPIV3.ReferenceObject | OpenAPIV3.SchemaObject): IIsFileSchemaResult {
-  const schema = _schema as OpenAPIV3.SchemaObject | undefined;
+  const schema = _schema as (OpenAPIV3.SchemaObject & { type?: string | string[] }) | undefined;
 
   if (schema == null) {
     return { isArray: false, isFile: false };
   }
 
   // Single file.
-  if (schema.type === "string" && (schema.format === "binary" || schema.format === "byte")) {
+  const types = Array.isArray(schema.type) ? schema.type : [schema.type];
+  if (types.includes("string") && (schema.format === "binary" || schema.format === "byte")) {
     return { isArray: false, isFile: true };
   }
 
   // File array.
-  if (schema.type === "array" && schema.items) {
-    const item = schema.items as OpenAPIV3.SchemaObject;
+  const items = "items" in schema ? schema.items : undefined;
+  if (types.includes("array") && items) {
+    const item = items as OpenAPIV3.SchemaObject & { type?: string | string[] };
+    const itemTypes = Array.isArray(item.type) ? item.type : [item.type];
 
-    if (item.type === "string" && (item.format === "binary" || item.format === "byte")) {
+    if (itemTypes.includes("string") && (item.format === "binary" || item.format === "byte")) {
       return { isArray: true, isFile: true };
     }
 

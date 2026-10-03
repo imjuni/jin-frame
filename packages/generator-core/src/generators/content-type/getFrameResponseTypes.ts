@@ -13,7 +13,7 @@ function hasFailResponse(responses?: OpenAPIV3.ResponsesObject): boolean {
     return false;
   }
 
-  return Object.keys(responses).some((statusCode) => !/^2\d\d$/.test(statusCode));
+  return Object.keys(responses).some((statusCode) => !/^2(?:\d\d|XX)$/.test(statusCode));
 }
 
 export function getFrameResponseTypes(params: IGetFrameResponseTypesProps): string[] {

@@ -113,4 +113,19 @@ describe("getQuerystringMap", () => {
 
     expect(r01).toMatchObject({ heroes: "ironman,captain" });
   });
+
+  it("should return separator joined string map when string array", () => {
+    const result = getQuerystringMap({ heroes: ["ironman", "captain"] }, [
+      {
+        key: "heroes",
+        type: "query",
+        bit: { enable: false, withZero: false },
+        comma: false,
+        separator: "|",
+        cacheKeyExclude: false,
+      },
+    ]);
+
+    expect(result).toEqual({ heroes: "ironman|captain" });
+  });
 });
