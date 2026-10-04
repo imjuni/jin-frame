@@ -1,20 +1,7 @@
-import type { OpenAPIV3 } from "openapi-types";
 import { getResponseContentTypes } from "#generators/content-type/getResponseContentTypes.js";
 import { getResponseTypeMappedAccessPath } from "#generators/content-type/getResponseTypeMappedAccessPath.js";
-
-export interface IGetFrameResponseTypesProps {
-  pathKey: string;
-  method: string;
-  responses?: OpenAPIV3.ResponsesObject;
-}
-
-function hasFailResponse(responses?: OpenAPIV3.ResponsesObject): boolean {
-  if (responses == null) {
-    return false;
-  }
-
-  return Object.keys(responses).some((statusCode) => !/^2(?:\d\d|XX)$/.test(statusCode));
-}
+import { hasFailResponse } from "#generators/content-type/hasFailResponse.js";
+import type { IGetFrameResponseTypesProps } from "#generators/content-type/interfaces/IGetFrameResponseTypesProps.js";
 
 export function getFrameResponseTypes(params: IGetFrameResponseTypesProps): string[] {
   const responseContentTypes = getResponseContentTypes(params.responses);

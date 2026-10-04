@@ -4,17 +4,10 @@ import { createBaseFrameFromData } from "#generators/base-frame/createBaseFrameF
 import { createFrameData } from "#generators/frame/createFrameData.js";
 import { createFrameFromData } from "#generators/frame/createFrameFromData.js";
 import { extractFrameEndpoints } from "#generators/frames/extractFrameEndpoints.js";
-import type { ICreateFramesProps } from "#generators/frames/interfaces/ICreateFramesProps.js";
+import type { ICreateFramePipelineParams } from "#generators/frames/interfaces/ICreateFramePipelineParams.js";
 import type { ICreateFramesResult } from "#generators/frames/interfaces/ICreateFramesResult.js";
-import type { IFrameGenerationContext } from "#generators/frames/interfaces/IFrameGenerationContext.js";
 import { createSecurityProviderData } from "#generators/security/createSecurityProviderData.js";
 import { createSecurityProviderFromData } from "#generators/security/createSecurityProviderFromData.js";
-
-export interface ICreateFramePipelineParams {
-  params: ICreateFramesProps;
-  context: IFrameGenerationContext;
-  project?: Project;
-}
 
 export function createFramePipeline({
   params,

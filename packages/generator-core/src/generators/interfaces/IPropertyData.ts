@@ -1,7 +1,4 @@
-export interface IPropertyDecoratorData {
-  name: string;
-  arguments: string[];
-}
+import type { IPropertyDecoratorData } from "#generators/interfaces/IPropertyDecoratorData.js";
 
 export interface IPropertyData {
   decorators: IPropertyDecoratorData[];

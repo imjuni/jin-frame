@@ -1,4 +1,5 @@
-import type { IPropertyData, IPropertyDecoratorData } from "#generators/interfaces/IPropertyData.js";
+import type { IPropertyData } from "#generators/interfaces/IPropertyData.js";
+import type { IPropertyDecoratorData } from "#generators/interfaces/IPropertyDecoratorData.js";
 import { getParameterDecorator } from "#generators/parameters/getParameterDecorator.js";
 import { getParameterDecoratorArguments } from "#generators/parameters/getParameterDecoratorArguments.js";
 import { getParameterJsDoc } from "#generators/parameters/getParameterJsDoc.js";

@@ -1,11 +1,9 @@
 import { isIdentifierName } from "@babel/helper-validator-identifier";
 import { z } from "zod";
-import {
-  endpointOverridesSchema,
-  securityProviderSchema,
-  type TEndpointRetry,
-} from "#schema/args/generatorConfigSchema.js";
+import { endpointOverridesSchema } from "#schema/args/endpointOverridesSchema.js";
 import { parseEndpointOverrideMap, parseRetryOverride } from "#schema/args/parseEndpointOverride.js";
+import { securityProviderSchema } from "#schema/args/securityProviderSchema.js";
+import type { TEndpointRetry } from "#schema/args/TEndpointRetry.js";
 import { coerceIdentifier } from "#validators/coerceIdentifier.js";
 
 function mergeRecords<T>(left?: Record<string, T>, right?: Record<string, T>): Record<string, T> | undefined {

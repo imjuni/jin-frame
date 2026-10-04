@@ -1,4 +1,4 @@
-import type { TEndpointRetry } from "#schema/args/generatorConfigSchema.js";
+import type { TEndpointRetry } from "#schema/args/TEndpointRetry.js";
 
 type TEndpointOverrideParser<T> = (value: string) => T;
 
