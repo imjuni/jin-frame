@@ -1,11 +1,5 @@
+import type { BufferedResponse } from "#interfaces/BufferedResponse";
 import type { DedupeResult } from "#interfaces/DedupeResult";
-
-interface BufferedResponse {
-  status: number;
-  statusText: string;
-  headers: Headers;
-  body: string;
-}
 
 /**
  * Manages request deduplication to prevent multiple identical HTTP requests

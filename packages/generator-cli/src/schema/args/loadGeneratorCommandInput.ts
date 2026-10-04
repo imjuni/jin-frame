@@ -1,23 +1,7 @@
 import { loadConfig } from "c12";
 import { defu } from "defu";
-import { normalizeGeneratorOptionInput } from "#schema/args/generatorOptionSchema.js";
-import { normalizeOpenAPITypeScriptOptionInput } from "#schema/args/openapiTypeScriptOptionSchema.js";
-
-type TCommandInput = Record<string, unknown>;
-
-function compactUndefined(record: TCommandInput): TCommandInput {
-  return Object.fromEntries(Object.entries(record).filter(([, value]) => value !== undefined));
-}
-
-function normalizeCommandInput(value: unknown): TCommandInput {
-  const normalized = normalizeOpenAPITypeScriptOptionInput(normalizeGeneratorOptionInput(value));
-
-  if (normalized == null || typeof normalized !== "object" || Array.isArray(normalized)) {
-    return {};
-  }
-
-  return compactUndefined(normalized as TCommandInput);
-}
+import { normalizeCommandInput } from "#schema/args/normalizeCommandInput.js";
+import type { TCommandInput } from "#schema/args/TCommandInput.js";
 
 export async function loadGeneratorCommandInput(value: unknown): Promise<TCommandInput> {
   const cliInput = normalizeCommandInput(value);

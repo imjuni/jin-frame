@@ -1,13 +1,7 @@
+import { absoluteUrlPattern } from "#tools/slash-utils/absoluteUrlPattern";
+import { hostUrlPattern } from "#tools/slash-utils/hostUrlPattern";
+import { pathUrlPattern } from "#tools/slash-utils/pathUrlPattern";
 import { removeBothSlash } from "#tools/slash-utils/removeBothSlash";
-
-// 1) protocol + hostname[:port] + path (RFC 3986 scheme, path value is case-sensitive)
-const pattern1 = /^([A-Za-z][A-Za-z0-9+.-]*:\/\/)([A-Za-z0-9.-]+(:\d+)?)(\/.*)?$/i;
-
-// 2) hostname + path (hostname includes TLD, case-insensitive / path is case-sensitive)
-const pattern2 = /^([A-Za-z0-9-]+\.[A-Za-z]{2,})(\/.*)?$/i;
-
-// 3) only path (case-sensitive)
-const pattern3 = /^(\/.*)$/;
 
 export function getUrl(
   host?: string,
@@ -28,19 +22,19 @@ export function getUrl(
   const str = concatted === "/" ? concatted : removeBothSlash(concatted);
 
   // protocol + hostname + path
-  if (pattern1.test(str)) {
+  if (absoluteUrlPattern.test(str)) {
     const url = new URL(str);
     return { url, str, pathname: url.pathname, isOnlyPath: false };
   }
 
   // hostname + empty path
-  if (host != null && withPathPrefix == null && pattern2.test(str)) {
+  if (host != null && withPathPrefix == null && hostUrlPattern.test(str)) {
     const url = new URL(`http://${str}`);
     return { url, str, pathname: url.pathname, isOnlyPath: false };
   }
 
   // path
-  if (host == null && withPathPrefix != null && pattern3.test(`/${str}`)) {
+  if (host == null && withPathPrefix != null && pathUrlPattern.test(`/${str}`)) {
     const url = new URL(`http://localhost/${str}`);
     return { url, str, pathname: url.pathname, isOnlyPath: true };
   }

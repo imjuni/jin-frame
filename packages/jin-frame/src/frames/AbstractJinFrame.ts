@@ -30,7 +30,7 @@ import { startWithSlash } from "#tools/slash-utils/startWithSlash";
 import { sleep } from "#tools/sleep";
 import type { BuilderFor } from "#tools/type-utilities/BuilderFor";
 import type { ConstructorFunction } from "#tools/type-utilities/ConstructorFunction";
-import type { PublicFieldsOf } from "#tools/type-utilities/FieldsOf";
+import type { PublicFieldsOf } from "#tools/type-utilities/PublicFieldsOf";
 import type { WithBuilder } from "#tools/type-utilities/WithBuilder";
 import type { WithDefaultValues } from "#tools/type-utilities/WithDefaultValues";
 import "reflect-metadata";

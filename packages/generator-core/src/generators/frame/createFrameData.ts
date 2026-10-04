@@ -4,8 +4,10 @@ import type { OptionalKind, TypeAliasDeclarationStructure } from "ts-morph";
 import { getFrameResponseTypes } from "#generators/content-type/getFrameResponseTypes.js";
 import { getMethodDecorator } from "#generators/content-type/getMethodDecorator.js";
 import { getRequestContentType } from "#generators/content-type/getRequestContentType.js";
+import { getParameterAliasName } from "#generators/frame/getParameterAliasName.js";
 import type { ICreateFrameProps } from "#generators/frame/interfaces/ICreateFrameProps.js";
 import type { IFrameData } from "#generators/frame/interfaces/IFrameData.js";
+import { parameterAliasMap } from "#generators/frame/parameterAliasMap.js";
 import { getClassJsDoc } from "#generators/getClassJsDoc.js";
 import { getFrameName } from "#generators/getFrameName.js";
 import type { IPropertyData } from "#generators/interfaces/IPropertyData.js";
@@ -17,24 +19,6 @@ import type { ISecurityProviderReference } from "#generators/security/interfaces
 import { dotRelative } from "#tools/dotRelative.js";
 import { removeExt } from "#tools/removeExt.js";
 import { safePathJoin } from "#tools/safePathJoin.js";
-
-const parameterAliasMap = {
-  Cookie: { aliasName: "FrameCookieParameter", location: "cookie" },
-  Header: { aliasName: "FrameHeaderParameter", location: "header" },
-  Param: { aliasName: "FramePathParameter", location: "path" },
-  Query: { aliasName: "FrameQueryParameter", location: "query" },
-} as const;
-
-function getParameterAliasName(
-  decorator: keyof typeof parameterAliasMap,
-  usedParameterAliases: Set<keyof typeof parameterAliasMap>,
-): string {
-  if (usedParameterAliases.size === 1) {
-    return "FrameRequestParameter";
-  }
-
-  return parameterAliasMap[decorator].aliasName;
-}
 
 export function createFrameData(params: ICreateFrameProps): IFrameData {
   const name = getFrameName({

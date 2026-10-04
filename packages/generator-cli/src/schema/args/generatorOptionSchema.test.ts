@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { z } from "zod";
-import { generatorOptionSchema, normalizeGeneratorOptionInput } from "#schema/args/generatorOptionSchema.js";
+import { generatorOptionSchema } from "#schema/args/generatorOptionSchema.js";
+import { normalizeGeneratorOptionInput } from "#schema/args/normalizeGeneratorOptionInput.js";
 
 describe("generatorOptionSchema", () => {
   it("should parse endpoint override arguments by OpenAPI path key", () => {
