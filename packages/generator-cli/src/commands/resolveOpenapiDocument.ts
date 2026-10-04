@@ -1,24 +1,6 @@
 import { convertor, createOpenapiTs, validate } from "@jin-frame/generator-core";
-import type { OpenAPIV2, OpenAPIV3_1 } from "openapi-types";
-
-function isSwaggerV2Document(document: unknown): document is OpenAPIV2.Document {
-  return (
-    typeof document === "object" &&
-    document != null &&
-    "swagger" in document &&
-    (document as { swagger?: unknown }).swagger === "2.0"
-  );
-}
-
-function isOpenapi31Document(document: unknown): document is OpenAPIV3_1.Document {
-  return (
-    typeof document === "object" &&
-    document != null &&
-    "openapi" in document &&
-    typeof document.openapi === "string" &&
-    document.openapi.startsWith("3.1")
-  );
-}
+import { isOpenapi31Document } from "#commands/isOpenapi31Document.js";
+import { isSwaggerV2Document } from "#commands/isSwaggerV2Document.js";
 
 export async function resolveOpenapiDocument(document: unknown, specPath: string) {
   if (isOpenapi31Document(document)) {
