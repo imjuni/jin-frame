@@ -1,35 +1,6 @@
-import type { TEndpointRetry } from "#schema/args/TEndpointRetry.js";
-
-type TEndpointOverrideParser<T> = (value: string) => T;
-
-function toValues(value: unknown): string[] {
-  if (Array.isArray(value)) {
-    return value.filter((entry): entry is string => typeof entry === "string");
-  }
-
-  if (typeof value === "string") {
-    return [value];
-  }
-
-  return [];
-}
-
-function splitEndpointOverride(value: string): [string, string] | undefined {
-  const index = value.indexOf("=");
-
-  if (index < 0) {
-    return undefined;
-  }
-
-  const key = value.slice(0, index).trim();
-  const raw = value.slice(index + 1).trim();
-
-  if (!key.startsWith("/") || raw.length === 0) {
-    return undefined;
-  }
-
-  return [key, raw];
-}
+import { splitEndpointOverride } from "#schema/args/splitEndpointOverride.js";
+import type { TEndpointOverrideParser } from "#schema/args/TEndpointOverrideParser.js";
+import { toValues } from "#schema/args/toValues.js";
 
 export function parseEndpointOverrideMap<T>(
   value: unknown,
@@ -56,14 +27,4 @@ export function parseEndpointOverrideMap<T>(
     rest,
     overrides: Object.keys(overrides).length > 0 ? overrides : undefined,
   };
-}
-
-export function parseRetryOverride(value: string): TEndpointRetry {
-  const parsed = JSON.parse(value) as unknown;
-
-  if (parsed == null || typeof parsed !== "object" || Array.isArray(parsed)) {
-    throw new Error("Retry override value must be a JSON object.");
-  }
-
-  return parsed as TEndpointRetry;
 }

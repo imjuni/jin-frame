@@ -20,22 +20,11 @@ import { getError } from "#tools/getError";
 import { isValidateStatusDefault } from "#tools/isValidateStatusDefault";
 import { runAndUnwrap } from "#tools/runAndUnwrap";
 import "reflect-metadata";
+import { resolveSecurityKey } from "#frames/resolveSecurityKey";
 import type { JinPassResp } from "#interfaces/JinPassResp";
-import type { FrameOption } from "#interfaces/options/FrameOption";
 import { getHeaderObject } from "#tools/getHeaderObject";
 import { safeParse } from "#tools/json/safeParse";
 import { getStatusFromError } from "#tools/responses/getStatusFromError";
-
-async function resolveSecurityKey<T extends JinFrameRequestConfig & JinFrameCreateConfig>(
-  frameOption: FrameOption,
-  option: T | undefined,
-): Promise<T> {
-  if (option?.dynamicAuth != null) return option;
-  const frameAuth = frameOption.authorization;
-  if (typeof frameAuth !== "function") return (option ?? {}) as T;
-  const resolved = await frameAuth();
-  return { ...(option ?? {}), dynamicAuth: resolved } as T;
-}
 
 /**
  * Definition HTTP Request

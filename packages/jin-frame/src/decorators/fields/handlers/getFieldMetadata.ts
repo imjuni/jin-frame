@@ -1,28 +1,7 @@
 import { REQUEST_FIELD_DECORATOR } from "#decorators/fields/handlers/REQUEST_FIELD_DECORATOR";
-import type { BodyFieldOption } from "#interfaces/field/body/BodyFieldOption";
-import type { ObjectBodyFieldOption } from "#interfaces/field/body/ObjectBodyFieldOption";
-import type { CookieFieldOption } from "#interfaces/field/CookieFieldOption";
-import type { HeaderFieldOption } from "#interfaces/field/HeaderFieldOption";
-import type { ParamFieldOption } from "#interfaces/field/ParamFieldOption";
-import type { QueryFieldOption } from "#interfaces/field/QueryFieldOption";
+import type { FieldEntry } from "#interfaces/field/FieldEntry";
+import type { IRequestFieldRecord } from "#interfaces/field/IRequestFieldRecord";
 import "reflect-metadata";
-
-interface IRequestFieldRecord {
-  param: ParamFieldOption[];
-  query: QueryFieldOption[];
-  body: BodyFieldOption[];
-  objectBody: ObjectBodyFieldOption[];
-  header: HeaderFieldOption[];
-  cookie: CookieFieldOption[];
-}
-
-type FieldEntry =
-  | { key: string; option: QueryFieldOption }
-  | { key: string; option: ParamFieldOption }
-  | { key: string; option: BodyFieldOption }
-  | { key: string; option: ObjectBodyFieldOption }
-  | { key: string; option: HeaderFieldOption }
-  | { key: string; option: CookieFieldOption };
 
 export function getFieldMetadata(type: object, keys: { key: string; value: unknown }[]): IRequestFieldRecord {
   const fields: { key: string; meta: FieldEntry }[] = [];

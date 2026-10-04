@@ -1,5 +1,5 @@
 import type { ConstructorFunction } from "#tools/type-utilities/ConstructorFunction";
-import type { PublicFieldsOf } from "#tools/type-utilities/FieldsOf";
+import type { PublicFieldsOf } from "#tools/type-utilities/PublicFieldsOf";
 
 /**
  * Builder interface for constructing JinFrame instances with compile-time field tracking.

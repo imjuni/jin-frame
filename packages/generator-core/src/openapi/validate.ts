@@ -1,13 +1,6 @@
-import OpenapiSchemaValidatorModule from "openapi-schema-validator";
 import type { OpenAPIV2, OpenAPIV3, OpenAPIV3_1 } from "openapi-types";
 import type { TValidateResult } from "#openapi/interfaces/TValidateResult.js";
-
-const OpenapiSchemaValidator =
-  (
-    OpenapiSchemaValidatorModule as unknown as {
-      default?: typeof OpenapiSchemaValidatorModule;
-    }
-  ).default ?? OpenapiSchemaValidatorModule;
+import { OpenapiSchemaValidator } from "#openapi/OpenapiSchemaValidator.js";
 
 export function validate(document: unknown): TValidateResult {
   const validators = {
