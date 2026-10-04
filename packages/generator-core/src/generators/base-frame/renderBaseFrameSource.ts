@@ -1,14 +1,6 @@
-import { type OptionalKind, type Project, type PropertyDeclarationStructure, Scope, StructureKind } from "ts-morph";
+import type { Project } from "ts-morph";
 import type { IBaseFrameData } from "#generators/base-frame/interfaces/IBaseFrameData.js";
-import type { IPropertyData } from "#generators/interfaces/IPropertyData.js";
-
-function toPropertyDeclarationStructure(property: IPropertyData): OptionalKind<PropertyDeclarationStructure> {
-  return {
-    ...property,
-    scope: Scope.Public,
-    kind: StructureKind.Property,
-  };
-}
+import { toPropertyDeclarationStructure } from "#generators/frame/toPropertyDeclarationStructure.js";
 
 export function renderBaseFrameSource(project: Project, aliasFilePath: string, data: IBaseFrameData): string {
   const sourceFile = project.createSourceFile(aliasFilePath);

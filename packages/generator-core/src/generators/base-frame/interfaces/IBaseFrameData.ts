@@ -4,7 +4,7 @@ import type {
   OptionalKind,
   TypeParameterDeclarationStructure,
 } from "ts-morph";
-import type { IFrameDataImport } from "#generators/frame/interfaces/IFrameData.js";
+import type { IFrameDataImport } from "#generators/frame/interfaces/IFrameDataImport.js";
 import type { IPropertyData } from "#generators/interfaces/IPropertyData.js";
 
 export interface IBaseFrameData {

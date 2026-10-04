@@ -1,17 +1,7 @@
-import type { OpenAPIV3 } from "openapi-types";
-import type { ICreateFramesProps } from "#generators/frames/interfaces/ICreateFramesProps.js";
+import type { IExtractFrameEndpointsParams } from "#generators/frames/interfaces/IExtractFrameEndpointsParams.js";
 import type { IFrameEndpoint } from "#generators/frames/interfaces/IFrameEndpoint.js";
 import { mergeParameters } from "#generators/frames/mergeParameters.js";
-import type { ISecurityProviderReference } from "#generators/security/interfaces/ISecurityProviderReference.js";
 import type { THttpMethod } from "#https/method.js";
-
-export interface IExtractFrameEndpointsParams {
-  params: ICreateFramesProps;
-  document: OpenAPIV3.Document;
-  host: string | (() => string);
-  hostCode?: string;
-  securityProviders?: Map<string, ISecurityProviderReference>;
-}
 
 export function extractFrameEndpoints({
   params,

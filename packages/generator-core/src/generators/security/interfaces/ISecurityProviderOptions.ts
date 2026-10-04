@@ -1,7 +1,4 @@
-export interface ISecurityProviderOverride {
-  className: string;
-  importPath: string;
-}
+import type { ISecurityProviderOverride } from "#generators/security/interfaces/ISecurityProviderOverride.js";
 
 export interface ISecurityProviderOptions {
   securityProviderDir?: string;

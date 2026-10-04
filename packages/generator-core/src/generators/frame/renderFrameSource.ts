@@ -1,21 +1,7 @@
-import { type OptionalKind, type Project, type PropertyDeclarationStructure, Scope, StructureKind } from "ts-morph";
+import type { Project } from "ts-morph";
+import { formatFrameSource } from "#generators/frame/formatFrameSource.js";
 import type { IFrameData } from "#generators/frame/interfaces/IFrameData.js";
-import type { IPropertyData } from "#generators/interfaces/IPropertyData.js";
-
-function formatFrameSource(source: string): string {
-  return source
-    .replaceAll(/\/\*\* (Response DTO|Request DTO) \*\//g, "/**\n * $1\n */")
-    .replace(/(import[^\n]+;\n)(\/\*\*)/, "$1\n$2")
-    .replaceAll(/(type [^;]+;)\n(\/\*\*)/g, "$1\n\n$2");
-}
-
-function toPropertyDeclarationStructure(property: IPropertyData): OptionalKind<PropertyDeclarationStructure> {
-  return {
-    ...property,
-    scope: Scope.Public,
-    kind: StructureKind.Property,
-  };
-}
+import { toPropertyDeclarationStructure } from "#generators/frame/toPropertyDeclarationStructure.js";
 
 export function renderFrameSource(project: Project, aliasFilePath: string, data: IFrameData): string {
   const sourceFile = project.createSourceFile(aliasFilePath);

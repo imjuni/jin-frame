@@ -1,9 +1,6 @@
 import { type Project, Scope, StructureKind } from "ts-morph";
+import { formatSecurityProviderSource } from "#generators/security/formatSecurityProviderSource.js";
 import type { ISecurityProviderData } from "#generators/security/interfaces/ISecurityProviderData.js";
-
-function formatSecurityProviderSource(source: string): string {
-  return source.replace(/(import[^\n]+;\n)(export class)/, "$1\n$2");
-}
 
 export function renderSecurityProviderSource(
   project: Project,

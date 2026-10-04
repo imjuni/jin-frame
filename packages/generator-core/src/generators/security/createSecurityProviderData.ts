@@ -1,10 +1,8 @@
 import { pascalCase } from "change-case";
 import type { OpenAPIV3 } from "openapi-types";
 import type { ISecurityProviderData } from "#generators/security/interfaces/ISecurityProviderData.js";
-import type {
-  ISecurityProviderOptions,
-  ISecurityProviderOverride,
-} from "#generators/security/interfaces/ISecurityProviderOptions.js";
+import type { ISecurityProviderOptions } from "#generators/security/interfaces/ISecurityProviderOptions.js";
+import type { ISecurityProviderOverride } from "#generators/security/interfaces/ISecurityProviderOverride.js";
 import type { ISecurityProviderReference } from "#generators/security/interfaces/ISecurityProviderReference.js";
 
 const defaultSecurityProviderDir = "securities";

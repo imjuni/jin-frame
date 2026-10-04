@@ -1,4 +1,4 @@
-import type { IPropertyDecoratorData } from "#generators/interfaces/IPropertyData.js";
+import type { IPropertyDecoratorData } from "#generators/interfaces/IPropertyDecoratorData.js";
 
 export function getBodyDecorator(kind: "Body" | "ObjectBody"): IPropertyDecoratorData[] {
   return [
