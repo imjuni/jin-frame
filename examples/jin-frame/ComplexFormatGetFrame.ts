@@ -25,13 +25,13 @@ interface IFirstBody {
 @Get({ host: "http://some.api.google.com", path: "/jinframe/:passing" })
 export default class ComplexFormatGetFrame extends JinFrame {
   @Param()
-  public declare readonly passing: string;
+  declare public readonly passing: string;
 
   @Query()
-  public declare readonly name: string;
+  declare public readonly name: string;
 
   @Query()
-  public declare readonly skill: string[];
+  declare public readonly skill: string[];
 
   @ObjectBody({
     formatters: [
@@ -51,5 +51,5 @@ export default class ComplexFormatGetFrame extends JinFrame {
       },
     ],
   })
-  public declare readonly body: IFirstBody;
+  declare public readonly body: IFirstBody;
 }

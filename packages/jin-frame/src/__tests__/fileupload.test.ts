@@ -16,13 +16,13 @@ import { JinFrame } from "#frames/JinFrame";
 })
 class TestGetFrame extends JinFrame {
   @Body()
-  public declare readonly description: string;
+  declare public readonly description: string;
 
   @Body()
-  public declare readonly myFile: JinFile<Buffer>;
+  declare public readonly myFile: JinFile<Buffer>;
 
   @Body()
-  public declare readonly myFiles: JinFile<Buffer>[];
+  declare public readonly myFiles: JinFile<Buffer>[];
 }
 
 @Post({
@@ -31,10 +31,10 @@ class TestGetFrame extends JinFrame {
 })
 class BlobFileFrame extends JinFrame {
   @Body()
-  public declare readonly singleBlob: JinFile<Blob>;
+  declare public readonly singleBlob: JinFile<Blob>;
 
   @Body()
-  public declare readonly multiBlobs: JinFile<Blob>[];
+  declare public readonly multiBlobs: JinFile<Blob>[];
 }
 
 @Put({
@@ -43,10 +43,10 @@ class BlobFileFrame extends JinFrame {
 })
 class PutFileFrame extends JinFrame {
   @Body()
-  public declare readonly description: string;
+  declare public readonly description: string;
 
   @Body()
-  public declare readonly myFile: JinFile<Buffer>;
+  declare public readonly myFile: JinFile<Buffer>;
 }
 
 @Patch({
@@ -55,10 +55,10 @@ class PutFileFrame extends JinFrame {
 })
 class PatchFileFrame extends JinFrame {
   @Body()
-  public declare readonly description: string;
+  declare public readonly description: string;
 
   @Body()
-  public declare readonly myFile: JinFile<Buffer>;
+  declare public readonly myFile: JinFile<Buffer>;
 }
 
 describe("fileupload.test", () => {

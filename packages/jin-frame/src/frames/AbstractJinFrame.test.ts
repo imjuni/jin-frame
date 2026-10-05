@@ -15,13 +15,13 @@ import { JinFrame } from "#frames/JinFrame";
 })
 class Test001PostFrame extends JinFrame<{ message: string }> {
   @Param()
-  public declare readonly passing: string;
+  declare public readonly passing: string;
 
   @Body()
-  public declare readonly username: string;
+  declare public readonly username: string;
 
   @Body()
-  public declare readonly password: string;
+  declare public readonly password: string;
 }
 
 @Post({
@@ -31,13 +31,13 @@ class Test001PostFrame extends JinFrame<{ message: string }> {
 })
 class Test002PostFrame extends JinFrame<{ message: string }> {
   @Param()
-  public declare readonly passing: string;
+  declare public readonly passing: string;
 
   @Body()
-  public declare readonly username: string;
+  declare public readonly username: string;
 
   @Body()
-  public declare readonly password: string;
+  declare public readonly password: string;
 }
 
 @Post({
@@ -47,25 +47,25 @@ class Test002PostFrame extends JinFrame<{ message: string }> {
 })
 class Test003PostFrame extends JinFrame<{ message: string }> {
   @Param()
-  public declare readonly passing: string;
+  declare public readonly passing: string;
 
   @Body()
-  public declare readonly username: string;
+  declare public readonly username: string;
 
   @Body()
-  public declare readonly password: string;
+  declare public readonly password: string;
 }
 
 @Post({ host: "http://some.api.google.com/jinframe/{passing}" })
 class Test004PostFrame extends JinFrame<{ message: string }> {
   @Param()
-  public declare readonly passing: string[];
+  declare public readonly passing: string[];
 
   @Query()
-  public declare readonly name: string[];
+  declare public readonly name: string[];
 
   @Query()
-  public declare readonly nums: number[];
+  declare public readonly nums: number[];
 }
 
 describe("AbstractJinFrame", () => {

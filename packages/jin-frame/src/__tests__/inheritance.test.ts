@@ -8,7 +8,7 @@ import type { FieldsOf } from "#tools/type-utilities/FieldsOf";
 @Get({ host: "https://pokeapi.co" })
 class BaseFrame extends JinFrame {
   @Query()
-  public declare readonly tid: string;
+  declare public readonly tid: string;
 
   protected static override getDefaultValues(): Partial<FieldsOf<InstanceType<typeof this>>> {
     return { tid: "fce5a3d5-84aa-4051-96a3-1dbecd93dbe4" };
@@ -18,10 +18,10 @@ class BaseFrame extends JinFrame {
 @Get({ path: "/api/v2/pokemon/{name}" })
 export class PokemonFrame extends BaseFrame {
   @Param()
-  public declare readonly name: string;
+  declare public readonly name: string;
 
   @Query()
-  public declare readonly tid: string;
+  declare public readonly tid: string;
 }
 
 describe("JinFrame inheritance", () => {

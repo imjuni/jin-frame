@@ -8,103 +8,103 @@ import { JinFrame } from "#frames/JinFrame";
 @Post({ host: "http://some.api.google.com/jinframe/{passing}" })
 class Test001PostFrame extends JinFrame {
   @Param()
-  public declare readonly passing: string;
+  declare public readonly passing: string;
 
   @Body({
     formatters: {
       string: (value) => `${value}+111`,
     },
   })
-  public declare readonly username: string[];
+  declare public readonly username: string[];
 
   @Body()
-  public declare readonly password: string;
+  declare public readonly password: string;
 }
 
 @Post({ host: "http://some.api.google.com/jinframe/{passing}" })
 class Test002PostFrame extends JinFrame {
   @Param()
-  public declare readonly passing: string;
+  declare public readonly passing: string;
 
   @Body()
-  public declare readonly username: string[];
+  declare public readonly username: string[];
 
   @Body({
     formatters: {
       string: (value) => `${value}+111`,
     },
   })
-  public declare readonly password: string;
+  declare public readonly password: string;
 }
 
 @Post({ host: "http://some.api.google.com/jinframe/{passing}" })
 class Test003PostFrame extends JinFrame {
   @Param()
-  public declare readonly passing: string;
+  declare public readonly passing: string;
 
   @Body({
     formatters: {
       string: (value) => `000+${value}+222`,
     },
   })
-  public declare readonly username: string[];
+  declare public readonly username: string[];
 
   @Body({
     formatters: {
       string: (value) => `${value}+111`,
     },
   })
-  public declare readonly password: string;
+  declare public readonly password: string;
 
   @Body()
-  public declare readonly today: Date;
+  declare public readonly today: Date;
 }
 
 @Post({ host: "http://some.api.google.com/jinframe/{passing}" })
 class Test004PostFrame extends JinFrame {
   @Param()
-  public declare readonly passing: string;
+  declare public readonly passing: string;
 
   @Body({
     formatters: {
       string: (value) => `000+${value}+222`,
     },
   })
-  public declare readonly username: string[];
+  declare public readonly username: string[];
 
   @Body({
     formatters: {
       string: (value) => `${value}+111`,
     },
   })
-  public declare readonly password: string;
+  declare public readonly password: string;
 
   @Body({
     formatters: {
       dateTime: (value) => lightFormat(value, "yyyy-MM-dd HH:mm:ss"),
     },
   })
-  public declare readonly today: Date;
+  declare public readonly today: Date;
 }
 
 @Post({ host: "http://some.api.google.com/jinframe/{passing}" })
 class Test005PostFrame extends JinFrame {
   @Param()
-  public declare readonly passing: string;
+  declare public readonly passing: string;
 
   @Body({
     formatters: {
       string: (value) => `000+${value}+222`,
     },
   })
-  public declare readonly username: string[];
+  declare public readonly username: string[];
 
   @Body({
     formatters: {
       string: (value) => `${value}+111`,
     },
   })
-  public declare readonly password: string;
+  declare public readonly password: string;
 
   @Body({
     formatters: {
@@ -112,20 +112,20 @@ class Test005PostFrame extends JinFrame {
       dateTime: (value) => lightFormat(value, `yyyy-MM-dd'T'HH:mm:ss`),
     },
   })
-  public declare readonly today: string;
+  declare public readonly today: string;
 }
 
 @Post({ host: "http://some.api.google.com/jinframe/{passing}" })
 class Test006PostFrame extends JinFrame {
   @Param()
-  public declare readonly passing: string;
+  declare public readonly passing: string;
 
   @Body({
     formatters: {
       string: (value) => `000+${value}+222`,
     },
   })
-  public declare readonly username: string[];
+  declare public readonly username: string[];
 
   @Body({
     replaceAt: "pw",
@@ -133,7 +133,7 @@ class Test006PostFrame extends JinFrame {
       string: (value) => `${value}+111`,
     },
   })
-  public declare readonly password: string;
+  declare public readonly password: string;
 
   @Body({
     replaceAt: "format-day",
@@ -142,7 +142,7 @@ class Test006PostFrame extends JinFrame {
       dateTime: (value) => lightFormat(value, `yyyy-MM-dd'T'HH:mm:ss`),
     },
   })
-  public declare readonly today: string;
+  declare public readonly today: string;
 }
 
 describe("JinFrame - Body with formatters", () => {

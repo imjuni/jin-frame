@@ -17,7 +17,7 @@ import { BearerTokenProvider } from "#providers/security/BearerTokenProvider";
 @Get({ host: "http://api.example.com/user/{id}" })
 class UserProfileFrame extends JinFrame {
   @Param()
-  public declare readonly id: string;
+  declare public readonly id: string;
 
   constructor() {
     super();
@@ -30,7 +30,7 @@ class UserProfileFrame extends JinFrame {
 @Get({ host: "http://api.example.com/data" })
 class DataFrame extends JinFrame {
   @Query()
-  public declare readonly filter: string;
+  declare public readonly filter: string;
 
   constructor() {
     super();
@@ -46,7 +46,7 @@ class DataFrame extends JinFrame {
 })
 class SearchFrame extends JinFrame {
   @Query()
-  public declare readonly q: string;
+  declare public readonly q: string;
 
   constructor() {
     super();
@@ -62,7 +62,7 @@ class SearchFrame extends JinFrame {
 })
 class AdminUserFrame extends JinFrame {
   @Body()
-  public declare readonly userData: { name: string; email: string };
+  declare public readonly userData: { name: string; email: string };
 
   constructor() {
     super();

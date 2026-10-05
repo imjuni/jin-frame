@@ -17,10 +17,10 @@ describe("getParameterDecoratorArguments", () => {
     expect(getParameterDecoratorArguments(value)).toEqual(expected);
   });
 
-  it.each([
-    parameter({ style: "deepObject" }),
-    parameter({ in: "path", style: "matrix" }),
-  ])("should reject unsupported serialization", (value) => {
-    expect(() => getParameterDecoratorArguments(value)).toThrow("Unsupported OpenAPI parameter serialization");
-  });
+  it.each([parameter({ style: "deepObject" }), parameter({ in: "path", style: "matrix" })])(
+    "should reject unsupported serialization",
+    (value) => {
+      expect(() => getParameterDecoratorArguments(value)).toThrow("Unsupported OpenAPI parameter serialization");
+    },
+  );
 });

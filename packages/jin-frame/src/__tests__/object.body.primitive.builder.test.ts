@@ -8,25 +8,25 @@ import { JinFrame } from "#frames/JinFrame";
 @Post({ host: "http://some.api.google.com/jinframe/{passing}" })
 class Test001PostFrame extends JinFrame {
   @Param()
-  public declare readonly passing: string;
+  declare public readonly passing: string;
 
   @ObjectBody()
-  public declare readonly ability: number;
+  declare public readonly ability: number;
 }
 
 @Post({ host: "http://some.api.google.com/jinframe/{passing}" })
 class Test002PostFrame extends JinFrame {
   @Param()
-  public declare readonly passing: string;
+  declare public readonly passing: string;
 
   @ObjectBody()
-  public declare readonly ability: string;
+  declare public readonly ability: string;
 }
 
 @Post({ host: "http://some.api.google.com/jinframe/{passing}" })
 class Test003PostFrame extends JinFrame {
   @Param()
-  public declare readonly passing: string;
+  declare public readonly passing: string;
 
   @ObjectBody({
     formatters: {
@@ -34,16 +34,16 @@ class Test003PostFrame extends JinFrame {
       dateTime: (value) => lightFormat(value, "yyyy-MM-dd HH:mm:ss"),
     },
   })
-  public declare readonly ability: Date;
+  declare public readonly ability: Date;
 }
 
 @Post({ host: "http://some.api.google.com/jinframe/{passing}" })
 class Test004PostFrame extends JinFrame {
   @Param()
-  public declare readonly passing: string;
+  declare public readonly passing: string;
 
   @ObjectBody()
-  public declare readonly ability: boolean;
+  declare public readonly ability: boolean;
 }
 
 describe("JinFrame ObjectBody using Primitive type", () => {

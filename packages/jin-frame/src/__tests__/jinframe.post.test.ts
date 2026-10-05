@@ -10,16 +10,16 @@ import { JinFrame } from "#frames/JinFrame";
 @Post({ host: "http://some.api.google.com/jinframe/{passing}" })
 class TestPostFrame extends JinFrame {
   @Param()
-  public declare readonly passing: string;
+  declare public readonly passing: string;
 
   @Body({ replaceAt: "test.hello.marvel.name" })
-  public declare readonly name: string;
+  declare public readonly name: string;
 
   @Header({ replaceAt: "test.hello.marvel.skill" })
-  public declare readonly skill: string;
+  declare public readonly skill: string;
 
   @Body({ replaceAt: "test.hello.marvel.gender" })
-  public declare readonly gender: string;
+  declare public readonly gender: string;
 }
 
 @Post({
@@ -28,13 +28,13 @@ class TestPostFrame extends JinFrame {
 })
 class TestUrlencodedPostFrame extends JinFrame {
   @Param()
-  public declare readonly passing: string;
+  declare public readonly passing: string;
 
   @Body()
-  public declare readonly username: string;
+  declare public readonly username: string;
 
   @Body()
-  public declare readonly password: string;
+  declare public readonly password: string;
 }
 
 interface TestPostFrameBody {

@@ -8,13 +8,13 @@ import { JinFrame } from "#frames/JinFrame";
 @Get({ host: "/jinframe/{passing}/test" })
 class TestGet2Frame extends JinFrame {
   @Param()
-  public declare readonly passing: string;
+  declare public readonly passing: string;
 
   @Query()
-  public declare readonly name: string;
+  declare public readonly name: string;
 
   @Header()
-  public declare readonly ttt: string;
+  declare public readonly ttt: string;
 }
 
 it("ignore-hostname-axios-request", async () => {

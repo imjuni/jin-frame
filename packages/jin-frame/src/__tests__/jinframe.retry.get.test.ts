@@ -13,13 +13,13 @@ import type { JinRequestConfig } from "#interfaces/JinRequestConfig";
 })
 class RetryTestGet01Frame extends JinFrame {
   @Param()
-  public declare readonly passing: string;
+  declare public readonly passing: string;
 
   @Query()
-  public declare readonly name: string;
+  declare public readonly name: string;
 
   @Query({ encode: true })
-  public declare readonly skill: string[];
+  declare public readonly skill: string[];
 
   constructor() {
     super();
@@ -44,13 +44,13 @@ class RetryTestGet01Frame extends JinFrame {
 })
 class RetryTestGet02Frame extends JinFrame {
   @Param()
-  public declare readonly passing: string;
+  declare public readonly passing: string;
 
   @Query()
-  public declare readonly name: string;
+  declare public readonly name: string;
 
   @Query({ encode: true })
-  public declare readonly skill: string[];
+  declare public readonly skill: string[];
 
   #retryFail: string;
 

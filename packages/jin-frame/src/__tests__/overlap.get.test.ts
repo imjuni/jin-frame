@@ -17,16 +17,16 @@ class TestGetFrame extends JinFrame {
   @Query()
   @Body()
   @Header()
-  public declare readonly id: string;
+  declare public readonly id: string;
 
   @Param()
-  public declare readonly passing: string;
+  declare public readonly passing: string;
 
   @Query()
-  public declare readonly name: string;
+  declare public readonly name: string;
 
   @Query({ encode: false, comma: true })
-  public declare readonly skills: string[];
+  declare public readonly skills: string[];
 }
 
 interface TestOverlapResponse {

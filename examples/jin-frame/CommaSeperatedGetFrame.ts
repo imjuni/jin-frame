@@ -13,11 +13,11 @@ import { JinFrame } from "../src/frames/JinFrame";
 @Get({ path: "/jinframe/:passing" })
 export default class CommaSeperatedGetFrame extends JinFrame {
   @Param()
-  public declare readonly passing: string;
+  declare public readonly passing: string;
 
   @Query()
-  public declare readonly name: string;
+  declare public readonly name: string;
 
   @Query({ comma: true })
-  public declare readonly skill: string[];
+  declare public readonly skill: string[];
 }

@@ -7,29 +7,29 @@ import { JinFrame } from "#frames/JinFrame";
 @Post({ host: "http://some.api.google.com/jinframe/{passing}" })
 class Test001PostFrame extends JinFrame {
   @Param()
-  public declare readonly passing: string;
+  declare public readonly passing: string;
 
   @Body()
-  public declare readonly username: string[];
+  declare public readonly username: string[];
 
   @Body()
-  public declare readonly password: string;
+  declare public readonly password: string;
 }
 
 @Post({ host: "http://some.api.google.com/jinframe/{passing}" })
 class Test002PostFrame extends JinFrame {
   @Param()
-  public declare readonly passing: string;
+  declare public readonly passing: string;
 
   @Body()
-  public declare readonly username: string[];
+  declare public readonly username: string[];
 
   // warnning, username2 is invalid usage. It will be overwrite previous username key
   @Body({ replaceAt: "username" })
-  public declare readonly username2: string[];
+  declare public readonly username2: string[];
 
   @Body()
-  public declare readonly password: string;
+  declare public readonly password: string;
 }
 
 describe("JinFrame - Body", () => {

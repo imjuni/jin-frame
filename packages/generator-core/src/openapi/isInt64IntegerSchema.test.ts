@@ -9,12 +9,10 @@ describe("isInt64IntegerSchema", () => {
     expect(isInt64IntegerSchema(schema)).toBe(true);
   });
 
-  it.each([
-    null,
-    [],
-    { type: "integer", format: "int32" },
-    { type: "string", format: "int64" },
-  ])("should reject non int64 integer schemas", (schema) => {
-    expect(isInt64IntegerSchema(schema)).toBe(false);
-  });
+  it.each([null, [], { type: "integer", format: "int32" }, { type: "string", format: "int64" }])(
+    "should reject non int64 integer schemas",
+    (schema) => {
+      expect(isInt64IntegerSchema(schema)).toBe(false);
+    },
+  );
 });

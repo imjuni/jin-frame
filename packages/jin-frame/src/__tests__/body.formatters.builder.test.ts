@@ -8,21 +8,21 @@ import { JinFrame } from "#frames/JinFrame";
 @Post({ host: "http://some.api.google.com/jinframe/{passing}" })
 class Test001PostFrame extends JinFrame {
   @Param()
-  public declare readonly passing: string;
+  declare public readonly passing: string;
 
   @Body({
     formatters: [{ string: (value) => `${value}+111` }, { string: (value) => `${value}+222` }],
   })
-  public declare readonly username: string[];
+  declare public readonly username: string[];
 
   @Body()
-  public declare readonly password: string;
+  declare public readonly password: string;
 }
 
 @Post({ host: "http://some.api.google.com/jinframe/{passing}" })
 class Test002PostFrame extends JinFrame {
   @Param()
-  public declare readonly passing: string;
+  declare public readonly passing: string;
 
   @Body({
     formatters: [
@@ -36,7 +36,7 @@ class Test002PostFrame extends JinFrame {
       },
     ],
   })
-  public declare readonly hero: {
+  declare public readonly hero: {
     name: string;
     age: number;
     bio: {
@@ -45,7 +45,7 @@ class Test002PostFrame extends JinFrame {
   };
 
   @Body()
-  public declare readonly password: string;
+  declare public readonly password: string;
 }
 
 describe("JinFrame", () => {
