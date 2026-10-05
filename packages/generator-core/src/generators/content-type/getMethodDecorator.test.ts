@@ -6,7 +6,6 @@ describe("getMethodDecorator", () => {
     const decorator = getMethodDecorator({ host: "host", path: "path", method: "Get" });
     expect(decorator).toEqual({
       name: "Get",
-      kind: 7,
       arguments: ["{ host: 'host', path: 'path' }"],
     });
   });
@@ -20,7 +19,6 @@ describe("getMethodDecorator", () => {
     });
     expect(decorator).toEqual({
       name: "Get",
-      kind: 7,
       arguments: ["{ host: 'host', path: 'path', contentType: 'application/x-www-form-urlencoded' }"],
     });
   });
@@ -36,7 +34,6 @@ describe("getMethodDecorator", () => {
 
     expect(decorator).toEqual({
       name: "Get",
-      kind: 7,
       arguments: ["{ host: 'https://override.example.com', path: '/pets/{petId}' }"],
     });
   });

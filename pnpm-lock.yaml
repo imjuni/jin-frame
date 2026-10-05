@@ -71,9 +71,6 @@ importers:
       swagger2openapi:
         specifier: ^7.0.8
         version: 7.0.8
-      ts-morph:
-        specifier: '>=26'
-        version: 27.0.0
       type-fest:
         specifier: ^4.41.0
         version: 4.41.0
@@ -156,6 +153,9 @@ importers:
       change-case:
         specifier: ^5.4.4
         version: 5.4.4
+      eta:
+        specifier: 3.5.0
+        version: 3.5.0
       jin-frame:
         specifier: workspace:*
         version: link:../jin-frame
@@ -180,9 +180,6 @@ importers:
       swagger2openapi:
         specifier: ^7.0.8
         version: 7.0.8
-      ts-morph:
-        specifier: '>=26'
-        version: 27.0.0
       type-fest:
         specifier: ^5.7.0
         version: 5.7.0

@@ -115,6 +115,7 @@
   "dependencies": {
     "@apidevtools/json-schema-ref-parser": "^15.3.5",
     "change-case": "^5.4.4",
+    "eta": "3.5.0",
     "jin-frame": "workspace:*",
     "my-easy-fp": "^0.22.0",
     "my-node-fp": "^0.10.3",
@@ -129,7 +130,6 @@
   },
   "peerDependencies": {
     "openapi-typescript": ">=7",
-    "ts-morph": ">=26",
     "typescript": ">=6"
   }
 }

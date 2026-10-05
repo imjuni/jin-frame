@@ -1,4 +1,3 @@
-import { Project } from "ts-morph";
 import { createBaseFrameData } from "#generators/base-frame/createBaseFrameData.js";
 import { createBaseFrameFromData } from "#generators/base-frame/createBaseFrameFromData.js";
 import { createFrameData } from "#generators/frame/createFrameData.js";
@@ -9,11 +8,7 @@ import type { ICreateFramesResult } from "#generators/frames/interfaces/ICreateF
 import { createSecurityProviderData } from "#generators/security/createSecurityProviderData.js";
 import { createSecurityProviderFromData } from "#generators/security/createSecurityProviderFromData.js";
 
-export function createFramePipeline({
-  params,
-  context,
-  project = new Project(),
-}: ICreateFramePipelineParams): ICreateFramesResult[] {
+export function createFramePipeline({ params, context }: ICreateFramePipelineParams): ICreateFramesResult[] {
   const securityProviderData = createSecurityProviderData(context.document, {
     securityProviderDir: params.securityProviderDir,
     securityProviders: params.securityProviders,
@@ -38,7 +33,7 @@ export function createFramePipeline({
           timeout: params.timeout,
         })
       : undefined;
-  const baseFrame = baseFrameData == null ? undefined : createBaseFrameFromData(project, baseFrameData);
+  const baseFrame = baseFrameData == null ? undefined : createBaseFrameFromData(baseFrameData);
 
   const frames = endpoints
     .map((endpoint) => ({
@@ -48,12 +43,12 @@ export function createFramePipeline({
     .map(({ endpoint, data }) => ({
       method: endpoint.method,
       pathKey: endpoint.pathKey,
-      frame: createFrameFromData(project, data),
+      frame: createFrameFromData(data),
     }));
   const securityProviders = securityProviderData.providers.map((provider) => ({
     method: "get" as const,
     pathKey: "/",
-    frame: createSecurityProviderFromData(project, provider),
+    frame: createSecurityProviderFromData(provider),
   }));
 
   if (baseFrame != null) {

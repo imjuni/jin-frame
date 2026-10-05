@@ -1,6 +1,5 @@
 import { randomUUID } from "node:crypto";
 import type { OpenAPIV3 } from "openapi-types";
-import { Project } from "ts-morph";
 import { beforeEach, describe, expect, it, vitest } from "vitest";
 import { createFrame } from "#generators/createFrame.js";
 
@@ -9,7 +8,6 @@ vitest.mock("node:crypto", () => ({
 }));
 
 describe("createFrame", () => {
-  const project = new Project();
   const operationRequestBody = {
     required: ["name", "photoUrls"],
     type: "object",
@@ -97,7 +95,7 @@ describe("createFrame", () => {
     const mockUuid = "mockuuid-fe32-4d5d-923e-68fc16766231";
     vitest.mocked(randomUUID).mockReturnValue(mockUuid);
 
-    const frame = createFrame(project, {
+    const frame = createFrame({
       specTypeFilePath: "/a/b/petstore.d.ts",
       host: "https://pokeapi.co",
       output: "/a/b",
@@ -182,7 +180,7 @@ export class GetPetFindByStatusStatusFrame extends JinFrame<SuccessResponse, voi
       aliasFilePath: `${mockUuid}-${mockUuid}.ts`,
       filePath: "GetPetFindByStatusStatusFrame.ts",
       tag: "pet",
-      source,
+      source: source.trim(),
     });
   });
 
@@ -202,7 +200,7 @@ export class GetPetFindByStatusStatusFrame extends JinFrame<SuccessResponse, voi
       },
     } satisfies OpenAPIV3.ArraySchemaObject;
 
-    const frame = createFrame(project, {
+    const frame = createFrame({
       specTypeFilePath: "/a/b/petstore.d.ts",
       host: "https://pokeapi.co",
       output: "/a/b",
@@ -288,7 +286,7 @@ export class GetPetFindByStatusStatusFrame extends JinFrame<SuccessResponse, voi
       aliasFilePath: `${mockUuid}-${mockUuid}.ts`,
       filePath: "GetPetFindByStatusStatusFrame.ts",
       tag: "pet",
-      source,
+      source: source.trim(),
     });
   });
 });

@@ -121,7 +121,6 @@
   },
   "peerDependencies": {
     "openapi-typescript": ">=7",
-    "ts-morph": ">=26",
     "typescript": ">=6"
   }
 }
