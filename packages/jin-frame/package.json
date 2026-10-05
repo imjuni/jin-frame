@@ -18,7 +18,7 @@
     "unpub": "pnpm unpublish $npm_package_name@$npm_package_version --registry http://localhost:8901 --force",
     "pub:prod": "pnpm run bundle && cross-env RELEASE_MODE=true pnpm publish --access=public",
     "clean": "rimraf dist",
-    "lint": "pnpm run check",
+    "lint": "oxlint .",
     "lint:silent": "pnpm run check",
     "lint-staged": "pnpm run check:write",
     "test:only": "vitest run --coverage",
@@ -36,11 +36,10 @@
     "docs:build": "vitepress build docs",
     "docs:build:prod": "BASE_DIR='/jin-frame/' vitepress build docs",
     "docs:preview": "vitepress preview docs",
-    "biome": "biome",
-    "check": "biome check --config-path=biome.json .",
-    "check:write": "biome check --config-path=biome.json --write .",
-    "format": "biome format --config-path=biome.json --write .",
-    "format:check": "biome format --config-path=biome.json ."
+    "check": "ultracite check",
+    "check:write": "ultracite fix",
+    "format": "oxfmt .",
+    "format:check": "oxfmt --check ."
   },
   "keywords": [
     "http",

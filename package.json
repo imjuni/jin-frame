@@ -6,21 +6,22 @@
     "node": ">=22"
   },
   "scripts": {
-    "biome": "biome",
-    "check": "biome check .",
-    "check:write": "biome check --write .",
-    "format": "biome format --write .",
-    "format:check": "biome format .",
-    "lint": "biome lint .",
+    "check": "ultracite check",
+    "check:write": "ultracite fix",
+    "format": "oxfmt .",
+    "format:check": "oxfmt --check .",
+    "lint": "oxlint .",
     "build": "turbo run build",
     "bundle": "turbo run bundle",
     "test:hook": "turbo run test:hook",
     "prepare": "husky"
   },
   "devDependencies": {
-    "@biomejs/biome": "2.4.16",
     "husky": "9.1.7",
     "jiti": "^2.7.0",
-    "turbo": "^2.10.2"
+    "oxfmt": "^0.71.0",
+    "oxlint": "^1.86.0",
+    "turbo": "^2.10.2",
+    "ultracite": "7.12.2"
   }
 }
