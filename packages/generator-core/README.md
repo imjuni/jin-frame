@@ -40,7 +40,6 @@ import {
   createFrames,
   createOpenapiTs,
   load,
-  renderOpenapiTs,
   safePathJoin,
   validate,
 } from "@jin-frame/generator-core";
@@ -59,14 +58,14 @@ if (!validated.valid) {
 }
 
 const converted = await convertor(validated);
-const nodes = await createOpenapiTs(converted.document, {
+const source = await createOpenapiTs(converted.document, {
   version: 3,
   int64AsString: true,
 });
 
 const specTypeFilePath = pathe.join(output, "paths.d.ts");
 await fs.mkdir(output, { recursive: true });
-await fs.writeFile(specTypeFilePath, renderOpenapiTs(nodes));
+await fs.writeFile(specTypeFilePath, source);
 
 const frames = await createFrames({
   document: converted.document,
@@ -93,8 +92,7 @@ for (const frame of frames) {
 | `load()` | Loads an OpenAPI document from a local file or URL. JSON and YAML are supported. |
 | `validate()` | Validates whether the document is OpenAPI v2 or v3. |
 | `convertor()` | Converts Swagger/OpenAPI v2 documents to OpenAPI v3. |
-| `createOpenapiTs()` | Runs `openapi-typescript` and returns TypeScript AST nodes. |
-| `renderOpenapiTs()` | Renders the generated AST nodes as TypeScript source. |
+| `createOpenapiTs()` | Runs `openapi-typescript` and returns TypeScript source as a string. |
 | `createFrames()` | Generates frame source from an OpenAPI v3 document and a type definition path. |
 
 ## Generated Output
@@ -200,7 +198,7 @@ Each `securityProviders` key must match a security scheme name from the OpenAPI 
 Use `int64AsString` when 64-bit integer values should be handled as strings in JavaScript.
 
 ```ts
-const nodes = await createOpenapiTs(document, {
+const source = await createOpenapiTs(document, {
   version: 3,
   int64AsString: true,
 });

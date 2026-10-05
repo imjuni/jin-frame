@@ -6,7 +6,7 @@ packages:
   - '!**/test/**'
 
 catalog:
-  typescript: 6.0.3
+  typescript: 7.0.2
 
 engineStrict: true
 nodeVersion: 22.22.2

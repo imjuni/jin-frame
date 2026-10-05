@@ -60,7 +60,7 @@
 
 - [ ] 로컬 패키징 CLI 스모크 테스트
   - `@jin-frame/generator-core` 런타임 번들이 준비된 뒤, 로컬 Swagger/OpenAPI fixture로 전체 `frame-cli create` 파이프라인을 검증한다.
-  - 대상 흐름: `load -> validate -> convertor -> createOpenapiTs -> renderOpenapiTs -> createFrames -> write files`.
+  - 대상 흐름: `load -> validate -> convertor -> createOpenapiTs -> createFrames -> write files`.
   - 외부 공개 API나 원격 Swagger 문서에 의존하지 않는다.
 - [ ] 생성 결과 컴파일 확인
   - 임시 디렉터리에 frame을 생성하고 생성 결과에 대해 `tsc --noEmit`을 실행한다.
@@ -93,7 +93,7 @@
   - `generator-core`는 `generator-cli` option type을 참조하지 않는다.
   - CLI는 자체 option을 파싱하고 plain core option을 `createFrames()`에 전달한다.
 - [x] OpenAPI TypeScript 렌더링
-  - `renderOpenapiTs`는 `createOpenapiTs()`가 반환한 TypeScript AST를 렌더링한다.
+  - `createOpenapiTs()`는 `openapi-typescript`의 렌더러로 생성한 TypeScript 소스 문자열을 반환한다.
 - [x] Endpoint override 생성
   - `timeouts[path]`, `retries[path]`, `hosts[path]`를 `createFrames()`에서 입력받는다.
   - CLI는 반복 override 인자와 `frame-cli.config.*`를 같은 object shape으로 파싱한다.

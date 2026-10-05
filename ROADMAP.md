@@ -60,7 +60,7 @@
 
 - [ ] Local packaged CLI smoke test
   - Verify the full `frame-cli create` pipeline against a local Swagger/OpenAPI fixture after `@jin-frame/generator-core` runtime bundles are available.
-  - Target flow: `load -> validate -> convertor -> createOpenapiTs -> renderOpenapiTs -> createFrames -> write files`.
+  - Target flow: `load -> validate -> convertor -> createOpenapiTs -> createFrames -> write files`.
   - Do not depend on external public APIs or remote Swagger documents.
 - [ ] Generated output compilation check
   - Generate frames into a temporary directory and run `tsc --noEmit` against the output.
@@ -93,7 +93,7 @@
   - `generator-core` does not reference `generator-cli` option types.
   - CLI parses its own options and passes plain core options into `createFrames()`.
 - [x] OpenAPI TypeScript rendering
-  - `renderOpenapiTs` renders the TypeScript AST returned by `createOpenapiTs()`.
+  - `createOpenapiTs()` returns TypeScript source as a string using the renderer provided by `openapi-typescript`.
 - [x] Endpoint override generation
   - `timeouts[path]`, `retries[path]`, and `hosts[path]` are accepted by `createFrames()`.
   - CLI parses repeated override args and `frame-cli.config.*` into the same object shape.
