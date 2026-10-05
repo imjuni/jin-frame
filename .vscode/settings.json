@@ -30,11 +30,10 @@
     ".ctirc": "jsonc"
   },
   "github.copilot.nextEditSuggestions.enabled": false,
-  "editor.defaultFormatter": "biomejs.biome",
+  "editor.defaultFormatter": "oxc.oxc-vscode",
   "editor.formatOnSave": true,
   "editor.codeActionsOnSave": {
-    "source.fixAll.biome": "explicit",
-    "source.organizeImports.biome": "explicit"
+    "source.fixAll.oxc": "explicit"
   },
   "prettier.enable": false,
   "files.insertFinalNewline": true,
