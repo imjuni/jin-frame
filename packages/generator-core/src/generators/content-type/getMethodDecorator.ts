@@ -1,11 +1,9 @@
-import type { DecoratorStructure } from "ts-morph";
-import { StructureKind } from "ts-morph";
 import { applicationJsonContentType } from "#generators/content-type/applicationJsonContentType.js";
 import type { IGetMethodDecoratorProps } from "#generators/content-type/interfaces/IGetMethodDecoratorProps.js";
 import { getJsonArgument } from "#generators/json/getJsonArgument.js";
 import type { IJsonLiteralValue } from "#generators/json/interface/IJsonLiteralValue.js";
 
-export function getMethodDecorator(params: IGetMethodDecoratorProps): DecoratorStructure {
+export function getMethodDecorator(params: IGetMethodDecoratorProps): { name: string; arguments?: string[] } {
   const jsonLiteralValue: IJsonLiteralValue[] = [];
   const host = params.hostOverride ?? params.host;
 
@@ -42,7 +40,6 @@ export function getMethodDecorator(params: IGetMethodDecoratorProps): DecoratorS
 
   return {
     name: params.method,
-    kind: StructureKind.Decorator,
     arguments: decoratorArguments != null ? [decoratorArguments] : undefined,
   };
 }

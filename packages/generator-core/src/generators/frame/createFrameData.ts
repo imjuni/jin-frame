@@ -1,6 +1,5 @@
 import { pascalCase } from "change-case";
 import type { OpenAPIV3 } from "openapi-types";
-import type { OptionalKind, TypeAliasDeclarationStructure } from "ts-morph";
 import { getFrameResponseTypes } from "#generators/content-type/getFrameResponseTypes.js";
 import { getMethodDecorator } from "#generators/content-type/getMethodDecorator.js";
 import { getRequestContentType } from "#generators/content-type/getRequestContentType.js";
@@ -42,7 +41,7 @@ export function createFrameData(params: ICreateFrameProps): IFrameData {
     params.rootSecurity,
     params.securityProviders ?? new Map<string, ISecurityProviderReference>(),
   );
-  const typeAliases: OptionalKind<TypeAliasDeclarationStructure>[] = [];
+  const typeAliases: IFrameData["typeAliases"] = [];
   const parentFrameResponseTypes = responseTypes.map((responseType, index) => {
     if (responseType === "void") {
       return responseType;
