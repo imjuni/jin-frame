@@ -1,4 +1,4 @@
-import { createFrames, createOpenapiTs, load, renderOpenapiTs, safePathJoin } from "@jin-frame/generator-core";
+import { createFrames, createOpenapiTs, load, safePathJoin } from "@jin-frame/generator-core";
 import type { CommandContext } from "citty";
 import consola, { LogLevels, type LogType } from "consola";
 import pathe from "pathe";
@@ -26,10 +26,7 @@ export const createCommandRun = async ({ args }: CommandContext<typeof createCom
   consola.debug(`Resolving spec from "${specPath}"`);
   const converted = await resolveOpenapiDocument(spec.data, specPath);
 
-  const nodes = await createOpenapiTs(converted.document, transformArgvToOpenapiTsOptions(params));
-  consola.debug(`API endpoints: ${nodes.length}`);
-
-  const specSourceCode = renderOpenapiTs(nodes);
+  const specSourceCode = await createOpenapiTs(converted.document, transformArgvToOpenapiTsOptions(params));
 
   consola.debug(`Writing to ${params.output}`);
   const specFilePath = pathe.join(params.output, "paths.d.ts");

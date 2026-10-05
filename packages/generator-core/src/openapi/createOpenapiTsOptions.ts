@@ -1,5 +1,4 @@
-import type { OpenAPITSOptions } from "openapi-typescript";
-import ts from "typescript";
+import { type OpenAPITSOptions, STRING, tsNullable } from "openapi-typescript";
 import type { ICreateOpenapiTsOptions } from "#openapi/interfaces/ICreateOpenapiTsOptions.js";
 import { isInt64IntegerSchema } from "#openapi/isInt64IntegerSchema.js";
 import { isNullableSchema } from "#openapi/isNullableSchema.js";
@@ -21,10 +20,7 @@ export function createOpenapiTsOptions(option: ICreateOpenapiTsOptions): OpenAPI
       }
 
       if (isInt64IntegerSchema(schemaObject)) {
-        const stringType = ts.factory.createKeywordTypeNode(ts.SyntaxKind.StringKeyword);
-        return isNullableSchema(schemaObject)
-          ? ts.factory.createUnionTypeNode([stringType, ts.factory.createLiteralTypeNode(ts.factory.createNull())])
-          : stringType;
+        return isNullableSchema(schemaObject) ? tsNullable([STRING]) : STRING;
       }
 
       return undefined;

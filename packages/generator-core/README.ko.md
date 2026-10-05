@@ -40,7 +40,6 @@ import {
   createFrames,
   createOpenapiTs,
   load,
-  renderOpenapiTs,
   safePathJoin,
   validate,
 } from "@jin-frame/generator-core";
@@ -59,14 +58,14 @@ if (!validated.valid) {
 }
 
 const converted = await convertor(validated);
-const nodes = await createOpenapiTs(converted.document, {
+const source = await createOpenapiTs(converted.document, {
   version: 3,
   int64AsString: true,
 });
 
 const specTypeFilePath = pathe.join(output, "paths.d.ts");
 await fs.mkdir(output, { recursive: true });
-await fs.writeFile(specTypeFilePath, renderOpenapiTs(nodes));
+await fs.writeFile(specTypeFilePath, source);
 
 const frames = await createFrames({
   document: converted.document,
@@ -93,8 +92,7 @@ for (const frame of frames) {
 | `load()` | 로컬 파일 또는 URL에서 OpenAPI 문서를 읽습니다. JSON/YAML을 지원합니다. |
 | `validate()` | OpenAPI v2/v3 문서인지 검증합니다. |
 | `convertor()` | Swagger/OpenAPI v2 문서를 OpenAPI v3 문서로 변환합니다. |
-| `createOpenapiTs()` | `openapi-typescript`를 실행해 TypeScript AST를 생성합니다. |
-| `renderOpenapiTs()` | 생성된 AST를 TypeScript source로 출력합니다. |
+| `createOpenapiTs()` | `openapi-typescript`를 실행해 TypeScript 소스 문자열을 반환합니다. |
 | `createFrames()` | OpenAPI v3 문서와 타입 정의 경로를 바탕으로 frame source를 생성합니다. |
 
 ## 생성 결과
@@ -200,7 +198,7 @@ await createFrames({
 JavaScript에서 64-bit integer를 안전하게 다루기 어렵다면 `int64AsString`을 사용할 수 있습니다.
 
 ```ts
-const nodes = await createOpenapiTs(document, {
+const source = await createOpenapiTs(document, {
   version: 3,
   int64AsString: true,
 });

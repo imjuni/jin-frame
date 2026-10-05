@@ -1,25 +1,22 @@
-import ts from "typescript";
+import { transformSync } from "esbuild";
 import { describe, expect, it } from "vitest";
 import { renderDoc } from "#renderers/renderDoc.js";
 import { renderSecurityProviderSource } from "#renderers/renderSecurityProviderSource.js";
 import { renderTemplate } from "#renderers/renderTemplate.js";
 
 describe("Eta code generation", () => {
-  it("should preserve TypeScript expressions and Eta delimiters in data", () => {
+  it("should preserve TypeScript expressions and Eta delimiters when rendering data", () => {
     const source = renderTemplate("type Value = <%~ it.value %>;", { value: 'Array<string> | "<%~ injected %>"' });
     expect(source).toBe('type Value = Array<string> | "<%~ injected %>";');
   });
 
-  it("should keep a closing comment marker inside generated documentation", () => {
+  it("should escape a closing comment marker when generating documentation", () => {
     const source = `${renderDoc("Example */ unsafe")}\nexport class Example {}`;
     expect(source).toContain("Example * / unsafe");
-    expect(
-      ts.transpileModule(source, { compilerOptions: { target: ts.ScriptTarget.Latest }, reportDiagnostics: true })
-        .diagnostics,
-    ).toHaveLength(0);
+    expect(() => transformSync(source, { loader: "ts" })).not.toThrow();
   });
 
-  it("should generate a parseable security provider", () => {
+  it("should generate parseable code when rendering a security provider", () => {
     const source = renderSecurityProviderSource({
       schemeName: "bearer",
       className: "AuthProvider",
@@ -29,9 +26,6 @@ describe("Eta code generation", () => {
       constructorArguments: ['"bearer"'],
     });
     expect(source).toContain('super("bearer");');
-    expect(
-      ts.transpileModule(source, { compilerOptions: { target: ts.ScriptTarget.Latest }, reportDiagnostics: true })
-        .diagnostics,
-    ).toHaveLength(0);
+    expect(() => transformSync(source, { loader: "ts" })).not.toThrow();
   });
 });
