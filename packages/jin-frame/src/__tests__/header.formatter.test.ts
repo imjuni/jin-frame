@@ -9,10 +9,10 @@ import { JinFrame } from "#frames/JinFrame";
 @Post({ host: "http://some.api.google.com/jinframe/{passing}" })
 class Test001PostFrame extends JinFrame {
   @Param()
-  public declare readonly passing: string;
+  declare public readonly passing: string;
 
   @Header()
-  public declare readonly username: string;
+  declare public readonly username: string;
 
   @Header({
     replaceAt: "send-at",
@@ -20,16 +20,16 @@ class Test001PostFrame extends JinFrame {
       dateTime: (value) => lightFormat(value, `yyyyMMdd'T'HHmmss`),
     },
   })
-  public declare readonly sendAt: Date;
+  declare public readonly sendAt: Date;
 }
 
 @Post({ host: "http://some.api.google.com/jinframe/{passing}" })
 class Test002PostFrame extends JinFrame {
   @Param()
-  public declare readonly passing: string;
+  declare public readonly passing: string;
 
   @Header({ replaceAt: "uuu" })
-  public declare readonly username: string;
+  declare public readonly username: string;
 
   @Header({
     replaceAt: "send-at",
@@ -39,16 +39,16 @@ class Test002PostFrame extends JinFrame {
       dateTime: (value) => lightFormat(value, `yyyyMMdd'T'HHmmss`),
     },
   })
-  public declare readonly sendAt: Date[];
+  declare public readonly sendAt: Date[];
 }
 
 @Post({ host: "http://some.api.google.com/jinframe/{passing}" })
 class Test003PostFrame extends JinFrame {
   @Param()
-  public declare readonly passing: string;
+  declare public readonly passing: string;
 
   @Header()
-  public declare readonly username: string;
+  declare public readonly username: string;
 
   @Header({
     replaceAt: "send-at",
@@ -59,16 +59,16 @@ class Test003PostFrame extends JinFrame {
       dateTime: (value) => lightFormat(value, `yyyyMMdd'T'HHmmss`),
     },
   })
-  public declare readonly sendAt: string[];
+  declare public readonly sendAt: string[];
 }
 
 @Post({ host: "http://some.api.google.com/jinframe/{passing}" })
 class Test004PostFrame extends JinFrame {
   @Param()
-  public declare readonly passing: string;
+  declare public readonly passing: string;
 
   @Header()
-  public declare readonly username: string;
+  declare public readonly username: string;
 
   @Header({
     replaceAt: "send-at",
@@ -87,7 +87,7 @@ class Test004PostFrame extends JinFrame {
       },
     ],
   })
-  public declare readonly sendAt: number[];
+  declare public readonly sendAt: number[];
 }
 
 describe("JinFrame - Header with formatters", () => {

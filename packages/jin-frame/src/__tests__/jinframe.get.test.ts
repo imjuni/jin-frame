@@ -11,13 +11,13 @@ import type { JinResp } from "#interfaces/JinResp";
 @Get({ host: "http://some.api.google.com/jinframe/{passing}" })
 class TestGet3Frame extends JinFrame {
   @Param()
-  public declare readonly passing: string;
+  declare public readonly passing: string;
 
   @Query()
-  public declare readonly name: string;
+  declare public readonly name: string;
 
   @Query({ encode: true })
-  public declare readonly skill: string[];
+  declare public readonly skill: string[];
 
   override _preHook(req: JinRequestConfig): void {
     console.log("pre hook trigger: ", req);
@@ -32,13 +32,13 @@ class TestGet3Frame extends JinFrame {
 @Get({ host: "http://some.api.google.com/jinframe/{passing}" })
 class TestGet4Frame extends JinFrame {
   @Param()
-  public declare readonly passing: string;
+  declare public readonly passing: string;
 
   @Query()
-  public declare readonly name: string;
+  declare public readonly name: string;
 
   @Query({ encode: true })
-  public declare readonly skill: string[];
+  declare public readonly skill: string[];
 
   override async _preHook(req: JinRequestConfig): Promise<void> {
     console.log("pre hook trigger: ", req);
@@ -53,13 +53,13 @@ class TestGet4Frame extends JinFrame {
 @Get({ host: "http://some.api.google.com/jinframe/{passing}" })
 class TestGet5Frame extends JinFrame {
   @Param()
-  public declare readonly passing: string;
+  declare public readonly passing: string;
 
   @Query()
-  public declare readonly name: string;
+  declare public readonly name: string;
 
   @Query({ encode: false, keyFormat: "indices" })
-  public declare readonly skill: string[];
+  declare public readonly skill: string[];
 
   override _preHook(req: JinRequestConfig): void {
     console.log("pre hook trigger: ", req);
@@ -69,13 +69,13 @@ class TestGet5Frame extends JinFrame {
 @Get({ host: "http://some.api.google.com/jinframe/{passing}" })
 class TestGet6Frame extends JinFrame {
   @Param()
-  public declare readonly passing: string;
+  declare public readonly passing: string;
 
   @Query()
-  public declare readonly name: string;
+  declare public readonly name: string;
 
   @Query({ encode: false, keyFormat: "brackets" })
-  public declare readonly skill: string[];
+  declare public readonly skill: string[];
 
   override async _preHook(req: JinRequestConfig): Promise<void> {
     console.log("pre hook trigger: ", req);

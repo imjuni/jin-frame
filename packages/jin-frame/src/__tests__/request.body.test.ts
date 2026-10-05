@@ -69,13 +69,13 @@ const share: { first: IFirstBody; second: ISecondBody; third: IThirdBody } = {
 @Post({ host: "http://some.api.google.com/jinframe/{passing}" })
 class Test001PostFrame extends JinFrame {
   @Param()
-  public declare readonly passing: string;
+  declare public readonly passing: string;
 
   @Query()
-  public declare readonly name: string;
+  declare public readonly name: string;
 
   @Query({ encode: true })
-  public declare readonly skill: string[];
+  declare public readonly skill: string[];
 
   @Body({
     formatters: [
@@ -95,7 +95,7 @@ class Test001PostFrame extends JinFrame {
       },
     ],
   })
-  public declare readonly multipleFormatting: IFirstBody;
+  declare public readonly multipleFormatting: IFirstBody;
 
   constructor({ multipleFormatting }: { multipleFormatting: IFirstBody }) {
     super();
@@ -133,13 +133,13 @@ it("T001-object-type-field-multiple-formatting", async () => {
 @Post({ host: "http://some.api.google.com/jinframe/{passing}" })
 class Test002PostFrame extends JinFrame {
   @Param()
-  public declare readonly passing: string;
+  declare public readonly passing: string;
 
   @Query()
-  public declare readonly name: string;
+  declare public readonly name: string;
 
   @Query({ encode: true })
-  public declare readonly skill: string[];
+  declare public readonly skill: string[];
 
   @Body({
     formatters: [
@@ -159,7 +159,7 @@ class Test002PostFrame extends JinFrame {
       },
     ],
   })
-  public declare readonly hero: IFirstBody;
+  declare public readonly hero: IFirstBody;
 
   @Body({
     formatters: [
@@ -170,12 +170,12 @@ class Test002PostFrame extends JinFrame {
       },
     ],
   })
-  public declare readonly heroBio: ISecondBody;
+  declare public readonly heroBio: ISecondBody;
 
   @Body({
     replaceAt: "companion",
   })
-  public declare readonly thirdField: IThirdBody;
+  declare public readonly thirdField: IThirdBody;
 }
 
 it("T0002-many-object-field-multiple-formattin", async () => {

@@ -8,10 +8,10 @@ import { JinFrame } from "#frames/JinFrame";
 @Post({ host: "http://some.api.google.com/jinframe/{passing}" })
 class Test001PostFrame extends JinFrame {
   @Param()
-  public declare readonly passing: string;
+  declare public readonly passing: string;
 
   @ObjectBody()
-  public declare readonly ability: {
+  declare public readonly ability: {
     name: string;
     skill: string;
     count: number;
@@ -22,7 +22,7 @@ class Test001PostFrame extends JinFrame {
 @Post({ host: "http://some.api.google.com/jinframe/{passing}" })
 class Test002PostFrame extends JinFrame {
   @Param()
-  public declare readonly passing: string;
+  declare public readonly passing: string;
 
   @ObjectBody({
     formatters: {
@@ -30,7 +30,7 @@ class Test002PostFrame extends JinFrame {
       dateTime: (value) => lightFormat(value, "yyyy-MM-dd HH:mm:ss"),
     },
   })
-  public declare readonly ability: {
+  declare public readonly ability: {
     name: string;
     skill: string;
     count: number;
@@ -41,16 +41,16 @@ class Test002PostFrame extends JinFrame {
 @Post({ host: "http://some.api.google.com/jinframe/{passing}" })
 class Test003PostFrame extends JinFrame {
   @Param()
-  public declare readonly passing: string;
+  declare public readonly passing: string;
 
   @ObjectBody()
-  public declare readonly ability: string[];
+  declare public readonly ability: string[];
 }
 
 @Post({ host: "http://some.api.google.com/jinframe/{passing}" })
 class Test004PostFrame extends JinFrame {
   @Param()
-  public declare readonly passing: string;
+  declare public readonly passing: string;
 
   @ObjectBody({
     formatters: {
@@ -58,13 +58,13 @@ class Test004PostFrame extends JinFrame {
       dateTime: (value) => lightFormat(value, "yyyy-MM-dd HH:mm:ss"),
     },
   })
-  public declare readonly ability: Date[];
+  declare public readonly ability: Date[];
 }
 
 @Post({ host: "http://some.api.google.com/jinframe/{passing}" })
 class Test005PostFrame extends JinFrame {
   @Param()
-  public declare readonly passing: string;
+  declare public readonly passing: string;
 
   @ObjectBody({
     order: 2,
@@ -73,7 +73,7 @@ class Test005PostFrame extends JinFrame {
       dateTime: (value) => lightFormat(value, "yyyy-MM-dd HH:mm:ss"),
     },
   })
-  public declare readonly ability: Date[];
+  declare public readonly ability: Date[];
 
   @ObjectBody({
     order: 1,
@@ -82,18 +82,18 @@ class Test005PostFrame extends JinFrame {
       dateTime: (value) => lightFormat(value, "yyyy-MM-dd HH:mm:ss"),
     },
   })
-  public declare readonly birthAt: Date[];
+  declare public readonly birthAt: Date[];
 }
 
 @Post({ host: "http://some.api.google.com/jinframe/{passing}" })
 class Test006PostFrame extends JinFrame {
   @Param()
-  public declare readonly passing: string;
+  declare public readonly passing: string;
 
   @ObjectBody({
     order: 1,
   })
-  public declare readonly ability: string[];
+  declare public readonly ability: string[];
 
   @ObjectBody({
     order: 2,
@@ -102,13 +102,13 @@ class Test006PostFrame extends JinFrame {
       dateTime: (value) => lightFormat(value, "yyyy-MM-dd HH:mm:ss"),
     },
   })
-  public declare readonly birthAt: Date[];
+  declare public readonly birthAt: Date[];
 }
 
 @Post({ host: "http://some.api.google.com/jinframe/{passing}" })
 class Test007PostFrame extends JinFrame {
   @Param()
-  public declare readonly passing: string;
+  declare public readonly passing: string;
 
   @ObjectBody({
     order: 2,
@@ -117,7 +117,7 @@ class Test007PostFrame extends JinFrame {
       dateTime: (value) => lightFormat(value, "yyyy-MM-dd HH:mm:ss"),
     },
   })
-  public declare readonly ability: {
+  declare public readonly ability: {
     name: string;
     skill: string;
     count: number;
@@ -131,7 +131,7 @@ class Test007PostFrame extends JinFrame {
       dateTime: (value) => lightFormat(value, "yyyy-MM-dd HH:mm:ss"),
     },
   })
-  public declare readonly birthAt: Date[];
+  declare public readonly birthAt: Date[];
 }
 
 describe("JinFrame ObjectBody using Array", () => {

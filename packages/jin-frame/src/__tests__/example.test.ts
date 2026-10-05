@@ -39,10 +39,10 @@ class PokemonPagingFrame extends JinFrame {
 @Get({ host: "https://pokeapi.co/api/v2/pokemon/{name}" })
 export class PokemonFrame extends JinFrame {
   @Param()
-  public declare readonly name: string;
+  declare public readonly name: string;
 
   @Query()
-  public declare readonly tid: string;
+  declare public readonly tid: string;
 }
 
 describe("Real Request and Response", () => {

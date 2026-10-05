@@ -41,13 +41,13 @@ class CustomError extends Error {
 @Post({ host: "http://some.api.google.com/jinframe/{passing}" })
 class Test001PostFrame extends JinFrame<{ message: string }> {
   @Param()
-  public declare readonly passing: string;
+  declare public readonly passing: string;
 
   @Body()
-  public declare readonly username: string;
+  declare public readonly username: string;
 
   @Body()
-  public declare readonly password: string;
+  declare public readonly password: string;
 }
 
 @Post({
@@ -55,25 +55,25 @@ class Test001PostFrame extends JinFrame<{ message: string }> {
 })
 class Test002PostFrame extends JinFrame<{ message: string }> {
   @Param()
-  public declare readonly passing: string;
+  declare public readonly passing: string;
 
   @Body()
-  public declare readonly username: string;
+  declare public readonly username: string;
 
   @Body()
-  public declare readonly password: string;
+  declare public readonly password: string;
 }
 
 @Post({ host: "http://some.api.google.com/jinframe/{passing}" })
 class Test003PostFrame extends JinFrame<{ message: string }> {
   @Param()
-  public declare readonly passing: string;
+  declare public readonly passing: string;
 
   @Body()
-  public declare readonly username: string;
+  declare public readonly username: string;
 
   @Body()
-  public declare readonly password: string;
+  declare public readonly password: string;
 
   accessor postHookCount = 0;
 
@@ -100,13 +100,13 @@ class Test003PostFrame extends JinFrame<{ message: string }> {
 })
 class Test004PostFrame extends JinFrame<{ message: string }> {
   @Param()
-  public declare readonly passing: string;
+  declare public readonly passing: string;
 
   @Body()
-  public declare readonly username: string;
+  declare public readonly username: string;
 
   @Body()
-  public declare readonly password: string;
+  declare public readonly password: string;
 
   accessor postHookCount = 0;
 
@@ -159,13 +159,13 @@ class Test005PostFrameValidator extends BaseValidator<
 })
 class Test005PostFrame extends JinFrame<{ message: string }> {
   @Param()
-  public declare readonly passing: string;
+  declare public readonly passing: string;
 
   @Body()
-  public declare readonly username: string;
+  declare public readonly username: string;
 
   @Body()
-  public declare readonly password: string;
+  declare public readonly password: string;
 }
 
 @Post({
@@ -174,13 +174,13 @@ class Test005PostFrame extends JinFrame<{ message: string }> {
 })
 class Test006PostFrame extends JinFrame<{ message: string }> {
   @Param()
-  public declare readonly passing: string;
+  declare public readonly passing: string;
 
   @Body()
-  public declare readonly username: string;
+  declare public readonly username: string;
 
   @Body()
-  public declare readonly password: string;
+  declare public readonly password: string;
 }
 
 @Validator({ pass: new Test005PostFrameValidator("exception") })
@@ -189,13 +189,13 @@ class Test006PostFrame extends JinFrame<{ message: string }> {
 })
 class Test007PostFrame extends JinFrame<{ message: string }> {
   @Param()
-  public declare readonly passing: string;
+  declare public readonly passing: string;
 
   @Body()
-  public declare readonly username: string;
+  declare public readonly username: string;
 
   @Body()
-  public declare readonly password: string;
+  declare public readonly password: string;
 }
 
 @Dedupe()
@@ -205,22 +205,22 @@ class Test007PostFrame extends JinFrame<{ message: string }> {
 })
 class Test008PostFrame extends JinFrame<{ message: string }> {
   @Query({ cacheKeyExclude: true })
-  public declare readonly q: string;
+  declare public readonly q: string;
 
   @Header()
-  public declare readonly Authorization: string;
+  declare public readonly Authorization: string;
 
   @Param({ replaceAt: "pass_key" })
-  public declare readonly passing: string;
+  declare public readonly passing: string;
 
   @Body()
-  public declare readonly username: string;
+  declare public readonly username: string;
 
   @Body()
-  public declare readonly password: string;
+  declare public readonly password: string;
 
   @ObjectBody({ cacheKeyExcludePaths: ["code"] })
-  public declare readonly body: {
+  declare public readonly body: {
     team: string;
     code: number;
   };
@@ -885,13 +885,13 @@ describe("hook count either frame test", () => {
     }) // Use a non-routable IP to trigger timeout errors.
     class TimeoutRetryFrame extends JinFrame {
       @Param()
-      public declare readonly passing: string;
+      declare public readonly passing: string;
 
       @Body()
-      public declare readonly username: string;
+      declare public readonly username: string;
 
       @Body()
-      public declare readonly password: string;
+      declare public readonly password: string;
 
       override _retryFail(_req: JinRequestConfig, _prevResponse: Response) {
         hookCallCount += 1;
@@ -937,13 +937,13 @@ describe("hook count either frame test", () => {
     }) // max: 0으로 바로 332라인 테스트
     class ExhaustRetryFrame extends JinFrame {
       @Param()
-      public declare readonly passing: string;
+      declare public readonly passing: string;
 
       @Body()
-      public declare readonly username: string;
+      declare public readonly username: string;
 
       @Body()
-      public declare readonly password: string;
+      declare public readonly password: string;
 
       $_retryFail(_req: any, _prevResponse: any) {
         hookExecutions += 1;
@@ -1122,7 +1122,7 @@ describe("JinFrame fail validation test", () => {
     })
     class FailValidationFrame extends JinFrame {
       @Param()
-      public declare readonly passing: string;
+      declare public readonly passing: string;
     }
 
     const frame = FailValidationFrame.of({ passing: "pass" });
@@ -1145,7 +1145,7 @@ describe("JinFrame fail validation test", () => {
     @Post({ host: "http://some.api.google.com/jinframe/{passing}" })
     class NoValidatorFrame extends JinFrame {
       @Param()
-      public declare readonly passing: string;
+      declare public readonly passing: string;
     }
 
     const frame = NoValidatorFrame.of({ passing: "pass" });
@@ -1178,7 +1178,7 @@ describe("JinFrame fail validation test", () => {
     })
     class StrictFrame extends JinFrame {
       @Param()
-      public declare readonly passing: string;
+      declare public readonly passing: string;
     }
 
     const frame = StrictFrame.of({ passing: "pass" });
@@ -1224,10 +1224,10 @@ describe("JinFrame Cookie decorator test", () => {
     @Get({ host: "http://cookie.api.example.com", path: "/items" })
     class CookieFrame extends JinFrame<{ message: string }> {
       @Cookie()
-      public declare readonly sessionId: string;
+      declare public readonly sessionId: string;
 
       @Cookie({ replaceAt: "auth_token" })
-      public declare readonly token: string;
+      declare public readonly token: string;
     }
 
     const frame = CookieFrame.of({ sessionId: "abc123", token: "xyz789" });
@@ -1250,7 +1250,7 @@ describe("JinFrame Cookie decorator test", () => {
     @Post({ host: "http://cookie.api.example.com", path: "/items" })
     class NoCookieFrame extends JinFrame<{ message: string }> {
       @Body()
-      public declare readonly name: string;
+      declare public readonly name: string;
     }
 
     const frame = NoCookieFrame.of({ name: "test" });
@@ -1297,7 +1297,7 @@ describe("JinFrame coverage branches", () => {
     })
     class SignalFrame extends JinFrame<{ message: string }> {
       @Body()
-      public declare readonly name: string;
+      declare public readonly name: string;
     }
 
     const controller = new AbortController();
@@ -1314,7 +1314,7 @@ describe("JinFrame coverage branches", () => {
     })
     class InvalidMultipartFrame extends JinFrame<{ message: string }> {
       @Body()
-      public declare readonly file: string;
+      declare public readonly file: string;
     }
 
     const frame = new InvalidMultipartFrame();
@@ -1328,7 +1328,7 @@ describe("JinFrame coverage branches", () => {
     @Post({ host: "http://branch.api.example.com", path: "/clone" })
     class CloneRawFrame extends JinFrame<{ message: string }> {
       @Body()
-      public declare readonly name: string;
+      declare public readonly name: string;
     }
 
     const frame = CloneRawFrame.of({ name: "test" });
@@ -1345,7 +1345,7 @@ describe("JinFrame coverage branches", () => {
     @Post({ host: "http://branch.api.example.com", path: "/deserialize" })
     class DeserializeFrame extends JinFrame<{ value: number }> {
       @Body()
-      public declare readonly name: string;
+      declare public readonly name: string;
     }
 
     const frame = DeserializeFrame.of({ name: "test" });
@@ -1362,7 +1362,7 @@ describe("JinFrame coverage branches", () => {
     @Post({ host: "http://branch.api.example.com", path: "/empty" })
     class EmptyBodyFrame extends JinFrame<undefined> {
       @Body()
-      public declare readonly name: string;
+      declare public readonly name: string;
     }
 
     const frame = EmptyBodyFrame.of({ name: "test" });
@@ -1377,7 +1377,7 @@ describe("JinFrame coverage branches", () => {
     @Get({ host: "http://branch.api.example.com", path: "/items/{id}" })
     class OptionUrlFrame extends JinFrame<{ message: string }> {
       @Param()
-      public declare readonly id: string;
+      declare public readonly id: string;
     }
 
     const frame = OptionUrlFrame.of({ id: "99" });
@@ -1393,7 +1393,7 @@ describe("JinFrame coverage branches", () => {
     @Post({ path: "/api/resource" })
     class PathOnlyFrame extends JinFrame<{ message: string }> {
       @Body()
-      public declare readonly name: string;
+      declare public readonly name: string;
     }
 
     const frame = PathOnlyFrame.of({ name: "test" });
@@ -1502,7 +1502,7 @@ describe("validateStatus in FrameOption", () => {
   })
   class ValidateStatusFrame extends JinFrame<{ message: string }> {
     @Body()
-    public declare readonly username: string;
+    declare public readonly username: string;
   }
 
   const server = setupServer();

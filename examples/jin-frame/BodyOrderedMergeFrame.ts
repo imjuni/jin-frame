@@ -42,13 +42,13 @@ interface IThirdBody {
 @Get({ host: "http://some.api.google.com", path: "/jinframe/:passing" })
 export default class BodyOrderedMergeFrame extends JinFrame {
   @Param()
-  public declare readonly passing: string;
+  declare public readonly passing: string;
 
   @Query()
-  public declare readonly name: string;
+  declare public readonly name: string;
 
   @Query({ encode: true })
-  public declare readonly skill: string[];
+  declare public readonly skill: string[];
 
   @ObjectBody({
     order: 3,
@@ -69,7 +69,7 @@ export default class BodyOrderedMergeFrame extends JinFrame {
       },
     ],
   })
-  public declare readonly firstBody: IFirstBody;
+  declare public readonly firstBody: IFirstBody;
 
   @ObjectBody({
     order: 1,
@@ -81,10 +81,10 @@ export default class BodyOrderedMergeFrame extends JinFrame {
       },
     ],
   })
-  public declare readonly secondBody: ISecondBody;
+  declare public readonly secondBody: ISecondBody;
 
   @ObjectBody({
     order: 2,
   })
-  public declare readonly thirdBody: IThirdBody;
+  declare public readonly thirdBody: IThirdBody;
 }

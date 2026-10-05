@@ -8,7 +8,7 @@ import { JinFrame } from "#frames/JinFrame";
 @Post({ host: "http://some.api.google.com/jinframe/{passing}" })
 class Test001PostFrame extends JinFrame {
   @Param()
-  public declare readonly passing: string;
+  declare public readonly passing: string;
 
   @ObjectBody({
     formatters: [
@@ -27,7 +27,7 @@ class Test001PostFrame extends JinFrame {
       },
     ],
   })
-  public declare readonly ability: {
+  declare public readonly ability: {
     name: string;
     date: Date;
     desc: string;
