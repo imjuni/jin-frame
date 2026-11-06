@@ -41,7 +41,7 @@ Why `jin-frame`?
   - [Field decorators](#field-decorators)
 - [Inheritance](#inheritance)
 - [Builder Pattern](#builder-pattern)
-- [Pass / Fail Response](#pass--fail-response)
+- [Response status unions](#response-status-unions)
 - [Retry, Timeout](#retry-timeout)
 - [Authorization](#authorization)
 - [validateStatus](#validatestatus)
@@ -183,17 +183,22 @@ const reply = await frame._execute();
 const frame = PokemonFrame.of((b) => b.set('name', 'pikachu').set('tid', randomUUID()));
 ```
 
-## Pass / Fail Response
+## Response status unions
 
-`_execute()` returns a discriminated union typed by `ok`:
+`JinFrame` takes one `{ status, data }` response union. Checking `status` narrows the corresponding `data` type.
 
 ```ts
-const reply = await frame._execute<MyFrame, Pokemon, ErrorBody>();
+type PokemonResponse =
+  | { status: 200; data: Pokemon }
+  | { status: 404; data: ErrorBody };
 
-if (reply.ok) {
-  console.log(reply.data); // typed as Pokemon
+class PokemonFrame extends JinFrame<PokemonResponse> {}
+
+const reply = await frame._execute({ validateStatus: () => true });
+if (reply.status === 200) {
+  console.log(reply.data);
 } else {
-  console.error(reply.data); // typed as ErrorBody
+  console.error(reply.data);
 }
 ```
 
@@ -324,3 +329,12 @@ Full documentation: **[https://imjuni.github.io/jin-frame/](https://imjuni.githu
 ## License
 
 This software is licensed under the [MIT](LICENSE).
+
+
+### Generated response status unions
+
+The OpenAPI generator combines documented numeric 2xx–5xx responses into a `{ status, data }` union passed as the single `JinFrame` type argument. Checking `status` narrows `data` to that response's type. Responses without a body use `undefined` data.
+
+Non-2xx responses throw by default. Use `_execute({ validateStatus: () => true })` to receive error responses directly. This option changes runtime acceptance only; the generated union always includes all documented numeric statuses. Range keys such as `2XX` and `default` are not included in the numeric literal union.
+
+This is a breaking type API change. Migrate `JinFrame<DTO>` to `JinFrame<{ status: number; data: DTO }>` or a status-specific union. `JinPassResp` and `JinFailResp` are replaced by `JinResp<Response>`. The `validators.pass/fail` settings still select validators for accepted and rejected responses.

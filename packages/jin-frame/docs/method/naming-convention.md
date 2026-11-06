@@ -56,7 +56,7 @@ Static methods are called on the class itself (`MyFrame.of(...)`, `MyFrame.build
 | (none)  | Static methods | — | Yes |
 
 ```typescript
-class MyFrame extends JinFrame<Result> {
+class MyFrame extends JinFrame<{ status: number; data: Result }> {
   // User-defined fields — any name, no prefix required
   @Query()
   declare public readonly retry: number; // safe — no collision with _retry internal

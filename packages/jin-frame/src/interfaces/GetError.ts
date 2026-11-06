@@ -3,9 +3,6 @@ import type { JinRespError } from "#exceptions/JinRespError";
 import type { JinValidationError } from "#exceptions/JinValidationError";
 import type { JinFrame } from "#frames/JinFrame";
 
-export type GetError<TFRAME extends JinFrame<TPASS, TFAIL>, TPASS, TFAIL, TValidationError = unknown> = (
-  err:
-    | JinCreateError<TFRAME, TPASS, TFAIL>
-    | JinRespError<TPASS, TFAIL>
-    | JinValidationError<TPASS, TFAIL, TValidationError>,
+export type GetError<TFRAME extends JinFrame<Response>, Response, TValidationError = unknown> = (
+  err: JinCreateError<TFRAME> | JinRespError<Response> | JinValidationError<Response, TValidationError>,
 ) => Error;

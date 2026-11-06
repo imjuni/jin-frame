@@ -17,7 +17,7 @@ import { randomUUID } from 'crypto';
 
 @Timeout(3_000)
 @Get({ host: 'https://pokeapi.co' })
-class PokemonAPI<PASS = unknown, FAIL = unknown> extends JinFrame<PASS, FAIL> {
+class PokemonAPI<PASS = unknown, FAIL = unknown> extends JinFrame<{ status: number; data: PASS | FAIL }> {
   @Query()
   public declare readonly tid: string;
 
@@ -48,7 +48,6 @@ class PokemonByNameId extends PokemonAPI<IPokemonData> {
 팩토리 메서드 `of`를 직접 사용할 경우, 타입 안정성을 위해 모든 필드를 명시해야 합니다. 이런 경우에는 Builder 패턴을 이용하면 훨씬 편리합니다.
 
 ```ts
-// set 방식
 const frame = PokemonByNameId.of(b => b.set('name', 'pikachu'));
 const reply = await frame.execute();
 
@@ -66,7 +65,7 @@ const reply = await frame.execute();
 ```ts
 @Timeout(5_000)
 @Get({ host: 'https://pokeapi.co' })
-class PokeBaseFrame<P = unknown, F = unknown> extends JinFrame<P, F> {
+class PokeBaseFrame<P = unknown, F = unknown> extends JinFrame<{ status: number; data: P | F }> {
 }
 
 @Retry({ max: 5, interval: 1000 }) // 재시도 설정 추가
@@ -102,13 +101,13 @@ class PokemonPaging extends PokeBaseFrame {
 ```ts
 @Timeout(3_000)
 @Get({ host: 'https://pokeapi.co' })
-class PokemonAPI<PASS = unknown, FAIL = unknown> extends JinFrame<PASS, FAIL> {
+class PokemonAPI<PASS = unknown, FAIL = unknown> extends JinFrame<{ status: number; data: PASS | FAIL }> {
   @Query()
   public declare readonly tid: string;
 
   override async _postHook(
     _req: JinRequestConfig,
-    reply: JinResp<PASS, FAIL>,
+    reply: JinResp<{ status: number; data: PASS | FAIL }>,
     _debugInfo: DebugInfo,
   ) {
     if (!reply.ok) {
@@ -130,7 +129,7 @@ class PokemonByNameId extends PokemonAPI<IPokemonData> {
 
   override async _postHook(
     _req: JinRequestConfig,
-    reply: JinResp<IPokemonData, unknown>,
+    reply: JinResp<{ status: number; data: IPokemonData | unknown }>,
     _debugInfo: DebugInfo,
   ) {
     // 부모 Hook 실행

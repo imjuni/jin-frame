@@ -15,7 +15,7 @@ import { Get, JinFrame } from 'jin-frame';
 import type { JinRequestConfig } from 'jin-frame';
 
 @Get({ host: 'https://api.example.com', path: '/users/{id}' })
-class GetUserFrame extends JinFrame<User> {
+class GetUserFrame extends JinFrame<{ status: number; data: User }> {
   @Param()
   declare public readonly id: string;
 
@@ -49,13 +49,13 @@ import { Get, JinFrame } from 'jin-frame';
 import type { JinRequestConfig, JinResp, DebugInfo } from 'jin-frame';
 
 @Get({ host: 'https://api.example.com', path: '/users/{id}' })
-class GetUserFrame extends JinFrame<User> {
+class GetUserFrame extends JinFrame<{ status: number; data: User }> {
   @Param()
   declare public readonly id: string;
 
   protected override _postHook(
     req: JinRequestConfig,
-    reply: JinResp<User>,
+    reply: JinResp<{ status: number; data: User }>,
     debug: DebugInfo,
   ): void {
     console.log(`[${reply.ok ? 'OK' : 'FAIL'}] ${req.url} — ${debug.duration}ms`);
@@ -68,7 +68,7 @@ class GetUserFrame extends JinFrame<User> {
 ```ts
 protected _postHook(
   req: JinRequestConfig,
-  reply: JinResp<Pass, Fail>,
+  reply: JinResp<{ status: number; data: Pass | Fail }>,
   debugInfo: DebugInfo,
 ): void | Promise<void>
 ```
@@ -76,7 +76,7 @@ protected _postHook(
 | Parameter   | Type                    | Description                            |
 | ----------- | ----------------------- | -------------------------------------- |
 | `req`       | `JinRequestConfig`      | The request config that was sent       |
-| `reply`     | `JinResp<Pass, Fail>`   | Discriminated-union response (`ok: true \| false`) |
+| `reply`     | `JinResp<Response>`   | Discriminated-union response (`ok: true \| false`) |
 | `debugInfo` | `DebugInfo`             | Timing and deduplication metadata      |
 
 ### DebugInfo
@@ -103,7 +103,7 @@ import { Post, JinFrame } from 'jin-frame';
 import type { JinRequestConfig } from 'jin-frame';
 
 @Post({ host: 'https://api.example.com', path: '/submit', retry: { max: 3, interval: 500 } })
-class SubmitFrame extends JinFrame<Result> {
+class SubmitFrame extends JinFrame<{ status: number; data: Result }> {
   @Body()
   declare public readonly payload: string;
 
@@ -139,7 +139,7 @@ import { Post, JinFrame } from 'jin-frame';
 import type { JinRequestConfig } from 'jin-frame';
 
 @Post({ host: 'https://api.example.com', path: '/submit', retry: { max: 3, interval: 500 } })
-class SubmitFrame extends JinFrame<Result> {
+class SubmitFrame extends JinFrame<{ status: number; data: Result }> {
   @Body()
   declare public readonly payload: string;
 
@@ -201,15 +201,15 @@ sequenceDiagram
         JinFrame->>JinFrame: parse response body
         alt validateStatus passes
             JinFrame->>JinFrame: run pass validator
-            JinFrame->>JinFrame: _postHook(req, JinPassResp, debugInfo)
+            JinFrame->>JinFrame: _postHook(req, JinResp, debugInfo)
             alt validator passes OR type = 'value'
-                JinFrame-->>Caller: JinPassResp ✓
+                JinFrame-->>Caller: JinResp ✓
             else validator fails AND type = 'exception'
                 JinFrame-->>Caller: throw JinValidationError
             end
         else validateStatus fails (retries exhausted)
             JinFrame->>JinFrame: run fail validator
-            JinFrame->>JinFrame: _postHook(req, JinFailResp, debugInfo)
+            JinFrame->>JinFrame: _postHook(req, JinResp, debugInfo)
             JinFrame-->>Caller: throw JinRespError
         end
     else last result = Error (network error, retries exhausted)
@@ -237,7 +237,7 @@ The hooks pattern is especially useful when combined with inheritance. Define ho
 import { JinFrame } from 'jin-frame';
 import type { JinRequestConfig, JinResp, DebugInfo } from 'jin-frame';
 
-abstract class ApiBase<Pass, Fail = Pass> extends JinFrame<Pass, Fail> {
+abstract class ApiBase<Pass, Fail = Pass> extends JinFrame<{ status: number; data: Pass | Fail }> {
   protected override async _preHook(req: JinRequestConfig): Promise<void> {
     const token = await tokenStore.get();
     req.headers = { ...req.headers, Authorization: `Bearer ${token}` };
@@ -245,7 +245,7 @@ abstract class ApiBase<Pass, Fail = Pass> extends JinFrame<Pass, Fail> {
 
   protected override _postHook(
     req: JinRequestConfig,
-    reply: JinResp<Pass, Fail>,
+    reply: JinResp<{ status: number; data: Pass | Fail }>,
     debug: DebugInfo,
   ): void {
     metrics.record({ url: req.url, status: reply.status, duration: debug.duration });

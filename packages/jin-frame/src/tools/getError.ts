@@ -3,16 +3,10 @@ import type { JinRespError } from "#exceptions/JinRespError";
 import type { JinValidationError } from "#exceptions/JinValidationError";
 import type { JinFrame } from "#frames/JinFrame";
 
-export function getError<TPASS, TFAIL, TFRAME extends JinFrame<TPASS, TFAIL>, TValidationError = unknown>(
-  err:
-    | JinCreateError<TFRAME, TPASS, TFAIL>
-    | JinRespError<TPASS, TFAIL>
-    | JinValidationError<TPASS, TFAIL, TValidationError>,
+export function getError<Response, TFRAME extends JinFrame<Response>, TValidationError = unknown>(
+  err: JinCreateError<TFRAME> | JinRespError<Response> | JinValidationError<Response, TValidationError>,
   handler?: (
-    err:
-      | JinCreateError<TFRAME, TPASS, TFAIL>
-      | JinRespError<TPASS, TFAIL>
-      | JinValidationError<TPASS, TFAIL, TValidationError>,
+    err: JinCreateError<TFRAME> | JinRespError<Response> | JinValidationError<Response, TValidationError>,
   ) => Error,
 ): Error {
   if (handler != null) {

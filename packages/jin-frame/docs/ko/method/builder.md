@@ -16,7 +16,7 @@ outline: deep
 import { Get, Param, Query, JinFrame } from 'jin-frame';
 
 @Get({ host: 'https://api.example.com', path: '/users/{id}' })
-class GetUserFrame extends JinFrame<User> {
+class GetUserFrame extends JinFrame<{ status: number; data: User }> {
   @Param()
   declare public readonly id: string;
 
@@ -78,7 +78,7 @@ const frame = GetUserFrame.builder()
 
 ```ts
 @Get({ host: 'https://api.example.com', path: '/users/{id}' })
-class AuthedFrame extends JinFrame<User> {
+class AuthedFrame extends JinFrame<{ status: number; data: User }> {
   constructor(private readonly tenant: string) {
     super();
   }
@@ -102,7 +102,7 @@ const frame2 = AuthedFrame.builder('acme').set('id', '123').build();
 
 ```ts
 @Get({ host: 'https://api.example.com', path: '/users' })
-class ListUsersFrame extends JinFrame<User[]> {
+class ListUsersFrame extends JinFrame<{ status: number; data: User[] }> {
   @Query()
   declare public readonly page: number;
 

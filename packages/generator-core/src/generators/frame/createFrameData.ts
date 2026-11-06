@@ -1,6 +1,6 @@
+import { getFrameResponseTypes } from "#generators/content-type/getFrameResponseTypes.js";
 import { pascalCase } from "change-case";
 import type { OpenAPIV3 } from "openapi-types";
-import { getFrameResponseTypes } from "#generators/content-type/getFrameResponseTypes.js";
 import { getMethodDecorator } from "#generators/content-type/getMethodDecorator.js";
 import { getRequestContentType } from "#generators/content-type/getRequestContentType.js";
 import { getParameterAliasName } from "#generators/frame/getParameterAliasName.js";
@@ -31,31 +31,22 @@ export function createFrameData(params: ICreateFrameProps): IFrameData {
   const docs = getClassJsDoc(params);
   const requestContentType = getRequestContentType(params.operation.requestBody);
   const operationTypePath = `paths['${params.pathKey}']['${originMethod}']`;
-  const responseTypes = getFrameResponseTypes({
-    method: originMethod,
-    pathKey: params.pathKey,
-    responses: params.operation.responses,
-  });
   const securityProviders = getFrameSecurityProviders(
     params.operation.security,
     params.rootSecurity,
     params.securityProviders ?? new Map<string, ISecurityProviderReference>(),
   );
   const typeAliases: IFrameData["typeAliases"] = [];
-  const parentFrameResponseTypes = responseTypes.map((responseType, index) => {
-    if (responseType === "void") {
-      return responseType;
-    }
-
-    const aliasName = index === 0 ? "SuccessResponse" : "FailResponse";
-    typeAliases.push({
-      name: aliasName,
-      type: responseType,
-      docs: [{ description: "Response DTO" }],
-      isExported: false,
-    });
-
-    return aliasName;
+  const statusResponses = getFrameResponseTypes({
+    method: originMethod,
+    pathKey: params.pathKey,
+    responses: params.operation.responses,
+  });
+  typeAliases.push({
+    name: "OperationResponse",
+    type: statusResponses.join(" | ") || "never",
+    docs: [{ description: "Response DTO" }],
+    isExported: false,
   });
   const methodDecorator = getMethodDecorator({
     host: params.host,
@@ -218,6 +209,6 @@ export function createFrameData(params: ICreateFrameProps): IFrameData {
     ].filter((decorator) => decorator != null),
     properties,
     parentFrame: params.baseFrame ?? "JinFrame",
-    responseTypes: parentFrameResponseTypes,
+    responseTypes: ["OperationResponse"],
   };
 }

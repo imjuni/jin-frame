@@ -139,7 +139,7 @@ import { paths } from "../petstore.js";
 /**
  * Response DTO
  */
-type SuccessResponse = paths['/pet/findByStatus/{status}']['get']['responses']['200']['content']['application/json'];
+type OperationResponse = { status: 200; data: paths['/pet/findByStatus/{status}']['get']['responses'][200]['content']["application/json"] } | { status: 400; data: undefined };
 
 /**
  * Request DTO
@@ -159,7 +159,7 @@ type FrameRequestBody = NonNullable<paths['/pet/findByStatus/{status}']['get']['
  * @tag pet, cat
  */
 @Get({ host: 'https://pokeapi.co', path: '/pet/findByStatus/{status}' })
-export class GetPetFindByStatusStatusFrame extends JinFrame<SuccessResponse, void> {
+export class GetPetFindByStatusStatusFrame extends JinFrame<OperationResponse> {
     /**
      * Status values that need to be considered for filter
      *
@@ -242,7 +242,7 @@ import { paths } from "../petstore.js";
 /**
  * Response DTO
  */
-type SuccessResponse = paths['/pet/findByStatus/{status}']['get']['responses']['200']['content']['application/json'];
+type OperationResponse = { status: 200; data: paths['/pet/findByStatus/{status}']['get']['responses'][200]['content']["application/json"] } | { status: 400; data: undefined };
 
 /**
  * Request DTO
@@ -262,7 +262,7 @@ type FrameRequestBody = NonNullable<paths['/pet/findByStatus/{status}']['get']['
  * @tag pet, cat
  */
 @Get({ host: 'https://pokeapi.co', path: '/pet/findByStatus/{status}', contentType: 'multipart/form-data' })
-export class GetPetFindByStatusStatusFrame extends JinFrame<SuccessResponse, void> {
+export class GetPetFindByStatusStatusFrame extends JinFrame<OperationResponse> {
     /**
      * Status values that need to be considered for filter
      *

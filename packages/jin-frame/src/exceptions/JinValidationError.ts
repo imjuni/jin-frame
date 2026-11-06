@@ -1,17 +1,17 @@
 import type { JinFrame } from "#frames/JinFrame";
 import type { DebugInfo } from "#interfaces/DebugInfo";
-import type { JinPassResp } from "#interfaces/JinPassResp";
+import type { JinResp, JinResponse } from "#interfaces/JinResp";
 import type { ValidationResult } from "#interfaces/ValidationResult";
 import type { BaseValidator } from "#validators/BaseValidator";
 
-export class JinValidationError<Pass, Fail = unknown, ValidationError = unknown> extends Error {
+export class JinValidationError<Response = JinResponse, ValidationError = unknown> extends Error {
   __discriminator = "JinValidationError";
 
   #debug: DebugInfo;
 
-  #frame: JinFrame<Pass, Fail>;
+  #frame: JinFrame<Response>;
 
-  #resp: JinPassResp<Pass>;
+  #resp: JinResp<Response>;
 
   #status: number;
 
@@ -30,8 +30,8 @@ export class JinValidationError<Pass, Fail = unknown, ValidationError = unknown>
     validated,
   }: {
     debug: DebugInfo;
-    frame: JinFrame<Pass, Fail>;
-    resp: JinPassResp<Pass>;
+    frame: JinFrame<Response>;
+    resp: JinResp<Response>;
     message: string;
     validator: BaseValidator;
     validated: ValidationResult<ValidationError>;
@@ -51,11 +51,11 @@ export class JinValidationError<Pass, Fail = unknown, ValidationError = unknown>
     return this.#debug;
   }
 
-  get frame(): JinFrame<Pass, Fail> {
+  get frame(): JinFrame<Response> {
     return this.#frame;
   }
 
-  get resp(): JinPassResp<Pass> | undefined {
+  get resp(): JinResp<Response> | undefined {
     return this.#resp;
   }
 

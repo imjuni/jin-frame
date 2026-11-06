@@ -78,7 +78,6 @@ export class AdminUserFrame extends JinFrame {}
 `SecurityKey` 타입은 `string | (() => string | Promise<string>)`입니다. 이를 통해 환경 변수, 시크릿 매니저 등 다양한 소스에서 요청 시점에 토큰을 가져올 수 있습니다.
 
 ```ts
-// 정적 문자열
 @Security(new BearerTokenProvider(), 'static-token')
 
 // 환경 변수에서 (요청 시점에 해석)
@@ -96,7 +95,7 @@ export class AdminUserFrame extends JinFrame {}
   path: '/secure',
 })
 @Security(new BearerTokenProvider(), async () => await vault.getSecret('api-token'))
-class SecureFrame extends JinFrame<Response> {}
+class SecureFrame extends JinFrame<{ status: number; data: Response }> {}
 ```
 
 ## BearerTokenProvider.setKey()
@@ -182,7 +181,6 @@ export class UserProfileFrame extends JinFrame {
 `OAuth2Provider`가 제거되었습니다. `BearerTokenProvider`로 대체하세요:
 
 ```ts
-// Before (v4.x)
 @Security(new OAuth2Provider('oauth2', 'Bearer'))
 @Authorization({ accessToken: 'oauth-access-token-xyz', tokenType: 'Bearer' })
 

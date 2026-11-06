@@ -15,7 +15,7 @@ import { Get, JinFrame } from 'jin-frame';
 import type { JinRequestConfig } from 'jin-frame';
 
 @Get({ host: 'https://api.example.com', path: '/users/{id}' })
-class GetUserFrame extends JinFrame<User> {
+class GetUserFrame extends JinFrame<{ status: number; data: User }> {
   @Param()
   declare public readonly id: string;
 
@@ -49,13 +49,13 @@ import { Get, JinFrame } from 'jin-frame';
 import type { JinRequestConfig, JinResp, DebugInfo } from 'jin-frame';
 
 @Get({ host: 'https://api.example.com', path: '/users/{id}' })
-class GetUserFrame extends JinFrame<User> {
+class GetUserFrame extends JinFrame<{ status: number; data: User }> {
   @Param()
   declare public readonly id: string;
 
   protected override _postHook(
     req: JinRequestConfig,
-    reply: JinResp<User>,
+    reply: JinResp<{ status: number; data: User }>,
     debug: DebugInfo,
   ): void {
     console.log(`[${reply.ok ? 'OK' : 'FAIL'}] ${req.url} — ${debug.duration}ms`);
@@ -68,7 +68,7 @@ class GetUserFrame extends JinFrame<User> {
 ```ts
 protected _postHook(
   req: JinRequestConfig,
-  reply: JinResp<Pass, Fail>,
+  reply: JinResp<{ status: number; data: Pass | Fail }>,
   debugInfo: DebugInfo,
 ): void | Promise<void>
 ```
@@ -76,7 +76,7 @@ protected _postHook(
 | 파라미터    | 타입                  | 설명                                       |
 | ----------- | --------------------- | ------------------------------------------ |
 | `req`       | `JinRequestConfig`    | 전송된 요청 설정                            |
-| `reply`     | `JinResp<Pass, Fail>` | 판별 유니온 응답 (`ok: true \| false`)     |
+| `reply`     | `JinResp<Response>` | 판별 유니온 응답 (`ok: true \| false`)     |
 | `debugInfo` | `DebugInfo`           | 타이밍 및 중복 제거 메타데이터              |
 
 ### DebugInfo
@@ -103,7 +103,7 @@ import { Post, JinFrame } from 'jin-frame';
 import type { JinRequestConfig } from 'jin-frame';
 
 @Post({ host: 'https://api.example.com', path: '/submit', retry: { max: 3, interval: 500 } })
-class SubmitFrame extends JinFrame<Result> {
+class SubmitFrame extends JinFrame<{ status: number; data: Result }> {
   @Body()
   declare public readonly payload: string;
 
@@ -139,7 +139,7 @@ import { Post, JinFrame } from 'jin-frame';
 import type { JinRequestConfig } from 'jin-frame';
 
 @Post({ host: 'https://api.example.com', path: '/submit', retry: { max: 3, interval: 500 } })
-class SubmitFrame extends JinFrame<Result> {
+class SubmitFrame extends JinFrame<{ status: number; data: Result }> {
   @Body()
   declare public readonly payload: string;
 
@@ -201,15 +201,15 @@ sequenceDiagram
         JinFrame->>JinFrame: 응답 본문 파싱
         alt validateStatus 통과 (성공)
             JinFrame->>JinFrame: pass validator 실행
-            JinFrame->>JinFrame: _postHook(req, JinPassResp, debugInfo)
+            JinFrame->>JinFrame: _postHook(req, JinResp, debugInfo)
             alt validator 통과 OR type = 'value'
-                JinFrame-->>Caller: JinPassResp ✓
+                JinFrame-->>Caller: JinResp ✓
             else validator 실패 AND type = 'exception'
                 JinFrame-->>Caller: throw JinValidationError
             end
         else validateStatus 실패 (재시도 소진)
             JinFrame->>JinFrame: fail validator 실행
-            JinFrame->>JinFrame: _postHook(req, JinFailResp, debugInfo)
+            JinFrame->>JinFrame: _postHook(req, JinResp, debugInfo)
             JinFrame-->>Caller: throw JinRespError
         end
     else 마지막 결과 = Error (네트워크 에러로 소진)
@@ -237,7 +237,7 @@ sequenceDiagram
 import { JinFrame } from 'jin-frame';
 import type { JinRequestConfig, JinResp, DebugInfo } from 'jin-frame';
 
-abstract class ApiBase<Pass, Fail = Pass> extends JinFrame<Pass, Fail> {
+abstract class ApiBase<Pass, Fail = Pass> extends JinFrame<{ status: number; data: Pass | Fail }> {
   protected override async _preHook(req: JinRequestConfig): Promise<void> {
     const token = await tokenStore.get();
     req.headers = { ...req.headers, Authorization: `Bearer ${token}` };
@@ -245,7 +245,7 @@ abstract class ApiBase<Pass, Fail = Pass> extends JinFrame<Pass, Fail> {
 
   protected override _postHook(
     req: JinRequestConfig,
-    reply: JinResp<Pass, Fail>,
+    reply: JinResp<{ status: number; data: Pass | Fail }>,
     debug: DebugInfo,
   ): void {
     metrics.record({ url: req.url, status: reply.status, duration: debug.duration });

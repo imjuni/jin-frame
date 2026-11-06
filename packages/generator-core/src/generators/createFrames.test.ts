@@ -136,12 +136,14 @@ describe("createFrames", async () => {
     expect(frames.at(1)?.frame.source).toContain('import { ServerHostFrame } from "./ServerHostFrame.js";');
     expect(frames.at(1)?.frame.source).toContain("@Get({ path: '/users/{userId}' })");
     expect(frames.at(1)?.frame.source).toContain(
-      "type SuccessResponse = paths['/users/{userId}']['get']['responses']['200']['content']['application/json'];",
+      "type OperationResponse = { status: 200; data: paths['/users/{userId}']['get']['responses'][200]['content'][\"application/json\"] };",
     );
     expect(frames.at(1)?.frame.source).toContain(
       "type FrameRequestParameter = paths['/users/{userId}']['get']['parameters']['path'];",
     );
-    expect(frames.at(1)?.frame.source).toContain("export class GetUserFrame extends ServerHostFrame<SuccessResponse>");
+    expect(frames.at(1)?.frame.source).toContain(
+      "export class GetUserFrame extends ServerHostFrame<OperationResponse>",
+    );
   });
 
   it("should create server variable parameters on server host frame", async () => {
@@ -282,9 +284,9 @@ describe("createFrames", async () => {
     const frame = frames.at(1)?.frame.source;
 
     expect(frame).toContain(
-      "type FailResponse = paths['/pet']['post']['responses']['405']['content']['application/json'];",
+      "type OperationResponse = { status: 405; data: paths['/pet']['post']['responses'][405]['content'][\"application/json\"] };",
     );
-    expect(frame).toContain("export class AddPetFrame extends ServerHostFrame<void, FailResponse>");
+    expect(frame).toContain("export class AddPetFrame extends ServerHostFrame<OperationResponse>");
   });
 
   it("should render void fail response type when fail response has no content", async () => {
@@ -323,7 +325,7 @@ describe("createFrames", async () => {
     const frame = frames.at(1)?.frame.source;
 
     expect(frame).not.toContain("type FailResponse");
-    expect(frame).toContain("export class AddPetFrame extends ServerHostFrame<void, void>");
+    expect(frame).toContain("export class AddPetFrame extends ServerHostFrame<OperationResponse>");
   });
 
   it("should generate security providers and apply root security to frames", async () => {

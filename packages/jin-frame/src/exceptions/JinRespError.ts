@@ -1,15 +1,15 @@
 import type { JinFrame } from "#frames/JinFrame";
 import type { DebugInfo } from "#interfaces/DebugInfo";
-import type { JinFailResp } from "#interfaces/JinFailResp";
+import type { JinResp, JinResponse } from "#interfaces/JinResp";
 
-export class JinRespError<TPASS, TFAIL = unknown> extends Error {
+export class JinRespError<Response = JinResponse> extends Error {
   __discriminator = "JinRespError";
 
   #debug: DebugInfo;
 
-  #frame: JinFrame<TPASS, TFAIL>;
+  #frame: JinFrame<Response>;
 
-  #resp: JinFailResp<TFAIL>;
+  #resp: JinResp<Response>;
 
   #status: number;
 
@@ -23,8 +23,8 @@ export class JinRespError<TPASS, TFAIL = unknown> extends Error {
     cause,
   }: {
     debug: DebugInfo;
-    frame: JinFrame<TPASS, TFAIL>;
-    resp: JinFailResp<TFAIL>;
+    frame: JinFrame<Response>;
+    resp: JinResp<Response>;
     message: string;
     cause?: unknown;
   }) {
@@ -41,11 +41,11 @@ export class JinRespError<TPASS, TFAIL = unknown> extends Error {
     return this.#debug;
   }
 
-  get frame(): JinFrame<TPASS, TFAIL> {
+  get frame(): JinFrame<Response> {
     return this.#frame;
   }
 
-  get resp(): JinFailResp<TFAIL> | undefined {
+  get resp(): JinResp<Response> | undefined {
     return this.#resp;
   }
 

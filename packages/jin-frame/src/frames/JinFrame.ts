@@ -8,9 +8,8 @@ import { JinValidationError } from "#exceptions/JinValidationError";
 import { AbstractJinFrame } from "#frames/AbstractJinFrame";
 import type { DebugInfo } from "#interfaces/DebugInfo";
 import type { GetError } from "#interfaces/GetError";
-import type { JinFailResp } from "#interfaces/JinFailResp";
 import type { JinRequestConfig } from "#interfaces/JinRequestConfig";
-import type { JinResp } from "#interfaces/JinResp";
+import type { JinResponse, JinResp } from "#interfaces/JinResp";
 import type { JinFrameCreateConfig } from "#interfaces/options/JinFrameCreateConfig";
 import type { JinFrameFunction } from "#interfaces/options/JinFrameFunction";
 import type { JinFrameRequestConfig } from "#interfaces/options/JinFrameRequestConfig";
@@ -21,7 +20,6 @@ import { isValidateStatusDefault } from "#tools/isValidateStatusDefault";
 import { runAndUnwrap } from "#tools/runAndUnwrap";
 import "reflect-metadata";
 import { resolveSecurityKey } from "#frames/resolveSecurityKey";
-import type { JinPassResp } from "#interfaces/JinPassResp";
 import { getHeaderObject } from "#tools/getHeaderObject";
 import { safeParse } from "#tools/json/safeParse";
 import { getStatusFromError } from "#tools/responses/getStatusFromError";
@@ -29,10 +27,9 @@ import { getStatusFromError } from "#tools/responses/getStatusFromError";
 /**
  * Definition HTTP Request
  *
- * @typeParam Pass response data type for valid status — returned as `JinPassResp<Pass>`
- * @typeParam Fail response data type for invalid status — returned as `JinFailResp<Fail>`
+ * @typeParam Response Status/data union covering all documented HTTP responses
  */
-export class JinFrame<Pass = unknown, Fail = Pass> extends AbstractJinFrame implements JinFrameFunction<Pass, Fail> {
+export class JinFrame<Response = JinResponse> extends AbstractJinFrame implements JinFrameFunction<Response> {
   /**
    * Execute before request. If you can change request object that is affected request.
    *
@@ -50,11 +47,7 @@ export class JinFrame<Pass = unknown, Fail = Pass> extends AbstractJinFrame impl
    * @param result [discriminated union](https://www.typescriptlang.org/docs/handbook/typescript-in-5-minutes-func.html#discriminated-unions) pass or fail
    */
   // eslint-disable-next-line class-methods-use-this
-  protected _postHook(
-    _req: JinRequestConfig,
-    _reply: JinResp<Pass, Fail>,
-    _debugInfo: DebugInfo,
-  ): void | Promise<void> {}
+  protected _postHook(_req: JinRequestConfig, _reply: JinResp<Response>, _debugInfo: DebugInfo): void | Promise<void> {}
 
   public _requestWrap(option?: JinFrameRequestConfig & JinFrameCreateConfig): JinRequestConfig {
     try {
@@ -70,7 +63,7 @@ export class JinFrame<Pass = unknown, Fail = Pass> extends AbstractJinFrame impl
         isDeduped: false,
         duration,
       };
-      const err = new JinCreateError<typeof this, Pass, Fail>({
+      const err = new JinCreateError<typeof this>({
         debug,
         frame: this,
         message: source.message,
@@ -89,9 +82,9 @@ export class JinFrame<Pass = unknown, Fail = Pass> extends AbstractJinFrame impl
    */
   public _create<TSelf extends this = this>(
     this: this,
-    option?: JinFrameRequestConfig & JinFrameCreateConfig & { getError?: GetError<TSelf, Pass, Fail> },
+    option?: JinFrameRequestConfig & JinFrameCreateConfig & { getError?: GetError<TSelf, Response> },
   ): () => Promise<
-    JinResp<Pass, Fail> & {
+    JinResp<Response> & {
       $debug: DebugInfo;
       $frame: TSelf;
     }
@@ -100,7 +93,7 @@ export class JinFrame<Pass = unknown, Fail = Pass> extends AbstractJinFrame impl
     const isValidateStatus = option?.validateStatus ?? this._option.validateStatus ?? isValidateStatusDefault;
 
     const jinFrameHandle = async (): Promise<
-      JinPassResp<Pass> & {
+      JinResp<Response> & {
         $debug: DebugInfo;
         $frame: TSelf;
       }
@@ -132,22 +125,22 @@ export class JinFrame<Pass = unknown, Fail = Pass> extends AbstractJinFrame impl
         if (!isValidateStatus(resp.ok, resp.status)) {
           const failValidator = this._option.validators?.fail;
 
-          const failResp: JinFailResp<Fail> = {
+          const rejectedResponse = {
             ok: false,
             status: resp.status,
             statusText: resp.statusText,
             headers,
             raw,
-            data: data as Fail,
+            data,
             valid: false,
             $validated: { valid: false, error: [] },
-          };
+          } as unknown as JinResp<Response>;
 
           const failValidated: ValidationResult =
-            failValidator != null ? await failValidator.validate(failResp) : { valid: true };
+            failValidator != null ? await failValidator.validate(rejectedResponse) : { valid: true };
 
-          failResp.valid = failValidated?.valid;
-          failResp.$validated = failValidated;
+          rejectedResponse.valid = failValidated?.valid;
+          rejectedResponse.$validated = failValidated;
 
           const duration = getDuration(this._startAt, new Date());
 
@@ -156,44 +149,44 @@ export class JinFrame<Pass = unknown, Fail = Pass> extends AbstractJinFrame impl
             duration,
             isDeduped: deduped.isDeduped,
           };
-          const err = new JinRespError<Pass, Fail>({
-            resp: failResp,
+          const err = new JinRespError<Response>({
+            resp: rejectedResponse,
             debug: debugInfo,
             frame: this,
             message: `response error: ${resp.status} ${resp.statusText}`,
           });
 
-          await runAndUnwrap(this._postHook.bind(this), req, failResp, debugInfo);
+          await runAndUnwrap(this._postHook.bind(this), req, rejectedResponse, debugInfo);
 
           throw err;
         }
 
-        const passResp: JinPassResp<Pass> = {
+        const acceptedResponse = {
           ok: true,
           status: resp.status,
           statusText: resp.statusText,
           headers,
           raw,
-          data: data as Pass,
+          data,
           valid: false,
           $validated: { valid: false, error: [] },
-        };
+        } as unknown as JinResp<Response>;
 
         const passValidator = this._option.validators?.pass;
         const validated: ValidationResult =
-          passValidator != null ? await passValidator.validate(passResp) : { valid: true as const };
+          passValidator != null ? await passValidator.validate(acceptedResponse) : { valid: true as const };
 
-        passResp.valid = validated.valid;
-        passResp.$validated = validated;
+        acceptedResponse.valid = validated.valid;
+        acceptedResponse.$validated = validated;
 
         const duration = getDuration(this._startAt, new Date());
         const debugInfo = { ...debug, duration, isDeduped: deduped.isDeduped };
 
-        await runAndUnwrap(this._postHook.bind(this), req, passResp, debugInfo);
+        await runAndUnwrap(this._postHook.bind(this), req, acceptedResponse, debugInfo);
 
         if (passValidator != null && !validated.valid && passValidator.type === "exception") {
-          const err = new JinValidationError<Pass, Fail>({
-            resp: passResp,
+          const err = new JinValidationError<Response>({
+            resp: acceptedResponse,
             debug: debugInfo,
             frame: this,
             message: "validation error",
@@ -205,7 +198,7 @@ export class JinFrame<Pass = unknown, Fail = Pass> extends AbstractJinFrame impl
         }
 
         return {
-          ...passResp,
+          ...acceptedResponse,
           $debug: debugInfo,
           $frame: this as TSelf,
           $validated: validated,
@@ -222,12 +215,12 @@ export class JinFrame<Pass = unknown, Fail = Pass> extends AbstractJinFrame impl
         const duration = getDuration(this._startAt, new Date());
         const { status, statusText } = getStatusFromError(caught);
 
-        const jinFrameError = new JinRespError<Pass, Fail>({
+        const jinFrameError = new JinRespError<Response>({
           resp: {
             ok: false,
             status,
             statusText,
-          } as JinFailResp<Fail>,
+          } as unknown as JinResp<Response>,
           debug: { ...debug, duration },
           frame: this,
           message: caught instanceof Error ? caught.message : "unknown error raised",
@@ -252,8 +245,8 @@ export class JinFrame<Pass = unknown, Fail = Pass> extends AbstractJinFrame impl
    */
   public async _execute<TSelf extends this = this>(
     this: TSelf,
-    option?: JinFrameRequestConfig & JinFrameCreateConfig & { getError?: GetError<TSelf, Pass, Fail> },
-  ): Promise<JinResp<Pass, Fail>> {
+    option?: JinFrameRequestConfig & JinFrameCreateConfig & { getError?: GetError<TSelf, Response> },
+  ): Promise<JinResp<Response>> {
     const resolvedOption = await resolveSecurityKey(this._option, option);
     const requester = this._create(resolvedOption);
     return requester();

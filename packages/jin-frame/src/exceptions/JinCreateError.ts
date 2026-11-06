@@ -2,7 +2,7 @@ import httpStatusCodes, { getReasonPhrase } from "http-status-codes";
 import type { JinFrame } from "#frames/JinFrame";
 import type { DebugInfo } from "#interfaces/DebugInfo";
 
-export class JinCreateError<T extends JinFrame<TPASS, TFAIL>, TPASS, TFAIL = TPASS> extends Error {
+export class JinCreateError<T extends JinFrame<unknown>> extends Error {
   __discriminator = "JinCreateError";
 
   #debug: Omit<DebugInfo, "req">;

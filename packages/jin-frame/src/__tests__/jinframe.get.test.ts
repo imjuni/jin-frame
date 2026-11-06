@@ -23,7 +23,7 @@ class TestGet3Frame extends JinFrame {
     console.log("pre hook trigger: ", req);
   }
 
-  override _postHook(req: JinRequestConfig, reply: JinResp<unknown, unknown>): void {
+  override _postHook(req: JinRequestConfig, reply: JinResp<{ status: number; data: unknown | unknown }>): void {
     console.log("post hook trigger: ", req);
     console.log(reply);
   }
@@ -44,7 +44,10 @@ class TestGet4Frame extends JinFrame {
     console.log("pre hook trigger: ", req);
   }
 
-  override async _postHook(req: JinRequestConfig, reply: JinResp<unknown, unknown>): Promise<void> {
+  override async _postHook(
+    req: JinRequestConfig,
+    reply: JinResp<{ status: number; data: unknown | unknown }>,
+  ): Promise<void> {
     console.log("post hook trigger: ", req);
     console.log(reply);
   }
