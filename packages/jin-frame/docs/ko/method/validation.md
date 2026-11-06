@@ -42,7 +42,7 @@ export class BaseValidator<TOrigin = unknown, TData = TOrigin, TError = unknown>
 
 ### 제네릭 타입 매개변수
 
-- **`TOrigin`**: 원본 응답 타입 (예: `JinPassResp<UserData>`)
+- **`TOrigin`**: 원본 응답 타입 (예: `JinResp<UserData>`)
 - **`TData`**: 검증할 데이터 타입 (예: `UserData`)  
 - **`TError`**: 검증 실패 시 에러 타입 (예: `ZodIssue`)
 
@@ -52,10 +52,10 @@ export class BaseValidator<TOrigin = unknown, TData = TOrigin, TError = unknown>
 
 ```typescript
 import { BaseValidator } from 'jin-frame';
-import type { JinPassResp } from 'jin-frame';
+import type { JinResp } from 'jin-frame';
 
 class UserValidator extends BaseValidator<
-  JinPassResp<UserData>,  // 원본 응답 타입
+  JinResp<{ status: number; data: UserData }>,  // 원본 응답 타입
   UserData,               // 검증할 데이터 타입
   ValidationError         // 에러 타입
 > {
@@ -64,7 +64,7 @@ class UserValidator extends BaseValidator<
   }
 
   // 응답에서 검증할 데이터 추출
-  override getData(reply: JinPassResp<UserData>): UserData {
+  override getData(reply: JinResp<{ status: number; data: UserData }>): UserData {
     return reply.data;
   }
 
@@ -93,7 +93,7 @@ class UserValidator extends BaseValidator<
   host: 'https://api.example.com',
   path: '/users',
 })
-class CreateUserFrame extends JinFrame<UserData> {
+class CreateUserFrame extends JinFrame<{ status: number; data: UserData }> {
   @Body()
   declare name: string;
 
@@ -106,7 +106,7 @@ class CreateUserFrame extends JinFrame<UserData> {
 
 ```typescript
 import { z } from 'zod';
-import type { JinPassResp } from 'jin-frame';
+import type { JinResp } from 'jin-frame';
 
 const messageSchema = z.object({
   message: z.string(),
@@ -116,7 +116,7 @@ const messageSchema = z.object({
 type MessageData = { message: string; timestamp: number };
 
 class MessageValidator extends BaseValidator<
-  JinPassResp<MessageData>,
+  JinResp<{ status: number; data: MessageData }>,
   MessageData,
   z.ZodIssue
 > {
@@ -124,7 +124,7 @@ class MessageValidator extends BaseValidator<
     super({ type: 'exception' });
   }
 
-  override getData(reply: JinPassResp<MessageData>): MessageData {
+  override getData(reply: JinResp<{ status: number; data: MessageData }>): MessageData {
     return reply.data;
   }
 
@@ -168,11 +168,11 @@ const validator = new UserValidator({ type: 'value' });
 ## 실제 사용 예제
 
 ```typescript
-import type { JinPassResp } from 'jin-frame';
+import type { JinResp } from 'jin-frame';
 
 // 1. 검증기 정의
 class ProductValidator extends BaseValidator<
-  JinPassResp<Product>,
+  JinResp<{ status: number; data: Product }>,
   Product,
   ValidationError
 > {
@@ -180,7 +180,7 @@ class ProductValidator extends BaseValidator<
     super({ type: 'exception' });
   }
 
-  override getData(reply: JinPassResp<Product>): Product {
+  override getData(reply: JinResp<{ status: number; data: Product }>): Product {
     return reply.data;
   }
 
@@ -202,7 +202,7 @@ class ProductValidator extends BaseValidator<
   host: 'https://api.shop.com',
   path: '/products/{id}',
 })
-class GetProductFrame extends JinFrame<Product> {
+class GetProductFrame extends JinFrame<{ status: number; data: Product }> {
   @Param()
   declare id: string;
 }
@@ -253,7 +253,7 @@ interface JinValidationError {
   validator: BaseValidator;           // 사용된 검증기
   debug: DebugInfo;                   // 디버그 정보
   frame: JinFrame;                    // 프레임 인스턴스
-  resp: JinPassResp;                  // 응답 객체
+  resp: JinResp;                  // 응답 객체
 }
 ```
 

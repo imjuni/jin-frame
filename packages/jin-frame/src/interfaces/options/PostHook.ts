@@ -1,10 +1,9 @@
 import type { DebugInfo } from "#interfaces/DebugInfo";
-import type { JinFailResp } from "#interfaces/JinFailResp";
-import type { JinPassResp } from "#interfaces/JinPassResp";
+import type { JinResp } from "#interfaces/JinResp";
 import type { JinRequestConfig } from "#interfaces/JinRequestConfig";
 
-export type PostHook<Pass, Fail> = (
+export type PostHook<Response> = (
   req: JinRequestConfig,
-  reply: JinPassResp<Pass> | JinFailResp<Fail>,
+  reply: JinResp<Response>,
   debugInfo: DebugInfo,
 ) => void | Promise<void>;

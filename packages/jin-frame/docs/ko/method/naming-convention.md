@@ -56,7 +56,7 @@ class FindPetFrame extends JinFrame {
 | (없음) | 정적 메서드 | — | 가능 |
 
 ```typescript
-class MyFrame extends JinFrame<Result> {
+class MyFrame extends JinFrame<{ status: number; data: Result }> {
   // 사용자 정의 필드 — 어떤 이름이든 접두사 불필요
   @Query()
   declare public readonly retry: number; // 안전 — 내부 retry 상태와 충돌 없음

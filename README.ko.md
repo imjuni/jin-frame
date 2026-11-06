@@ -39,7 +39,7 @@ TypeScript 데코레이터와 클래스를 사용해 HTTP 요청을 선언적으
 - [데코레이터](#데코레이터)
 - [상속](#상속)
 - [Builder 패턴](#builder-패턴)
-- [Pass / Fail 응답](#pass--fail-응답)
+- [상태 코드별 응답](#상태-코드별-응답)
 - [Retry, Timeout](#retry-timeout)
 - [Authorization](#authorization)
 - [validateStatus](#validatestatus)
@@ -181,17 +181,22 @@ const reply = await frame._execute();
 const frame = PokemonFrame.of((b) => b.set('name', 'pikachu').set('tid', randomUUID()));
 ```
 
-## Pass / Fail 응답
+## 상태 코드별 응답
 
-`_execute()`는 `ok`로 구분되는 판별 유니온을 반환합니다:
+`JinFrame`은 `{ status, data }` 응답 union 하나를 타입 인수로 받습니다. `status`로 분기하면 `data` 타입이 좁혀집니다.
 
 ```ts
-const reply = await frame._execute<MyFrame, Pokemon, ErrorBody>();
+type PokemonResponse =
+  | { status: 200; data: Pokemon }
+  | { status: 404; data: ErrorBody };
 
-if (reply.ok) {
-  console.log(reply.data); // Pokemon 타입
+class PokemonFrame extends JinFrame<PokemonResponse> {}
+
+const reply = await frame._execute({ validateStatus: () => true });
+if (reply.status === 200) {
+  console.log(reply.data);
 } else {
-  console.error(reply.data); // ErrorBody 타입
+  console.error(reply.data);
 }
 ```
 
@@ -306,3 +311,12 @@ const reply = await frame._execute({
 ## License
 
 This software is licensed under the [MIT](LICENSE).
+
+
+### 생성된 상태 코드별 응답 타입
+
+OpenAPI 생성기는 명세의 숫자 상태 코드(2xx~5xx)를 `{ status, data }` union으로 묶어 `JinFrame`의 단일 타입 인수로 전달합니다. `status`를 검사하면 해당 응답의 `data` 타입이 좁혀집니다. 본문이 없는 응답의 `data`는 `undefined`입니다.
+
+기본적으로 2xx 외의 응답은 기존처럼 예외를 발생시킵니다. 오류 응답을 직접 받으려면 `_execute({ validateStatus: () => true })`를 사용합니다. 이 옵션은 런타임 판정만 변경하며 생성되는 응답 union은 항상 동일합니다. `default`와 `2XX` 같은 범위 키는 숫자 리터럴 union에 포함하지 않습니다.
+
+이 변경은 타입 API의 호환성을 변경합니다. 기존 `JinFrame<DTO>`는 `JinFrame<{ status: number; data: DTO }>`로, 상태별 응답이 있으면 해당 union으로 이전합니다. `JinPassResp`·`JinFailResp`는 `JinResp<Response>`로 통합되었습니다. `validators.pass/fail` 설정은 응답 수용·거부 경로의 검증기를 선택하는 용도로 유지됩니다.

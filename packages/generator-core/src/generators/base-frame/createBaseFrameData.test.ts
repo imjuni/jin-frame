@@ -24,7 +24,7 @@ describe("createBaseFrameData", () => {
     expect(data).toMatchObject({
       name: "ServerHostFrame",
       filePath: "ServerHostFrame.ts",
-      extends: "JinFrame<SUCCESS, FAIL>",
+      extends: "JinFrame<RESPONSE>",
       imports: [
         {
           moduleSpecifier: "jin-frame",

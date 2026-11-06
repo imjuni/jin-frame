@@ -29,16 +29,7 @@ export function createBaseFrameData(params: ICreateBaseFrameProps): IBaseFrameDa
           }
         : undefined,
     ].filter((entry) => entry != null),
-    typeParameters: [
-      {
-        name: "SUCCESS",
-        default: "unknown",
-      },
-      {
-        name: "FAIL",
-        default: "unknown",
-      },
-    ],
+    typeParameters: [{ name: "RESPONSE", default: 'Awaited<ReturnType<JinFrame["_execute"]>>' }],
     decorators: [
       {
         name: "Get",
@@ -53,6 +44,6 @@ export function createBaseFrameData(params: ICreateBaseFrameProps): IBaseFrameDa
     ].filter((decorator) => decorator != null),
     properties: getServerVariableProperties(serverVariables),
     methods: getServerVariableDefaultMethods(name, serverVariableDefaults),
-    extends: "JinFrame<SUCCESS, FAIL>",
+    extends: "JinFrame<RESPONSE>",
   };
 }

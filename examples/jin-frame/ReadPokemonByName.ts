@@ -3,7 +3,7 @@ import { Get } from "../src/decorators/methods/Get";
 import { JinFrame } from "../src/frames/JinFrame";
 
 @Get({ host: "https://pokeapi.co/api/v2/pokemon/:name" })
-export class PokemonFrame extends JinFrame<any, any> {
+export class PokemonFrame extends JinFrame<{ status: number; data: any | any }> {
   @Param()
   declare public readonly name: string;
 }

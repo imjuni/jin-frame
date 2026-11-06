@@ -41,11 +41,11 @@ describe("createFrameData", () => {
       filePath: "GetPetFrame.ts",
       tag: "pet",
       parentFrame: "JinFrame",
-      responseTypes: ["SuccessResponse"],
+      responseTypes: ["OperationResponse"],
       typeAliases: [
         {
-          name: "SuccessResponse",
-          type: "paths['/pets/{petId}']['get']['responses']['200']['content']['application/json']",
+          name: "OperationResponse",
+          type: `{ status: 200; data: paths['/pets/{petId}']['get']['responses'][200]['content']["application/json"] }`,
         },
         {
           name: "FrameRequestParameter",
@@ -74,7 +74,7 @@ describe("createFrameData", () => {
     expect(data.properties).toHaveLength(1);
   });
 
-  it("should use void success and fail response type when only fail response content exists", () => {
+  it("should generate a response union when only an error response exists", () => {
     const data = createFrameData({
       specTypeFilePath: "/a/b/paths.d.ts",
       host: "https://api.example.com",
@@ -109,11 +109,11 @@ describe("createFrameData", () => {
     expect(data).toMatchObject({
       name: "AddPetFrame",
       parentFrame: "ServerHostFrame",
-      responseTypes: ["void", "FailResponse"],
+      responseTypes: ["OperationResponse"],
       typeAliases: [
         {
-          name: "FailResponse",
-          type: "paths['/pet']['post']['responses']['405']['content']['application/json']",
+          name: "OperationResponse",
+          type: `{ status: 405; data: paths['/pet']['post']['responses'][405]['content']["application/json"] }`,
         },
         {
           name: "FrameRequestBody",
@@ -123,7 +123,7 @@ describe("createFrameData", () => {
     });
   });
 
-  it("should use void fail response type when only fail response without content exists", () => {
+  it("should use undefined data when an error response has no body", () => {
     const data = createFrameData({
       specTypeFilePath: "/a/b/paths.d.ts",
       host: "https://api.example.com",
@@ -153,8 +153,12 @@ describe("createFrameData", () => {
     expect(data).toMatchObject({
       name: "AddPetFrame",
       parentFrame: "ServerHostFrame",
-      responseTypes: ["void", "void"],
+      responseTypes: ["OperationResponse"],
       typeAliases: [
+        {
+          name: "OperationResponse",
+          type: `{ status: 405; data: undefined }`,
+        },
         {
           name: "FrameRequestBody",
           type: "NonNullable<paths['/pet']['post']['requestBody']>['content']['application/json']",
@@ -162,4 +166,30 @@ describe("createFrameData", () => {
       ],
     });
   });
+});
+
+it("should include every numeric response status when generating an operation union", () => {
+  const data = createFrameData({
+    specTypeFilePath: "/a/b/paths.d.ts",
+    host: "https://api.example.com",
+    output: "/a/b",
+    pathKey: "/pets",
+    method: "get",
+    operation: {
+      responses: Object.fromEntries(
+        [200, 201, 302, 400, 500].map((status) => [
+          status,
+          {
+            description: "Response",
+            content: { "application/json": { schema: { type: "object" as const } } },
+          },
+        ]),
+      ),
+    },
+  });
+  const response = data.typeAliases.find((alias) => alias.name === "OperationResponse");
+  for (const status of [200, 201, 302, 400, 500]) {
+    expect(response?.type).toContain(`{ status: ${status}; data: paths['/pets']['get']['responses'][${status}]`);
+  }
+  expect(response?.type.split(" | ")).toHaveLength(5);
 });

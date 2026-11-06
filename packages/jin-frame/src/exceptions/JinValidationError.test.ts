@@ -3,7 +3,7 @@ import { describe, expect, it } from "vitest";
 import { Get } from "#decorators/methods/Get";
 import { JinValidationError } from "#exceptions/JinValidationError";
 import { JinFrame } from "#frames/JinFrame";
-import type { JinPassResp } from "#interfaces/JinPassResp";
+import type { JinResp } from "#interfaces/JinResp";
 import type { JinRequestConfig } from "#interfaces/JinRequestConfig";
 import { getDuration } from "#tools/getDuration";
 import { BaseValidator } from "#validators/BaseValidator";
@@ -14,7 +14,7 @@ class TestFrame extends JinFrame {}
 describe("JinValidationError", () => {
   it("gettter/setter", () => {
     const req: JinRequestConfig = { url: "https://api.example.com", method: "GET", headers: {} };
-    const resp: JinPassResp<unknown> = {
+    const resp: JinResp<{ status: number; data: unknown }> = {
       ok: true,
       data: undefined,
       status: 500,

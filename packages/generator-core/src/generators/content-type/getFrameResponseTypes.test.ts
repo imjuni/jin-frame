@@ -3,53 +3,25 @@ import { describe, expect, it } from "vitest";
 import { getFrameResponseTypes } from "#generators/content-type/getFrameResponseTypes.js";
 
 describe("getFrameResponseTypes", () => {
-  it("should return void success when responses has no 2xx content", () => {
+  it("should include all numeric statuses and preserve their data types", () => {
     const responses: OpenAPIV3.ResponsesObject = {
-      "405": {
-        description: "Invalid input",
-        content: { "application/json": {} },
-      },
+      "200": { description: "Success", content: { "application/json": {} } },
+      "201": { description: "Created", content: { "application/json": {} } },
+      "302": { description: "Redirect" },
+      "400": { description: "Invalid", content: { "application/json": {}, "text/plain": {} } },
+      "500": { description: "Error" },
+      default: { description: "Default" },
+      "2XX": { description: "Range" },
     };
-
-    const result = getFrameResponseTypes({
-      pathKey: "/pet",
-      method: "post",
-      responses,
-    });
-
-    expect(result).toEqual(["void", "paths['/pet']['post']['responses']['405']['content']['application/json']"]);
+    expect(getFrameResponseTypes({ pathKey: "/pet", method: "get", responses })).toEqual([
+      `{ status: 200; data: paths['/pet']['get']['responses'][200]['content']["application/json"] }`,
+      `{ status: 201; data: paths['/pet']['get']['responses'][201]['content']["application/json"] }`,
+      "{ status: 302; data: undefined }",
+      `{ status: 400; data: paths['/pet']['get']['responses'][400]['content']["application/json"] | paths['/pet']['get']['responses'][400]['content']["text/plain"] }`,
+      "{ status: 500; data: undefined }",
+    ]);
   });
-
-  it("should return success type when responses has 2xx content", () => {
-    const responses: OpenAPIV3.ResponsesObject = {
-      "201": {
-        description: "Created",
-        content: { "application/json": {} },
-      },
-    };
-
-    const result = getFrameResponseTypes({
-      pathKey: "/pet",
-      method: "post",
-      responses,
-    });
-
-    expect(result).toEqual(["paths['/pet']['post']['responses']['201']['content']['application/json']"]);
-  });
-
-  it("should return void fail type when fail response has no content", () => {
-    const responses: OpenAPIV3.ResponsesObject = {
-      "405": {
-        description: "Invalid input",
-      },
-    };
-
-    const result = getFrameResponseTypes({
-      pathKey: "/pet",
-      method: "post",
-      responses,
-    });
-
-    expect(result).toEqual(["void", "void"]);
+  it("should return no members when responses are absent", () => {
+    expect(getFrameResponseTypes({ pathKey: "/pet", method: "get" })).toEqual([]);
   });
 });

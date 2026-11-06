@@ -78,7 +78,6 @@ export class AdminUserFrame extends JinFrame {}
 The `SecurityKey` type is `string | (() => string | Promise<string>)`. This allows the token to be resolved at request time from environment variables, secret managers, or any async source.
 
 ```ts
-// Static string
 @Security(new BearerTokenProvider(), 'static-token')
 
 // From environment variable (resolved at request time)
@@ -96,7 +95,7 @@ A full example using async key resolution:
   path: '/secure',
 })
 @Security(new BearerTokenProvider(), async () => await vault.getSecret('api-token'))
-class SecureFrame extends JinFrame<Response> {}
+class SecureFrame extends JinFrame<{ status: number; data: Response }> {}
 ```
 
 ## BearerTokenProvider.setKey()
@@ -182,7 +181,6 @@ export class UserProfileFrame extends JinFrame {
 `OAuth2Provider` has been removed. Replace it with `BearerTokenProvider`:
 
 ```ts
-// Before (v4.x)
 @Security(new OAuth2Provider('oauth2', 'Bearer'))
 @Authorization({ accessToken: 'oauth-access-token-xyz', tokenType: 'Bearer' })
 

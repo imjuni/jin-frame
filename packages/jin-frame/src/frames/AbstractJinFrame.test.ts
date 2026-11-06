@@ -13,7 +13,7 @@ import { JinFrame } from "#frames/JinFrame";
   path: "/{passing}",
   contentType: "multipart/form-data",
 })
-class Test001PostFrame extends JinFrame<{ message: string }> {
+class Test001PostFrame extends JinFrame<{ status: number; data: { message: string } }> {
   @Param()
   declare public readonly passing: string;
 
@@ -29,7 +29,7 @@ class Test001PostFrame extends JinFrame<{ message: string }> {
   path: "/jinframe/{passing}",
   customBody: { sample: "my-custom-body" },
 })
-class Test002PostFrame extends JinFrame<{ message: string }> {
+class Test002PostFrame extends JinFrame<{ status: number; data: { message: string } }> {
   @Param()
   declare public readonly passing: string;
 
@@ -45,7 +45,7 @@ class Test002PostFrame extends JinFrame<{ message: string }> {
   path: "/jinframe/{passing}",
   contentType: "application/x-www-form-urlencoded",
 })
-class Test003PostFrame extends JinFrame<{ message: string }> {
+class Test003PostFrame extends JinFrame<{ status: number; data: { message: string } }> {
   @Param()
   declare public readonly passing: string;
 
@@ -57,7 +57,7 @@ class Test003PostFrame extends JinFrame<{ message: string }> {
 }
 
 @Post({ host: "http://some.api.google.com/jinframe/{passing}" })
-class Test004PostFrame extends JinFrame<{ message: string }> {
+class Test004PostFrame extends JinFrame<{ status: number; data: { message: string } }> {
   @Param()
   declare public readonly passing: string[];
 

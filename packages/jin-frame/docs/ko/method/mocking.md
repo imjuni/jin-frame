@@ -41,7 +41,7 @@ import { Get, JinFrame } from 'jin-frame';
 import { Query } from 'jin-frame';
 
 @Get({ host: 'https://api.example.com', path: '/users' })
-class UserFrame extends JinFrame<{ users: { id: number; name: string }[] }> {
+class UserFrame extends JinFrame<{ status: number; data: { users: { id: number; name: string }[] } }> {
   @Query()
   declare public readonly searchText: string;
 }

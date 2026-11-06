@@ -19,15 +19,14 @@ Fail validators never throw `JinValidationError` because doing so would overwrit
 
 ### Validation Result Fields
 
-Both `JinPassResp` and `JinFailResp` always carry these fields:
+`JinResp<Response>` carries response metadata together with the status/data union:
 
 ```ts
-interface JinPassResp<T> {
-  ok: true;
-  data: T;
-  valid: boolean;           // false until validator runs and passes
+type JinResp<Response> = JinRespBase & Response & {
+  ok: boolean;
+  valid: boolean;
   $validated: ValidationResult;
-}
+};
 ```
 
 When no validator is configured, `valid` defaults to `true`.
@@ -46,15 +45,15 @@ Extend `BaseValidator` to implement your validation logic. Override `getData()` 
 ```ts
 import { BaseValidator } from 'jin-frame';
 import type { ValidationResult } from 'jin-frame';
-import type { JinPassResp } from 'jin-frame';
+import type { JinResp } from 'jin-frame';
 
-class UserPassValidator extends BaseValidator<JinPassResp<User>, User, ZodIssue> {
+class UserPassValidator extends BaseValidator<JinResp<{ status: number; data: User }>, User, ZodIssue> {
   constructor() {
     super({ type: 'exception' });
   }
 
   // Extract the data to validate from the full response
-  override getData(reply: JinPassResp<User>): User {
+  override getData(reply: JinResp<{ status: number; data: User }>): User {
     return reply.data;
   }
 
@@ -70,7 +69,7 @@ class UserPassValidator extends BaseValidator<JinPassResp<User>, User, ZodIssue>
 
 | Parameter | Description                                              |
 | --------- | -------------------------------------------------------- |
-| `TOrigin` | Full response type passed to `validate()` (e.g. `JinPassResp<User>`) |
+| `TOrigin` | Full response type passed to `validate()` (e.g. `JinResp<User>`) |
 | `TData`   | Slice extracted by `getData()` for actual validation     |
 | `TError`  | Type of each item in `error[]` on failure                |
 
@@ -89,7 +88,7 @@ Pass validators through the `validators` option on the method decorator:
     fail: new UserFailValidator(), // optional
   },
 })
-class GetUserFrame extends JinFrame<User, ErrorBody> {
+class GetUserFrame extends JinFrame<{ status: number; data: User | ErrorBody }> {
   @Param()
   declare public readonly id: string;
 }
@@ -102,7 +101,7 @@ class GetUserFrame extends JinFrame<User, ErrorBody> {
 ```ts
 import { z } from 'zod';
 import { BaseValidator, Get, JinFrame } from 'jin-frame';
-import type { JinPassResp, ValidationResult } from 'jin-frame';
+import type { JinResp, ValidationResult } from 'jin-frame';
 
 const userSchema = z.object({
   id: z.string(),
@@ -112,12 +111,12 @@ const userSchema = z.object({
 
 type User = z.infer<typeof userSchema>;
 
-class UserValidator extends BaseValidator<JinPassResp<User>, User, z.ZodIssue> {
+class UserValidator extends BaseValidator<JinResp<{ status: number; data: User }>, User, z.ZodIssue> {
   constructor() {
     super({ type: 'exception' });
   }
 
-  override getData(reply: JinPassResp<User>): User {
+  override getData(reply: JinResp<{ status: number; data: User }>): User {
     return reply.data;
   }
 
@@ -133,7 +132,7 @@ class UserValidator extends BaseValidator<JinPassResp<User>, User, z.ZodIssue> {
   path: '/users/{id}',
   validators: { pass: new UserValidator() },
 })
-class GetUserFrame extends JinFrame<User> {
+class GetUserFrame extends JinFrame<{ status: number; data: User }> {
   @Param()
   declare public readonly id: string;
 }
@@ -156,12 +155,12 @@ try {
 Use `type: 'value'` to receive validation results in the response instead of throwing:
 
 ```ts
-class SoftValidator extends BaseValidator<JinPassResp<User>, User, string> {
+class SoftValidator extends BaseValidator<JinResp<{ status: number; data: User }>, User, string> {
   constructor() {
     super({ type: 'value' }); // does not throw
   }
 
-  override getData(reply: JinPassResp<User>) { return reply.data; }
+  override getData(reply: JinResp<{ status: number; data: User }>) { return reply.data; }
 
   override validator(data: User): ValidationResult<string> {
     if (!data.id) return { valid: false, error: ['missing id'] };

@@ -17,7 +17,7 @@ import { randomUUID } from 'crypto';
 
 @Timeout(3_000)
 @Get({ host: 'https://pokeapi.co' })
-class PokemonAPI<PASS = unknown, FAIL = unknown> extends JinFrame<PASS, FAIL> {
+class PokemonAPI<PASS = unknown, FAIL = unknown> extends JinFrame<{ status: number; data: PASS | FAIL }> {
   @Query()
   declare public readonly tid: string;
 
@@ -48,7 +48,6 @@ class PokemonByNameId extends PokemonAPI<IPokemonData> {
 When using the `of` factory method directly, you need to specify all fields for type safety. In this case, the Builder pattern makes it much easier.
 
 ```ts
-// set style
 const frame = PokemonByNameId.of((b) => b.set('name', 'pikachu'));
 const reply = await frame.execute();
 
@@ -66,7 +65,7 @@ If the child class redefines the same configuration, it overrides the parent’s
 ```ts
 @Timeout(5_000)
 @Get({ host: 'https://pokeapi.co' })
-class PokeBaseFrame<P = unknown, F = unknown> extends JinFrame<P, F> {
+class PokeBaseFrame<P = unknown, F = unknown> extends JinFrame<{ status: number; data: P | F }> {
 }
 
 @Retry({ max: 5, interval: 1000 })
@@ -102,13 +101,13 @@ Hooks can also be extended in an inheritance structure. This allows you to place
 ```ts
 @Timeout(3_000)
 @Get({ host: 'https://pokeapi.co' })
-class PokemonAPI<PASS = unknown, FAIL = unknown> extends JinFrame<PASS, FAIL> {
+class PokemonAPI<PASS = unknown, FAIL = unknown> extends JinFrame<{ status: number; data: PASS | FAIL }> {
   @Query()
   declare public readonly tid: string;
 
   override async _postHook(
     _req: JinRequestConfig,
-    reply: JinResp<PASS, FAIL>,
+    reply: JinResp<{ status: number; data: PASS | FAIL }>,
     _debugInfo: DebugInfo,
   ) {
     if (!reply.ok) {
@@ -130,7 +129,7 @@ class PokemonByNameId extends PokemonAPI<IPokemonData> {
 
   override async _postHook(
     _req: JinRequestConfig,
-    reply: JinResp<IPokemonData, unknown>,
+    reply: JinResp<{ status: number; data: IPokemonData | unknown }>,
     _debugInfo: DebugInfo,
   ) {
     // Execute parent hook
