@@ -89,6 +89,7 @@ describe("ApiKeyProvider", () => {
       expect(extractKey("test-key")).toBe("test-key");
       expect(extractKey({ key: "test-key" })).toBe("test-key");
       expect(extractKey({ other: "value" })).toBeUndefined();
+      // @ts-expect-error Verify runtime handling of null outside the typed contract.
       expect(extractKey(null)).toBeUndefined();
     });
   });

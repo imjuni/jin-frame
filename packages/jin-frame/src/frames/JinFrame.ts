@@ -29,7 +29,10 @@ import { getStatusFromError } from "#tools/responses/getStatusFromError";
  *
  * @typeParam Response Status/data union covering all documented HTTP responses
  */
-export class JinFrame<Response = JinResponse> extends AbstractJinFrame implements JinFrameFunction<Response> {
+export class JinFrame<Response extends JinResponse = JinResponse>
+  extends AbstractJinFrame
+  implements JinFrameFunction<Response>
+{
   /**
    * Execute before request. If you can change request object that is affected request.
    *

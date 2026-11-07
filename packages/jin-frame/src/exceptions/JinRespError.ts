@@ -2,7 +2,7 @@ import type { JinFrame } from "#frames/JinFrame";
 import type { DebugInfo } from "#interfaces/DebugInfo";
 import type { JinResp, JinResponse } from "#interfaces/JinResp";
 
-export class JinRespError<Response = JinResponse> extends Error {
+export class JinRespError<Response extends JinResponse = JinResponse> extends Error {
   __discriminator = "JinRespError";
 
   #debug: DebugInfo;

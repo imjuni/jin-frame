@@ -32,7 +32,7 @@ describe("JinFrame inheritance", () => {
   });
 
   it("should apply default values from getDefaultValues when using builder().build()", () => {
-    const frame = PokemonFrame.builder().set("name", "pikachu").build();
+    const frame = PokemonFrame.builder().auto().set("name", "pikachu").build();
     const req = frame._request();
     expect(req.url).toEqual("https://pokeapi.co/api/v2/pokemon/pikachu?tid=fce5a3d5-84aa-4051-96a3-1dbecd93dbe4");
   });

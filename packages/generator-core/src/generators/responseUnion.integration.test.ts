@@ -55,6 +55,7 @@ it("should compile generated frames against OpenAPI response types and narrow ev
       shim,
       [
         `export { JinFrame } from '${library}/frames/JinFrame';`,
+        `export type { JinResp } from '${library}/interfaces/JinResp';`,
         `export { Get } from '${library}/decorators/methods/Get';`,
         `export { Timeout } from '${library}/decorators/methods/options/Timeout';`,
       ].join("\n"),
@@ -63,6 +64,19 @@ it("should compile generated frames against OpenAPI response types and narrow ev
     writeFileSync(
       consumer,
       `
+      import { JinFrame } from 'jin-frame';
+      import type { JinResp } from 'jin-frame';
+      // @ts-expect-error Raw DTOs are not response envelopes.
+      export class InvalidDtoFrame extends JinFrame<{ name: string }> {}
+      // @ts-expect-error Status must be numeric.
+      export class InvalidStatusFrame extends JinFrame<{ status: '200'; data: string }> {}
+      // @ts-expect-error Data must be present, even for an empty response.
+      export class MissingDataFrame extends JinFrame<{ status: 204 }> {}
+      // @ts-expect-error Every union member must be a response envelope.
+      export class InvalidUnionFrame extends JinFrame<{ status: 200; data: string } | { error: string }> {}
+      // @ts-expect-error Response aliases reject raw DTOs too.
+      export type InvalidResponse = JinResp<{ name: string }>;
+      export class DefaultFrame extends JinFrame {}
       import { GetResponsesFrame } from './GetResponsesFrame';
       const frame = GetResponsesFrame.of({});
       async function check() {

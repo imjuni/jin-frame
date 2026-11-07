@@ -4,7 +4,7 @@ import type { JinResp, JinResponse } from "#interfaces/JinResp";
 import type { ValidationResult } from "#interfaces/ValidationResult";
 import type { BaseValidator } from "#validators/BaseValidator";
 
-export class JinValidationError<Response = JinResponse, ValidationError = unknown> extends Error {
+export class JinValidationError<Response extends JinResponse = JinResponse, ValidationError = unknown> extends Error {
   __discriminator = "JinValidationError";
 
   #debug: DebugInfo;

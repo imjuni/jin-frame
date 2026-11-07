@@ -244,7 +244,7 @@ type UserResponse =
   | { status: 201; data: User }
   | { status: 404; data: { message: string } };
 
-abstract class ApiBase<OperationResponse> extends JinFrame<OperationResponse> {
+abstract class ApiBase<OperationResponse extends { status: number; data: unknown }> extends JinFrame<OperationResponse> {
   protected override async _preHook(req: JinRequestConfig): Promise<void> {
     const token = await tokenStore.get();
     req.headers = { ...req.headers, Authorization: `Bearer ${token}` };

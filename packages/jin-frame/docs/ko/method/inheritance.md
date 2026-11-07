@@ -17,7 +17,7 @@ import { randomUUID } from 'crypto';
 
 @Timeout(3_000)
 @Get({ host: 'https://pokeapi.co' })
-class PokemonAPI<OperationResponse = { status: number; data: unknown }> extends JinFrame<OperationResponse> {
+class PokemonAPI<OperationResponse extends { status: number; data: unknown } = { status: number; data: unknown }> extends JinFrame<OperationResponse> {
   @Query()
   public declare readonly tid: string;
 
@@ -71,7 +71,7 @@ const reply = await frame._execute();
 ```ts
 @Timeout(5_000)
 @Get({ host: 'https://pokeapi.co' })
-class PokeBaseFrame<OperationResponse = { status: number; data: unknown }> extends JinFrame<OperationResponse> {
+class PokeBaseFrame<OperationResponse extends { status: number; data: unknown } = { status: number; data: unknown }> extends JinFrame<OperationResponse> {
 }
 
 @Retry({ max: 5, interval: 1000 }) // 재시도 설정 추가
@@ -107,7 +107,7 @@ class PokemonPaging extends PokeBaseFrame {
 ```ts
 @Timeout(3_000)
 @Get({ host: 'https://pokeapi.co' })
-class PokemonAPI<OperationResponse = { status: number; data: unknown }> extends JinFrame<OperationResponse> {
+class PokemonAPI<OperationResponse extends { status: number; data: unknown } = { status: number; data: unknown }> extends JinFrame<OperationResponse> {
   @Query()
   public declare readonly tid: string;
 

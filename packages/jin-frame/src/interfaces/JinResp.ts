@@ -2,7 +2,7 @@ import type { JinRespBase } from "#interfaces/JinRespBase";
 import type { ValidationResult } from "#interfaces/ValidationResult";
 
 export type JinResponse = { status: number; data: unknown };
-export type JinResp<Response = JinResponse> = JinRespBase & {
+export type JinResp<Response extends JinResponse = JinResponse> = JinRespBase & {
   data: unknown;
   ok: boolean;
   valid: boolean;

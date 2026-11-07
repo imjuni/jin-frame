@@ -29,7 +29,13 @@ export function createBaseFrameData(params: ICreateBaseFrameProps): IBaseFrameDa
           }
         : undefined,
     ].filter((entry) => entry != null),
-    typeParameters: [{ name: "RESPONSE", default: 'Awaited<ReturnType<JinFrame["_execute"]>>' }],
+    typeParameters: [
+      {
+        name: "RESPONSE",
+        constraint: "{ status: number; data: unknown }",
+        default: 'Awaited<ReturnType<JinFrame["_execute"]>>',
+      },
+    ],
     decorators: [
       {
         name: "Get",

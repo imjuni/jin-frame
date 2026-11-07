@@ -22,7 +22,7 @@ Fail validators never throw `JinValidationError` because doing so would overwrit
 `JinResp<Response>` carries response metadata together with the status/data union:
 
 ```ts
-type JinResp<Response> = JinRespBase & Response & {
+type JinResp<Response extends { status: number; data: unknown }> = JinRespBase & Response & {
   ok: boolean;
   valid: boolean;
   $validated: ValidationResult;
