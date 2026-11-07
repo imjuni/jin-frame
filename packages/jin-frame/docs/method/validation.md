@@ -69,7 +69,7 @@ class UserPassValidator extends BaseValidator<JinResp<{ status: number; data: Us
 
 | Parameter | Description                                              |
 | --------- | -------------------------------------------------------- |
-| `TOrigin` | Full response type passed to `validate()` (e.g. `JinResp<User>`) |
+| `TOrigin` | Full response type passed to `validate()` (e.g. `JinResp<{ status: 200; data: User }>`) |
 | `TData`   | Slice extracted by `getData()` for actual validation     |
 | `TError`  | Type of each item in `error[]` on failure                |
 
@@ -77,9 +77,15 @@ class UserPassValidator extends BaseValidator<JinResp<{ status: number; data: Us
 
 ## Registering Validators
 
+The `pass` and `fail` keys select runtime validation paths; they do not define separate response types. `pass` runs when `validateStatus` accepts the response, including a 4xx explicitly accepted by the caller. A validator that expects a particular payload must check `status` before reading that payload. The response union does not change with `validateStatus`.
+
 Pass validators through the `validators` option on the method decorator:
 
 ```ts
+type UserResponse =
+  | { status: 200; data: User }
+  | { status: 400; data: ErrorBody };
+
 @Get({
   host: 'https://api.example.com',
   path: '/users/{id}',
@@ -88,7 +94,7 @@ Pass validators through the `validators` option on the method decorator:
     fail: new UserFailValidator(), // optional
   },
 })
-class GetUserFrame extends JinFrame<{ status: number; data: User | ErrorBody }> {
+class GetUserFrame extends JinFrame<UserResponse> {
   @Param()
   declare public readonly id: string;
 }

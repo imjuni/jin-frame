@@ -22,7 +22,7 @@ interface IReqGetPokemonInfoByName {
 }
 
 async function getPokemonInfoByName(inp: IReqGetPokemonInfoByName) {
-  const url = `https://pokeapi.co/api/v2/pokemon/${inp.name}?tid=${inp.tid}`;
+  const url = `https://pokeapi.co/api/v2/pokemon/${inp.name}`;
   const response = await fetch(url);
   return response.json() as Promise<Record<string, string>>;
 }
@@ -40,9 +40,6 @@ class PokemonPagingFrame extends JinFrame {
 export class PokemonFrame extends JinFrame {
   @Param()
   declare public readonly name: string;
-
-  @Query()
-  declare public readonly tid: string;
 }
 
 describe("Real Request and Response", () => {
@@ -80,7 +77,6 @@ describe("Real Request and Response", () => {
   it("PokemonFrame", async () => {
     const frame = PokemonFrame.of({
       name: "pikachu",
-      tid: crypto.randomUUID(),
     });
 
     const reply = await frame._execute();

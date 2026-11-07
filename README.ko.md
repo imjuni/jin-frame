@@ -23,7 +23,7 @@ TypeScript 데코레이터와 클래스를 사용해 HTTP 요청을 선언적으
 ## Why jin-frame?
 
 1. **선언적 API 정의** — 클래스와 데코레이터로 URL, QueryString, Path Parameter, Body, Header를 직관적으로 정의
-2. **타입 안전성** — `ok: true | false` 판별 유니온 응답 타입, 컴파일 단계 오류 검출
+2. **타입 안전성** — 숫자 `status` 기반 판별 유니온 응답 타입, 컴파일 단계 오류 검출
 3. **Retry, Hook, File Upload, Timeout, AbortSignal 지원**
 4. **네이티브 `fetch` 기반** — 별도 HTTP 클라이언트 불필요
 5. **RFC 6570 URI Template** — `{param}` 형식의 path parameter 지원
@@ -91,7 +91,7 @@ export class PokemonFrame extends JinFrame {
 const frame = PokemonFrame.of({ name: 'pikachu', tid: randomUUID() });
 const reply = await frame._execute();
 
-if (reply.ok) {
+if (reply.status === 200) {
   console.log(reply.data);
 }
 ```
@@ -320,3 +320,28 @@ OpenAPI 생성기는 명세의 숫자 상태 코드(2xx~5xx)를 `{ status, data 
 기본적으로 2xx 외의 응답은 기존처럼 예외를 발생시킵니다. 오류 응답을 직접 받으려면 `_execute({ validateStatus: () => true })`를 사용합니다. 이 옵션은 런타임 판정만 변경하며 생성되는 응답 union은 항상 동일합니다. `default`와 `2XX` 같은 범위 키는 숫자 리터럴 union에 포함하지 않습니다.
 
 이 변경은 타입 API의 호환성을 변경합니다. 기존 `JinFrame<DTO>`는 `JinFrame<{ status: number; data: DTO }>`로, 상태별 응답이 있으면 해당 union으로 이전합니다. `JinPassResp`·`JinFailResp`는 `JinResp<Response>`로 통합되었습니다. `validators.pass/fail` 설정은 응답 수용·거부 경로의 검증기를 선택하는 용도로 유지됩니다.
+
+## 응답이 없는 오류 처리
+
+`JinRespError.resp`는 완전한 HTTP 응답 객체이거나 `undefined`입니다. 응답이 없는 네트워크 오류에서는 `data`, `headers`, `raw`를 가진 가짜 응답을 만들지 않습니다. 원본 오류는 `cause`에 보존됩니다.
+
+HTTP 상태가 거부된 경우에는 `resp`에 실제 응답의 `status`, `data`, `headers`, `raw`와 검증 결과가 유지됩니다. `resp`가 없을 때 오류 객체의 `status`·`statusText`는 내부 진단용 값입니다. 기본값인 `500`·`Internal Server Error`는 서버가 실제로 500을 반환했다는 의미가 아닙니다.
+
+`validateStatus: () => true`도 네트워크 오류를 반환값으로 바꾸지 않습니다. 응답 생성 전후의 훅 또는 역직렬화 과정에서 발생한 오류도 `JinRespError`로 래핑될 수 있으므로, `resp === undefined`만으로 네트워크 장애라고 단정하지 말고 `cause`를 함께 확인합니다.
+
+```ts
+import { JinRespError } from 'jin-frame';
+
+try {
+  await frame._execute();
+} catch (error) {
+  if (!(error instanceof JinRespError)) throw error;
+
+  const response = error.resp;
+  if (response === undefined) {
+    console.error(error.message, error.cause);
+  } else {
+    console.error(response.status, response.data, response.headers);
+  }
+}
+```

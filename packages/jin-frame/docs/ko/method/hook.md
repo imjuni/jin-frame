@@ -68,7 +68,7 @@ class GetUserFrame extends JinFrame<{ status: number; data: User }> {
 ```ts
 protected _postHook(
   req: JinRequestConfig,
-  reply: JinResp<{ status: number; data: Pass | Fail }>,
+  reply: JinResp<OperationResponse>,
   debugInfo: DebugInfo,
 ): void | Promise<void>
 ```
@@ -76,7 +76,7 @@ protected _postHook(
 | 파라미터    | 타입                  | 설명                                       |
 | ----------- | --------------------- | ------------------------------------------ |
 | `req`       | `JinRequestConfig`    | 전송된 요청 설정                            |
-| `reply`     | `JinResp<Response>` | 판별 유니온 응답 (`ok: true \| false`)     |
+| `reply`     | `JinResp<OperationResponse>` | 숫자 `status`로 구분하는 응답 union     |
 | `debugInfo` | `DebugInfo`           | 타이밍 및 중복 제거 메타데이터              |
 
 ### DebugInfo
@@ -91,6 +91,8 @@ interface DebugInfo {
 ```
 
 ---
+
+`ok`는 `validateStatus`가 응답을 수용했는지를 나타내는 boolean이며 타입 판별자가 아닙니다. `validateStatus: () => true`로 수용한 404도 `ok: true`입니다. `data` 타입은 `status`로 좁힙니다. 훅은 수용·거부된 HTTP 응답에 동일한 응답 union을 사용합니다.
 
 ## \_retryFail
 
@@ -160,7 +162,7 @@ protected _retryException(req: JinRequestConfig, err: Error): void | Promise<voi
 | `req`    | `JinRequestConfig` | 전송된 요청 설정               |
 | `err`    | `Error`            | fetch 시도 중 발생한 에러 객체 |
 
-> `_retryException`도 마지막 에러 포함, **에러가 발생한 모든 시도마다** 호출됩니다. 최종 결과가 필요하다면 `_postHook`을 사용하세요.
+> `_retryException`은 마지막 오류를 포함해 **오류가 발생한 모든 시도마다** 호출됩니다. HTTP 응답이 없으면 `_postHook`이 호출되지 않으므로, 최종 실패는 `_execute()`의 예외를 처리해 확인하세요.
 
 ---
 
@@ -237,7 +239,12 @@ sequenceDiagram
 import { JinFrame } from 'jin-frame';
 import type { JinRequestConfig, JinResp, DebugInfo } from 'jin-frame';
 
-abstract class ApiBase<Pass, Fail = Pass> extends JinFrame<{ status: number; data: Pass | Fail }> {
+type UserResponse =
+  | { status: 200; data: User }
+  | { status: 201; data: User }
+  | { status: 404; data: { message: string } };
+
+abstract class ApiBase<OperationResponse> extends JinFrame<OperationResponse> {
   protected override async _preHook(req: JinRequestConfig): Promise<void> {
     const token = await tokenStore.get();
     req.headers = { ...req.headers, Authorization: `Bearer ${token}` };
@@ -245,7 +252,7 @@ abstract class ApiBase<Pass, Fail = Pass> extends JinFrame<{ status: number; dat
 
   protected override _postHook(
     req: JinRequestConfig,
-    reply: JinResp<{ status: number; data: Pass | Fail }>,
+    reply: JinResp<OperationResponse>,
     debug: DebugInfo,
   ): void {
     metrics.record({ url: req.url, status: reply.status, duration: debug.duration });
@@ -253,13 +260,13 @@ abstract class ApiBase<Pass, Fail = Pass> extends JinFrame<{ status: number; dat
 }
 
 @Get({ host: 'https://api.example.com', path: '/users/{id}' })
-class GetUserFrame extends ApiBase<User> {
+class GetUserFrame extends ApiBase<UserResponse> {
   @Param()
   declare public readonly id: string;
 }
 
 @Post({ host: 'https://api.example.com', path: '/users' })
-class CreateUserFrame extends ApiBase<User> {
+class CreateUserFrame extends ApiBase<UserResponse> {
   @Body()
   declare public readonly name: string;
 }
@@ -279,3 +286,31 @@ class CreateUserFrame extends ApiBase<User> {
 | 메트릭 / 트레이싱       | `_postHook`         | 메트릭 수집기에 소요 시간 기록                     |
 | 오류 알림               | `_postHook`         | `reply.ok === false` 시 알림 발송                  |
 | 캐시 무효화             | `_postHook`         | 성공적인 변경 요청 후 캐시 삭제                    |
+
+
+## 응답이 없는 오류 처리
+
+`JinRespError.resp`는 완전한 HTTP 응답 객체이거나 `undefined`입니다. 응답이 없는 네트워크 오류에서는 `data`, `headers`, `raw`를 가진 가짜 응답을 만들지 않습니다. 원본 오류는 `cause`에 보존됩니다.
+
+HTTP 상태가 거부된 경우에는 `resp`에 실제 응답의 `status`, `data`, `headers`, `raw`와 검증 결과가 유지됩니다. `resp`가 없을 때 오류 객체의 `status`·`statusText`는 내부 진단용 값입니다. 기본값인 `500`·`Internal Server Error`는 서버가 실제로 500을 반환했다는 의미가 아닙니다.
+
+`validateStatus: () => true`도 네트워크 오류를 반환값으로 바꾸지 않습니다. 응답 생성 전후의 훅 또는 역직렬화 과정에서 발생한 오류도 `JinRespError`로 래핑될 수 있으므로, `resp === undefined`만으로 네트워크 장애라고 단정하지 말고 `cause`를 함께 확인합니다.
+
+```ts
+import { JinRespError } from 'jin-frame';
+
+try {
+  await frame._execute();
+} catch (error) {
+  if (!(error instanceof JinRespError)) throw error;
+
+  const response = error.resp;
+  if (response === undefined) {
+    console.error(error.message, error.cause);
+  } else {
+    console.error(response.status, response.data, response.headers);
+  }
+}
+```
+
+응답이 없는 네트워크 오류에서는 `_postHook`이 호출되지 않습니다. `_retryException`은 각 실패 시도를 관찰하고, 최종 실패는 `_execute()`의 예외를 처리해 확인합니다. `getError`로 오류를 변환하면 호출자는 해당 핸들러가 반환한 오류를 받습니다.

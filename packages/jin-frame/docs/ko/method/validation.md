@@ -42,7 +42,7 @@ export class BaseValidator<TOrigin = unknown, TData = TOrigin, TError = unknown>
 
 ### 제네릭 타입 매개변수
 
-- **`TOrigin`**: 원본 응답 타입 (예: `JinResp<UserData>`)
+- **`TOrigin`**: 원본 응답 타입 (예: `JinResp<{ status: 201; data: UserData }>`)
 - **`TData`**: 검증할 데이터 타입 (예: `UserData`)  
 - **`TError`**: 검증 실패 시 에러 타입 (예: `ZodIssue`)
 
@@ -262,3 +262,7 @@ interface JinValidationError {
 ---
 
 Validator는 API 응답의 **데이터 무결성을 보장**하고 **예상치 못한 데이터로 인한 런타임 오류를 방지**하는 핵심 기능입니다. 특히 외부 API를 사용할 때 응답 형태가 변경되거나 예상과 다른 데이터가 올 경우를 대비할 수 있습니다.
+
+## 상태 코드와 검증기 선택
+
+`validators.pass/fail`은 응답 타입을 나누는 제네릭이 아니라 런타임 검증 경로 설정입니다. `validateStatus`가 참이면 `pass`, 거짓이면 `fail` 검증기를 사용합니다. `() => true`로 허용한 4xx도 `pass` 검증기를 거치므로, 특정 데이터 구조를 기대하는 검증기는 먼저 `status`를 확인해야 합니다. 응답 union은 이 설정과 무관하게 동일합니다.

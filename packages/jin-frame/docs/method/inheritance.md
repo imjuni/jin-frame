@@ -17,7 +17,7 @@ import { randomUUID } from 'crypto';
 
 @Timeout(3_000)
 @Get({ host: 'https://pokeapi.co' })
-class PokemonAPI<PASS = unknown, FAIL = unknown> extends JinFrame<{ status: number; data: PASS | FAIL }> {
+class PokemonAPI<OperationResponse = { status: number; data: unknown }> extends JinFrame<OperationResponse> {
   @Query()
   declare public readonly tid: string;
 
@@ -33,8 +33,14 @@ class PokemonAPI<PASS = unknown, FAIL = unknown> extends JinFrame<{ status: numb
 ### Child Class Definition
 
 ```ts
+type PokemonResponse =
+  | { status: 200; data: IPokemonData }
+  | { status: 404; data: { message: string } };
+```
+
+```ts
 @Get({ path: '/api/v2/pokemon/{name}' })
-class PokemonByNameId extends PokemonAPI<IPokemonData> {
+class PokemonByNameId extends PokemonAPI<PokemonResponse> {
   @Param()
   declare public readonly name: string;
 }
@@ -49,11 +55,11 @@ When using the `of` factory method directly, you need to specify all fields for 
 
 ```ts
 const frame = PokemonByNameId.of((b) => b.set('name', 'pikachu'));
-const reply = await frame.execute();
+const reply = await frame._execute();
 
 // from style
 const frame = PokemonByNameId.of((b) => b.from({ name: 'pikachu' }));
-const reply = await frame.execute();
+const reply = await frame._execute();
 ```
 
 ---
@@ -65,7 +71,7 @@ If the child class redefines the same configuration, it overrides the parent’s
 ```ts
 @Timeout(5_000)
 @Get({ host: 'https://pokeapi.co' })
-class PokeBaseFrame<P = unknown, F = unknown> extends JinFrame<{ status: number; data: P | F }> {
+class PokeBaseFrame<OperationResponse = { status: number; data: unknown }> extends JinFrame<OperationResponse> {
 }
 
 @Retry({ max: 5, interval: 1000 })
@@ -101,13 +107,13 @@ Hooks can also be extended in an inheritance structure. This allows you to place
 ```ts
 @Timeout(3_000)
 @Get({ host: 'https://pokeapi.co' })
-class PokemonAPI<PASS = unknown, FAIL = unknown> extends JinFrame<{ status: number; data: PASS | FAIL }> {
+class PokemonAPI<OperationResponse = { status: number; data: unknown }> extends JinFrame<OperationResponse> {
   @Query()
   declare public readonly tid: string;
 
   override async _postHook(
     _req: JinRequestConfig,
-    reply: JinResp<{ status: number; data: PASS | FAIL }>,
+    reply: JinResp<OperationResponse>,
     _debugInfo: DebugInfo,
   ) {
     if (!reply.ok) {
@@ -123,20 +129,22 @@ The reason hook methods use the `_` prefix is that `jin-frame` applies this to a
 
 ```ts
 @Get({ path: '/api/v2/pokemon/{name}' })
-class PokemonByNameId extends PokemonAPI<IPokemonData> {
+class PokemonByNameId extends PokemonAPI<PokemonResponse> {
   @Param()
   public declare readonly name: string;
 
   override async _postHook(
     _req: JinRequestConfig,
-    reply: JinResp<{ status: number; data: IPokemonData | unknown }>,
+    reply: JinResp<PokemonResponse>,
     _debugInfo: DebugInfo,
   ) {
     // Execute parent hook
     await super._postHook(_req, reply, _debugInfo);
 
-    // Additional logging or post-processing
-    ...
+    if (reply.status === 200) {
+      // Data is narrowed to IPokemonData.
+      console.log(reply.data);
+    }
   }
 }
 ```

@@ -9,32 +9,32 @@ export class JinRespError<Response = JinResponse> extends Error {
 
   #frame: JinFrame<Response>;
 
-  #resp: JinResp<Response>;
+  #resp: JinResp<Response> | undefined;
 
   #status: number;
 
   #statusText: string;
 
-  constructor({
-    debug,
-    frame,
-    resp,
-    message,
-    cause,
-  }: {
-    debug: DebugInfo;
-    frame: JinFrame<Response>;
-    resp: JinResp<Response>;
-    message: string;
-    cause?: unknown;
-  }) {
-    super(message, { cause });
+  constructor(
+    options: {
+      debug: DebugInfo;
+      frame: JinFrame<Response>;
+      message: string;
+      cause?: unknown;
+    } & ({ resp: JinResp<Response> } | { resp?: undefined; status: number; statusText: string }),
+  ) {
+    super(options.message, { cause: options.cause });
 
-    this.#debug = debug;
-    this.#frame = frame;
-    this.#resp = resp;
-    this.#status = resp.status;
-    this.#statusText = resp.statusText;
+    this.#debug = options.debug;
+    this.#frame = options.frame;
+    this.#resp = options.resp;
+    if ("status" in options) {
+      this.#status = options.status;
+      this.#statusText = options.statusText;
+    } else {
+      this.#status = options.resp.status;
+      this.#statusText = options.resp.statusText;
+    }
   }
 
   get debug(): DebugInfo {
