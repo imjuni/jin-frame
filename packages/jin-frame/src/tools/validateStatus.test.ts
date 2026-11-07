@@ -3,9 +3,7 @@ import { JinFrame } from "#frames/JinFrame";
 import { validateStatus } from "#tools/validateStatus";
 
 type Responses = { status: 200; data: { name: string } } | { status: 404; data: { message: string } };
-class UserFrame extends JinFrame<Responses> {
-  public override readonly _defaultValidateStatus = validateStatus(200);
-}
+class UserFrame extends JinFrame<Responses> {}
 
 it("should accept only configured statuses when validating a response", () => {
   const predicate = validateStatus(200, 404);
@@ -30,11 +28,11 @@ it("should infer default and overridden statuses when creating requests", () => 
   expect(check).toBeTypeOf("function");
 });
 
-it("should apply the default predicate and allow call overrides when receiving HTTP errors", async () => {
+it("should apply the default success policy and allow call overrides when receiving HTTP errors", async () => {
   const { Get } = await import("#decorators/methods/Get");
   const { http, HttpResponse } = await import("msw");
   const { setupServer } = await import("msw/node");
-  @Get({ host: "https://status.test", path: "/user", validateStatus: () => true })
+  @Get({ host: "https://status.test", path: "/user" })
   class DefaultFrame extends UserFrame {}
   const server = setupServer(
     http.get("https://status.test/user", () => HttpResponse.json({ message: "Missing" }, { status: 404 })),
