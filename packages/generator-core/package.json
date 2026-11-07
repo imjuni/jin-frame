@@ -105,7 +105,6 @@
     "rollup": "^4.50.1",
     "rollup-plugin-dts": "^6.1.0",
     "shortsword": "^0.4.0",
-    "ts-node": "^10.9.1",
     "tsc-alias": "^1.8.8",
     "tslib": "^2.5.2",
     "tsx": "^4.20.3",

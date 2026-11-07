@@ -1,10 +1,5 @@
 {
   "extends": "@tsconfig/node20/tsconfig.json",
-  "ts-node": {
-    "transpileOnly": true,
-    "files": true,
-    "esm": true
-  },
   "compilerOptions": {
     /* Basic Options */
     "module": "Preserve",
