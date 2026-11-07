@@ -33,17 +33,7 @@
     "experimentalDecorators": true,
     "emitDecoratorMetadata": true,
     "outDir": "dist",
-    "rootDir": ".",
-    "paths": {
-      "#decorators/*": ["./src/decorators/*"],
-      "#exceptions/*": ["./src/exceptions/*"],
-      "#frames/*": ["./src/frames/*"],
-      "#interfaces/*": ["./src/interfaces/*"],
-      "#processors/*": ["./src/processors/*"],
-      "#providers/*": ["./src/providers/*"],
-      "#tools/*": ["./src/tools/*"],
-      "#validators/*": ["./src/validators/*"]
-    }
+    "rootDir": "."
   },
   "include": ["src/**/*.ts"],
   "exclude": ["dist/**", "**/docs/**/*"]

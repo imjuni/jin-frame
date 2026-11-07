@@ -1,28 +1,22 @@
-import { nodeResolve } from "@rollup/plugin-node-resolve";
-import readPackage from "read-pkg";
+import { isBuiltin } from "node:module";
+import { resolve } from "node:path";
 import { dts } from "rollup-plugin-dts";
 
-const pkg = readPackage.sync();
-
-const resolveOnly = (module) => {
-  return (
-    pkg?.dependencies?.[module] != null &&
-    pkg?.devDependencies?.[module] != null &&
-    pkg?.peerDependencies?.[module] != null
-  );
+export default {
+  external: isBuiltin,
+  input: "dist/types/origin/index.d.ts",
+  output: [{ file: "dist/types/index.d.ts", format: "esm" }],
+  plugins: [
+    {
+      name: "internal-declaration-paths",
+      resolveId(source) {
+        if (!source.startsWith("#")) {
+          return null;
+        }
+        // Resolve internal imports to emitted declarations instead of source files.
+        return resolve("dist/types/origin", `${source.slice(1)}.d.ts`);
+      },
+    },
+    dts({ tsconfig: "./tsconfig.dts.json" }),
+  ],
 };
-
-const config = [
-  {
-    input: "dist/types/origin/index.d.ts",
-    output: [{ file: "dist/types/index.d.ts", format: "esm" }],
-    plugins: [
-      nodeResolve({ resolveOnly }),
-      dts({
-        tsconfig: "./tsconfig.dts.json",
-      }),
-    ],
-  },
-];
-
-export default config;

@@ -6,12 +6,5 @@
     "declarationDir": "dist/types/origin",
     "emitDeclarationOnly": true,
     "rootDir": "src"
-  },
-  "tsc-alias": {
-    "replacers": {
-      "base-url": {
-        "enabled": false
-      }
-    }
   }
 }
