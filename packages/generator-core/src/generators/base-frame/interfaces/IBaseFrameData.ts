@@ -6,7 +6,7 @@ export interface IBaseFrameData {
   filePath: string;
   docs: string;
   imports: IFrameDataImport[];
-  typeParameters: { name: string; default?: string }[];
+  typeParameters: { name: string; constraint?: string; default?: string }[];
   decorators: { name: string; arguments?: string[] }[];
   properties: IPropertyData[];
   methods: { name: string; returnType: string; statements: string[] }[];

@@ -1,4 +1,7 @@
 import type { JinRequestConfig } from "#interfaces/JinRequestConfig";
-import type { JinResp } from "#interfaces/JinResp";
+import type { JinResp, JinResponse } from "#interfaces/JinResp";
 
-export type RetryFailHook<Response> = (req: JinRequestConfig, res: JinResp<Response>) => void | Promise<void>;
+export type RetryFailHook<Response extends JinResponse> = (
+  req: JinRequestConfig,
+  res: JinResp<Response>,
+) => void | Promise<void>;

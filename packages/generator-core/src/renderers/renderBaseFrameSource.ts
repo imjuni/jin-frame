@@ -20,7 +20,10 @@ export class <%~ it.name %><<%~ it.typeParameters %>> extends <%~ it.extends %> 
     decorators: data.decorators.map(renderDecorator).join("\n"),
     name: data.name,
     typeParameters: data.typeParameters
-      .map((type) => `${type.name}${type.default ? ` = ${type.default}` : ""}`)
+      .map(
+        (type) =>
+          `${type.name}${type.constraint ? ` extends ${type.constraint}` : ""}${type.default ? ` = ${type.default}` : ""}`,
+      )
       .join(", "),
     extends: data.extends,
     properties: data.properties.length ? `${data.properties.map(renderProperty).join("\n")}\n` : "",

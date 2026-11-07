@@ -17,7 +17,7 @@ import { randomUUID } from 'crypto';
 
 @Timeout(3_000)
 @Get({ host: 'https://pokeapi.co' })
-class PokemonAPI<OperationResponse = { status: number; data: unknown }> extends JinFrame<OperationResponse> {
+class PokemonAPI<OperationResponse extends { status: number; data: unknown } = { status: number; data: unknown }> extends JinFrame<OperationResponse> {
   @Query()
   declare public readonly tid: string;
 
@@ -71,7 +71,7 @@ If the child class redefines the same configuration, it overrides the parent’s
 ```ts
 @Timeout(5_000)
 @Get({ host: 'https://pokeapi.co' })
-class PokeBaseFrame<OperationResponse = { status: number; data: unknown }> extends JinFrame<OperationResponse> {
+class PokeBaseFrame<OperationResponse extends { status: number; data: unknown } = { status: number; data: unknown }> extends JinFrame<OperationResponse> {
 }
 
 @Retry({ max: 5, interval: 1000 })
@@ -107,7 +107,7 @@ Hooks can also be extended in an inheritance structure. This allows you to place
 ```ts
 @Timeout(3_000)
 @Get({ host: 'https://pokeapi.co' })
-class PokemonAPI<OperationResponse = { status: number; data: unknown }> extends JinFrame<OperationResponse> {
+class PokemonAPI<OperationResponse extends { status: number; data: unknown } = { status: number; data: unknown }> extends JinFrame<OperationResponse> {
   @Query()
   declare public readonly tid: string;
 
