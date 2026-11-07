@@ -1,3 +1,4 @@
+import type { StatusValidator, ValidatedResponse } from "#tools/validateStatus";
 // eslint-disable-next-line import-x/no-extraneous-dependencies
 import { formatISO } from "date-fns/formatISO";
 // eslint-disable-next-line import-x/no-extraneous-dependencies
@@ -33,6 +34,9 @@ export class JinFrame<Response extends JinResponse = JinResponse>
   extends AbstractJinFrame
   implements JinFrameFunction<Response>
 {
+  /** Typed default policy. Call options override it; it takes precedence over decorator policies. */
+  public readonly _defaultValidateStatus: StatusValidator | undefined = undefined;
+
   /**
    * Execute before request. If you can change request object that is affected request.
    *
@@ -83,6 +87,16 @@ export class JinFrame<Response extends JinResponse = JinResponse>
    * @param option request configuration options
    * @returns Function that invokes HTTP APIs
    */
+  public _create<
+    Validator extends StatusValidator | undefined = this["_defaultValidateStatus"],
+    TSelf extends this = this,
+  >(
+    option?: JinFrameRequestConfig &
+      Omit<JinFrameCreateConfig, "validateStatus"> & {
+        validateStatus?: Validator;
+        getError?: GetError<TSelf, Response>;
+      },
+  ): () => Promise<JinResp<ValidatedResponse<Response, Validator>> & { $debug: DebugInfo; $frame: TSelf }>;
   public _create<TSelf extends this = this>(
     this: this,
     option?: JinFrameRequestConfig & JinFrameCreateConfig & { getError?: GetError<TSelf, Response> },
@@ -93,7 +107,8 @@ export class JinFrame<Response extends JinResponse = JinResponse>
     }
   > {
     const req = this._requestWrap(option);
-    const isValidateStatus = option?.validateStatus ?? this._option.validateStatus ?? isValidateStatusDefault;
+    const isValidateStatus =
+      option?.validateStatus ?? this._defaultValidateStatus ?? this._option.validateStatus ?? isValidateStatusDefault;
 
     const jinFrameHandle = async (): Promise<
       JinResp<Response> & {
@@ -243,6 +258,16 @@ export class JinFrame<Response extends JinResponse = JinResponse>
    * @param option request configuration options
    * @returns JinResp with pass or fail discriminated union
    */
+  public _execute<
+    Validator extends StatusValidator | undefined = this["_defaultValidateStatus"],
+    TSelf extends this = this,
+  >(
+    option?: JinFrameRequestConfig &
+      Omit<JinFrameCreateConfig, "validateStatus"> & {
+        validateStatus?: Validator;
+        getError?: GetError<TSelf, Response>;
+      },
+  ): Promise<JinResp<ValidatedResponse<Response, Validator>>>;
   public async _execute<TSelf extends this = this>(
     this: TSelf,
     option?: JinFrameRequestConfig & JinFrameCreateConfig & { getError?: GetError<TSelf, Response> },
