@@ -23,7 +23,7 @@ A reusable, declarative, type-safe, and extendable HTTP request library built on
 Why `jin-frame`?
 
 1. Declarative API Definition — HTTP requests as TypeScript classes with decorators
-2. Type Safety — discriminated union response (`ok: true | false`) with full TypeScript generics
+2. Type Safety — numeric `status` discriminated response unions with full TypeScript generics
 3. Retry, Hooks, File Upload, Timeout, and AbortSignal support
 4. Built on native `fetch` — no extra HTTP client dependency
 5. RFC 6570 URI Template path parameters (`{param}`)
@@ -94,7 +94,7 @@ export class PokemonFrame extends JinFrame {
 const frame = PokemonFrame.of({ name: 'pikachu', tid: randomUUID() });
 const reply = await frame._execute();
 
-if (reply.ok) {
+if (reply.status === 200) {
   console.log(reply.data);
 }
 ```
@@ -338,3 +338,28 @@ The OpenAPI generator combines documented numeric 2xx–5xx responses into a `{ 
 Non-2xx responses throw by default. Use `_execute({ validateStatus: () => true })` to receive error responses directly. This option changes runtime acceptance only; the generated union always includes all documented numeric statuses. Range keys such as `2XX` and `default` are not included in the numeric literal union.
 
 This is a breaking type API change. Migrate `JinFrame<DTO>` to `JinFrame<{ status: number; data: DTO }>` or a status-specific union. `JinPassResp` and `JinFailResp` are replaced by `JinResp<Response>`. The `validators.pass/fail` settings still select validators for accepted and rejected responses.
+
+## Errors Without an HTTP Response
+
+`JinRespError.resp` is either a complete HTTP response or `undefined`. A network failure without a response does not create a synthetic response with `data`, `headers`, or `raw`. The original error is preserved in `cause`.
+
+When an HTTP status is rejected, `resp` retains the actual response's `status`, `data`, `headers`, `raw`, and validation result. Without `resp`, the error-level `status` and `statusText` are diagnostic values. The defaults, `500` and `Internal Server Error`, do not mean that a server returned HTTP 500.
+
+`validateStatus: () => true` still rejects on network failures. Hook or deserialization errors can also be wrapped in `JinRespError` without a response, so inspect `cause` rather than assuming every absent `resp` means a network outage.
+
+```ts
+import { JinRespError } from 'jin-frame';
+
+try {
+  await frame._execute();
+} catch (error) {
+  if (!(error instanceof JinRespError)) throw error;
+
+  const response = error.resp;
+  if (response === undefined) {
+    console.error(error.message, error.cause);
+  } else {
+    console.error(response.status, response.data, response.headers);
+  }
+}
+```

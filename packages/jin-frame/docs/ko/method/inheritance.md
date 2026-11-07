@@ -17,7 +17,7 @@ import { randomUUID } from 'crypto';
 
 @Timeout(3_000)
 @Get({ host: 'https://pokeapi.co' })
-class PokemonAPI<PASS = unknown, FAIL = unknown> extends JinFrame<{ status: number; data: PASS | FAIL }> {
+class PokemonAPI<OperationResponse = { status: number; data: unknown }> extends JinFrame<OperationResponse> {
   @Query()
   public declare readonly tid: string;
 
@@ -33,8 +33,14 @@ class PokemonAPI<PASS = unknown, FAIL = unknown> extends JinFrame<{ status: numb
 ### 자식 클래스 정의
 
 ```ts
+type PokemonResponse =
+  | { status: 200; data: IPokemonData }
+  | { status: 404; data: { message: string } };
+```
+
+```ts
 @Get({ path: '/api/v2/pokemon/{name}' })
-class PokemonByNameId extends PokemonAPI<IPokemonData> {
+class PokemonByNameId extends PokemonAPI<PokemonResponse> {
   @Param()
   public declare readonly name: string;
 }
@@ -49,11 +55,11 @@ class PokemonByNameId extends PokemonAPI<IPokemonData> {
 
 ```ts
 const frame = PokemonByNameId.of(b => b.set('name', 'pikachu'));
-const reply = await frame.execute();
+const reply = await frame._execute();
 
 // from 방식
 const frame = PokemonByNameId.of(b => b.from({ name: 'pikachu' }));
-const reply = await frame.execute();
+const reply = await frame._execute();
 ```
 
 ---
@@ -65,7 +71,7 @@ const reply = await frame.execute();
 ```ts
 @Timeout(5_000)
 @Get({ host: 'https://pokeapi.co' })
-class PokeBaseFrame<P = unknown, F = unknown> extends JinFrame<{ status: number; data: P | F }> {
+class PokeBaseFrame<OperationResponse = { status: number; data: unknown }> extends JinFrame<OperationResponse> {
 }
 
 @Retry({ max: 5, interval: 1000 }) // 재시도 설정 추가
@@ -101,13 +107,13 @@ class PokemonPaging extends PokeBaseFrame {
 ```ts
 @Timeout(3_000)
 @Get({ host: 'https://pokeapi.co' })
-class PokemonAPI<PASS = unknown, FAIL = unknown> extends JinFrame<{ status: number; data: PASS | FAIL }> {
+class PokemonAPI<OperationResponse = { status: number; data: unknown }> extends JinFrame<OperationResponse> {
   @Query()
   public declare readonly tid: string;
 
   override async _postHook(
     _req: JinRequestConfig,
-    reply: JinResp<{ status: number; data: PASS | FAIL }>,
+    reply: JinResp<OperationResponse>,
     _debugInfo: DebugInfo,
   ) {
     if (!reply.ok) {
@@ -123,13 +129,13 @@ Hook 함수명에 `_` 접두사가 붙는 이유는 모든 인스턴스 메서�
 
 ```ts
 @Get({ path: '/api/v2/pokemon/{name}' })
-class PokemonByNameId extends PokemonAPI<IPokemonData> {
+class PokemonByNameId extends PokemonAPI<PokemonResponse> {
   @Param()
   public declare readonly name: string;
 
   override async _postHook(
     _req: JinRequestConfig,
-    reply: JinResp<{ status: number; data: IPokemonData | unknown }>,
+    reply: JinResp<PokemonResponse>,
     _debugInfo: DebugInfo,
   ) {
     // 부모 Hook 실행

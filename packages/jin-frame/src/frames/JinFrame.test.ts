@@ -485,7 +485,7 @@ describe("JinFrame", () => {
           throw "invalid exception";
         },
       });
-    }).rejects.toMatchObject({ resp: { status: 500 } });
+    }).rejects.toMatchObject({ resp: undefined, status: 500 });
   });
 
   it("should raise error wrap custom error using getError when server response 404", async () => {

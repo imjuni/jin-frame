@@ -216,11 +216,8 @@ export class JinFrame<Response = JinResponse> extends AbstractJinFrame implement
         const { status, statusText } = getStatusFromError(caught);
 
         const jinFrameError = new JinRespError<Response>({
-          resp: {
-            ok: false,
-            status,
-            statusText,
-          } as unknown as JinResp<Response>,
+          status,
+          statusText,
           debug: { ...debug, duration },
           frame: this,
           message: caught instanceof Error ? caught.message : "unknown error raised",

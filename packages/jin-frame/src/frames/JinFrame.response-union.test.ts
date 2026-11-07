@@ -1,5 +1,6 @@
 import { Get } from "#decorators/methods/Get";
 import { expectTypeOf, it, afterEach, expect, vi } from "vitest";
+import { JinRespError } from "#exceptions/JinRespError";
 import { JinFrame } from "#frames/JinFrame";
 
 type Responses = { status: 200; data: { name: string } } | { status: 400; data: { message: string } };
@@ -77,4 +78,35 @@ it("should wrap a non-Error hook failure with the fallback message", async () =>
     }
   }
   await expect(HookFailureFrame.of({})._execute()).rejects.toThrow("unknown error raised");
+});
+
+it("should omit the HTTP response and preserve the cause when fetch fails", async () => {
+  const cause = new Error("connection refused");
+  vi.stubGlobal(
+    "fetch",
+    vi.fn(async () => {
+      throw cause;
+    }),
+  );
+  const handler = vi.fn((error: Error) => error);
+  const request = RuntimeStatusFrame.of({})._execute({ validateStatus: () => true, getError: handler });
+  await expect(request).rejects.toBeInstanceOf(JinRespError);
+  await expect(request).rejects.toMatchObject({
+    resp: undefined,
+    status: 500,
+    statusText: "Internal Server Error",
+    cause,
+  });
+  expect(handler).toHaveBeenCalledOnce();
+});
+
+it("should retain the complete HTTP response when its status is rejected", async () => {
+  vi.stubGlobal(
+    "fetch",
+    vi.fn(async () => new Response(JSON.stringify({ message: "invalid" }), { status: 400 })),
+  );
+  await expect(RuntimeStatusFrame.of({})._execute()).rejects.toMatchObject({
+    status: 400,
+    resp: { status: 400, data: { message: "invalid" }, headers: {}, raw: expect.any(Response), valid: true },
+  });
 });

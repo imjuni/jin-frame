@@ -68,7 +68,7 @@ class GetUserFrame extends JinFrame<{ status: number; data: User }> {
 ```ts
 protected _postHook(
   req: JinRequestConfig,
-  reply: JinResp<{ status: number; data: Pass | Fail }>,
+  reply: JinResp<OperationResponse>,
   debugInfo: DebugInfo,
 ): void | Promise<void>
 ```
@@ -76,7 +76,7 @@ protected _postHook(
 | Parameter   | Type                    | Description                            |
 | ----------- | ----------------------- | -------------------------------------- |
 | `req`       | `JinRequestConfig`      | The request config that was sent       |
-| `reply`     | `JinResp<Response>`   | Discriminated-union response (`ok: true \| false`) |
+| `reply`     | `JinResp<OperationResponse>`   | Response union discriminated by numeric `status` |
 | `debugInfo` | `DebugInfo`             | Timing and deduplication metadata      |
 
 ### DebugInfo
@@ -91,6 +91,8 @@ interface DebugInfo {
 ```
 
 ---
+
+`ok` indicates whether `validateStatus` accepted the response. It is a boolean, not a type discriminator. A 404 accepted with `validateStatus: () => true` has `ok: true`. Narrow `data` by `status`. The hook receives the same response union for accepted and rejected HTTP responses.
 
 ## \_retryFail
 
@@ -160,7 +162,7 @@ protected _retryException(req: JinRequestConfig, err: Error): void | Promise<voi
 | `req`     | `JinRequestConfig` | The request config that was sent         |
 | `err`     | `Error`            | The error thrown during the fetch attempt |
 
-> `_retryException` fires on every network-level error, including the final one. Use `_postHook` if you need the definitive outcome.
+> `_retryException` fires on every network-level error, including the final one. `_postHook` is not called when no HTTP response is available; catch the final rejection from `_execute()` instead.
 
 ---
 
@@ -237,7 +239,12 @@ The hooks pattern is especially useful when combined with inheritance. Define ho
 import { JinFrame } from 'jin-frame';
 import type { JinRequestConfig, JinResp, DebugInfo } from 'jin-frame';
 
-abstract class ApiBase<Pass, Fail = Pass> extends JinFrame<{ status: number; data: Pass | Fail }> {
+type UserResponse =
+  | { status: 200; data: User }
+  | { status: 201; data: User }
+  | { status: 404; data: { message: string } };
+
+abstract class ApiBase<OperationResponse> extends JinFrame<OperationResponse> {
   protected override async _preHook(req: JinRequestConfig): Promise<void> {
     const token = await tokenStore.get();
     req.headers = { ...req.headers, Authorization: `Bearer ${token}` };
@@ -245,7 +252,7 @@ abstract class ApiBase<Pass, Fail = Pass> extends JinFrame<{ status: number; dat
 
   protected override _postHook(
     req: JinRequestConfig,
-    reply: JinResp<{ status: number; data: Pass | Fail }>,
+    reply: JinResp<OperationResponse>,
     debug: DebugInfo,
   ): void {
     metrics.record({ url: req.url, status: reply.status, duration: debug.duration });
@@ -253,13 +260,13 @@ abstract class ApiBase<Pass, Fail = Pass> extends JinFrame<{ status: number; dat
 }
 
 @Get({ host: 'https://api.example.com', path: '/users/{id}' })
-class GetUserFrame extends ApiBase<User> {
+class GetUserFrame extends ApiBase<UserResponse> {
   @Param()
   declare public readonly id: string;
 }
 
 @Post({ host: 'https://api.example.com', path: '/users' })
-class CreateUserFrame extends ApiBase<User> {
+class CreateUserFrame extends ApiBase<UserResponse> {
   @Body()
   declare public readonly name: string;
 }
@@ -279,3 +286,31 @@ class CreateUserFrame extends ApiBase<User> {
 | Metrics / tracing            | `_postHook`         | Record duration in a metrics collector              |
 | Error alerting               | `_postHook`         | Send alert when `reply.ok === false`                |
 | Cache invalidation           | `_postHook`         | Bust a cache after a successful mutation            |
+
+
+## Errors Without an HTTP Response
+
+`JinRespError.resp` is either a complete HTTP response or `undefined`. A network failure without a response does not create a synthetic response with `data`, `headers`, or `raw`. The original error is preserved in `cause`.
+
+When an HTTP status is rejected, `resp` retains the actual response's `status`, `data`, `headers`, `raw`, and validation result. Without `resp`, the error-level `status` and `statusText` are diagnostic values. The defaults, `500` and `Internal Server Error`, do not mean that a server returned HTTP 500.
+
+`validateStatus: () => true` still rejects on network failures. Hook or deserialization errors can also be wrapped in `JinRespError` without a response, so inspect `cause` rather than assuming every absent `resp` means a network outage.
+
+```ts
+import { JinRespError } from 'jin-frame';
+
+try {
+  await frame._execute();
+} catch (error) {
+  if (!(error instanceof JinRespError)) throw error;
+
+  const response = error.resp;
+  if (response === undefined) {
+    console.error(error.message, error.cause);
+  } else {
+    console.error(response.status, response.data, response.headers);
+  }
+}
+```
+
+`_postHook` is not called for network failures without an HTTP response. Use `_retryException` to observe individual attempts and catch `_execute()` to handle the final failure. If `getError` transforms the error, the caller receives the error returned by that handler.
