@@ -1,3 +1,4 @@
+import { reportGeneratorEvent } from "#commands/reportGeneratorEvent.js";
 import { createFrames, load, safePathJoin } from "@jin-frame/generator-core";
 import type { CommandContext } from "citty";
 import consola, { LogLevels, type LogType } from "consola";
@@ -15,7 +16,7 @@ export const frameCommandRun = async ({ args }: CommandContext<typeof frameComma
   const specPath = params.spec.toString();
 
   consola.debug(`Loading spec from "${specPath}"`);
-  const spec = await load(specPath);
+  const spec = await load(specPath, { onEvent: reportGeneratorEvent });
 
   if (spec == null) {
     throw new Error(`Failed to load spec from "${specPath}"`);
@@ -28,6 +29,7 @@ export const frameCommandRun = async ({ args }: CommandContext<typeof frameComma
 
   const specTypeFilePath = params.type;
   const frames = await createFrames({
+    onEvent: reportGeneratorEvent,
     document: converted.document,
     templatePath: params.templatePath,
     specTypeFilePath,

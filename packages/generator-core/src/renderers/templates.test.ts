@@ -17,3 +17,14 @@ it("should override one template when other files are missing", async () => {
     await rm(directory, { recursive: true, force: true });
   }
 });
+
+it("should reject unreadable template entries when a template path is a directory", async () => {
+  const { mkdir } = await import("node:fs/promises");
+  const root = await mkdtemp(join(tmpdir(), "invalid-template-"));
+  try {
+    await mkdir(join(root, "frame.eta"));
+    await expect(loadTemplates(root)).rejects.toThrow("Failed to load template");
+  } finally {
+    await rm(root, { recursive: true, force: true });
+  }
+});

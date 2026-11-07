@@ -1,10 +1,11 @@
+import type { IGeneratorObserverOptions } from "#generators/interfaces/IGeneratorObserverOptions.js";
 import fs from "node:fs";
 import { exists } from "my-node-fp";
 import type { JsonValue } from "type-fest";
 import type { ILoadResult } from "#openapi/interfaces/ILoadResult.js";
 import { multiParse } from "#tools/multiParse.js";
 
-export async function load(filePath: string): Promise<ILoadResult | undefined> {
+async function loadSource(filePath: string): Promise<ILoadResult | undefined> {
   if (await exists(filePath)) {
     // load openapi spec from the file
     const buf = await fs.promises.readFile(filePath);
@@ -35,4 +36,11 @@ export async function load(filePath: string): Promise<ILoadResult | undefined> {
   }
 
   return undefined;
+}
+
+export async function load(filePath: string, options?: IGeneratorObserverOptions): Promise<ILoadResult | undefined> {
+  options?.onEvent?.({ type: "stage", stage: "load-spec", state: "started" });
+  const result = await loadSource(filePath);
+  options?.onEvent?.({ type: "stage", stage: "load-spec", state: "completed" });
+  return result;
 }

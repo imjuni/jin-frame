@@ -25,6 +25,11 @@ describe("enhanceSafeUrl", () => {
   it("should return url when pass valid url", () => {
     const result = enhanceSafeUrl("unknown_protocol://www.superhero.com/api/test/:example");
 
-    console.log(result);
+    expect(result?.url.pathname).toBe("/unknown_protocol://www.superhero.com/api/test/:example");
   });
+});
+
+// JavaScript callers can pass values outside the TypeScript signature.
+it.each([null, undefined, 123, {}])("should return undefined when JavaScript callers supply %s", (value) => {
+  expect(enhanceSafeUrl(value as unknown as string)).toBeUndefined();
 });

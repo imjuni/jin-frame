@@ -7,9 +7,17 @@ import type { ICreateFramesProps } from "#generators/frames/interfaces/ICreateFr
 import type { ICreateFramesResult } from "#generators/frames/interfaces/ICreateFramesResult.js";
 
 export async function createFrames(params: ICreateFramesProps): Promise<ICreateFramesResult[]> {
+  params.onEvent?.({ type: "stage", stage: "resolve-references", state: "started" });
   const document = await $RefParser.dereference<OpenAPIV3.Document | OpenAPIV3_1.Document>(params.document);
+  params.onEvent?.({ type: "stage", stage: "resolve-references", state: "completed" });
   const operationalDocument = document as OpenAPIV3.Document;
   const context = createFrameGenerationContext(params, operationalDocument);
 
-  return createFramePipeline({ params, context, templates: await loadTemplates(params.templatePath) });
+  params.onEvent?.({ type: "stage", stage: "load-templates", state: "started" });
+  const templates = await loadTemplates(params.templatePath);
+  params.onEvent?.({ type: "stage", stage: "load-templates", state: "completed" });
+  params.onEvent?.({ type: "stage", stage: "generate-frames", state: "started" });
+  const result = createFramePipeline({ params, context, templates });
+  params.onEvent?.({ type: "stage", stage: "generate-frames", state: "completed" });
+  return result;
 }

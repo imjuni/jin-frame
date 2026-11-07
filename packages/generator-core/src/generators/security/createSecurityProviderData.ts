@@ -1,3 +1,4 @@
+import type { IGeneratorObserverOptions } from "#generators/interfaces/IGeneratorObserverOptions.js";
 import type { OpenAPIV3 } from "openapi-types";
 import { createGeneratedProviderData } from "#generators/security/createGeneratedProviderData.js";
 import { getProviderReference } from "#generators/security/getProviderReference.js";
@@ -7,7 +8,7 @@ import type { ISecurityProviderReference } from "#generators/security/interfaces
 
 export function createSecurityProviderData(
   document: OpenAPIV3.Document,
-  options?: ISecurityProviderOptions,
+  options?: ISecurityProviderOptions & IGeneratorObserverOptions,
 ): { providers: ISecurityProviderData[]; references: Map<string, ISecurityProviderReference> } {
   const securitySchemes = document.components?.securitySchemes ?? {};
   const providers: ISecurityProviderData[] = [];
@@ -20,14 +21,17 @@ export function createSecurityProviderData(
 
     const reference = getProviderReference(schemeName, options);
 
-    if (reference == null) {
-      continue;
-    }
-
     const generatedProvider =
       reference.generated === true ? createGeneratedProviderData(schemeName, scheme, reference) : undefined;
 
     if (reference.generated === true && generatedProvider == null) {
+      options?.onEvent?.({
+        type: "diagnostic",
+        severity: "warning",
+        code: "UNSUPPORTED_SECURITY_SCHEME",
+        schemeName,
+        message: `Security scheme "${schemeName}" requires an external security provider configuration.`,
+      });
       continue;
     }
 
