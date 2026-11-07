@@ -1,6 +1,6 @@
 import { HttpResponse, http, type PathParams } from "msw";
 import { setupServer } from "msw/node";
-import { afterEach, beforeEach, describe, expect, it } from "vitest";
+import { afterEach, beforeEach, describe, expect, expectTypeOf, it } from "vitest";
 import z from "zod";
 import { Body } from "#decorators/fields/Body";
 import { Cookie } from "#decorators/fields/Cookie";
@@ -37,8 +37,15 @@ class CustomError extends Error {
   }
 }
 
+type MessageResponse =
+  | { status: 200; data: { message: string } }
+  | { status: 400; data: { message: string } | string }
+  | { status: 401; data: { message: string } | string }
+  | { status: 403; data: { error: string } }
+  | { status: 404; data: { code: string } | string };
+
 @Post({ host: "http://some.api.google.com/jinframe/{passing}" })
-class Test001PostFrame extends JinFrame<{ status: number; data: { message: string } }> {
+class Test001PostFrame extends JinFrame<MessageResponse> {
   @Param()
   declare public readonly passing: string;
 
@@ -52,7 +59,7 @@ class Test001PostFrame extends JinFrame<{ status: number; data: { message: strin
 @Post({
   host: "http://some.api.google.com/jinframe/{passing}/:raiseerr",
 })
-class Test002PostFrame extends JinFrame<{ status: number; data: { message: string } }> {
+class Test002PostFrame extends JinFrame<MessageResponse> {
   @Param()
   declare public readonly passing: string;
 
@@ -64,7 +71,7 @@ class Test002PostFrame extends JinFrame<{ status: number; data: { message: strin
 }
 
 @Post({ host: "http://some.api.google.com/jinframe/{passing}" })
-class Test003PostFrame extends JinFrame<{ status: number; data: { message: string } }> {
+class Test003PostFrame extends JinFrame<MessageResponse> {
   @Param()
   declare public readonly passing: string;
 
@@ -80,7 +87,7 @@ class Test003PostFrame extends JinFrame<{ status: number; data: { message: strin
 
   override async _postHook(
     _req: JinRequestConfig,
-    _result: JinResp<{ status: number; data: { message: string } | { message: string } }>,
+    _result: JinResp<MessageResponse>,
     _debugInfo: DebugInfo,
   ): Promise<void> {
     this.postHookCount += 1;
@@ -97,7 +104,7 @@ class Test003PostFrame extends JinFrame<{ status: number; data: { message: strin
   host: "http://some.api.google.com/jinframe/{passing}",
   retry: { max: 3, interval: 100 },
 })
-class Test004PostFrame extends JinFrame<{ status: number; data: { message: string } }> {
+class Test004PostFrame extends JinFrame<MessageResponse> {
   @Param()
   declare public readonly passing: string;
 
@@ -113,7 +120,7 @@ class Test004PostFrame extends JinFrame<{ status: number; data: { message: strin
 
   override async _postHook(
     _req: JinRequestConfig,
-    _reply: JinResp<{ status: number; data: { message: string } | { message: string } }>,
+    _reply: JinResp<MessageResponse>,
     _debugInfo: DebugInfo,
   ): Promise<void> {
     this.postHookCount += 1;
@@ -156,7 +163,7 @@ class Test005PostFrameValidator extends BaseValidator<
   host: "http://some.api.google.com/jinframe/{passing}",
   validators: { pass: new Test005PostFrameValidator("exception") },
 })
-class Test005PostFrame extends JinFrame<{ status: number; data: { message: string } }> {
+class Test005PostFrame extends JinFrame<MessageResponse> {
   @Param()
   declare public readonly passing: string;
 
@@ -171,7 +178,7 @@ class Test005PostFrame extends JinFrame<{ status: number; data: { message: strin
   host: "http://some.api.google.com/jinframe/{passing}",
   validators: { pass: new Test005PostFrameValidator("value") },
 })
-class Test006PostFrame extends JinFrame<{ status: number; data: { message: string } }> {
+class Test006PostFrame extends JinFrame<MessageResponse> {
   @Param()
   declare public readonly passing: string;
 
@@ -186,7 +193,7 @@ class Test006PostFrame extends JinFrame<{ status: number; data: { message: strin
 @Post({
   host: "http://some.api.google.com/jinframe/{passing}",
 })
-class Test007PostFrame extends JinFrame<{ status: number; data: { message: string } }> {
+class Test007PostFrame extends JinFrame<MessageResponse> {
   @Param()
   declare public readonly passing: string;
 
@@ -202,7 +209,7 @@ class Test007PostFrame extends JinFrame<{ status: number; data: { message: strin
   host: "http://some.api.google.com",
   path: "/jinframe/{pass_key}",
 })
-class Test008PostFrame extends JinFrame<{ status: number; data: { message: string } }> {
+class Test008PostFrame extends JinFrame<MessageResponse> {
   @Query({ cacheKeyExclude: true })
   declare public readonly q: string;
 
@@ -383,10 +390,11 @@ describe("JinFrame", () => {
     });
 
     const reply = await frame._execute({
-      validateStatus: (ok) => ok,
       customBody,
     });
 
+    expectTypeOf(reply.status).toEqualTypeOf<200>();
+    expectTypeOf(reply.data.message).toEqualTypeOf<string>();
     expect(reply.data).toEqual({ message: "hello" });
   });
 
@@ -1221,7 +1229,7 @@ describe("JinFrame Cookie decorator test", () => {
     );
 
     @Get({ host: "http://cookie.api.example.com", path: "/items" })
-    class CookieFrame extends JinFrame<{ status: number; data: { message: string } }> {
+    class CookieFrame extends JinFrame<{ status: 200; data: { message: string } }> {
       @Cookie()
       declare public readonly sessionId: string;
 
@@ -1247,7 +1255,7 @@ describe("JinFrame Cookie decorator test", () => {
     );
 
     @Post({ host: "http://cookie.api.example.com", path: "/items" })
-    class NoCookieFrame extends JinFrame<{ status: number; data: { message: string } }> {
+    class NoCookieFrame extends JinFrame<{ status: 200; data: { message: string } }> {
       @Body()
       declare public readonly name: string;
     }
@@ -1279,7 +1287,7 @@ describe("JinFrame coverage branches", () => {
       path: "/items",
       contentType: "application/x-www-form-urlencoded",
     })
-    class UrlencodedNoBodyFrame extends JinFrame<{ status: number; data: { message: string } }> {}
+    class UrlencodedNoBodyFrame extends JinFrame<{ status: 200; data: { message: string } }> {}
 
     const frame = new UrlencodedNoBodyFrame();
     const result = await frame._execute();
@@ -1294,7 +1302,7 @@ describe("JinFrame coverage branches", () => {
       path: "/signal",
       timeout: 5000,
     })
-    class SignalFrame extends JinFrame<{ status: number; data: { message: string } }> {
+    class SignalFrame extends JinFrame<{ status: 200; data: { message: string } }> {
       @Body()
       declare public readonly name: string;
     }
@@ -1311,7 +1319,7 @@ describe("JinFrame coverage branches", () => {
       path: "/upload",
       contentType: "multipart/form-data",
     })
-    class InvalidMultipartFrame extends JinFrame<{ status: number; data: { message: string } }> {
+    class InvalidMultipartFrame extends JinFrame<{ status: 200; data: { message: string } }> {
       @Body()
       declare public readonly file: string;
     }
@@ -1325,7 +1333,7 @@ describe("JinFrame coverage branches", () => {
     branchServer.use(http.post("http://branch.api.example.com/clone", () => HttpResponse.json({ message: "ok" })));
 
     @Post({ host: "http://branch.api.example.com", path: "/clone" })
-    class CloneRawFrame extends JinFrame<{ status: number; data: { message: string } }> {
+    class CloneRawFrame extends JinFrame<{ status: 200; data: { message: string } }> {
       @Body()
       declare public readonly name: string;
     }
@@ -1342,7 +1350,7 @@ describe("JinFrame coverage branches", () => {
     );
 
     @Post({ host: "http://branch.api.example.com", path: "/deserialize" })
-    class DeserializeFrame extends JinFrame<{ status: number; data: { value: number } }> {
+    class DeserializeFrame extends JinFrame<{ status: 200; data: { value: number } }> {
       @Body()
       declare public readonly name: string;
     }
@@ -1359,7 +1367,7 @@ describe("JinFrame coverage branches", () => {
     branchServer.use(http.post("http://branch.api.example.com/empty", () => new HttpResponse("", { status: 200 })));
 
     @Post({ host: "http://branch.api.example.com", path: "/empty" })
-    class EmptyBodyFrame extends JinFrame<{ status: number; data: undefined }> {
+    class EmptyBodyFrame extends JinFrame<{ status: 200; data: undefined }> {
       @Body()
       declare public readonly name: string;
     }
@@ -1374,7 +1382,7 @@ describe("JinFrame coverage branches", () => {
     branchServer.use(http.get("http://branch.api.example.com/items/99", () => HttpResponse.json({ message: "ok" })));
 
     @Get({ host: "http://branch.api.example.com", path: "/items/{id}" })
-    class OptionUrlFrame extends JinFrame<{ status: number; data: { message: string } }> {
+    class OptionUrlFrame extends JinFrame<{ status: 200; data: { message: string } }> {
       @Param()
       declare public readonly id: string;
     }
@@ -1390,7 +1398,7 @@ describe("JinFrame coverage branches", () => {
     branchServer.use(http.post("/api/resource", () => HttpResponse.json({ message: "ok" })));
 
     @Post({ path: "/api/resource" })
-    class PathOnlyFrame extends JinFrame<{ status: number; data: { message: string } }> {
+    class PathOnlyFrame extends JinFrame<{ status: 200; data: { message: string } }> {
       @Body()
       declare public readonly name: string;
     }
@@ -1404,7 +1412,7 @@ describe("JinFrame coverage branches", () => {
     branchServer.use(http.get("http://branch.api.example.com/notimeout", () => HttpResponse.json({ message: "ok" })));
 
     @Get({ host: "http://branch.api.example.com", path: "/notimeout" })
-    class NoTimeoutFrame extends JinFrame<{ status: number; data: { message: string } }> {}
+    class NoTimeoutFrame extends JinFrame<{ status: 200; data: { message: string } }> {}
 
     const frame = new NoTimeoutFrame();
     const req: JinRequestConfig = {
@@ -1494,12 +1502,13 @@ describe("Dedupe Request", () => {
   });
 });
 
-describe("validateStatus in FrameOption", () => {
+describe("validateStatus in call options", () => {
   @Post({
     host: "http://some.api.google.com/validate-status-frame",
-    validateStatus: (_ok, status) => status === 200 || status === 404,
   })
-  class ValidateStatusFrame extends JinFrame<{ status: number; data: { message: string } }> {
+  class ValidateStatusFrame extends JinFrame<
+    { status: 200; data: { message: string } } | { status: 404; data: string }
+  > {
     @Body()
     declare public readonly username: string;
   }
@@ -1512,7 +1521,7 @@ describe("validateStatus in FrameOption", () => {
     server.close();
   });
 
-  it("should treat 404 as success when validateStatus is set on FrameOption", async () => {
+  it("should return 404 when validateStatus is passed to execute", async () => {
     server.use(
       http.post(
         "http://some.api.google.com/validate-status-frame",
@@ -1521,13 +1530,17 @@ describe("validateStatus in FrameOption", () => {
     );
 
     const frame = ValidateStatusFrame.of({ username: "ironman" });
-    const reply = await frame._execute();
+    const reply = await frame._execute({ validateStatus: (_ok, status): status is 404 => status === 404 });
 
     expect(reply.ok).toBe(true);
     expect(reply.status).toBe(404);
+    if (reply.status === 404) {
+      expectTypeOf(reply.data).toEqualTypeOf<string>();
+      expect(reply.data).toBe("Not Found");
+    }
   });
 
-  it("should allow _execute validateStatus to override FrameOption validateStatus", async () => {
+  it("should reject 404 when the default status policy is used", async () => {
     server.use(
       http.post(
         "http://some.api.google.com/validate-status-frame",

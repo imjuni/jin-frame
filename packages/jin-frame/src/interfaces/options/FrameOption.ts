@@ -77,21 +77,6 @@ export interface FrameOption {
   validators?: { pass?: BaseValidator; fail?: BaseValidator };
 
   /**
-   * Determines whether a response status code is considered successful.
-   * When not provided, defaults to `response.ok` (i.e. 200–299).
-   *
-   * Setting this at the decorator level applies it as the default for all executions of the frame.
-   * A `validateStatus` passed to `_execute()` takes precedence over this value.
-   *
-   * @example
-   * ```typescript
-   * // Treat 404 as a success (e.g. idempotent DELETE)
-   * validateStatus: (ok, status) => ok || status === 404
-   * ```
-   */
-  validateStatus?: (ok: boolean, status: number) => boolean;
-
-  /**
    * When enabled, identical concurrent requests are deduplicated — only one network call
    * is made and the result is shared with all callers.
    */

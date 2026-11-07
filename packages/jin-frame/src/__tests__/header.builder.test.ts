@@ -87,7 +87,6 @@ describe("JinFrame - Header", () => {
       method: "POST",
       transformRequest: undefined,
       url: "http://some.api.google.com/jinframe/hello",
-      validateStatus: undefined,
     };
 
     expect(req).toEqual(expectation);
@@ -126,7 +125,6 @@ describe("JinFrame - Header", () => {
       method: "POST",
       transformRequest: undefined,
       url: "http://some.api.google.com/jinframe/hello",
-      validateStatus: undefined,
     };
 
     expect(req).toEqual(expectation);
@@ -150,7 +148,6 @@ describe("JinFrame - Header", () => {
       method: "POST",
       transformRequest: undefined,
       url: "http://some.api.google.com/jinframe/hello",
-      validateStatus: undefined,
     };
 
     // console.log(req.headers);
@@ -177,7 +174,6 @@ describe("JinFrame - Header", () => {
       method: "POST",
       transformRequest: undefined,
       url: "http://some.api.google.com/jinframe/hello",
-      validateStatus: undefined,
     };
 
     // console.log(req.headers);
@@ -204,7 +200,6 @@ describe("JinFrame - Header", () => {
       method: "POST",
       transformRequest: undefined,
       url: "http://some.api.google.com/jinframe/hello",
-      validateStatus: undefined,
     };
 
     // console.log(req.headers);

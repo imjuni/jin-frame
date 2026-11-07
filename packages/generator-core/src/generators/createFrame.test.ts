@@ -135,7 +135,6 @@ describe("createFrame", () => {
 
     const source = `import { Get, Query, ObjectBody, JinFrame } from "jin-frame";
 import { paths } from "../petstore.js";
-import { validateStatus } from "jin-frame";
 
 /**
  * Response DTO
@@ -161,7 +160,6 @@ type FrameRequestBody = NonNullable<paths['/pet/findByStatus/{status}']['get']['
  */
 @Get({ host: 'https://pokeapi.co', path: '/pet/findByStatus/{status}' })
 export class GetPetFindByStatusStatusFrame extends JinFrame<OperationResponse> {
-public override readonly _defaultValidateStatus = validateStatus(200);
     /**
      * Status values that need to be considered for filter
      *
@@ -240,7 +238,6 @@ public override readonly _defaultValidateStatus = validateStatus(200);
 
     const source = `import { Get, Query, ObjectBody, Body, JinFile, JinFrame } from "jin-frame";
 import { paths } from "../petstore.js";
-import { validateStatus } from "jin-frame";
 
 /**
  * Response DTO
@@ -266,7 +263,6 @@ type FrameRequestBody = NonNullable<paths['/pet/findByStatus/{status}']['get']['
  */
 @Get({ host: 'https://pokeapi.co', path: '/pet/findByStatus/{status}', contentType: 'multipart/form-data' })
 export class GetPetFindByStatusStatusFrame extends JinFrame<OperationResponse> {
-public override readonly _defaultValidateStatus = validateStatus(200);
     /**
      * Status values that need to be considered for filter
      *

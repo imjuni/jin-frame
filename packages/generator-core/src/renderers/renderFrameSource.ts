@@ -9,11 +9,7 @@ import { renderTemplate } from "#renderers/renderTemplate.js";
 export function renderFrameSource(data: IFrameData, templates: ITemplateSet = defaultTemplates): string {
   const template = templates["frame"];
   return renderTemplate(template, {
-    imports:
-      renderImports(data.imports) +
-      (data.typeAliases.some((alias) => alias.name === "OperationResponse")
-        ? '\nimport { validateStatus } from "jin-frame";'
-        : ""),
+    imports: renderImports(data.imports),
     aliases: data.typeAliases
       .map(
         (alias) =>
@@ -25,13 +21,6 @@ export function renderFrameSource(data: IFrameData, templates: ITemplateSet = de
     name: data.name,
     parentFrame: data.parentFrame,
     responseTypes: data.responseTypes.join(", "),
-    properties: [
-      ...(data.typeAliases.some((alias) => alias.name === "OperationResponse")
-        ? [
-            `public override readonly _defaultValidateStatus = validateStatus(${[...new Set(data.typeAliases.filter((alias) => alias.name === "OperationResponse").flatMap((alias) => [...alias.type.matchAll(/status: (2\d{2});/g)].map((match) => Number(match[1]))))].join(", ")});`,
-          ]
-        : []),
-      ...data.properties.map(renderProperty),
-    ].join("\n"),
+    properties: data.properties.map(renderProperty).join("\n"),
   }).trim();
 }

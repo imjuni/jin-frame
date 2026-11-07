@@ -117,7 +117,6 @@ All method decorators (`@Get`, `@Post`, …) accept common options:
 | `method`         | `string`                                                                              | Normally set internally, but can be overridden for custom methods            |
 | `contentType`    | `'application/json' \| 'multipart/form-data' \| 'application/x-www-form-urlencoded'` | Specifies the request content type                                           |
 | `customBody`     | `unknown`                                                                             | Provide a **custom body** instead of using decorated fields                  |
-| `validateStatus` | `(ok: boolean, status: number) => boolean`                                            | Determine success. Defaults to `(ok) => ok` (native `Response.ok`)          |
 | `userAgent`      | `string`                                                                              | Sets User-Agent. May be ignored due to browser security restrictions         |
 | `authorization`  | `string \| { username: string; password: string }`                                    | Configure `Authorization` header directly or with Basic Auth                 |
 | `validators`     | `{ pass?: BaseValidator; fail?: BaseValidator }`                                      | Validators for pass and fail responses, run independently                    |
@@ -157,28 +156,20 @@ console.log(req);                        // Final request config
 
 ### Typed status validation
 
-Generated frames define `_defaultValidateStatus` from the explicit 2xx responses in the OpenAPI operation. Calling `_execute()` or `_create()` without a status override returns only those response variants. An operation with a single 200 response therefore exposes its body without a status check.
-
-Use the exported `validateStatus` helper to change both the accepted statuses and the inferred response type:
+All frames use HTTP 2xx as their default success policy. `_execute()` and `_create()` infer the successful variants of the declared response union without an additional class field.
 
 ```typescript
 import { validateStatus } from 'jin-frame';
 
-const response = await frame._execute({
-  validateStatus: validateStatus(200, 404),
-});
+const response = await frame._execute();
+// Only documented successful responses.
 
-if (response.status === 404) {
-  response.data; // The documented 404 body
+const selected = await frame._execute({ validateStatus: validateStatus(200, 404) });
+if (selected.status === 404) {
+  selected.data; // The documented 404 body.
 }
 ```
 
-A regular boolean callback, such as `validateStatus: () => true`, returns the complete documented response union. A status predicate narrows that union. Manual frames retain their existing behavior unless they override the typed default:
+A regular boolean callback such as `validateStatus: () => true` returns the complete documented response union. Status predicates narrow the union to their accepted codes. Broad `status: number` declarations retain their broad type under the default policy.
 
-```typescript
-class UserFrame extends JinFrame<UserResponse> {
-  public override readonly _defaultValidateStatus = validateStatus(200);
-}
-```
-
-The precedence is call options, typed frame default, decorator policy, then the native HTTP success policy. A typed frame default takes precedence over a decorator policy so that runtime acceptance matches the inferred return type. An operation with no explicit 2xx responses gets an empty default status list and rejects every HTTP response unless the call supplies an override. Status ranges such as `2XX` and `default` remain outside the generator's existing explicit-code response model.
+In version 6, `validateStatus` is a call option only; method decorators no longer accept it. Move decorator policies to `_execute()` or `_create()` call options so the runtime policy and inferred response type stay aligned. The generator continues to model explicit numeric response codes; `2XX` and `default` response entries are not generated.
