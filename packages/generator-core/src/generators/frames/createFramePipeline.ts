@@ -10,6 +10,7 @@ import { createSecurityProviderFromData } from "#generators/security/createSecur
 
 export function createFramePipeline({ params, context, templates }: ICreateFramePipelineParams): ICreateFramesResult[] {
   const securityProviderData = createSecurityProviderData(context.document, {
+    onEvent: params.onEvent,
     securityProviderDir: params.securityProviderDir,
     securityProviders: params.securityProviders,
   });
@@ -40,11 +41,15 @@ export function createFramePipeline({ params, context, templates }: ICreateFrame
       endpoint,
       data: createFrameData(endpoint),
     }))
-    .map(({ endpoint, data }) => ({
-      method: endpoint.method,
-      pathKey: endpoint.pathKey,
-      frame: createFrameFromData(data, templates),
-    }));
+    .map(({ endpoint, data }, index) => {
+      const frame = createFrameFromData(data, templates);
+      params.onEvent?.({ type: "progress", stage: "generate-frames", completed: index + 1, total: endpoints.length });
+      return {
+        method: endpoint.method,
+        pathKey: endpoint.pathKey,
+        frame,
+      };
+    });
   const securityProviders = securityProviderData.providers.map((provider) => ({
     method: "get" as const,
     pathKey: "/",

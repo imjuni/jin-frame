@@ -11,13 +11,7 @@ export function enhanceSafeUrl(value: string): { key?: string; url: URL } | unde
     }
 
     const attached = `${CE_URL_TEMP_KEY.PROTOCOL}${CE_URL_TEMP_KEY.HOST}`;
-    const tryWithHost = safeUrl(urlJoin(attached, value));
-
-    if (tryWithHost != null) {
-      return { key: attached, url: tryWithHost };
-    }
-
-    return undefined;
+    return { key: attached, url: new URL(urlJoin(attached, value)) };
   } catch {
     return undefined;
   }

@@ -1,3 +1,4 @@
+import { reportGeneratorEvent } from "#commands/reportGeneratorEvent.js";
 import { createFrames, createOpenapiTs, load, safePathJoin } from "@jin-frame/generator-core";
 import type { CommandContext } from "citty";
 import consola, { LogLevels, type LogType } from "consola";
@@ -17,7 +18,7 @@ export const createCommandRun = async ({ args }: CommandContext<typeof createCom
   const specPath = params.spec.toString();
 
   consola.debug(`Loading spec from "${specPath}"`);
-  const spec = await load(specPath);
+  const spec = await load(specPath, { onEvent: reportGeneratorEvent });
 
   if (spec == null) {
     throw new Error(`Failed to load spec from "${specPath}"`);
@@ -26,12 +27,16 @@ export const createCommandRun = async ({ args }: CommandContext<typeof createCom
   consola.debug(`Resolving spec from "${specPath}"`);
   const converted = await resolveOpenapiDocument(spec.data, specPath);
 
-  const specSourceCode = await createOpenapiTs(converted.document, transformArgvToOpenapiTsOptions(params));
+  const specSourceCode = await createOpenapiTs(converted.document, {
+    ...transformArgvToOpenapiTsOptions(params),
+    onEvent: reportGeneratorEvent,
+  });
 
   consola.debug(`Writing to ${params.output}`);
   const specFilePath = pathe.join(params.output, "paths.d.ts");
 
   const frames = await createFrames({
+    onEvent: reportGeneratorEvent,
     document: converted.document,
     templatePath: params.templatePath,
     specTypeFilePath: specFilePath,
