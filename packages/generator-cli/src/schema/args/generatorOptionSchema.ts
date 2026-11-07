@@ -5,6 +5,7 @@ import { securityProviderSchema } from "#schema/args/securityProviderSchema.js";
 import { coerceIdentifier } from "#validators/coerceIdentifier.js";
 
 export const generatorOptionSchema = z.object({
+  templatePath: z.string().min(1).optional(),
   config: z.string().min(1).optional(),
   spec: z.string().min(1),
   output: z.string().min(1),

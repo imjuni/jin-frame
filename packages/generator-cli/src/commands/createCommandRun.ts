@@ -33,6 +33,7 @@ export const createCommandRun = async ({ args }: CommandContext<typeof createCom
 
   const frames = await createFrames({
     document: converted.document,
+    templatePath: params.templatePath,
     specTypeFilePath: specFilePath,
     specFilePath: specPath,
     host: params.host,

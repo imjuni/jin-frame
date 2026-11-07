@@ -1,0 +1,8 @@
+
+import { <%~ it.builtinClassName %> } from "jin-frame";
+
+export class <%~ it.className %> extends <%~ it.builtinClassName %> {
+    public constructor() {
+        super(<%~ it.arguments %>);
+    }
+}

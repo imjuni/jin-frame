@@ -6,6 +6,7 @@ const packageJson = JSON.parse((await fs.promises.readFile("package.json")).toSt
 await esbuild.build({
   entryPoints: ["src/index.ts"],
   bundle: true,
+  loader: { ".eta": "text" },
   sourcemap: true,
   minify: true,
   outfile: "dist/esm/index.mjs",

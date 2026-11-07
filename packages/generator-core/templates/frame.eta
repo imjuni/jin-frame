@@ -1,0 +1,8 @@
+
+<%~ it.imports %>
+
+<%~ it.aliases %><%~ it.docs %>
+<%~ it.decorators %>
+export class <%~ it.name %> extends <%~ it.parentFrame %><<%~ it.responseTypes %>> {
+<%~ it.properties %>
+}

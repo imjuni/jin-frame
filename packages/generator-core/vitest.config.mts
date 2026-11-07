@@ -1,3 +1,4 @@
+import { readFileSync } from "node:fs";
 import tsconfigPaths from "vite-tsconfig-paths";
 import { defineConfig } from "vitest/config";
 
@@ -10,5 +11,13 @@ export default defineConfig({
     },
     exclude: ["node_modules", "examples"],
   },
-  plugins: [tsconfigPaths({ projects: ["tsconfig.json"] })],
+  plugins: [
+    {
+      name: "eta-text",
+      load(id) {
+        if (id.endsWith(".eta")) return `export default ${JSON.stringify(readFileSync(id, "utf8"))}`;
+      },
+    },
+    tsconfigPaths({ projects: ["tsconfig.json"] }),
+  ],
 });

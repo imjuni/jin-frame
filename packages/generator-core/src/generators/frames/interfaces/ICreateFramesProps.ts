@@ -3,6 +3,7 @@ import type { IFrameOverrides } from "#generators/frames/interfaces/IFrameOverri
 import type { ISecurityProviderOptions } from "#generators/security/interfaces/ISecurityProviderOptions.js";
 
 export interface ICreateFramesProps extends ISecurityProviderOptions {
+  templatePath?: string;
   specTypeFilePath: string;
   specFilePath?: string;
   baseFrame?: string;

@@ -1,6 +1,7 @@
 import type { ArgsDef } from "citty";
 
 export const generatorOptionArgs = {
+  "template-path": { type: "string", description: "Directory containing custom Eta templates" },
   spec: {
     type: "positional",
     required: true,

@@ -16,6 +16,7 @@ export function normalizeGeneratorOptionInput(value: unknown): unknown {
   return {
     ...record,
     config: record.config,
+    templatePath: record["template-path"] ?? record.templatePath,
     logLevel: record["log-level"] ?? record.logLevel,
     baseFrame: record["base-frame"] ?? record.baseFrame,
     codeFence: record["code-fence"] ?? record.codeFence,

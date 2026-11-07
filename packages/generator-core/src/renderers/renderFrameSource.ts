@@ -1,3 +1,4 @@
+import { defaultTemplates, type ITemplateSet } from "#renderers/templates.js";
 import type { IFrameData } from "#generators/frame/interfaces/IFrameData.js";
 import { renderDecorator } from "#renderers/renderDecorator.js";
 import { renderDoc } from "#renderers/renderDoc.js";
@@ -5,16 +6,8 @@ import { renderImports } from "#renderers/renderImports.js";
 import { renderProperty } from "#renderers/renderProperty.js";
 import { renderTemplate } from "#renderers/renderTemplate.js";
 
-export function renderFrameSource(data: IFrameData): string {
-  const template = `
-<%~ it.imports %>
-
-<%~ it.aliases %><%~ it.docs %>
-<%~ it.decorators %>
-export class <%~ it.name %> extends <%~ it.parentFrame %><<%~ it.responseTypes %>> {
-<%~ it.properties %>
-}
-`;
+export function renderFrameSource(data: IFrameData, templates: ITemplateSet = defaultTemplates): string {
+  const template = templates["frame"];
   return renderTemplate(template, {
     imports: renderImports(data.imports),
     aliases: data.typeAliases

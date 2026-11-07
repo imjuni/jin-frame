@@ -1,4 +1,5 @@
 export const CE_COMMAND = {
+  TEMPLATE_EJECT: "template-eject",
   CREATE: "create",
   FRAME: "frame",
 } as const;
