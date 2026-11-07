@@ -124,7 +124,7 @@ class PokemonFrame extends JinFrame {
 
 ```jsonc
 {
-  "extends": "@tsconfig/node20/tsconfig.json",
+  "extends": "@tsconfig/node22/tsconfig.json",
   "compilerOptions": {
     // enable experimentalDecorators, emitDecoratorMetadata for using decorator
     "experimentalDecorators": true,

@@ -71,7 +71,7 @@ pnpm add jin-frame --save
 | Version | HTTP Client | Notes |
 |---------|-------------|-------|
 | < 5.0   | Axios       | Requires `axios` as a peer dependency |
-| >= 5.0  | native `fetch` | No HTTP client dependency; Node.js >= 20 required |
+| >= 5.0  | native `fetch` | No HTTP client dependency; Node.js ^22.23.4 required |
 
 ## Usage
 
@@ -295,11 +295,11 @@ frame-cli create ./openapi.yml --output ./generated
 - [`@jin-frame/generator-cli`](packages/generator-cli/README.md): ESM executable for generating `paths.d.ts`, frames, base frames, and security providers.
 - [`@jin-frame/generator-core`](packages/generator-core/README.md): ESM-only generation APIs for custom tooling and pipelines.
 
-The generator packages require Node.js 22 or later.
+The generator packages require Node.js 22.23.4 or a later 22.x patch.
 
 ## jin-frame Requirements
 
-- Node.js >= 20
+- Node.js ^22.23.4
 - TypeScript >= 5.0
 - `experimentalDecorators` and `emitDecoratorMetadata` enabled in `tsconfig.json`
 

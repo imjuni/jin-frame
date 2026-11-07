@@ -9,4 +9,4 @@ catalog:
   typescript: 7.0.2
 
 engineStrict: true
-nodeVersion: 22.22.2
+nodeVersion: 22.23.4

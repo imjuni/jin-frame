@@ -18,7 +18,7 @@ dist/
 
 ## 요구사항
 
-- Node.js 22 이상
+- Node.js 22.23.4 이상(22.x)
 - TypeScript 6 이상
 
 ## 설치

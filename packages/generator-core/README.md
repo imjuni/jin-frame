@@ -18,7 +18,7 @@ dist/
 
 ## Requirements
 
-- Node.js 22 or later
+- Node.js 22.23.4 or a later 22.x patch
 - TypeScript 6 or later
 
 ## Installation
