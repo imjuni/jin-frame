@@ -154,3 +154,31 @@ console.log(req);                        // Final request config
 
 > Use `_requestWrap()` to inspect the request config before sending.
 > `_execute()` builds the config and performs the network call in one step.
+
+### Typed status validation
+
+Generated frames define `_defaultValidateStatus` from the explicit 2xx responses in the OpenAPI operation. Calling `_execute()` or `_create()` without a status override returns only those response variants. An operation with a single 200 response therefore exposes its body without a status check.
+
+Use the exported `validateStatus` helper to change both the accepted statuses and the inferred response type:
+
+```typescript
+import { validateStatus } from 'jin-frame';
+
+const response = await frame._execute({
+  validateStatus: validateStatus(200, 404),
+});
+
+if (response.status === 404) {
+  response.data; // The documented 404 body
+}
+```
+
+A regular boolean callback, such as `validateStatus: () => true`, returns the complete documented response union. A status predicate narrows that union. Manual frames retain their existing behavior unless they override the typed default:
+
+```typescript
+class UserFrame extends JinFrame<UserResponse> {
+  public override readonly _defaultValidateStatus = validateStatus(200);
+}
+```
+
+The precedence is call options, typed frame default, decorator policy, then the native HTTP success policy. A typed frame default takes precedence over a decorator policy so that runtime acceptance matches the inferred return type. An operation with no explicit 2xx responses gets an empty default status list and rejects every HTTP response unless the call supplies an override. Status ranges such as `2XX` and `default` remain outside the generator's existing explicit-code response model.

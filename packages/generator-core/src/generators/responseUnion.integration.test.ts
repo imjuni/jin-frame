@@ -55,6 +55,7 @@ it("should compile generated frames against OpenAPI response types and narrow ev
       shim,
       [
         `export { JinFrame } from '${library}/frames/JinFrame';`,
+        `export { validateStatus } from '${library}/tools/validateStatus';`,
         `export type { JinResp } from '${library}/interfaces/JinResp';`,
         `export { Get } from '${library}/decorators/methods/Get';`,
         `export { Timeout } from '${library}/decorators/methods/options/Timeout';`,
@@ -83,8 +84,11 @@ it("should compile generated frames against OpenAPI response types and narrow ev
         const normal = await frame._execute();
         const accepted = await frame._execute({ validateStatus: () => true });
         const created = await frame._create({ validateStatus: () => true })();
-        const same: typeof normal = accepted;
-        const alsoSame: typeof normal = created;
+        // @ts-expect-error Accepted errors are excluded from the default response.
+        const invalid: typeof normal = accepted;
+        void invalid;
+        const same = accepted;
+        const alsoSame = created;
         ${[200, 201, 302, 400, 500]
           .map(
             (status) => `
