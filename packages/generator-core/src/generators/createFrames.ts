@@ -1,3 +1,4 @@
+import { loadTemplates } from "#renderers/templates.js";
 import $RefParser from "@apidevtools/json-schema-ref-parser";
 import type { OpenAPIV3, OpenAPIV3_1 } from "openapi-types";
 import { createFrameGenerationContext } from "#generators/frames/createFrameGenerationContext.js";
@@ -10,5 +11,5 @@ export async function createFrames(params: ICreateFramesProps): Promise<ICreateF
   const operationalDocument = document as OpenAPIV3.Document;
   const context = createFrameGenerationContext(params, operationalDocument);
 
-  return createFramePipeline({ params, context });
+  return createFramePipeline({ params, context, templates: await loadTemplates(params.templatePath) });
 }

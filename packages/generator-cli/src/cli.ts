@@ -4,6 +4,7 @@ import { isError } from "my-easy-fp";
 import { install as sourceMapSupportInstall } from "source-map-support";
 import { createCommand } from "#commands/createCommand.js";
 import { frameCommand } from "#commands/frameCommand.js";
+import { templateEjectCommand } from "#commands/templateEjectCommand.js";
 import { CE_COMMAND } from "#interfaces/CE_COMMAND.js";
 
 sourceMapSupportInstall();
@@ -15,6 +16,7 @@ const main = defineCommand({
     description: "A CLI tool for generating jin-frame classes from an OpenAPI specification.",
   },
   subCommands: {
+    [CE_COMMAND.TEMPLATE_EJECT]: templateEjectCommand,
     [CE_COMMAND.CREATE]: createCommand,
     [CE_COMMAND.FRAME]: frameCommand,
   },

@@ -1,0 +1,7 @@
+
+<%~ it.imports %>
+
+<%~ it.docs %>
+<%~ it.decorators %>
+export class <%~ it.name %><<%~ it.typeParameters %>> extends <%~ it.extends %> {
+<%~ it.properties %><%~ it.methods %>}

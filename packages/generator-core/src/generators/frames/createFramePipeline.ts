@@ -8,7 +8,7 @@ import type { ICreateFramesResult } from "#generators/frames/interfaces/ICreateF
 import { createSecurityProviderData } from "#generators/security/createSecurityProviderData.js";
 import { createSecurityProviderFromData } from "#generators/security/createSecurityProviderFromData.js";
 
-export function createFramePipeline({ params, context }: ICreateFramePipelineParams): ICreateFramesResult[] {
+export function createFramePipeline({ params, context, templates }: ICreateFramePipelineParams): ICreateFramesResult[] {
   const securityProviderData = createSecurityProviderData(context.document, {
     securityProviderDir: params.securityProviderDir,
     securityProviders: params.securityProviders,
@@ -33,7 +33,7 @@ export function createFramePipeline({ params, context }: ICreateFramePipelinePar
           timeout: params.timeout,
         })
       : undefined;
-  const baseFrame = baseFrameData == null ? undefined : createBaseFrameFromData(baseFrameData);
+  const baseFrame = baseFrameData == null ? undefined : createBaseFrameFromData(baseFrameData, templates);
 
   const frames = endpoints
     .map((endpoint) => ({
@@ -43,12 +43,12 @@ export function createFramePipeline({ params, context }: ICreateFramePipelinePar
     .map(({ endpoint, data }) => ({
       method: endpoint.method,
       pathKey: endpoint.pathKey,
-      frame: createFrameFromData(data),
+      frame: createFrameFromData(data, templates),
     }));
   const securityProviders = securityProviderData.providers.map((provider) => ({
     method: "get" as const,
     pathKey: "/",
-    frame: createSecurityProviderFromData(provider),
+    frame: createSecurityProviderFromData(provider, templates),
   }));
 
   if (baseFrame != null) {

@@ -78,7 +78,8 @@
     }
   },
   "files": [
-    "dist"
+    "dist",
+    "templates/**/*.eta"
   ],
   "bugs": {
     "url": "https://github.com/imjuni/jin-frame/issues"

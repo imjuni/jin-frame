@@ -16,6 +16,7 @@ const config = [
   {
     input: "dist/types/origin/index.d.ts",
     output: [{ file: "dist/types/index.d.ts", format: "esm" }],
+    external: (id) => id.endsWith(".eta"),
     plugins: [
       nodeResolve({ resolveOnly }),
       dts({
