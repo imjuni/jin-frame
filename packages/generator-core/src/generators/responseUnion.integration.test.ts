@@ -106,7 +106,8 @@ it("should compile generated frames against OpenAPI response types and narrow ev
     const parsed = ts.parseJsonConfigFileContent(config.config, ts.sys, resolve("../jin-frame"));
     const program = ts.createProgram([consumer], {
       ...parsed.options,
-      rootDir: undefined,
+      // Include both the generated consumer and library sources for import-map resolution.
+      rootDir: resolve(".."),
       noEmit: true,
       incremental: false,
       paths: { ...parsed.options.paths, "jin-frame": [shim] },

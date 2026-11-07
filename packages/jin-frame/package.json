@@ -6,9 +6,8 @@
   "scripts": {
     "build": "tsc --noEmit --incremental --project tsconfig.prod.json",
     "dts": "tsc -p tsconfig.dts.json",
-    "dts-alias": "tsc-alias -p tsconfig.dts.json",
     "dts-gen": "rollup --config .configs/rollup.config.mjs",
-    "dts-pack": "run-s dts dts-alias dts-gen dts-rm",
+    "dts-pack": "run-s dts dts-gen dts-rm",
     "dts-rm": "rimraf dist/types/origin",
     "esbuild-cjs": "FORMAT=cjs node .configs/esbuild.mjs",
     "esbuild-esm": "FORMAT=esm node .configs/esbuild.mjs",
@@ -113,7 +112,6 @@
     "rollup": "^4.5.0",
     "rollup-plugin-dts": "^6.4.1",
     "shortsword": "^0.4.0",
-    "tsc-alias": "^1.8.8",
     "tsconfig-paths": "^4.2.0",
     "tslib": "^2.6.2",
     "typedoc": "^0.28.19",
@@ -127,5 +125,39 @@
   },
   "directories": {
     "test": "test"
+  },
+  "imports": {
+    "#decorators/*": {
+      "types": "./src/decorators/*.ts",
+      "default": "./src/decorators/*.ts"
+    },
+    "#exceptions/*": {
+      "types": "./src/exceptions/*.ts",
+      "default": "./src/exceptions/*.ts"
+    },
+    "#frames/*": {
+      "types": "./src/frames/*.ts",
+      "default": "./src/frames/*.ts"
+    },
+    "#interfaces/*": {
+      "types": "./src/interfaces/*.ts",
+      "default": "./src/interfaces/*.ts"
+    },
+    "#processors/*": {
+      "types": "./src/processors/*.ts",
+      "default": "./src/processors/*.ts"
+    },
+    "#providers/*": {
+      "types": "./src/providers/*.ts",
+      "default": "./src/providers/*.ts"
+    },
+    "#tools/*": {
+      "types": "./src/tools/*.ts",
+      "default": "./src/tools/*.ts"
+    },
+    "#validators/*": {
+      "types": "./src/validators/*.ts",
+      "default": "./src/validators/*.ts"
+    }
   }
 }
