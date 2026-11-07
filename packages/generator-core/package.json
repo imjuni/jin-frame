@@ -93,7 +93,6 @@
     "@types/swagger2openapi": "^7.0.4",
     "@types/traverse": "^0.6.37",
     "@types/yargs": "^17.0.24",
-    "@typescript/native": "npm:typescript@7.0.2",
     "@vitest/coverage-v8": "^4.1.9",
     "cross-env": "^10.0.0",
     "ctix": "^2.7.1",
@@ -109,7 +108,7 @@
     "tsc-alias": "^1.8.8",
     "tslib": "^2.5.2",
     "tsx": "^4.20.3",
-    "typescript": "npm:@typescript/typescript6@6.0.2",
+    "typescript": "6.0.3",
     "vite-tsconfig-paths": "^6.1.1",
     "vitest": "^4.1.8"
   },

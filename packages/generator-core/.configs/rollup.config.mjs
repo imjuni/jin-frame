@@ -1,3 +1,4 @@
+import { resolve } from "node:path";
 import { nodeResolve } from "@rollup/plugin-node-resolve";
 import readPackage from "read-pkg";
 import { dts } from "rollup-plugin-dts";
@@ -16,8 +17,16 @@ const config = [
   {
     input: "dist/types/origin/index.d.ts",
     output: [{ file: "dist/types/index.d.ts", format: "esm" }],
-    external: (id) => id.endsWith(".eta"),
     plugins: [
+      {
+        name: "internal-declaration-paths",
+        resolveId(source) {
+          if (!source.startsWith("#") || !source.endsWith(".js")) {
+            return null;
+          }
+          return resolve("dist/types/origin", `${source.slice(1, -3)}.d.ts`);
+        },
+      },
       nodeResolve({ resolveOnly }),
       dts({
         tsconfig: "./tsconfig.dts.json",
