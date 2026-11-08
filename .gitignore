@@ -139,3 +139,6 @@ git-short.sh
 .aider*
 .pnpm-store
 .turbo
+
+# Temporary VitePress configuration bundles
+packages/docs/src/.vitepress/*.timestamp-*.mjs

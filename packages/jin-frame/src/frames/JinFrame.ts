@@ -127,6 +127,7 @@ export class JinFrame<Response extends JinResponse = JinResponse>
         req,
       };
 
+      let receivedResponse: JinResp<Response> | undefined;
       try {
         await runAndUnwrap(this._preHook.bind(this), req);
 
@@ -142,7 +143,7 @@ export class JinFrame<Response extends JinResponse = JinResponse>
         const data = text.length > 0 ? parsed : undefined;
 
         if (!isValidateStatus(resp.ok, resp.status)) {
-          const failValidator = this._option.validators?.fail;
+          const failValidator = this._option.validators?.[resp.status];
 
           const rejectedResponse = {
             ok: false,
@@ -155,9 +156,11 @@ export class JinFrame<Response extends JinResponse = JinResponse>
             $validated: { valid: false, error: [] },
           } as unknown as JinResp<Response>;
 
+          receivedResponse = rejectedResponse;
           const failValidated: ValidationResult =
-            failValidator != null ? await failValidator.validate(rejectedResponse) : { valid: true };
+            failValidator != null ? await failValidator.validate(rejectedResponse as never) : { valid: true };
 
+          receivedResponse = undefined;
           rejectedResponse.valid = failValidated?.valid;
           rejectedResponse.$validated = failValidated;
 
@@ -191,10 +194,12 @@ export class JinFrame<Response extends JinResponse = JinResponse>
           $validated: { valid: false, error: [] },
         } as unknown as JinResp<Response>;
 
-        const passValidator = this._option.validators?.pass;
+        receivedResponse = acceptedResponse;
+        const passValidator = this._option.validators?.[resp.status];
         const validated: ValidationResult =
-          passValidator != null ? await passValidator.validate(acceptedResponse) : { valid: true as const };
+          passValidator != null ? await passValidator.validate(acceptedResponse as never) : { valid: true as const };
 
+        receivedResponse = undefined;
         acceptedResponse.valid = validated.valid;
         acceptedResponse.$validated = validated;
 
@@ -235,8 +240,7 @@ export class JinFrame<Response extends JinResponse = JinResponse>
         const { status, statusText } = getStatusFromError(caught);
 
         const jinFrameError = new JinRespError<Response>({
-          status,
-          statusText,
+          ...(receivedResponse ? { resp: receivedResponse } : { status, statusText }),
           debug: { ...debug, duration },
           frame: this,
           message: caught instanceof Error ? caught.message : "unknown error raised",
