@@ -224,3 +224,7 @@ pnpm docs:build
 ```
 
 [generator-core API](https://imjuni.github.io/jin-frame/api/generator-core/)
+
+## 명세 URL과 API 서버 URL
+
+명세에 `servers`가 없거나 비어 있으면 원격 명세 URL의 origin만 API host로 사용합니다. 예를 들어 `http://localhost:7878/swagger/json`에서 읽은 명세의 `/health` 요청은 `http://localhost:7878/health`입니다. 명세 문서의 경로·query·fragment는 API 접두사로 사용하지 않습니다. 명시한 `host` 또는 `servers[].url`의 경로는 보존하며, 상대 server URL은 명세 URL을 기준으로 해석합니다. 로컬 파일에 server 정보가 없다면 host를 명시해야 합니다.

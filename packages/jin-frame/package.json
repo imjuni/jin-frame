@@ -14,7 +14,7 @@
     "esbuild-esm": "FORMAT=esm node .configs/esbuild.mjs",
     "bundle-pack": "run-p esbuild-cjs esbuild-esm dts-pack",
     "bundle": "run-s clean ctix bundle-pack ctix-rm",
-    "pub": "pnpm run bundle && cross-env RELEASE_MODE=true pnpm publish --registry http://localhost:8901",
+    "pub": "pnpm run bundle && cross-env RELEASE_MODE=true pnpm publish --no-git-checks --registry http://localhost:8901",
     "unpub": "pnpm unpublish $npm_package_name@$npm_package_version --registry http://localhost:8901 --force",
     "pub:prod": "pnpm run bundle && cross-env RELEASE_MODE=true pnpm publish --access=public",
     "clean": "rimraf dist",

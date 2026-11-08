@@ -4,6 +4,8 @@ Release history and consumer migration notes are maintained in this file. See [c
 
 ## 6.0.0
 
+- Fixed generator host fallback when OpenAPI servers is absent or empty: use the remote specification origin rather than treating the document path as an API prefix. Explicit host and server prefixes remain unchanged.
+
 The manifests target jin-frame 6.0.0 and generator CLI/core 1.0.0. This section describes repository changes and does not assert npm publication.
 
 - Replace Pass/Fail body generics with a single status/data response union, preserving the relationship between each numeric HTTP status and its payload.

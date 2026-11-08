@@ -31,10 +31,10 @@ export function getHost(params: IGetHostParams): string {
     }
   }
 
-  // Last resort: use specTypeFilePath itself as the host
+  // The specification location is not an API path; only its origin is a fallback.
   const specUrl = safeUrl(params.specTypeFilePath);
   if (specUrl != null) {
-    return specUrl.href;
+    return `${specUrl.origin}/`;
   }
 
   throw new Error(

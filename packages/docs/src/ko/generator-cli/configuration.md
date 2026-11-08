@@ -133,3 +133,7 @@ export default {
 
 
 [패키지 문서 목록](../packages) · [시작하기](./index) · [명령어](./commands) · [Configuration](./configuration)
+
+## 명세 URL의 fallback
+
+`servers`가 없거나 비어 있고 host도 지정하지 않았다면 원격 명세 URL의 origin만 사용합니다. `/swagger/json`은 명세를 읽는 경로이며 API 경로가 아닙니다. 예를 들어 `http://localhost:7878/swagger/json`의 `/health`는 `http://localhost:7878/health`로 요청합니다. 명시한 host·server URL의 경로와 상대 server URL 해석은 유지합니다. 로컬 명세 파일에는 서버 정보나 명시적 host가 필요합니다.

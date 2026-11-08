@@ -437,3 +437,26 @@ describe("createFrames", async () => {
     expect(frames.at(1)?.frame.source).toContain("@Get({ path: '/users', security: new AppBearerTokenProvider() })");
   });
 });
+
+it.each([undefined, "ServerHostFrame"])(
+  "should exclude the specification path from generated API URLs with base frame %s",
+  async (baseFrame) => {
+    const frames = await createFrames({
+      specTypeFilePath: "/generated/paths.d.ts",
+      specFilePath: "http://localhost:7878/swagger/json?format=openapi#schema",
+      output: "/generated",
+      baseFrame,
+      useCodeFence: false,
+      document: {
+        openapi: "3.0.0",
+        info: { title: "Test", version: "1" },
+        paths: { "/health": { get: { operationId: "readHealth", responses: { "200": { description: "Healthy" } } } } },
+      },
+    });
+    const source = frames.map((frame) => frame.frame.source).join("\n");
+    expect(source).toContain("http://localhost:7878");
+    expect(source).not.toContain("pathPrefix: '/swagger/json'");
+    expect(source).not.toContain("http://localhost:7878/swagger/json");
+    expect(source).toContain("path: '/health'");
+  },
+);

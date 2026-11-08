@@ -51,3 +51,26 @@ describe("getHost", () => {
     expect(result).toEqual("http://example.com/");
   });
 });
+
+it.each([undefined, []])("should use only the remote specification origin when servers is %j", (servers) => {
+  expect(
+    getHost({
+      specTypeFilePath: "http://localhost:7878/swagger/json?format=openapi#schema",
+      document: { openapi: "3.0.0", info: { title: "Test", version: "1" }, paths: {}, servers },
+    }),
+  ).toBe("http://localhost:7878/");
+});
+
+it("should preserve an explicit server prefix when the specification has a nested path", () => {
+  expect(
+    getHost({
+      specTypeFilePath: "https://docs.example.com/swagger/json",
+      document: {
+        openapi: "3.0.0",
+        info: { title: "Test", version: "1" },
+        paths: {},
+        servers: [{ url: "https://api.example.com/v1" }],
+      },
+    }),
+  ).toBe("https://api.example.com/v1");
+});
