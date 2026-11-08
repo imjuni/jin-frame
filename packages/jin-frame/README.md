@@ -40,13 +40,12 @@ Define HTTP requests as TypeScript classes and send them using native `fetch`.
 - [Builder Pattern](#builder-pattern)
 - [Response status unions](#response-status-unions)
   - [Generated response status unions](#generated-response-status-unions)
-- [Retry, Timeout](#retry-timeout)
+- [Retry, Timeout, Validation](#retry-timeout-validation)
+  - [Retry](#retry)
+  - [Timeout](#timeout)
+  - [Validation](#validation)
 - [Authorization](#authorization)
-- [validateStatus](#validatestatus)
-- [Runtime URL Override](#runtime-url-override)
-- [Errors Without an HTTP Response](#errors-without-an-http-response)
-- [Naming Convention](#naming-convention)
-- [OpenAPI Generator](#openapi-generator)
+- [Response Validation and Errors](#response-validation-and-errors)
 - [jin-frame Requirements](#jin-frame-requirements)
 - [Documentation](#documentation)
 - [License](#license)
@@ -191,28 +190,69 @@ Non-2xx responses throw by default. Use `_execute({ validateStatus: () => true }
 
 This is a breaking type API change. Migrate `JinFrame<DTO>` to `JinFrame<{ status: number; data: DTO }>` or a status-specific union. `JinPassResp` and `JinFailResp` are replaced by `JinResp<Response>`. Register a single `validator: new ApiValidator()` receiving the complete response union, and select schemas by status inside the validator.
 
-## Retry, Timeout
+## Retry, Timeout, Validation
+
+### Retry
+
+Retry failed requests with a configurable interval.
 
 ```ts
-@Timeout(2000)
+import { Get, JinFrame, Retry } from 'jin-frame';
+
+// Retry up to 5 times with a 1-second interval.
 @Retry({ max: 5, interval: 1000 })
-@Get({
-  host: 'https://pokeapi.co',
-  path: '/api/v2/pokemon/{name}',
-})
-export class PokemonFrame extends JinFrame {
-  @Param()
-  declare public readonly name: string;
-}
+@Get({ host: 'https://pokeapi.co', path: '/api/v2/pokemon/pikachu' })
+class RetryPokemonFrame extends JinFrame {}
 ```
 
-`getInterval` supports exponential backoff:
+### Timeout
+
+Set the timeout in milliseconds.
 
 ```ts
-@Retry({
-  max: 5,
-  getInterval: (retry) => Math.min(1000 * 2 ** retry, 30_000),
-})
+import { Get, JinFrame, Timeout } from 'jin-frame';
+
+// Abort each request attempt after 2 seconds.
+@Timeout(2000)
+@Get({ host: 'https://pokeapi.co', path: '/api/v2/pokemon/pikachu' })
+class TimeoutPokemonFrame extends JinFrame {}
+```
+
+### Validation
+
+Select a Zod schema by HTTP status (`pnpm add zod`).
+
+```ts
+import { z } from 'zod';
+import { BaseValidator, Get, JinFrame, Validator } from 'jin-frame';
+import type { ValidationInput, ValidationResult } from 'jin-frame';
+
+const schemas: Partial<Record<number, z.ZodType>> = {
+  200: z.object({ name: z.string() }),
+};
+
+class PokemonValidator extends BaseValidator {
+  validator({ status, data }: ValidationInput): ValidationResult<string> {
+    // Select the body schema for this HTTP status.
+    const schema = schemas[status];
+
+    // Leave statuses without a schema to the HTTP status policy.
+    if (schema === undefined) {
+      return { valid: true };
+    }
+
+    const result = schema.safeParse(data);
+
+    return result.success
+      ? { valid: true }
+      : { valid: false, error: result.error.issues.map((issue) => issue.message) };
+  }
+}
+
+// Throw JinValidationError when an accepted response fails validation.
+@Validator(new PokemonValidator({ type: 'exception' }))
+@Get({ host: 'https://pokeapi.co', path: '/api/v2/pokemon/pikachu' })
+class ValidatedPokemonFrame extends JinFrame {}
 ```
 
 ## Authorization
@@ -246,80 +286,45 @@ Token priority is `dynamicAuth` → provider key → decorator `authorization`.
 `BearerTokenProvider` adds `Bearer` unless already present; without a token it adds no header.
 An explicit `Authorization` header or call-level `auth` bypasses security providers.
 
-## validateStatus
+## Response Validation and Errors
 
-Pass `validateStatus` to `_execute()` or `_create()`. Version 6.0 does not accept it in decorator options. By default, 2xx responses are returned and other HTTP statuses throw `JinRespError`.
-
-```ts
-import { validateStatus } from 'jin-frame';
-
-const reply = await frame._execute({
-  validateStatus: validateStatus(200, 404),
-});
-```
-
-## Runtime URL Override
-
-`host`, `pathPrefix`, and `path` can be overridden per `_execute()` call:
+By default, `_execute()` returns 2xx responses and throws `JinRespError` for other statuses.
+Pass `validateStatus` to `_execute()` or `_create()` to choose which statuses to accept.
+It is not a decorator option.
 
 ```ts
-const reply = await frame._execute({
-  host: 'https://staging.api.example.com',
-  pathPrefix: '/v3',
-  path: '/pokemon/{name}',
-});
-```
-
-## Errors Without an HTTP Response
-
-`JinRespError.resp` is either a complete HTTP response or `undefined`. A network failure without a response does not create a synthetic response with `data`, `headers`, or `raw`. The original error is preserved in `cause`.
-
-When an HTTP status is rejected, `resp` retains the actual response's `status`, `data`, `headers`, `raw`, and validation result. Without `resp`, the error-level `status` and `statusText` are diagnostic values. The defaults, `500` and `Internal Server Error`, do not mean that a server returned HTTP 500.
-
-`validateStatus: () => true` still rejects on network failures. Hook or deserialization errors can also be wrapped in `JinRespError` without a response, so inspect `cause` rather than assuming every absent `resp` means a network outage.
-
-```ts
-import { JinRespError } from 'jin-frame';
+import { JinRespError, validateStatus } from 'jin-frame';
 
 try {
-  await frame._execute();
-} catch (error) {
-  if (!(error instanceof JinRespError)) throw error;
+  // Accept 200 and 404; other HTTP statuses still throw JinRespError.
+  const reply = await frame._execute({
+    validateStatus: validateStatus(200, 404),
+  });
 
+  // A 404 is returned here as a normal response, not caught below.
+  console.log(reply.status, reply.data);
+} catch (error) {
+  // Propagate errors that are not wrapped by jin-frame.
+  if (!(error instanceof JinRespError)) {
+    throw error;
+  }
+
+  // Check whether the error includes an HTTP response.
   const response = error.resp;
+
   if (response === undefined) {
+    // Inspect the original cause of a network, hook, or deserialization failure.
     console.error(error.message, error.cause);
   } else {
+    // Read the actual response, for example when its status was rejected.
     console.error(response.status, response.data, response.headers);
   }
 }
 ```
 
-## Naming Convention
-
-| Prefix | Used for |
-| -------- | ---------- |
-| `#` | Internal state (JavaScript private fields) — invisible to subclasses |
-| `_` | All instance methods — public API, hooks, and helpers |
-| _(none)_ | Static methods |
-
-See the full [Naming Convention](https://imjuni.github.io/jin-frame/method/naming-convention) documentation for details.
-
-## OpenAPI Generator
-
-The generator packages create type-safe `jin-frame` request classes from Swagger/OpenAPI v2 and OpenAPI v3 documents.
-
-```sh
-pnpm add -D @jin-frame/generator-cli@^1.0.0 openapi-typescript typescript@^6
-pnpm add jin-frame@^6.0.0
-
-frame-cli create ./openapi.yml --output ./generated
-```
-
-- [`@jin-frame/generator-cli`](../generator-cli/README.md): ESM executable for generating `paths.d.ts`, frames, base frames, and security providers.
-- [`@jin-frame/generator-core`](../generator-core/README.md): ESM-only generation APIs for custom tooling and pipelines.
-
-The generator packages require Node.js 22.23.4 or a later 22.x patch.
+`validateStatus: () => true` accepts every HTTP status, but cannot prevent network or
+processing failures. Without `error.resp`, no HTTP response is attached; use `cause`
+to diagnose the failure rather than treating the error's status as a server response.
 
 ## jin-frame Requirements
 

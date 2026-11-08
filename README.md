@@ -12,13 +12,13 @@
 
 ## Introduction
 
-**HTTP Request** = **TypeScript Class**
+**1 HTTP Request** = **1 TypeScript Class**
 
 Define HTTP requests as TypeScript classes and send them using native `fetch`.
 
 <!-- markdownlint-disable MD033 -->
 <p align="center">
-   <img src="assets/jin-frame-brand-icon.png" alt="brand" width="500"/>
+   <img src="../../assets/jin-frame-brand-icon.png" alt="brand" width="500"/>
 </p>
 <!-- markdownlint-enable MD033 -->
 
@@ -31,23 +31,22 @@ Define HTTP requests as TypeScript classes and send them using native `fetch`.
 
 ## Table of Contents <!-- omit in toc -->
 
+- [Introduction](#introduction)
+- [Why jin-frame?](#why-jin-frame)
 - [Install](#install)
 - [Version](#version)
 - [Usage](#usage)
-- [Decorators](#decorators)
-  - [Method decorators](#method-decorators)
-  - [Field decorators](#field-decorators)
 - [Inheritance](#inheritance)
 - [Builder Pattern](#builder-pattern)
 - [Response status unions](#response-status-unions)
-- [Retry, Timeout](#retry-timeout)
+  - [Generated response status unions](#generated-response-status-unions)
+- [Retry, Timeout, Validation](#retry-timeout-validation)
+  - [Retry](#retry)
+  - [Timeout](#timeout)
+  - [Validation](#validation)
 - [Authorization](#authorization)
-- [validateStatus](#validatestatus)
-- [Runtime URL Override](#runtime-url-override)
-- [Errors Without an HTTP Response](#errors-without-an-http-response)
-- [Naming Convention](#naming-convention)
-- [OpenAPI Generator](#openapi-generator)
-- [Requirements](#jin-frame-requirements)
+- [Response Validation and Errors](#response-validation-and-errors)
+- [jin-frame Requirements](#jin-frame-requirements)
 - [Documentation](#documentation)
 - [License](#license)
 
@@ -75,93 +74,74 @@ pnpm add jin-frame --save
 
 ## Usage
 
-```ts
-import { Get, Param, Query, JinFrame } from 'jin-frame';
-import { randomUUID } from 'node:crypto';
+The following example defines a request and fetches a Pokémon by name.
+Run it in a TypeScript ESM project with `experimentalDecorators` enabled and top-level `await` support.
 
+```ts
+import { Get, Param, JinFrame } from 'jin-frame';
+
+// Define an HTTP GET request with a decorator.
 @Get({
+  // Set the API endpoint.
   host: 'https://pokeapi.co',
   path: '/api/v2/pokemon/{name}',
 })
 export class PokemonFrame extends JinFrame {
+  // Map this field to the name parameter in the URL path.
   @Param()
   declare public readonly name: string;
-
-  @Query()
-  declare public readonly tid: string;
 }
 
-const frame = PokemonFrame.of({ name: 'pikachu', tid: randomUUID() });
+// Create a request instance using the static factory.
+const frame = PokemonFrame.of({ name: 'pikachu' });
+// Send the request and read the response.
 const reply = await frame._execute();
 
-if (reply.status === 200) {
-  console.log(reply.data);
-}
+console.log(reply.data);
 ```
-
-## Decorators
-
-### Method decorators
-
-| Decorator | Description |
-|-----------|-------------|
-| `@Get` | HTTP GET |
-| `@Post` | HTTP POST |
-| `@Put` | HTTP PUT |
-| `@Patch` | HTTP PATCH |
-| `@Delete` | HTTP DELETE |
-| `@Head` | HTTP HEAD |
-| `@Options` | HTTP OPTIONS |
-| `@Retry` | Retry configuration |
-| `@Timeout` | Request timeout |
-| `@Dedupe` | Deduplicate concurrent identical requests |
-| `@Security` | Security provider for authentication |
-| `@Validator` | Response validators |
-
-### Field decorators
-
-| Decorator | Mapped to |
-|-----------|-----------|
-| `@Param` | URL path parameter (`{name}`) |
-| `@Query` | URL query string |
-| `@Body` | Request body field |
-| `@ObjectBody` | Request body (entire object merged) |
-| `@Header` | Request header |
-| `@Cookie` | `Cookie` request header |
 
 ## Inheritance
 
 Define shared settings (host, auth, pathPrefix, default field values) in a base class and override only the path in each subclass.
 
 ```ts
-import { Get, Post, Param, Query, Header, Body, JinFrame } from 'jin-frame';
+import { Get, Post, Param, Header, Body, JinFrame } from 'jin-frame';
 import { randomUUID } from 'node:crypto';
 
+// Share the host and URL prefix across subclasses.
 @Get({ host: 'https://pokeapi.co', pathPrefix: '/api/v2' })
 class PokeApiFrame extends JinFrame {
+  // Map the inherited field to the X-Request-Id header.
   @Header({ replaceAt: 'X-Request-Id' })
   declare public readonly requestId: string;
 
+  // Generate a default request ID unless an explicit value is supplied.
   protected static override getDefaultValues() {
     return { requestId: randomUUID() };
   }
 }
 
+// Override the path while inheriting the host and prefix.
 @Get({ path: '/pokemon/{name}' })
 class GetPokemonFrame extends PokeApiFrame {
+  // Substitute this value for {name} in the URL path.
   @Param()
   declare public readonly name: string;
 }
 
+// Illustrate a POST override; PokeAPI does not support creating Pokémon.
 @Post({ path: '/pokemon' })
 class CreatePokemonFrame extends PokeApiFrame {
+  // Serialize this field into the request body rather than the URL path.
   @Body()
   declare public readonly name: string;
 }
 
-// requestId is filled automatically by getDefaultValues
-const frame = GetPokemonFrame.of({ name: 'pikachu' });
+// Supply name through the callback and use the inherited default request ID.
+const frame = GetPokemonFrame.of((b) => b.set('name', 'pikachu'));
+// Send the GET request with the generated X-Request-Id header.
 const reply = await frame._execute();
+console.log(reply.data);
 ```
 
 ## Builder Pattern
@@ -210,118 +190,141 @@ Non-2xx responses throw by default. Use `_execute({ validateStatus: () => true }
 
 This is a breaking type API change. Migrate `JinFrame<DTO>` to `JinFrame<{ status: number; data: DTO }>` or a status-specific union. `JinPassResp` and `JinFailResp` are replaced by `JinResp<Response>`. Register a single `validator: new ApiValidator()` receiving the complete response union, and select schemas by status inside the validator.
 
-## Retry, Timeout
+## Retry, Timeout, Validation
+
+### Retry
+
+Retry failed requests with a configurable interval.
 
 ```ts
-@Timeout(2000)
+import { Get, JinFrame, Retry } from 'jin-frame';
+
+// Retry up to 5 times with a 1-second interval.
 @Retry({ max: 5, interval: 1000 })
-@Get({
-  host: 'https://pokeapi.co',
-  path: '/api/v2/pokemon/{name}',
-})
-export class PokemonFrame extends JinFrame {
-  @Param()
-  declare public readonly name: string;
-}
+@Get({ host: 'https://pokeapi.co', path: '/api/v2/pokemon/pikachu' })
+class RetryPokemonFrame extends JinFrame {}
 ```
 
-`getInterval` supports exponential backoff:
+### Timeout
+
+Set the timeout in milliseconds.
 
 ```ts
-@Retry({
-  max: 5,
-  getInterval: (retry) => Math.min(1000 * 2 ** retry, 30_000),
-})
+import { Get, JinFrame, Timeout } from 'jin-frame';
+
+// Abort each request attempt after 2 seconds.
+@Timeout(2000)
+@Get({ host: 'https://pokeapi.co', path: '/api/v2/pokemon/pikachu' })
+class TimeoutPokemonFrame extends JinFrame {}
+```
+
+### Validation
+
+Select a Zod schema by HTTP status (`pnpm add zod`).
+
+```ts
+import { z } from 'zod';
+import { BaseValidator, Get, JinFrame, Validator } from 'jin-frame';
+import type { ValidationInput, ValidationResult } from 'jin-frame';
+
+const schemas: Partial<Record<number, z.ZodType>> = {
+  200: z.object({ name: z.string() }),
+};
+
+class PokemonValidator extends BaseValidator {
+  validator({ status, data }: ValidationInput): ValidationResult<string> {
+    // Select the body schema for this HTTP status.
+    const schema = schemas[status];
+
+    // Leave statuses without a schema to the HTTP status policy.
+    if (schema === undefined) {
+      return { valid: true };
+    }
+
+    const result = schema.safeParse(data);
+
+    return result.success
+      ? { valid: true }
+      : { valid: false, error: result.error.issues.map((issue) => issue.message) };
+  }
+}
+
+// Throw JinValidationError when an accepted response fails validation.
+@Validator(new PokemonValidator({ type: 'exception' }))
+@Get({ host: 'https://pokeapi.co', path: '/api/v2/pokemon/pikachu' })
+class ValidatedPokemonFrame extends JinFrame {}
 ```
 
 ## Authorization
 
+Use a security provider to turn credentials into request headers.
+
 ```ts
+import { BearerTokenProvider, Get, JinFrame } from 'jin-frame';
+
 @Get({
-  host: 'https://pokeapi.co',
-  path: '/api/v2/pokemon/{name}',
-  authorization: process.env.YOUR_KEY_HERE,
+  host: 'https://api.example.com', // Replace with your API host.
+  path: '/me',
+  // Read the current token whenever a request is built.
+  security: new BearerTokenProvider(() => process.env.API_ACCESS_TOKEN ?? ''),
 })
-export class PokemonFrame extends JinFrame {
-  @Param()
-  declare public readonly name: string;
-}
+class GetProfileFrame extends JinFrame {}
+
+const frame = GetProfileFrame.of();
+// Sends Authorization: Bearer <current token>.
+const reply = await frame._execute();
+console.log(reply.data);
+
+// Override the token for this call without updating the shared provider.
+await frame._execute({ dynamicAuth: 'per-request-access-token' });
 ```
 
-## validateStatus
+`ApiKeyProvider(key, keyName, location)` accepts a string or synchronous key supplier.
+`BasicAuthProvider(key)` and `BearerTokenProvider(key)` specialize its Authorization header.
+Basic keys must already be Base64-encoded, for example `new BasicAuthProvider(() => btoa("user:pass"))`.
+Token priority is `dynamicAuth` → provider key → decorator `authorization`.
+`BearerTokenProvider` adds `Bearer` unless already present; without a token it adds no header.
+An explicit `Authorization` header or call-level `auth` bypasses security providers.
 
-Pass `validateStatus` to `_execute()` or `_create()`. Version 6.0 does not accept it in decorator options. By default, 2xx responses are returned and other HTTP statuses throw `JinRespError`.
+## Response Validation and Errors
 
-```ts
-import { validateStatus } from 'jin-frame';
-
-const reply = await frame._execute({
-  validateStatus: validateStatus(200, 404),
-});
-```
-
-## Runtime URL Override
-
-`host`, `pathPrefix`, and `path` can be overridden per `_execute()` call:
+By default, `_execute()` returns 2xx responses and throws `JinRespError` for other statuses.
+Pass `validateStatus` to `_execute()` or `_create()` to choose which statuses to accept.
+It is not a decorator option.
 
 ```ts
-const reply = await frame._execute({
-  host: 'https://staging.api.example.com',
-  pathPrefix: '/v3',
-  path: '/pokemon/{name}',
-});
-```
-
-## Errors Without an HTTP Response
-
-`JinRespError.resp` is either a complete HTTP response or `undefined`. A network failure without a response does not create a synthetic response with `data`, `headers`, or `raw`. The original error is preserved in `cause`.
-
-When an HTTP status is rejected, `resp` retains the actual response's `status`, `data`, `headers`, `raw`, and validation result. Without `resp`, the error-level `status` and `statusText` are diagnostic values. The defaults, `500` and `Internal Server Error`, do not mean that a server returned HTTP 500.
-
-`validateStatus: () => true` still rejects on network failures. Hook or deserialization errors can also be wrapped in `JinRespError` without a response, so inspect `cause` rather than assuming every absent `resp` means a network outage.
-
-```ts
-import { JinRespError } from 'jin-frame';
+import { JinRespError, validateStatus } from 'jin-frame';
 
 try {
-  await frame._execute();
-} catch (error) {
-  if (!(error instanceof JinRespError)) throw error;
+  // Accept 200 and 404; other HTTP statuses still throw JinRespError.
+  const reply = await frame._execute({
+    validateStatus: validateStatus(200, 404),
+  });
 
+  // A 404 is returned here as a normal response, not caught below.
+  console.log(reply.status, reply.data);
+} catch (error) {
+  // Propagate errors that are not wrapped by jin-frame.
+  if (!(error instanceof JinRespError)) {
+    throw error;
+  }
+
+  // Check whether the error includes an HTTP response.
   const response = error.resp;
+
   if (response === undefined) {
+    // Inspect the original cause of a network, hook, or deserialization failure.
     console.error(error.message, error.cause);
   } else {
+    // Read the actual response, for example when its status was rejected.
     console.error(response.status, response.data, response.headers);
   }
 }
 ```
 
-## Naming Convention
-
-| Prefix | Used for |
-|--------|----------|
-| `#` | Internal state (JavaScript private fields) — invisible to subclasses |
-| `_` | All instance methods — public API, hooks, and helpers |
-| _(none)_ | Static methods |
-
-See the full [Naming Convention](https://imjuni.github.io/jin-frame/method/naming-convention) documentation for details.
-
-## OpenAPI Generator
-
-The generator packages create type-safe `jin-frame` request classes from Swagger/OpenAPI v2 and OpenAPI v3 documents.
-
-```sh
-pnpm add -D @jin-frame/generator-cli@^1.0.0 openapi-typescript typescript@^6
-pnpm add jin-frame@^6.0.0
-
-frame-cli create ./openapi.yml --output ./generated
-```
-
-- [`@jin-frame/generator-cli`](packages/generator-cli/README.md): ESM executable for generating `paths.d.ts`, frames, base frames, and security providers.
-- [`@jin-frame/generator-core`](packages/generator-core/README.md): ESM-only generation APIs for custom tooling and pipelines.
-
-The generator packages require Node.js 22.23.4 or a later 22.x patch.
+`validateStatus: () => true` accepts every HTTP status, but cannot prevent network or
+processing failures. Without `error.resp`, no HTTP response is attached; use `cause`
+to diagnose the failure rather than treating the error's status as a server response.
 
 ## jin-frame Requirements
 
@@ -340,8 +343,6 @@ The generator packages require Node.js 22.23.4 or a later 22.x patch.
 
 ## Documentation
 
-The [documentation workspace](packages/docs/README.md) owns the guides and API references for all three packages. Use `pnpm docs:dev` locally and `pnpm docs:build` to build the site.
-
 Full documentation: **[https://imjuni.github.io/jin-frame/](https://imjuni.github.io/jin-frame/)**
 
 - [Getting Started](https://imjuni.github.io/jin-frame/getting-to-start)
@@ -356,4 +357,4 @@ Full documentation: **[https://imjuni.github.io/jin-frame/](https://imjuni.githu
 
 ## License
 
-This software is licensed under the [MIT](LICENSE).
+This software is licensed under the [MIT](./LICENSE).
