@@ -76,7 +76,6 @@ export abstract class AbstractJinFrame {
         return store;
       },
       build() {
-        // eslint-disable-next-line new-cap
         const inst = new self(...ctorArgs) as InstanceType<C>;
         const defaults = (self as unknown as WithDefaultValues<C>).getDefaultValues?.();
         Object.assign(inst as object, defaults, store);
@@ -108,10 +107,8 @@ export abstract class AbstractJinFrame {
     return inst;
   }
 
-  // eslint-disable-next-line class-methods-use-this
   protected _retryFail(_req: JinRequestConfig, _res: Response): void | Promise<void> {}
 
-  // eslint-disable-next-line class-methods-use-this
   protected _retryException(_req: JinRequestConfig, _err: Error): void | Promise<void> {}
 
   #option: FrameOption;
@@ -484,8 +481,7 @@ export abstract class AbstractJinFrame {
               : undefined;
           const promised =
             cacheKey != null
-              ? // eslint-disable-next-line @typescript-eslint/promise-function-async
-                RequestDedupeManager.dedupe(cacheKey, () => fetch(fetchReq))
+              ? RequestDedupeManager.dedupe(cacheKey, () => fetch(fetchReq))
               : (async () => ({
                   resp: await fetch(fetchReq),
                   isDeduped: false,

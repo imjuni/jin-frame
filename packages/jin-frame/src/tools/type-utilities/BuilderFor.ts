@@ -1,9 +1,8 @@
 import type { ConstructorFunction } from "#tools/type-utilities/ConstructorFunction";
 import type { PublicFieldsOf } from "#tools/type-utilities/PublicFieldsOf";
 
-// Empty object assignability distinguishes optional keys from required keys.
-// eslint-disable-next-line @typescript-eslint/no-empty-object-type
-type RequiredKeys<T> = { [K in keyof T]-?: {} extends Pick<T, K> ? never : K }[keyof T];
+// Compare optionality without widening required values that include undefined.
+type RequiredKeys<T> = { [K in keyof T]-?: Pick<T, K> extends Required<Pick<T, K>> ? K : never }[keyof T];
 
 /**
  * Tracks explicitly assigned fields. Only required public fields gate build().

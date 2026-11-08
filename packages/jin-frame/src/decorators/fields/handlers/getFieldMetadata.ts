@@ -11,7 +11,6 @@ export function getFieldMetadata(type: object, keys: { key: string; value: unkno
 
     if (raw != null) {
       for (const entry of raw) {
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         fields.push({
           key: key.key,
           meta: {

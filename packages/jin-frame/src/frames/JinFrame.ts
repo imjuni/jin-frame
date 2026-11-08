@@ -1,7 +1,5 @@
 import type { StatusValidator, ValidatedResponse } from "#tools/validateStatus";
-// eslint-disable-next-line import-x/no-extraneous-dependencies
 import { formatISO } from "date-fns/formatISO";
-// eslint-disable-next-line import-x/no-extraneous-dependencies
 import { getUnixTime } from "date-fns/getUnixTime";
 import { JinCreateError } from "#exceptions/JinCreateError";
 import { JinRespError } from "#exceptions/JinRespError";
@@ -40,7 +38,6 @@ export class JinFrame<Response extends JinResponse = JinResponse>
    * @param this this instance
    * @param req request object
    * */
-  // eslint-disable-next-line class-methods-use-this
   protected _preHook(_req: JinRequestConfig): void | Promise<void> {}
 
   /**
@@ -50,7 +47,6 @@ export class JinFrame<Response extends JinResponse = JinResponse>
    * @param req request object
    * @param result [discriminated union](https://www.typescriptlang.org/docs/handbook/typescript-in-5-minutes-func.html#discriminated-unions) pass or fail
    */
-  // eslint-disable-next-line class-methods-use-this
   protected _postHook(_req: JinRequestConfig, _reply: JinResp<Response>, _debugInfo: DebugInfo): void | Promise<void> {}
 
   public _requestWrap(option?: JinFrameRequestConfig & JinFrameCreateConfig): JinRequestConfig {
