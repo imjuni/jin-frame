@@ -10,6 +10,8 @@ outline: deep
 
 `of()` creates an instance from a plain object or a builder callback. It is the simplest way to create a frame.
 
+If a frame has no required public fields, use `Frame.of()` or `Frame.of(undefined)`. To pass constructor arguments without fields, use `Frame.of(undefined, ...ctorArgs)`.
+
 ### Plain object
 
 ```ts
@@ -101,6 +103,8 @@ const frame2 = AuthedFrame.builder('acme').set('id', '123').build();
 Override the static `getDefaultValues()` method to provide field defaults that are applied automatically by `auto()` and merged during `build()`.
 
 ```ts
+import type { PublicFieldsOf } from 'jin-frame';
+
 @Get({ host: 'https://api.example.com', path: '/users' })
 class ListUsersFrame extends JinFrame<{ status: number; data: User[] }> {
   @Query()
@@ -109,7 +113,7 @@ class ListUsersFrame extends JinFrame<{ status: number; data: User[] }> {
   @Query()
   declare public readonly limit: number;
 
-  protected static override getDefaultValues() {
+  protected static override getDefaultValues(): Partial<PublicFieldsOf<ListUsersFrame>> {
     return { page: 1, limit: 20 };
   }
 }

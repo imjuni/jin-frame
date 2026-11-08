@@ -44,7 +44,8 @@ export abstract class AbstractJinFrame {
     return urlMeta.url;
   }
 
-  protected static getDefaultValues(): Partial<PublicFieldsOf<InstanceType<typeof this>>> {
+  /** Subclasses should declare `Partial<PublicFieldsOf<ChildFrame>>` to validate default fields. */
+  protected static getDefaultValues(): object {
     return {};
   }
 
@@ -87,8 +88,18 @@ export abstract class AbstractJinFrame {
   }
 
   static of<C extends ConstructorFunction<unknown>>(
+    this: C & (Partial<PublicFieldsOf<InstanceType<C>>> extends PublicFieldsOf<InstanceType<C>> ? unknown : never),
+    args?: undefined,
+    ...ctorArgs: ConstructorParameters<C>
+  ): InstanceType<C>;
+  static of<C extends ConstructorFunction<unknown>>(
     this: C,
     args: PublicFieldsOf<InstanceType<C>> | ((b: BuilderFor<C>) => unknown),
+    ...ctorArgs: ConstructorParameters<C>
+  ): InstanceType<C>;
+  static of<C extends ConstructorFunction<unknown>>(
+    this: C,
+    args?: PublicFieldsOf<InstanceType<C>> | ((b: BuilderFor<C>) => unknown),
     ...ctorArgs: ConstructorParameters<C>
   ): InstanceType<C> {
     const defaults = (this as unknown as WithDefaultValues<C>).getDefaultValues?.();
