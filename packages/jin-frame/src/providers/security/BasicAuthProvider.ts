@@ -27,7 +27,6 @@ export class BasicAuthProvider implements SecurityProvider {
    * @param dynamicKey - Optional dynamic Basic auth string that overrides the authorization data
    * @returns Security context with Basic auth applied to headers or auth property
    */
-  // eslint-disable-next-line class-methods-use-this
   createContext(authorization?: AuthorizationData, dynamicKey?: string): SecurityContext {
     if (dynamicKey) {
       return BasicAuthProvider.handleDynamicKey(dynamicKey);

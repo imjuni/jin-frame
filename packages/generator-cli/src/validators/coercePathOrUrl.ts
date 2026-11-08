@@ -2,7 +2,6 @@ import { safeUrl } from "@jin-frame/generator-core";
 import { existsSync } from "my-node-fp";
 
 export function coercePathOrUrl(value: string): string {
-  // eslint-disable-next-line n/no-sync
   const isFile = existsSync(value);
 
   if (isFile) {

@@ -7,5 +7,6 @@
 import type { OmitType } from "#tools/type-utilities/OmitType";
 
 // 4 Exclude the Function type to only get properties
-// eslint-disable-next-line @typescript-eslint/no-unsafe-function-type
+// Preserve the public utility’s exclusion of both callable and constructable Function values.
+// oxlint-disable-next-line typescript/no-unsafe-function-type
 export type ConstructorType<T> = OmitType<T, Function>;

@@ -30,7 +30,6 @@ export function getAllRequestMetaInherited(ctor: AbstractConstructor<unknown> | 
   const authorizations: FrameOption["authorization"][] = [];
   const securities: FrameOption["security"][] = [];
 
-  // eslint-disable-next-line no-restricted-syntax
   for (
     let c: AbstractConstructor<unknown> | Constructor<unknown> = ctor;
     typeof c === "function";
