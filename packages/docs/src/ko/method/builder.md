@@ -10,6 +10,8 @@ outline: deep
 
 `of()`는 일반 객체 또는 빌더 콜백으로 인스턴스를 생성합니다. 프레임을 만드는 가장 간단한 방법입니다.
 
+필수 공개 필드가 없으면 `Frame.of()` 또는 `Frame.of(undefined)`를 사용할 수 있습니다. 필드 없이 생성자 인자를 전달하려면 `Frame.of(undefined, ...ctorArgs)`를 사용합니다.
+
 ### 일반 객체
 
 ```ts
@@ -101,6 +103,8 @@ const frame2 = AuthedFrame.builder('acme').set('id', '123').build();
 정적 메서드 `getDefaultValues()`를 오버라이드하면 `auto()`와 `build()` 시 자동으로 적용될 기본값을 제공할 수 있습니다.
 
 ```ts
+import type { PublicFieldsOf } from 'jin-frame';
+
 @Get({ host: 'https://api.example.com', path: '/users' })
 class ListUsersFrame extends JinFrame<{ status: number; data: User[] }> {
   @Query()
@@ -109,7 +113,7 @@ class ListUsersFrame extends JinFrame<{ status: number; data: User[] }> {
   @Query()
   declare public readonly limit: number;
 
-  protected static override getDefaultValues() {
+  protected static override getDefaultValues(): Partial<PublicFieldsOf<ListUsersFrame>> {
     return { page: 1, limit: 20 };
   }
 }

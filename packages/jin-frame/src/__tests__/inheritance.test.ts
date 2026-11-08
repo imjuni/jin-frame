@@ -3,14 +3,14 @@ import { Param } from "#decorators/fields/Param";
 import { Query } from "#decorators/fields/Query";
 import { Get } from "#decorators/methods/Get";
 import { JinFrame } from "#frames/JinFrame";
-import type { FieldsOf } from "#tools/type-utilities/FieldsOf";
+import type { PublicFieldsOf } from "#tools/type-utilities/PublicFieldsOf";
 
 @Get({ host: "https://pokeapi.co" })
 class BaseFrame extends JinFrame {
   @Query()
   declare public readonly tid: string;
 
-  protected static override getDefaultValues(): Partial<FieldsOf<InstanceType<typeof this>>> {
+  protected static override getDefaultValues(): Partial<PublicFieldsOf<BaseFrame>> {
     return { tid: "fce5a3d5-84aa-4051-96a3-1dbecd93dbe4" };
   }
 }

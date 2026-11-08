@@ -1,6 +1,7 @@
 import { expect, it } from "vitest";
 import { Get } from "#decorators/methods/Get";
 import { JinFrame } from "#frames/JinFrame";
+import type { PublicFieldsOf } from "#tools/type-utilities/PublicFieldsOf";
 
 @Get({ host: "https://example.com" })
 class Frame extends JinFrame {
@@ -40,4 +41,20 @@ it("should preserve permissive paths and live views when using existing APIs", (
   const view = builder.get();
   builder.set("id", "second");
   expect(view.id).toBe("second");
+});
+
+@Get({ host: "https://example.com" })
+class EmptyFrame extends JinFrame {
+  declare readonly page?: number;
+
+  protected static override getDefaultValues(): Partial<PublicFieldsOf<EmptyFrame>> {
+    return { page: 1 };
+  }
+}
+
+it("should apply defaults when factory fields are omitted or undefined", () => {
+  expect(EmptyFrame.of().page).toBe(1);
+  expect(EmptyFrame.of(undefined).page).toBe(1);
+  expect(EmptyFrame.of({ page: 2 }).page).toBe(2);
+  expect(EmptyFrame.of()).not.toBe(EmptyFrame.of());
 });
