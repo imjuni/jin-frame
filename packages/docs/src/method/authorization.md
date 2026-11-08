@@ -51,12 +51,12 @@ Injects an API key into a header or query parameter.
 import { ApiKeyProvider } from 'jin-frame/providers';
 
 // API Key in header
-@Security(new ApiKeyProvider('api-key', 'X-API-Key', 'header'), 'secret-api-key-value')
+@Security(new ApiKeyProvider(undefined, 'X-API-Key', 'header', 'api-key'), 'secret-api-key-value')
 @Get({ host: 'https://api.example.com', path: '/data' })
 export class DataFrame extends JinFrame {}
 
 // API Key in query parameter
-@Security(new ApiKeyProvider('api-key', 'apikey', 'query'), 'secret-api-key-value')
+@Security(new ApiKeyProvider(undefined, 'apikey', 'query', 'api-key'), 'secret-api-key-value')
 @Get({ host: 'https://api.example.com', path: '/public-data' })
 export class PublicDataFrame extends JinFrame {}
 ```
@@ -120,7 +120,7 @@ You can attach multiple providers to a single frame. Each provider processes the
 ```ts
 @Security([
   new BearerTokenProvider(),
-  new ApiKeyProvider('client-id', 'X-Client-ID', 'header'),
+  new ApiKeyProvider(undefined, 'X-Client-ID', 'header', 'client-id'),
 ], 'multi-auth-token')
 @Get({ host: 'https://api.example.com', path: '/secure' })
 export class MultiSecurityFrame extends JinFrame {}
@@ -135,7 +135,7 @@ A child class can override the parent's security configuration:
 @Get({ host: 'https://api.example.com' })
 class BaseApiFrame extends JinFrame {}
 
-@Security(new ApiKeyProvider('specialized-auth', 'X-API-Key', 'header'), 'specialized-api-key')
+@Security(new ApiKeyProvider(undefined, 'X-API-Key', 'header', 'specialized-auth'), 'specialized-api-key')
 @Get({ path: '/specialized' })
 class SpecializedApiFrame extends BaseApiFrame {}
 ```
@@ -156,7 +156,7 @@ export class DataFrame extends JinFrame {}
 ### Before (v4.x)
 
 ```ts
-@Security(new BearerTokenProvider('my-auth'))
+@Security(new BearerTokenProvider(undefined, 'my-auth'))
 @Authorization('user-token-12345')
 @Get({ host: 'https://api.example.com', path: '/user/{id}' })
 export class UserProfileFrame extends JinFrame {
@@ -186,4 +186,16 @@ export class UserProfileFrame extends JinFrame {
 
 // After (v5.0)
 @Security(new BearerTokenProvider(), 'oauth-access-token-xyz')
+```
+
+## Provider constructor keys
+
+Constructors accept a key or synchronous key supplier; Basic credentials must be Base64-encoded.
+Provider names are optional metadata passed after the key configuration.
+For asynchronous suppliers, continue using `@Security(provider, async () => token)`.
+
+```ts
+new ApiKeyProvider('secret', 'X-API-Key');
+new BearerTokenProvider(() => process.env.API_TOKEN ?? '');
+new BasicAuthProvider(() => btoa('user:pass'));
 ```

@@ -375,10 +375,10 @@ describe("createFrames", async () => {
     ]);
     expect(frames.at(1)?.frame.source).toContain('import { BearerTokenProvider } from "jin-frame";');
     expect(frames.at(1)?.frame.source).toContain("export class BearerAuthProvider extends BearerTokenProvider");
-    expect(frames.at(1)?.frame.source).toContain('super("bearerAuth");');
+    expect(frames.at(1)?.frame.source).toContain('super(key, "bearerAuth");');
     expect(frames.at(2)?.frame.source).toContain('import { ApiKeyProvider } from "jin-frame";');
     expect(frames.at(2)?.frame.source).toContain("export class ApiKeySecurityProvider extends ApiKeyProvider");
-    expect(frames.at(2)?.frame.source).toContain('super("apiKey", "X-API-Key", "header");');
+    expect(frames.at(2)?.frame.source).toContain('super(key, "X-API-Key", "header", "apiKey");');
     expect(frames.at(3)?.frame.source).toContain(
       'import { BearerAuthProvider } from "./securities/BearerAuthProvider.js";',
     );

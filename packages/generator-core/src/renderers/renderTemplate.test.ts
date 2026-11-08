@@ -23,9 +23,9 @@ describe("Eta code generation", () => {
       filePath: "AuthProvider.ts",
       tag: "security",
       builtinClassName: "BearerTokenProvider",
-      constructorArguments: ['"bearer"'],
+      constructorArguments: ["key", '"bearer"'],
     });
-    expect(source).toContain('super("bearer");');
+    expect(source).toContain('super(key, "bearer");');
     expect(() => transformSync(source, { loader: "ts" })).not.toThrow();
   });
 });

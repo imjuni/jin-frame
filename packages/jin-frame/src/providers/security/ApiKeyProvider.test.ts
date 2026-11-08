@@ -12,21 +12,21 @@ type ApiKeyProviderConstructorInternals = {
 
 describe("ApiKeyProvider", () => {
   it("should create provider with correct type and name", () => {
-    const provider = new ApiKeyProvider("test-api-key", "X-API-Key");
+    const provider = new ApiKeyProvider(undefined, "X-API-Key", "header", "test-api-key");
     expect(provider.name).toBe("test-api-key");
     expect(provider.type).toBe("api-key");
   });
 
   describe("createContext", () => {
     it("should return empty context when no key is provided", () => {
-      const provider = new ApiKeyProvider("test", "X-API-Key");
+      const provider = new ApiKeyProvider(undefined, "X-API-Key", "header", "test");
       expect(provider.createContext()).toEqual({});
       expect(provider.createContext(undefined)).toEqual({});
       expect(provider.createContext({ username: "user" })).toEqual({});
     });
 
     it("should apply key to header location when key is provided", () => {
-      const provider = new ApiKeyProvider("test", "X-API-Key", "header");
+      const provider = new ApiKeyProvider(undefined, "X-API-Key", "header", "test");
 
       expect(provider.createContext("api-key")).toEqual({
         headers: { "X-API-Key": "api-key" },
@@ -42,7 +42,7 @@ describe("ApiKeyProvider", () => {
     });
 
     it("should apply key to query location when location is query", () => {
-      const provider = new ApiKeyProvider("test", "api_key", "query");
+      const provider = new ApiKeyProvider(undefined, "api_key", "query", "test");
 
       expect(provider.createContext("api-key")).toEqual({
         queries: { api_key: "api-key" },
@@ -50,7 +50,7 @@ describe("ApiKeyProvider", () => {
     });
 
     it("should apply key to cookie location when location is cookie", () => {
-      const provider = new ApiKeyProvider("test", "session", "cookie");
+      const provider = new ApiKeyProvider(undefined, "session", "cookie", "test");
 
       expect(provider.createContext("api-key")).toEqual({
         headers: { Cookie: "session=api-key" },
@@ -58,7 +58,7 @@ describe("ApiKeyProvider", () => {
     });
 
     it("should return empty context for invalid location", () => {
-      const provider = new ApiKeyProvider("test", "X-API-Key");
+      const provider = new ApiKeyProvider(undefined, "X-API-Key", "header", "test");
       // Force invalid location to test default case
       (provider as unknown as ApiKeyProviderInternals).location = "invalid";
 
@@ -66,7 +66,7 @@ describe("ApiKeyProvider", () => {
     });
 
     it("should prioritize dynamic key over authorization", () => {
-      const provider = new ApiKeyProvider("test", "X-API-Key");
+      const provider = new ApiKeyProvider(undefined, "X-API-Key", "header", "test");
 
       expect(provider.createContext({ key: "auth-key" }, "dynamic-key")).toEqual({
         headers: { "X-API-Key": "dynamic-key" },
@@ -74,7 +74,7 @@ describe("ApiKeyProvider", () => {
     });
 
     it("should handle empty string as valid key", () => {
-      const provider = new ApiKeyProvider("test", "X-API-Key");
+      const provider = new ApiKeyProvider(undefined, "X-API-Key", "header", "test");
 
       expect(provider.createContext("")).toEqual({
         headers: { "X-API-Key": "" },

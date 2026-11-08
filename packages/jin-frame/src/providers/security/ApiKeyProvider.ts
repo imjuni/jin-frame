@@ -2,86 +2,67 @@ import type { AuthorizationData } from "#interfaces/security/AuthorizationData";
 import type { SecurityContext } from "#interfaces/security/SecurityContext";
 import type { SecurityProvider } from "#interfaces/security/SecurityProvider";
 
-/**
- * API Key security provider that implements authentication using API keys.
- * Supports API key placement in headers, query parameters, or cookies.
- */
+/** A key or a synchronous key supplier evaluated when building each request. */
+export type ProviderKey = string | (() => string);
+
+/** Places a key in a header, query parameter, or cookie. */
 export class ApiKeyProvider implements SecurityProvider {
-  /** Type identifier for this security provider */
-  readonly type = "api-key" as const;
-
-  /** Name of this security provider instance */
+  readonly type: SecurityProvider["type"] = "api-key";
   readonly name: string;
-
-  /** The name of the API key parameter */
+  private key?: ProviderKey;
   private readonly keyName: string;
-
-  /** Location where the API key should be placed */
   private readonly location: "header" | "query" | "cookie";
 
-  /**
-   * Creates a new API Key provider
-   * @param name - Name of this security provider instance
-   * @param keyName - The name of the API key parameter (e.g., 'X-API-Key', 'apikey')
-   * @param location - Where to place the API key: 'header', 'query', or 'cookie'
-   */
-  constructor(name: string, keyName: string, location: "header" | "query" | "cookie" = "header") {
-    this.name = name;
+  constructor(
+    key: ProviderKey | undefined,
+    keyName: string,
+    location: "header" | "query" | "cookie" = "header",
+    name = "api-key",
+  ) {
+    this.key = key;
     this.keyName = keyName;
     this.location = location;
+    this.name = name;
   }
 
-  /**
-   * Creates security context with API key authentication
-   * @param authorization - Authorization data containing the API key
-   * @param dynamicKey - Optional dynamic API key that overrides the authorization data
-   * @returns Security context with the API key applied to the appropriate location
-   */
-  createContext(authorization?: AuthorizationData, dynamicKey?: string): SecurityContext {
-    const key = dynamicKey ?? ApiKeyProvider.extractKey(authorization);
+  setKey(key: ProviderKey): this {
+    this.key = key;
+    return this;
+  }
 
-    if (key == null) {
+  protected formatKey(key: string): string {
+    return key;
+  }
+
+  createContext(authorization?: AuthorizationData, dynamicKey?: string): SecurityContext {
+    const supplied = dynamicKey ?? (typeof this.key === "function" ? this.key() : this.key);
+    const fallback = ApiKeyProvider.extractKey(authorization);
+    const key = supplied ?? fallback;
+
+    if (typeof key !== "string") {
       return {};
     }
 
-    switch (this.location) {
-      case "header":
-        return {
-          headers: {
-            [this.keyName]: key,
-          },
-        };
-      case "query":
-        return {
-          queries: {
-            [this.keyName]: key,
-          },
-        };
-      case "cookie":
-        return {
-          headers: {
-            Cookie: `${this.keyName}=${key}`,
-          },
-        };
-      default:
-        return {};
+    const value = this.formatKey(key);
+
+    if (this.location === "query") {
+      return { queries: { [this.keyName]: value } };
     }
+
+    if (this.location === "cookie") {
+      return { headers: { Cookie: `${this.keyName}=${value}` } };
+    }
+
+    if (this.location === "header") {
+      return { headers: { [this.keyName]: value } };
+    }
+
+    return {};
   }
-
-  /**
-   * Extracts the API key from authorization data
-   * @param authorization - Authorization data that can be a string or an object with a 'key' property
-   * @returns The extracted API key or undefined if not found
-   */
   private static extractKey(authorization?: AuthorizationData): string | undefined {
-    if (typeof authorization === "string") {
-      return authorization;
-    }
-
-    if (authorization && typeof authorization === "object" && "key" in authorization) {
+    if (typeof authorization === "string") return authorization;
+    if (authorization && typeof authorization === "object" && "key" in authorization)
       return authorization.key as string;
-    }
-
     return undefined;
   }
 }

@@ -1,74 +1,27 @@
 import type { AuthorizationData } from "#interfaces/security/AuthorizationData";
 import type { SecurityContext } from "#interfaces/security/SecurityContext";
-import type { SecurityProvider } from "#interfaces/security/SecurityProvider";
+import { ApiKeyProvider, type ProviderKey } from "#providers/security/ApiKeyProvider";
 
-/**
- * Basic Authentication security provider that implements HTTP Basic Auth.
- * Supports both username/password pairs and pre-encoded Basic auth strings.
- */
-export class BasicAuthProvider implements SecurityProvider {
-  /** Type identifier for this security provider */
-  readonly type = "http" as const;
+/** Accepts an encoded credential or legacy username/password authorization data. */
+export class BasicAuthProvider extends ApiKeyProvider {
+  override readonly type = "http" as const;
 
-  /** Name of this security provider instance */
-  readonly name: string;
-
-  /**
-   * Creates a new Basic Authentication provider
-   * @param name - Name of this security provider instance
-   */
-  constructor(name = "basic") {
-    this.name = name;
+  constructor(key?: ProviderKey, name = "basic") {
+    super(key, "Authorization", "header", name);
   }
 
-  /**
-   * Creates security context with Basic Authentication
-   * @param authorization - Authorization data containing username/password or Basic auth string
-   * @param dynamicKey - Optional dynamic Basic auth string that overrides the authorization data
-   * @returns Security context with Basic auth applied to headers or auth property
-   */
-  createContext(authorization?: AuthorizationData, dynamicKey?: string): SecurityContext {
-    if (dynamicKey) {
-      return BasicAuthProvider.handleDynamicKey(dynamicKey);
-    }
-
-    return BasicAuthProvider.handleAuthorization(authorization);
+  protected override formatKey(key: string): string {
+    return key.startsWith("Basic ") ? key : `Basic ${key}`;
   }
 
-  /**
-   * Handles dynamic key for Basic Authentication
-   * @param dynamicKey - The dynamic Basic auth string
-   * @returns Security context with Authorization header
-   */
-  private static handleDynamicKey(dynamicKey: string): SecurityContext {
-    if (dynamicKey.startsWith("Basic ")) {
-      return {
-        headers: {
-          Authorization: dynamicKey,
-        },
-      };
-    }
+  override createContext(authorization?: AuthorizationData, dynamicKey?: string): SecurityContext {
+    const context = super.createContext(
+      typeof authorization === "string" ? authorization : undefined,
+      dynamicKey || undefined,
+    );
 
-    return {
-      headers: {
-        Authorization: `Basic ${dynamicKey}`,
-      },
-    };
-  }
-
-  /**
-   * Handles authorization data for Basic Authentication
-   * @param authorization - Authorization data that can be a string or an object with username/password
-   * @returns Security context with either Authorization header or auth credentials
-   */
-  private static handleAuthorization(authorization?: AuthorizationData): SecurityContext {
-    if (typeof authorization === "string") {
-      const basicAuth = authorization.startsWith("Basic ") ? authorization : `Basic ${authorization}`;
-      return {
-        headers: {
-          Authorization: basicAuth,
-        },
-      };
+    if (context.headers) {
+      return context;
     }
 
     if (
@@ -77,14 +30,9 @@ export class BasicAuthProvider implements SecurityProvider {
       "username" in authorization &&
       "password" in authorization
     ) {
-      return {
-        auth: {
-          username: authorization.username as string,
-          password: authorization.password as string,
-        },
-      };
+      return { auth: { username: authorization.username as string, password: authorization.password as string } };
     }
 
-    return {};
+    return context;
   }
 }

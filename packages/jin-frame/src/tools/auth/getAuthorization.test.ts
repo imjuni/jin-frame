@@ -34,7 +34,7 @@ describe("getAuthorization", () => {
   });
 
   it("should handle SecurityProvider with API key in header", () => {
-    const provider = new ApiKeyProvider("api-key", "X-API-Key", "header");
+    const provider = new ApiKeyProvider(undefined, "X-API-Key", "header", "api-key");
     const result = getAuthorization({}, { security: provider, authorization: "api-key-value" }, undefined);
 
     expect(result.securityHeaders).toEqual({ "X-API-Key": "api-key-value" });
@@ -42,7 +42,7 @@ describe("getAuthorization", () => {
   });
 
   it("should handle SecurityProvider with API key in query", () => {
-    const provider = new ApiKeyProvider("api-key", "api_key", "query");
+    const provider = new ApiKeyProvider(undefined, "api_key", "query", "api-key");
     const result = getAuthorization({}, { security: provider, authorization: "api-key-value" }, undefined);
 
     expect(result.securityQueries).toEqual({ api_key: "api-key-value" });
@@ -60,7 +60,7 @@ describe("getAuthorization", () => {
 
   it("should handle multiple SecurityProviders", () => {
     const bearerProvider = new BearerTokenProvider();
-    const apiKeyProvider = new ApiKeyProvider("api-key", "X-API-Key", "header");
+    const apiKeyProvider = new ApiKeyProvider(undefined, "X-API-Key", "header", "api-key");
 
     const result = getAuthorization(
       {},

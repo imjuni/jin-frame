@@ -26,7 +26,7 @@ class UserProfileFrame extends JinFrame {
 }
 
 // API Key in Header Authentication Frame — key via @Security second arg
-@Security(new ApiKeyProvider("api-key", "X-API-Key", "header"), "secret-api-key-value")
+@Security(new ApiKeyProvider(undefined, "X-API-Key", "header", "api-key"), "secret-api-key-value")
 @Get({ host: "http://api.example.com/data" })
 class DataFrame extends JinFrame {
   @Query()
@@ -41,7 +41,7 @@ class DataFrame extends JinFrame {
 // API Key in Query Authentication Frame — key via FrameOption
 @Get({
   host: "http://api.example.com/search",
-  security: new ApiKeyProvider("api_key", "key", "query"),
+  security: new ApiKeyProvider(undefined, "key", "query", "api_key"),
   authorization: "query-api-key-123",
 })
 class SearchFrame extends JinFrame {
@@ -73,13 +73,16 @@ class AdminUserFrame extends JinFrame {
 // Bearer Token with BearerProvider — using FrameOption authorization
 @Get({
   host: "http://api.example.com/oauth/profile",
-  security: new BearerTokenProvider("bearer"),
+  security: new BearerTokenProvider(undefined, "bearer"),
   authorization: "oauth-access-token-xyz",
 })
 class BearerProfileFrame extends JinFrame {}
 
 // Multiple Security Providers Frame
-@Security([new BearerTokenProvider(), new ApiKeyProvider("client-id", "X-Client-ID", "header")], "multi-auth-token")
+@Security(
+  [new BearerTokenProvider(), new ApiKeyProvider(undefined, "X-Client-ID", "header", "client-id")],
+  "multi-auth-token",
+)
 @Get({ host: "http://api.example.com/secure" })
 class MultiSecurityFrame extends JinFrame {}
 
@@ -346,7 +349,7 @@ describe("Security Integration Tests", () => {
   it("should handle API key authentication failure", async () => {
     @Get({
       host: "http://api.example.com/data",
-      security: new ApiKeyProvider("api-key", "X-API-Key", "header"),
+      security: new ApiKeyProvider(undefined, "X-API-Key", "header", "api-key"),
       authorization: "wrong-api-key",
     })
     class ApiKeyFailureFrame extends JinFrame {}
@@ -417,7 +420,7 @@ describe("Security Integration Tests", () => {
   it("should authenticate with multiple providers using dynamic auth", async () => {
     @Get({
       host: "http://api.example.com/multi-dynamic",
-      security: [new BearerTokenProvider(), new ApiKeyProvider("client-id", "X-Client-ID", "header")],
+      security: [new BearerTokenProvider(), new ApiKeyProvider(undefined, "X-Client-ID", "header", "client-id")],
     })
     class MultiDynamicFrame extends JinFrame {}
 
@@ -444,7 +447,7 @@ describe("Security Integration Tests", () => {
   it("should handle API key in cookie location", async () => {
     @Get({
       host: "http://api.example.com/cookie-auth",
-      security: new ApiKeyProvider("session", "session_id", "cookie"),
+      security: new ApiKeyProvider(undefined, "session_id", "cookie", "session"),
       authorization: "cookie-session-123",
     })
     class CookieAuthFrame extends JinFrame {}
@@ -465,7 +468,7 @@ describe("Security Integration Tests", () => {
   });
 
   it("should handle Bearer token with standard Bearer prefix", async () => {
-    @Security(new BearerTokenProvider("bearer-standard"), "standard-bearer-token")
+    @Security(new BearerTokenProvider(undefined, "bearer-standard"), "standard-bearer-token")
     @Get({ host: "http://api.example.com/dynamic" })
     class StandardBearerFrame extends JinFrame {}
 

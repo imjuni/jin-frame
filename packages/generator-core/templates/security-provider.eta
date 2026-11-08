@@ -2,7 +2,7 @@
 import { <%~ it.builtinClassName %> } from "jin-frame";
 
 export class <%~ it.className %> extends <%~ it.builtinClassName %> {
-    public constructor() {
+    public constructor(key?: ConstructorParameters<typeof <%~ it.builtinClassName %>>[0]) {
         super(<%~ it.arguments %>);
     }
 }
