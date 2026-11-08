@@ -222,17 +222,15 @@ Use a security provider to turn credentials into request headers.
 ```ts
 import { BearerTokenProvider, Get, JinFrame } from 'jin-frame';
 
-// Read the current token whenever a request is built.
-const bearer = new BearerTokenProvider(() => process.env.API_ACCESS_TOKEN ?? '');
-
 @Get({
   host: 'https://api.example.com', // Replace with your API host.
   path: '/me',
-  security: bearer,
+  // Read the current token whenever a request is built.
+  security: new BearerTokenProvider(() => process.env.API_ACCESS_TOKEN ?? ''),
 })
 class GetProfileFrame extends JinFrame {}
 
-const frame = GetProfileFrame.of({});
+const frame = GetProfileFrame.of();
 // Sends Authorization: Bearer <current token>.
 const reply = await frame._execute();
 console.log(reply.data);
@@ -245,7 +243,7 @@ await frame._execute({ dynamicAuth: 'per-request-access-token' });
 `BasicAuthProvider(key)` and `BearerTokenProvider(key)` specialize its Authorization header.
 Basic keys must already be Base64-encoded, for example `new BasicAuthProvider(() => btoa("user:pass"))`.
 Token priority is `dynamicAuth` → provider key → decorator `authorization`.
-`BearerTokenProvider` adds `Bearer ` unless already present; without a token it adds no header.
+`BearerTokenProvider` adds `Bearer` unless already present; without a token it adds no header.
 An explicit `Authorization` header or call-level `auth` bypasses security providers.
 
 ## validateStatus

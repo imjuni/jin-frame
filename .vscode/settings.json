@@ -38,5 +38,8 @@
   "prettier.enable": false,
   "files.insertFinalNewline": true,
   "js/ts.tsdk.path": "node_modules/typescript/lib",
-  "markdown.extension.toc.levels": "2..6"
+  "markdown.extension.toc.levels": "2..6",
+  "[typescript]": {
+    "editor.defaultFormatter": "oxc.oxc-vscode"
+  }
 }
