@@ -6,6 +6,7 @@
     "node": "^22.23.4"
   },
   "scripts": {
+    "artifact": "pnpm pack --pack-destination ../../artifacts",
     "openapi-typescript-example": "pnpm dlx openapi-typescript ./samples/v3.yml -o petstore.d.ts",
     "clean": "rimraf dist",
     "dts": "tsc -p tsconfig.dts.json",
@@ -23,9 +24,9 @@
     "ctix-rm": "ctix remove --force-yes --remove-backup",
     "lint": "oxlint .",
     "lint-staged": "pnpm run check:write",
-    "pub": "pnpm publish --registry http://localhost:8901",
-    "unpub": "pnpm unpublish typescript-cli-boilerplate@$npm_package_version --registry http://localhost:8901 --force",
-    "pub:prod": "RELEASE_MODE=true pnpm publish --access=public",
+    "pub": "pnpm run bundle && cross-env RELEASE_MODE=true pnpm publish --registry http://localhost:8901",
+    "unpub": "pnpm unpublish $npm_package_name@$npm_package_version --registry http://localhost:8901 --force",
+    "pub:prod": "pnpm run bundle && cross-env RELEASE_MODE=true pnpm publish --access=public",
     "dd": "deps-diff md -d prod -d dev --title-list-type 'm' --deps-list-type 'm' --content-list-type 'm'",
     "check": "ultracite check",
     "check:write": "ultracite fix",

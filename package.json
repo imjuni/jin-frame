@@ -6,6 +6,9 @@
     "node": "^22.23.4"
   },
   "scripts": {
+    "artifact": "mkdir -p artifacts && pnpm -r --parallel --filter jin-frame --filter @jin-frame/generator-core --filter @jin-frame/generator-cli run artifact",
+    "pub": "pnpm -r --parallel --filter jin-frame --filter @jin-frame/generator-core run pub && pnpm --filter @jin-frame/generator-cli run pub",
+    "unpub": "pnpm -r --parallel --no-bail --filter jin-frame --filter @jin-frame/generator-core --filter @jin-frame/generator-cli run unpub",
     "docs:typedoc": "pnpm --filter @jin-frame/docs run docs:typedoc",
     "docs:build": "pnpm --filter @jin-frame/docs run build",
     "check": "ultracite check",
