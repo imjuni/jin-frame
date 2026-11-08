@@ -21,7 +21,7 @@
     "lint": "oxlint .",
     "lint:silent": "pnpm run check",
     "lint-staged": "pnpm run check:write",
-    "test:types": "tsc --noEmit --incremental false --project tsconfig.json",
+    "test:types": "vitest run --typecheck.only",
     "test:only": "vitest run --coverage",
     "test:hook": "vitest run --coverage --silent --exclude src/__tests__/example.test.ts",
     "test:silent": "vitest run --coverage --silent",
