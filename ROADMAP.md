@@ -1,31 +1,39 @@
 # Roadmap
 
+## Current status
+
+There are 13 unchecked top-level items: 10 implementation, testing, or convenience items (6 runtime, 1 CLI, 3 core), plus 3 feasibility studies.
+
+Completion reflects repository implementation and tests, not publication. Status/data response unions, call-level status inference, whole-response validation, and unified package documentation are implemented. Content-type discrimination remains incomplete: media types are combined into each status payload union. The response-union integration test compiles generated code with the TypeScript compiler API; installed tarball CLI smoke testing remains separate.
+
+Prioritize local packaged CLI and schema composition smoke coverage before release. Caching, progress events, and other planned capabilities are follow-up features rather than automatic 6.0 release blockers. See the [Korean roadmap](./ROADMAP.ko.md) for the detailed current audit.
+
 ## jin-frame
 
-- [ ] Mocking (Provide built-in mock functionality without using axios-mock-adapter)
+- [ ] Built-in mocking (MSW integration guides and tests exist, but no library-owned mock registry)
   - Support registering mocks as an array
   - Each array element follows the format: { url: string; params: self, reply: unknown }
     - params refers to the type. When checking cache matches, passing member variables will also match those values
   - When executing or making requests, iterate through the array to return responses
 - [ ] Add BigInt type (Long type) serialization functionality
-- [ ] Implement caching functionality using endpoint and query
+- [ ] Implement endpoint/query-based memory or LRU response caching
   - Calculate cache timeout and re-execute when timeout expires, otherwise return cached result
   - Explore cache strategies like stale-while-revalidate (similar to SWR)
   - Research cache-related headers
 - [ ] Create a simple server with fastify for testing file uploads and other features
-- [ ] Powerful cache layer (memory/LRU)
 - [ ] Upload/download progress events
-- [ ] Add functionality to change Authorization and host after Server Component configuration for convenient use in Next.js
+- [x] Runtime host and authorization overrides
+  - Request options provide URL overrides and dynamicAuth. This does not claim Next.js-specific integration coverage.
 - [ ] Status code and content type specific response models
   - OpenAPI responses are defined by `status-code + content-type -> response schema`.
   - Support distinct success and failure DTOs by status code and content type without losing OpenAPI contract information.
-  - Keep the simple user-facing path ergonomic, while preserving an advanced response map for OpenAPI-driven generation and typed error handling.
+  - Status unions and default 2xx inference are complete; media-type discrimination is not. Current generated data unions combine media types within each status.
 
 ### Feasibility Study
 
 - [ ] Powerful cache layer (IndexedDB/AsyncStorage)
 - [ ] Authentication templates (plugin-like integration, feasibility assessment needed for both node + browser compatibility)
-- [ ] Multi-transport adapters (Edge/Node/Deno/React Native, axios uses adapter approach, feasibility study needed, though axios alone seems sufficient)
+- [ ] Multi-transport adapters (assess a native fetch interface with injectable implementations for Edge/Node/Deno/React Native)
   - Fix fetch adapter interface and inject environment-specific implementations:
   - Node: undici
   - Edge/Cloudflare: Web Fetch
@@ -62,7 +70,7 @@
   - Verify the full `frame-cli create` pipeline against a local Swagger/OpenAPI fixture after `@jin-frame/generator-core` runtime bundles are available.
   - Target flow: `load -> validate -> convertor -> createOpenapiTs -> createFrames -> write files`.
   - Do not depend on external public APIs or remote Swagger documents.
-- [ ] Generated output compilation check
+- [x] Generated output compilation check (response-union integration test)
   - Generate frames into a temporary directory and run `tsc --noEmit` against the output.
 - [ ] Schema composition smoke coverage
   - Ensure frame generation does not crash for request/response schemas using `allOf`, `oneOf`, and `anyOf`.
