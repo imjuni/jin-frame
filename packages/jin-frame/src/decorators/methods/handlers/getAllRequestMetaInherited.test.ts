@@ -13,15 +13,15 @@ import { ApiKeyProvider } from "#providers/security/ApiKeyProvider";
 import { BasicAuthProvider } from "#providers/security/BasicAuthProvider";
 import { BearerTokenProvider } from "#providers/security/BearerTokenProvider";
 
-@Security(new BearerTokenProvider("base-auth"), "Bearer base-token")
+@Security(new BearerTokenProvider(undefined, "base-auth"), "Bearer base-token")
 @Get({ host: "http://some.host.com" })
 class GetAllRequestMetaInheritedTest001 {}
 
-@Security(new ApiKeyProvider("post-auth", "X-API-Key", "header"), "post-api-key")
+@Security(new ApiKeyProvider(undefined, "X-API-Key", "header", "post-auth"), "post-api-key")
 @Post({ path: "some/path" })
 class GetAllRequestMetaInheritedTest002 extends GetAllRequestMetaInheritedTest001 {}
 
-@Security(new ApiKeyProvider("patch-auth", "X-API-Key", "header"))
+@Security(new ApiKeyProvider(undefined, "X-API-Key", "header", "patch-auth"))
 @Timeout(1000)
 @Patch({
   contentType: "custom-content-type",
@@ -34,7 +34,10 @@ class GetAllRequestMetaInheritedTest003 extends GetAllRequestMetaInheritedTest00
 @Put({})
 class GetAllRequestMetaInheritedTest004 extends GetAllRequestMetaInheritedTest003 {}
 
-@Security([new BasicAuthProvider("final-auth"), new BearerTokenProvider("final-bearer")], "final-session-token")
+@Security(
+  [new BasicAuthProvider(undefined, "final-auth"), new BearerTokenProvider(undefined, "final-bearer")],
+  "final-session-token",
+)
 @Timeout(2000)
 @Validator(new NoopValidator({ type: "exception" }))
 @Get({ path: "overwrite/double/path" })
@@ -83,34 +86,37 @@ describe("getAllRequestMetaInherited", () => {
       validators: [new NoopValidator({ type: "exception" })],
       dedupes: [],
       securities: [
-        [new BasicAuthProvider("final-auth"), new BearerTokenProvider("final-bearer")],
-        new ApiKeyProvider("patch-auth", "X-API-Key", "header"),
-        new ApiKeyProvider("post-auth", "X-API-Key", "header"),
-        new BearerTokenProvider("base-auth"),
+        [new BasicAuthProvider(undefined, "final-auth"), new BearerTokenProvider(undefined, "final-bearer")],
+        new ApiKeyProvider(undefined, "X-API-Key", "header", "patch-auth"),
+        new ApiKeyProvider(undefined, "X-API-Key", "header", "post-auth"),
+        new BearerTokenProvider(undefined, "base-auth"),
       ],
       authorizations: ["final-session-token", "post-api-key", "Bearer base-token"],
     });
   });
 
   it("should handle Security with key in inheritance hierarchy", () => {
-    @Security(new BearerTokenProvider("grandparent-auth"), "grandparent-token")
+    @Security(new BearerTokenProvider(undefined, "grandparent-auth"), "grandparent-token")
     @Get({ host: "https://api.example.com" })
     class GrandParentClass {}
 
-    @Security(new ApiKeyProvider("parent-auth", "X-API-Key", "header"), "parent-key")
+    @Security(new ApiKeyProvider(undefined, "X-API-Key", "header", "parent-auth"), "parent-key")
     @Post({ path: "/api/v1" })
     class ParentClass extends GrandParentClass {}
 
-    @Security([new BasicAuthProvider("child-auth"), new BearerTokenProvider("child-bearer")], "child-session")
+    @Security(
+      [new BasicAuthProvider(undefined, "child-auth"), new BearerTokenProvider(undefined, "child-bearer")],
+      "child-session",
+    )
     @Put({ path: "/api/v2/resource" })
     class ChildClass extends ParentClass {}
 
     const metas = getAllRequestMetaInherited(ChildClass);
 
     expect(metas.securities).toEqual([
-      [new BasicAuthProvider("child-auth"), new BearerTokenProvider("child-bearer")],
-      new ApiKeyProvider("parent-auth", "X-API-Key", "header"),
-      new BearerTokenProvider("grandparent-auth"),
+      [new BasicAuthProvider(undefined, "child-auth"), new BearerTokenProvider(undefined, "child-bearer")],
+      new ApiKeyProvider(undefined, "X-API-Key", "header", "parent-auth"),
+      new BearerTokenProvider(undefined, "grandparent-auth"),
     ]);
 
     expect(metas.authorizations).toEqual(["child-session", "parent-key", "grandparent-token"]);
@@ -122,7 +128,7 @@ describe("getAllRequestMetaInherited", () => {
   });
 
   it("should handle Security without key", () => {
-    @Security(new BearerTokenProvider("base-security"))
+    @Security(new BearerTokenProvider(undefined, "base-security"))
     @Get({ host: "https://base.example.com" })
     class BaseClass {}
 
@@ -130,7 +136,10 @@ describe("getAllRequestMetaInherited", () => {
     @Post({ path: "/middle" })
     class MiddleClass extends BaseClass {}
 
-    @Security([new ApiKeyProvider("final-key", "X-Key", "query"), new BasicAuthProvider("final-basic")], "final-token")
+    @Security(
+      [new ApiKeyProvider(undefined, "X-Key", "query", "final-key"), new BasicAuthProvider(undefined, "final-basic")],
+      "final-token",
+    )
     @Retry({ max: 3, interval: 1000 })
     @Patch({ path: "/final" })
     class FinalClass extends MiddleClass {}
@@ -138,8 +147,8 @@ describe("getAllRequestMetaInherited", () => {
     const metas = getAllRequestMetaInherited(FinalClass);
 
     expect(metas.securities).toEqual([
-      [new ApiKeyProvider("final-key", "X-Key", "query"), new BasicAuthProvider("final-basic")],
-      new BearerTokenProvider("base-security"),
+      [new ApiKeyProvider(undefined, "X-Key", "query", "final-key"), new BasicAuthProvider(undefined, "final-basic")],
+      new BearerTokenProvider(undefined, "base-security"),
     ]);
 
     expect(metas.authorizations).toEqual(["final-token"]);
@@ -152,7 +161,7 @@ describe("getAllRequestMetaInherited", () => {
     @Get({ host: "https://no-auth.example.com" })
     class NoAuthClass {}
 
-    @Security(new BearerTokenProvider("only-security"))
+    @Security(new BearerTokenProvider(undefined, "only-security"))
     @Post({ path: "/only-security" })
     class OnlySecurityClass extends NoAuthClass {}
 
@@ -161,7 +170,7 @@ describe("getAllRequestMetaInherited", () => {
     expect(noAuthMetas.authorizations).toEqual([]);
 
     const onlySecurityMetas = getAllRequestMetaInherited(OnlySecurityClass);
-    expect(onlySecurityMetas.securities).toEqual([new BearerTokenProvider("only-security")]);
+    expect(onlySecurityMetas.securities).toEqual([new BearerTokenProvider(undefined, "only-security")]);
     expect(onlySecurityMetas.authorizations).toEqual([]);
   });
 

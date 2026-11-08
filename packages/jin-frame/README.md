@@ -36,9 +36,6 @@ Define HTTP requests as TypeScript classes and send them using native `fetch`.
 - [Install](#install)
 - [Version](#version)
 - [Usage](#usage)
-- [Decorators](#decorators)
-  - [Method decorators](#method-decorators)
-  - [Field decorators](#field-decorators)
 - [Inheritance](#inheritance)
 - [Builder Pattern](#builder-pattern)
 - [Response status unions](#response-status-unions)
@@ -78,93 +75,74 @@ pnpm add jin-frame --save
 
 ## Usage
 
-```ts
-import { Get, Param, Query, JinFrame } from 'jin-frame';
-import { randomUUID } from 'node:crypto';
+The following example defines a request and fetches a Pokémon by name.
+Run it in a TypeScript ESM project with `experimentalDecorators` enabled and top-level `await` support.
 
+```ts
+import { Get, Param, JinFrame } from 'jin-frame';
+
+// Define an HTTP GET request with a decorator.
 @Get({
+  // Set the API endpoint.
   host: 'https://pokeapi.co',
   path: '/api/v2/pokemon/{name}',
 })
 export class PokemonFrame extends JinFrame {
+  // Map this field to the name parameter in the URL path.
   @Param()
   declare public readonly name: string;
-
-  @Query()
-  declare public readonly tid: string;
 }
 
-const frame = PokemonFrame.of({ name: 'pikachu', tid: randomUUID() });
+// Create a request instance using the static factory.
+const frame = PokemonFrame.of({ name: 'pikachu' });
+// Send the request and read the response.
 const reply = await frame._execute();
 
-if (reply.status === 200) {
-  console.log(reply.data);
-}
+console.log(reply.data);
 ```
-
-## Decorators
-
-### Method decorators
-
-| Decorator | Description |
-| ----------- | ------------- |
-| `@Get` | HTTP GET |
-| `@Post` | HTTP POST |
-| `@Put` | HTTP PUT |
-| `@Patch` | HTTP PATCH |
-| `@Delete` | HTTP DELETE |
-| `@Head` | HTTP HEAD |
-| `@Options` | HTTP OPTIONS |
-| `@Retry` | Retry configuration |
-| `@Timeout` | Request timeout |
-| `@Dedupe` | Deduplicate concurrent identical requests |
-| `@Security` | Security provider for authentication |
-| `@Validator` | Response validators |
-
-### Field decorators
-
-| Decorator | Mapped to |
-| ----------- | ----------- |
-| `@Param` | URL path parameter (`{name}`) |
-| `@Query` | URL query string |
-| `@Body` | Request body field |
-| `@ObjectBody` | Request body (entire object merged) |
-| `@Header` | Request header |
-| `@Cookie` | `Cookie` request header |
 
 ## Inheritance
 
 Define shared settings (host, auth, pathPrefix, default field values) in a base class and override only the path in each subclass.
 
 ```ts
-import { Get, Post, Param, Query, Header, Body, JinFrame } from 'jin-frame';
+import { Get, Post, Param, Header, Body, JinFrame } from 'jin-frame';
 import { randomUUID } from 'node:crypto';
 
+// Share the host and URL prefix across subclasses.
 @Get({ host: 'https://pokeapi.co', pathPrefix: '/api/v2' })
 class PokeApiFrame extends JinFrame {
+  // Map the inherited field to the X-Request-Id header.
   @Header({ replaceAt: 'X-Request-Id' })
   declare public readonly requestId: string;
 
+  // Generate a default request ID unless an explicit value is supplied.
   protected static override getDefaultValues() {
     return { requestId: randomUUID() };
   }
 }
 
+// Override the path while inheriting the host and prefix.
 @Get({ path: '/pokemon/{name}' })
 class GetPokemonFrame extends PokeApiFrame {
+  // Substitute this value for {name} in the URL path.
   @Param()
   declare public readonly name: string;
 }
 
+// Illustrate a POST override; PokeAPI does not support creating Pokémon.
 @Post({ path: '/pokemon' })
 class CreatePokemonFrame extends PokeApiFrame {
+  // Serialize this field into the request body rather than the URL path.
   @Body()
   declare public readonly name: string;
 }
 
-// requestId is filled automatically by getDefaultValues
-const frame = GetPokemonFrame.of({ name: 'pikachu' });
+// Supply name through the callback and use the inherited default request ID.
+const frame = GetPokemonFrame.of((b) => b.set('name', 'pikachu'));
+// Send the GET request with the generated X-Request-Id header.
 const reply = await frame._execute();
+console.log(reply.data);
 ```
 
 ## Builder Pattern
@@ -239,17 +217,36 @@ export class PokemonFrame extends JinFrame {
 
 ## Authorization
 
+Use a security provider to turn credentials into request headers.
+
 ```ts
+import { BearerTokenProvider, Get, JinFrame } from 'jin-frame';
+
+// Read the current token whenever a request is built.
+const bearer = new BearerTokenProvider(() => process.env.API_ACCESS_TOKEN ?? '');
+
 @Get({
-  host: 'https://pokeapi.co',
-  path: '/api/v2/pokemon/{name}',
-  authorization: process.env.YOUR_KEY_HERE,
+  host: 'https://api.example.com', // Replace with your API host.
+  path: '/me',
+  security: bearer,
 })
-export class PokemonFrame extends JinFrame {
-  @Param()
-  declare public readonly name: string;
-}
+class GetProfileFrame extends JinFrame {}
+
+const frame = GetProfileFrame.of({});
+// Sends Authorization: Bearer <current token>.
+const reply = await frame._execute();
+console.log(reply.data);
+
+// Override the token for this call without updating the shared provider.
+await frame._execute({ dynamicAuth: 'per-request-access-token' });
 ```
+
+`ApiKeyProvider(key, keyName, location)` accepts a string or synchronous key supplier.
+`BasicAuthProvider(key)` and `BearerTokenProvider(key)` specialize its Authorization header.
+Basic keys must already be Base64-encoded, for example `new BasicAuthProvider(() => btoa("user:pass"))`.
+Token priority is `dynamicAuth` → provider key → decorator `authorization`.
+`BearerTokenProvider` adds `Bearer ` unless already present; without a token it adds no header.
+An explicit `Authorization` header or call-level `auth` bypasses security providers.
 
 ## validateStatus
 

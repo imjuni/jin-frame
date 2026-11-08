@@ -13,12 +13,12 @@ export function createGeneratedProviderData(
     return {
       ...base,
       builtinClassName: "ApiKeyProvider",
-      constructorArguments: [quote(schemeName), quote(scheme.name), quote(scheme.in)],
+      constructorArguments: ["key", quote(scheme.name), quote(scheme.in), quote(schemeName)],
     };
   if (scheme.type !== "http") return undefined;
   if (scheme.scheme.toLowerCase() === "bearer")
-    return { ...base, builtinClassName: "BearerTokenProvider", constructorArguments: [quote(schemeName)] };
+    return { ...base, builtinClassName: "BearerTokenProvider", constructorArguments: ["key", quote(schemeName)] };
   if (scheme.scheme.toLowerCase() === "basic")
-    return { ...base, builtinClassName: "BasicAuthProvider", constructorArguments: [quote(schemeName)] };
+    return { ...base, builtinClassName: "BasicAuthProvider", constructorArguments: ["key", quote(schemeName)] };
   return undefined;
 }

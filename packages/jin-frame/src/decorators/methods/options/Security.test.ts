@@ -9,7 +9,7 @@ describe("Security", () => {
   it("should set security metadata correctly when Security decorator applied with single provider", () => {
     class TestClass {}
 
-    const provider = new BearerTokenProvider("auth-bearer");
+    const provider = new BearerTokenProvider(undefined, "auth-bearer");
     const handle = Security(provider);
     handle(TestClass);
 
@@ -21,7 +21,10 @@ describe("Security", () => {
   it("should set security metadata correctly when Security decorator applied with multiple providers", () => {
     class TestClass {}
 
-    const providers = [new BearerTokenProvider("auth-bearer"), new ApiKeyProvider("api-key", "X-API-Key", "header")];
+    const providers = [
+      new BearerTokenProvider(undefined, "auth-bearer"),
+      new ApiKeyProvider(undefined, "X-API-Key", "header", "api-key"),
+    ];
     const handle = Security(providers);
     handle(TestClass);
 
@@ -33,9 +36,9 @@ describe("Security", () => {
   it("should support multiple security providers via array parameter", () => {
     class TestClass {}
 
-    const provider1 = new BearerTokenProvider("auth-bearer");
-    const provider2 = new ApiKeyProvider("api-key", "X-API-Key", "header");
-    const provider3 = new BasicAuthProvider("basic-auth");
+    const provider1 = new BearerTokenProvider(undefined, "auth-bearer");
+    const provider2 = new ApiKeyProvider(undefined, "X-API-Key", "header", "api-key");
+    const provider3 = new BasicAuthProvider(undefined, "basic-auth");
 
     const handle = Security([provider1, provider2, provider3]);
     handle(TestClass);
@@ -49,8 +52,8 @@ describe("Security", () => {
     class ParentClass {}
     class ChildClass extends ParentClass {}
 
-    const parentProvider = new BearerTokenProvider("parent-auth");
-    const childProvider = new ApiKeyProvider("child-auth", "X-API-Key", "header");
+    const parentProvider = new BearerTokenProvider(undefined, "parent-auth");
+    const childProvider = new ApiKeyProvider(undefined, "X-API-Key", "header", "child-auth");
 
     const parentHandle = Security(parentProvider);
     const childHandle = Security(childProvider);

@@ -51,12 +51,12 @@ API 키를 헤더 또는 쿼리 파라미터에 주입합니다.
 import { ApiKeyProvider } from 'jin-frame/providers';
 
 // 헤더에 API Key 설정
-@Security(new ApiKeyProvider('api-key', 'X-API-Key', 'header'), 'secret-api-key-value')
+@Security(new ApiKeyProvider(undefined, 'X-API-Key', 'header', 'api-key'), 'secret-api-key-value')
 @Get({ host: 'https://api.example.com', path: '/data' })
 export class DataFrame extends JinFrame {}
 
 // 쿼리 파라미터에 API Key 설정
-@Security(new ApiKeyProvider('api-key', 'apikey', 'query'), 'secret-api-key-value')
+@Security(new ApiKeyProvider(undefined, 'apikey', 'query', 'api-key'), 'secret-api-key-value')
 @Get({ host: 'https://api.example.com', path: '/public-data' })
 export class PublicDataFrame extends JinFrame {}
 ```
@@ -120,7 +120,7 @@ class ProfileFrame extends JinFrame {}
 ```ts
 @Security([
   new BearerTokenProvider(),
-  new ApiKeyProvider('client-id', 'X-Client-ID', 'header'),
+  new ApiKeyProvider(undefined, 'X-Client-ID', 'header', 'client-id'),
 ], 'multi-auth-token')
 @Get({ host: 'https://api.example.com', path: '/secure' })
 export class MultiSecurityFrame extends JinFrame {}
@@ -135,7 +135,7 @@ export class MultiSecurityFrame extends JinFrame {}
 @Get({ host: 'https://api.example.com' })
 class BaseApiFrame extends JinFrame {}
 
-@Security(new ApiKeyProvider('specialized-auth', 'X-API-Key', 'header'), 'specialized-api-key')
+@Security(new ApiKeyProvider(undefined, 'X-API-Key', 'header', 'specialized-auth'), 'specialized-api-key')
 @Get({ path: '/specialized' })
 class SpecializedApiFrame extends BaseApiFrame {}
 ```
@@ -156,7 +156,7 @@ export class DataFrame extends JinFrame {}
 ### Before (v4.x)
 
 ```ts
-@Security(new BearerTokenProvider('my-auth'))
+@Security(new BearerTokenProvider(undefined, 'my-auth'))
 @Authorization('user-token-12345')
 @Get({ host: 'https://api.example.com', path: '/user/{id}' })
 export class UserProfileFrame extends JinFrame {
@@ -186,4 +186,16 @@ export class UserProfileFrame extends JinFrame {
 
 // After (v5.0)
 @Security(new BearerTokenProvider(), 'oauth-access-token-xyz')
+```
+
+## Provider 생성자 키
+
+생성자는 키 문자열 또는 동기 키 반환 함수를 받습니다. Basic 키는 Base64 인코딩 값입니다.
+이름은 키 설정 뒤에 선택적으로 전달하는 메타데이터입니다.
+비동기 함수는 기존 `@Security(provider, async () => token)` 형태를 사용합니다.
+
+```ts
+new ApiKeyProvider('secret', 'X-API-Key');
+new BearerTokenProvider(() => process.env.API_TOKEN ?? '');
+new BasicAuthProvider(() => btoa('user:pass'));
 ```

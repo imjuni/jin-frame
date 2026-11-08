@@ -7,7 +7,7 @@ describe("BearerTokenProvider", () => {
     expect(provider.type).toBe("http");
     expect(provider.name).toBe("bearer");
 
-    const customProvider = new BearerTokenProvider("custom-bearer");
+    const customProvider = new BearerTokenProvider(undefined, "custom-bearer");
     expect(customProvider.name).toBe("custom-bearer");
   });
 
