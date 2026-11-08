@@ -1,68 +1,35 @@
 # jin-frame이란?
 
-<!-- markdownlint-disable MD033 -->
-<p align="center">
-  <img src="../assets/jin-frame-brand.png" alt="brand" width="300"/>
-</p>
-<!-- markdownlint-enable MD033 -->
+## Introduction
 
-**HTTP Request**를 **TypeScript Class**로 정의할 수 있도록 돕는 라이브러리입니다. 단순히 HTTP 요청을 정의하는 것에 그치지 않고, 실무 환경에서 자주 필요한 다양한 기능을 제공합니다. 예를 들어 Hook 정의, timeout 설정, 재시도 횟수 지정 등을 엔드포인트별로 다르게 설정할 수 있으며, 이 모든 것을 TypeScript Class를 기반으로 선언적으로 정의할 수 있습니다. 궁극적으로는 **API를 효율적으로 관리**하는 것이 목표입니다.
+jin-frame은 HTTP 요청을 TypeScript 클래스로 정의하고 네이티브 `fetch`로 전송하는 라이브러리입니다. 데코레이터로 클래스 필드를 경로 매개변수, 쿼리 문자열, 헤더, 요청 본문에 연결합니다.
 
-## 왜 jin-frame인가?
+요청 클래스에는 엔드포인트의 URL, 입력 필드, 타임아웃, 재시도 설정을 모아 둡니다. 여러 엔드포인트가 사용하는 호스트나 인증 설정은 부모 클래스에 정의할 수 있습니다.
 
-- 🎩 **선언적인 API 정의**  
-  데코레이터와 클래스를 활용해 URL, Querystring, Path Param, Body, Header를 명확하고 직관적으로 정의할 수 있습니다.
+## Why jin-frame?
 
-- ⛑️ **타입 안정성**  
-  TypeScript의 타입 시스템을 적극 활용하여, 타입 불일치는 컴파일 단계에서 바로 잡아낼 수 있습니다.
+- **HTTP API를 TypeScript 클래스로 정의합니다.** HTTP 메서드, 엔드포인트, 타임아웃, 재시도 정책, 인증 설정을 요청 필드와 함께 선언합니다.
+- **API별 운영 요구사항을 설정에 반영합니다.** 엔드포인트마다 다른 타임아웃, 재시도 정책과 요청 옵션을 지정합니다.
+- **응답을 검증하고 중복 요청을 줄입니다.** 검증기로 응답 데이터를 확인하고, 동시에 실행되는 동일한 요청은 중복 제거 기능으로 하나의 네트워크 호출을 공유합니다.
+- **상속으로 API 설정의 계층을 표현합니다.** 부모 클래스에 공통 설정을 정의하고 자식 클래스에서 재정의해 API의 계층 구조를 반영합니다.
 
-- 🎢 **Production-Ready 기능**  
-  290개의 테스트 케이스로 신뢰성을 확보하였으며, MSA 환경에서 요구되는 retry, hook, file upload, mocking 기능을 지원합니다.
+## 요청과 응답 타입
 
-- 🏭 **표준 기반 HTTP**  
-  서드파티 HTTP 클라이언트 없이 네이티브 `fetch` API 위에 구축되어 있습니다.
+`of()`는 클래스에 선언한 필드로 요청 객체를 만듭니다. 상태 코드마다 응답 본문이 다른 API라면 `{ status, data }` union을 선언하고 `status`를 확인해 `data` 타입을 좁힙니다.
 
-- 🎪 **Path Parameter 지원**  
-  `example.com/{id}`와 같은 path parameter를 타입 안정성을 보장하며 치환할 수 있습니다.
+타입 선언은 서버 응답을 런타임에 검증하지 않습니다. 반환된 데이터가 스키마에 맞는지 확인하려면 [응답 검증기](./method/validation)를 등록합니다.
 
-## 제공 기능
+## 엔드포인트별 설정
 
-- **Retry 설정**  
-  최대 횟수, 고정 간격, 점진적 간격 증가 등 다양한 재시도 정책을 구성할 수 있습니다.
-
-- **Hook 지원**  
-  요청 전/후, 재시도 시점에 Hook을 정의할 수 있습니다. 상속을 통해 전역 공통 Hook을 적용하거나 엔드포인트 단위로 별도로 적용할 수도 있습니다.
-
-- **엔드포인트별 Timeout**  
-  마이크로서비스 환경에서 엔드포인트마다 다른 timeout 값을 적용할 수 있습니다.
-
-- **파일 업로드**  
-  네이티브 `FormData` API를 사용한 파일 업로드를 동일한 클래스 정의 방식으로 처리할 수 있습니다.
-
-- **Mocking 지원**  
-  테스트나 개발 환경에서 API 응답을 손쉽게 모킹할 수 있습니다.
-
-- **확장성**  
-  Frame 클래스는 상속이 가능해, 공통 로직을 확장하거나 재사용 가능한 구성 요소로 만들 수 있습니다.
-
-## 사용 예시
-
-`fetch`를 직접 사용할 때와 jin-frame을 사용할 때의 비교 예시는 다음과 같습니다.
-
-| Direct usage                           | Jin-Frame                                     |
-| -------------------------------------- | --------------------------------------------- |
-| ![fetch](../assets/axios-usage.png)    | ![jin-frame](../assets/jinframe-usage.png)    |
-| [fetch svg](../assets/axios-usage.svg) | [jin-frame svg](../assets/jinframe-usage.svg) |
-
-코드 양 자체는 비슷하지만, jin-frame은 **각 변수가 Querystring, Header, Body, Path Param 중 어디에 들어가는지 명확하게 보인다**는 점이 다릅니다. 또한 `of`라는 정적 팩토리 메서드를 통해 타입 안정성을 유지하면서 Request를 생성하고 실행할 수 있습니다.
-
-추가로, 엔드포인트별로 timeout과 재시도 횟수를 다르게 설정할 수 있습니다. 이는 MSA 환경에서 여러 API 서버와 연결할 때 매우 자주 요구되는 패턴이며, jin-frame에서는 선언적으로 쉽게 설정할 수 있습니다.
+아래 목록 요청의 타임아웃은 10초입니다. 상세 요청은 타임아웃이 2초이고, 실패하면 1초 간격으로 최대 세 번 재시도합니다.
 
 ```ts
+import { Get, JinFrame, Param, Query } from 'jin-frame';
+
 @Get({
   host: 'https://pokeapi.co',
   path: '/api/v2/pokemon',
-  timeout: 10_000, // 10초
+  timeout: 10_000, // 10 seconds
 })
 class PokemonPagingFrame extends JinFrame {
   @Query()
@@ -75,8 +42,8 @@ class PokemonPagingFrame extends JinFrame {
 @Get({
   host: 'https://pokeapi.co',
   path: '/api/v2/pokemon/{name}',
-  timeout: 2_000, // 2초
-  retry: { max: 3, inteval: 1000 }, // 1초 간격으로 3회 재시도
+  timeout: 2_000, // 2 seconds
+  retry: { max: 3, interval: 1000 }, // Retry up to 3 times at 1-second intervals
 })
 export class PokemonFrame extends JinFrame {
   @Param()
@@ -87,10 +54,11 @@ export class PokemonFrame extends JinFrame {
 }
 ```
 
-이러한 설정은 상속을 통해 재사용 가능하므로, 다양한 상황에 맞게 확장할 수 있습니다.
+## 공통 요청 동작
 
-## 결론
+- [훅](./method/hook)은 요청 전후와 재시도 시점에 실행됩니다.
+- [상속](./method/inheritance)으로 여러 요청 클래스의 설정과 훅을 공유합니다.
+- [폼 데이터](./method/form)는 URL 인코딩 필드와 multipart 파일 업로드를 지원합니다.
+- [모킹](./method/mocking)은 MSW로 요청을 가로채 API 서버 호출 없이 테스트합니다.
 
-jin-frame은 단순히 `fetch`를 감싸는 유틸리티가 아니라, **타입 안정성과 선언적 코드 스타일**, 그리고 **MSA 환경에 필요한 기능**을 결합한 HTTP Request 관리 라이브러리입니다. 이를 통해 개발자는 API 요청을 더욱 명확하고 체계적으로 정의할 수 있으며, 유지보수와 확장성 측면에서도 높은 생산성을 기대할 수 있습니다.
-
-또한 이렇게 정의한 클래스를 하나의 패키지로 분리해 두면, 공통 API 요청 로직을 여러 프로젝트에서 재사용할 수도 있습니다. 즉, 팀 단위 혹은 조직 전체에서 동일한 규격의 API 호출 방식을 공유할 수 있어, **일관성과 재사용성**을 동시에 확보할 수 있습니다.
+요청 클래스를 패키지로 내보내 여러 프로젝트에서 사용할 수도 있습니다. 설치와 실행 예제는 [시작하기](./getting-to-start)를 참고하세요.

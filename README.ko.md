@@ -1,8 +1,5 @@
 # jin-frame
 
-[통합 문서](https://imjuni.github.io/jin-frame/ko/packages)
-
-
 ![ts](https://flat.badgen.net/badge/Built%20With/TypeScript/blue)
 [![Download Status](https://img.shields.io/npm/dw/jin-frame.svg?style=flat-square)](https://npmcharts.com/compare/jin-frame?minimal=true)
 [![Github Star](https://img.shields.io/github/stars/imjuni/jin-frame.svg?style=flat-square)](https://github.com/imjuni/jin-frame)
@@ -12,6 +9,8 @@
 [![ci](https://github.com/imjuni/jin-frame/actions/workflows/ci.yml/badge.svg?style=flat-square)](https://github.com/imjuni/jin-frame/actions/workflows/ci.yml)
 [![codecov](https://codecov.io/gh/imjuni/jin-frame/branch/master/graph/badge.svg?style=flat-square&token=R7R2PdJcS9)](https://codecov.io/gh/imjuni/jin-frame)
 [![code style: Biome](https://img.shields.io/badge/code_style-Biome-60a5fa.svg?style=flat-square)](https://biomejs.dev/)
+
+## Introduction
 
 **HTTP Request** = **TypeScript Class**
 
@@ -25,18 +24,10 @@ TypeScript 데코레이터와 클래스를 사용해 HTTP 요청을 선언적으
 
 ## Why jin-frame?
 
-1. **선언적 API 정의** — 클래스와 데코레이터로 URL, QueryString, Path Parameter, Body, Header를 직관적으로 정의
-2. **타입 안전성** — 숫자 `status` 기반 판별 유니온 응답 타입, 컴파일 단계 오류 검출
-3. **Retry, Hook, File Upload, Timeout, AbortSignal 지원**
-4. **네이티브 `fetch` 기반** — 별도 HTTP 클라이언트 불필요
-5. **RFC 6570 URI Template** — `{param}` 형식의 path parameter 지원
-6. **Builder 패턴** — 컴파일 시점 필드 완전성 체크
-7. **상속 친화적** — 부모 클래스에 host/auth 정의, 자식 클래스에서 path만 오버라이드
-8. **런타임 URL 오버라이드** — `_execute()` 호출 시 host, pathPrefix, path 변경 가능
-
-## 6.0.0 릴리즈
-
-`jin-frame` 6.0.0과 `@jin-frame/generator-cli`·`@jin-frame/generator-core` 1.0.0을 함께 사용합니다. 5.x에서 업그레이드할 때는 [6.0 마이그레이션 가이드](https://imjuni.github.io/jin-frame/ko/migration-v6)를 확인하세요.
+- **HTTP API를 TypeScript 클래스로 정의합니다.** HTTP 메서드, 엔드포인트, 타임아웃, 재시도 정책, 인증 설정을 요청 필드와 함께 선언합니다.
+- **API별 운영 요구사항을 설정에 반영합니다.** 엔드포인트마다 다른 타임아웃, 재시도 정책과 요청 옵션을 지정합니다.
+- **응답을 검증하고 중복 요청을 줄입니다.** 검증기로 응답 데이터를 확인하고, 동시에 실행되는 동일한 요청은 중복 제거 기능으로 하나의 네트워크 호출을 공유합니다.
+- **상속으로 API 설정의 계층을 표현합니다.** 부모 클래스에 공통 설정을 정의하고 자식 클래스에서 재정의해 API의 계층 구조를 반영합니다.
 
 ## 목차 <!-- omit in toc -->
 
@@ -51,6 +42,7 @@ TypeScript 데코레이터와 클래스를 사용해 HTTP 요청을 선언적으
 - [Authorization](#authorization)
 - [validateStatus](#validatestatus)
 - [런타임 URL 오버라이드](#런타임-url-오버라이드)
+- [응답이 없는 오류 처리](#응답이-없는-오류-처리)
 - [네이밍 컨벤션](#네이밍-컨벤션)
 - [요구사항](#요구사항)
 - [문서](#문서)
@@ -147,7 +139,7 @@ class PokeApiFrame extends JinFrame {
   @Header({ replaceAt: 'X-Request-Id' })
   declare public readonly requestId: string;
 
-  // 모든 자식 클래스에서 requestId 자동 주입
+  // Supply requestId for all subclasses
   protected static override getDefaultValues() {
     return { requestId: randomUUID() };
   }
@@ -165,7 +157,7 @@ class CreatePokemonFrame extends PokeApiFrame {
   declare public readonly name: string;
 }
 
-// requestId는 getDefaultValues로 자동 설정
+// requestId is supplied by getDefaultValues
 const frame = GetPokemonFrame.of({ name: 'pikachu' });
 const reply = await frame._execute();
 ```
@@ -178,7 +170,7 @@ const reply = await frame._execute();
 const frame = PokemonFrame.builder()
   .set('name', 'pikachu')
   .set('tid', randomUUID())
-  .build(); // public 필드가 누락되면 컴파일 에러
+  .build(); // Compile error if a public field is missing
 
 const reply = await frame._execute();
 ```
@@ -256,20 +248,13 @@ export class PokemonFrame extends JinFrame {
 
 ## validateStatus
 
-데코레이터 레벨에서 기본값으로 설정하거나, `_execute()` 호출 시 오버라이드할 수 있습니다:
+`validateStatus`는 `_execute()` 또는 `_create()` 호출 옵션으로 전달합니다. 6.0에서는 데코레이터 옵션으로 지정할 수 없습니다. 기본적으로 2xx 응답을 반환하며, 다른 상태의 응답은 `JinRespError`를 발생시킵니다.
 
 ```ts
-// 데코레이터 레벨 기본값
-@Get({
-  host: 'https://pokeapi.co',
-  path: '/api/v2/pokemon/{name}',
-  validateStatus: (ok, status) => ok || status === 404,
-})
-export class PokemonFrame extends JinFrame { ... }
+import { validateStatus } from 'jin-frame';
 
-// _execute() 레벨 오버라이드 (우선 적용)
 const reply = await frame._execute({
-  validateStatus: (ok, status) => ok || status === 304,
+  validateStatus: validateStatus(200, 404),
 });
 ```
 
@@ -283,6 +268,31 @@ const reply = await frame._execute({
   pathPrefix: '/v3',
   path: '/pokemon/{name}',
 });
+```
+
+## 응답이 없는 오류 처리
+
+`JinRespError.resp`는 완전한 HTTP 응답 객체이거나 `undefined`입니다. 응답이 없는 네트워크 오류에서는 `data`, `headers`, `raw`를 가진 가짜 응답을 만들지 않습니다. 원본 오류는 `cause`에 보존됩니다.
+
+HTTP 상태가 거부된 경우에는 `resp`에 실제 응답의 `status`, `data`, `headers`, `raw`와 검증 결과가 유지됩니다. `resp`가 없을 때 오류 객체의 `status`·`statusText`는 내부 진단용 값입니다. 기본값인 `500`·`Internal Server Error`는 서버가 실제로 500을 반환했다는 의미가 아닙니다.
+
+`validateStatus: () => true`도 네트워크 오류를 반환값으로 바꾸지 않습니다. 응답 생성 전후의 훅 또는 역직렬화 과정에서 발생한 오류도 `JinRespError`로 래핑될 수 있으므로, `resp === undefined`만으로 네트워크 장애라고 단정하지 말고 `cause`를 함께 확인합니다.
+
+```ts
+import { JinRespError } from 'jin-frame';
+
+try {
+  await frame._execute();
+} catch (error) {
+  if (!(error instanceof JinRespError)) throw error;
+
+  const response = error.resp;
+  if (response === undefined) {
+    console.error(error.message, error.cause);
+  } else {
+    console.error(response.status, response.data, response.headers);
+  }
+}
 ```
 
 ## 네이밍 컨벤션
@@ -329,30 +339,3 @@ const reply = await frame._execute({
 ## License
 
 This software is licensed under the [MIT](LICENSE).
-
-
-
-## 응답이 없는 오류 처리
-
-`JinRespError.resp`는 완전한 HTTP 응답 객체이거나 `undefined`입니다. 응답이 없는 네트워크 오류에서는 `data`, `headers`, `raw`를 가진 가짜 응답을 만들지 않습니다. 원본 오류는 `cause`에 보존됩니다.
-
-HTTP 상태가 거부된 경우에는 `resp`에 실제 응답의 `status`, `data`, `headers`, `raw`와 검증 결과가 유지됩니다. `resp`가 없을 때 오류 객체의 `status`·`statusText`는 내부 진단용 값입니다. 기본값인 `500`·`Internal Server Error`는 서버가 실제로 500을 반환했다는 의미가 아닙니다.
-
-`validateStatus: () => true`도 네트워크 오류를 반환값으로 바꾸지 않습니다. 응답 생성 전후의 훅 또는 역직렬화 과정에서 발생한 오류도 `JinRespError`로 래핑될 수 있으므로, `resp === undefined`만으로 네트워크 장애라고 단정하지 말고 `cause`를 함께 확인합니다.
-
-```ts
-import { JinRespError } from 'jin-frame';
-
-try {
-  await frame._execute();
-} catch (error) {
-  if (!(error instanceof JinRespError)) throw error;
-
-  const response = error.resp;
-  if (response === undefined) {
-    console.error(error.message, error.cause);
-  } else {
-    console.error(response.status, response.data, response.headers);
-  }
-}
-```

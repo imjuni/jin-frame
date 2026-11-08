@@ -1,14 +1,16 @@
 # @jin-frame/generator-cli
 
-[Unified documentation](https://imjuni.github.io/jin-frame/generator-cli/)
+## Introduction
 
+A CLI for generating `jin-frame` request classes and TypeScript types from an OpenAPI document. The command name is `frame-cli`.
 
 Version 1.0.0 targets `jin-frame` 6.x.
 
+## Why generator-cli?
 
-CLI package for generating `jin-frame` request classes from an OpenAPI document.
-
-The CLI command name is `frame-cli`.
+- **Generate request code from an OpenAPI specification.** Use `create` to generate type definitions and frames together.
+- **Use existing type definitions.** Use `frame` to generate frames that reference types you have already generated.
+- **Keep generation settings with your project.** Configure output paths and request options in a config file, and customize generated code with your own templates.
 
 ## Package Format
 

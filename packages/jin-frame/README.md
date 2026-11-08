@@ -1,8 +1,5 @@
 # jin-frame
 
-[Unified documentation](https://imjuni.github.io/jin-frame/packages)
-
-
 ![ts](https://flat.badgen.net/badge/Built%20With/TypeScript/blue)
 [![Download Status](https://img.shields.io/npm/dw/jin-frame.svg?style=flat-square)](https://npmcharts.com/compare/jin-frame?minimal=true)
 [![Github Star](https://img.shields.io/github/stars/imjuni/jin-frame.svg?style=flat-square)](https://github.com/imjuni/jin-frame)
@@ -13,9 +10,11 @@
 [![codecov](https://codecov.io/gh/imjuni/jin-frame/branch/master/graph/badge.svg?style=flat-square&token=R7R2PdJcS9)](https://codecov.io/gh/imjuni/jin-frame)
 [![code style: Biome](https://img.shields.io/badge/code_style-Biome-60a5fa.svg?style=flat-square)](https://biomejs.dev/)
 
-**HTTP Request** = **TypeScript Class**
+## Introduction
 
-A reusable, declarative, type-safe, and extendable HTTP request library built on native `fetch`.
+**1 HTTP Request** = **1 TypeScript Class**
+
+Define HTTP requests as TypeScript classes and send them using native `fetch`.
 
 <!-- markdownlint-disable MD033 -->
 <p align="center">
@@ -23,23 +22,17 @@ A reusable, declarative, type-safe, and extendable HTTP request library built on
 </p>
 <!-- markdownlint-enable MD033 -->
 
-Why `jin-frame`?
+## Why jin-frame?
 
-1. Declarative API Definition — HTTP requests as TypeScript classes with decorators
-2. Type Safety — numeric `status` discriminated response unions with full TypeScript generics
-3. Retry, Hooks, File Upload, Timeout, and AbortSignal support
-4. Built on native `fetch` — no extra HTTP client dependency
-5. RFC 6570 URI Template path parameters (`{param}`)
-6. Builder pattern with compile-time field completeness checking
-7. Inheritance-friendly — share host/auth in a base class, override path in subclasses
-8. Runtime URL override — change host, pathPrefix, or path per `_execute()` call
-
-## Release 6.0.0
-
-Use `jin-frame` 6.0.0 with `@jin-frame/generator-cli` and `@jin-frame/generator-core` 1.0.0. When upgrading from 5.x, follow the [6.0 migration guide](https://imjuni.github.io/jin-frame/migration-v6).
+- **Define HTTP APIs as TypeScript classes.** Declare the HTTP method, endpoint, timeout, retry policy, and security settings alongside the request fields.
+- **Configure each API for production use.** Set different timeouts, retry policies, and other request options for endpoints with different operational requirements.
+- **Validate responses and deduplicate requests.** Use validators to check response data and request deduplication to share a single network call among identical concurrent requests.
+- **Organize API settings through inheritance.** Define shared settings in base classes and override them in subclasses to reflect your API hierarchy.
 
 ## Table of Contents <!-- omit in toc -->
 
+- [Introduction](#introduction)
+- [Why jin-frame?](#why-jin-frame)
 - [Install](#install)
 - [Version](#version)
 - [Usage](#usage)
@@ -49,13 +42,15 @@ Use `jin-frame` 6.0.0 with `@jin-frame/generator-cli` and `@jin-frame/generator-
 - [Inheritance](#inheritance)
 - [Builder Pattern](#builder-pattern)
 - [Response status unions](#response-status-unions)
+  - [Generated response status unions](#generated-response-status-unions)
 - [Retry, Timeout](#retry-timeout)
 - [Authorization](#authorization)
 - [validateStatus](#validatestatus)
 - [Runtime URL Override](#runtime-url-override)
+- [Errors Without an HTTP Response](#errors-without-an-http-response)
 - [Naming Convention](#naming-convention)
 - [OpenAPI Generator](#openapi-generator)
-- [Requirements](#requirements)
+- [jin-frame Requirements](#jin-frame-requirements)
 - [Documentation](#documentation)
 - [License](#license)
 
@@ -112,7 +107,7 @@ if (reply.status === 200) {
 ### Method decorators
 
 | Decorator | Description |
-|-----------|-------------|
+| ----------- | ------------- |
 | `@Get` | HTTP GET |
 | `@Post` | HTTP POST |
 | `@Put` | HTTP PUT |
@@ -129,7 +124,7 @@ if (reply.status === 200) {
 ### Field decorators
 
 | Decorator | Mapped to |
-|-----------|-----------|
+| ----------- | ----------- |
 | `@Param` | URL path parameter (`{name}`) |
 | `@Query` | URL query string |
 | `@Body` | Request body field |
@@ -258,20 +253,13 @@ export class PokemonFrame extends JinFrame {
 
 ## validateStatus
 
-`validateStatus` can be set at the decorator level or overridden per `_execute()` call:
+Pass `validateStatus` to `_execute()` or `_create()`. Version 6.0 does not accept it in decorator options. By default, 2xx responses are returned and other HTTP statuses throw `JinRespError`.
 
 ```ts
-// decorator-level default
-@Get({
-  host: 'https://pokeapi.co',
-  path: '/api/v2/pokemon/{name}',
-  validateStatus: (ok, status) => ok || status === 404,
-})
-export class PokemonFrame extends JinFrame { ... }
+import { validateStatus } from 'jin-frame';
 
-// _execute()-level override (takes precedence)
 const reply = await frame._execute({
-  validateStatus: (ok, status) => ok || status === 304,
+  validateStatus: validateStatus(200, 404),
 });
 ```
 
@@ -287,10 +275,35 @@ const reply = await frame._execute({
 });
 ```
 
+## Errors Without an HTTP Response
+
+`JinRespError.resp` is either a complete HTTP response or `undefined`. A network failure without a response does not create a synthetic response with `data`, `headers`, or `raw`. The original error is preserved in `cause`.
+
+When an HTTP status is rejected, `resp` retains the actual response's `status`, `data`, `headers`, `raw`, and validation result. Without `resp`, the error-level `status` and `statusText` are diagnostic values. The defaults, `500` and `Internal Server Error`, do not mean that a server returned HTTP 500.
+
+`validateStatus: () => true` still rejects on network failures. Hook or deserialization errors can also be wrapped in `JinRespError` without a response, so inspect `cause` rather than assuming every absent `resp` means a network outage.
+
+```ts
+import { JinRespError } from 'jin-frame';
+
+try {
+  await frame._execute();
+} catch (error) {
+  if (!(error instanceof JinRespError)) throw error;
+
+  const response = error.resp;
+  if (response === undefined) {
+    console.error(error.message, error.cause);
+  } else {
+    console.error(response.status, response.data, response.headers);
+  }
+}
+```
+
 ## Naming Convention
 
 | Prefix | Used for |
-|--------|----------|
+| -------- | ---------- |
 | `#` | Internal state (JavaScript private fields) — invisible to subclasses |
 | `_` | All instance methods — public API, hooks, and helpers |
 | _(none)_ | Static methods |
@@ -345,30 +358,3 @@ Full documentation: **[https://imjuni.github.io/jin-frame/](https://imjuni.githu
 ## License
 
 This software is licensed under the [MIT](../../LICENSE).
-
-
-
-## Errors Without an HTTP Response
-
-`JinRespError.resp` is either a complete HTTP response or `undefined`. A network failure without a response does not create a synthetic response with `data`, `headers`, or `raw`. The original error is preserved in `cause`.
-
-When an HTTP status is rejected, `resp` retains the actual response's `status`, `data`, `headers`, `raw`, and validation result. Without `resp`, the error-level `status` and `statusText` are diagnostic values. The defaults, `500` and `Internal Server Error`, do not mean that a server returned HTTP 500.
-
-`validateStatus: () => true` still rejects on network failures. Hook or deserialization errors can also be wrapped in `JinRespError` without a response, so inspect `cause` rather than assuming every absent `resp` means a network outage.
-
-```ts
-import { JinRespError } from 'jin-frame';
-
-try {
-  await frame._execute();
-} catch (error) {
-  if (!(error instanceof JinRespError)) throw error;
-
-  const response = error.resp;
-  if (response === undefined) {
-    console.error(error.message, error.cause);
-  } else {
-    console.error(response.status, response.data, response.headers);
-  }
-}
-```

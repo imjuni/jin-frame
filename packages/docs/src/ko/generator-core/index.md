@@ -4,13 +4,17 @@ outline: deep
 
 # @jin-frame/generator-core
 
+## Introduction
+
+OpenAPI 문서에서 `jin-frame` 요청 클래스와 TypeScript 타입을 생성하는 라이브러리입니다. `@jin-frame/generator-cli`도 이 패키지를 사용합니다.
+
 1.0.0 버전은 `jin-frame` 6.x를 대상으로 합니다.
 
+## Why generator-core?
 
-OpenAPI 문서에서 `jin-frame` 요청 클래스를 생성하기 위한 core 패키지입니다.
-
-`@jin-frame/generator-cli`는 이 패키지를 사용해 CLI 입력과 설정 파일을 처리합니다. 직접 생성 파이프라인을 구성하거나 별도 도구에 붙이고 싶다면 `generator-core`를 사용합니다.
-
+- **기존 도구에 코드 생성을 연결합니다.** TypeScript나 JavaScript 코드에서 생성 API를 직접 호출합니다.
+- **생성 파이프라인을 구성합니다.** 명세 로딩, 검증, 변환, 타입 생성, 프레임 생성 단계를 필요한 흐름으로 연결합니다.
+- **생성 결과와 진행 상황을 제어합니다.** 옵션과 사용자 정의 템플릿으로 출력을 조정하고, 이벤트 관찰자로 진행 상황과 진단 정보를 받습니다.
 
 ## 패키지 형식
 

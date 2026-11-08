@@ -4,13 +4,17 @@ outline: deep
 
 # @jin-frame/generator-core
 
+## Introduction
+
+A library for generating `jin-frame` request classes and TypeScript types from an OpenAPI document. It also powers `@jin-frame/generator-cli`.
+
 Version 1.0.0 targets `jin-frame` 6.x.
 
+## Why generator-core?
 
-Core package for generating `jin-frame` request classes from an OpenAPI document.
-
-`@jin-frame/generator-cli` uses this package internally. Use `generator-core` directly when you want to build a custom generation pipeline or integrate frame generation into another tool.
-
+- **Add code generation to your own tools.** Call the generation APIs directly from TypeScript or JavaScript.
+- **Compose a generation pipeline.** Connect document loading, validation, conversion, type generation, and frame generation in your own workflow.
+- **Control output and observe generation.** Adjust output through options and custom templates, and receive progress and diagnostics through event observers.
 
 ## Package Format
 

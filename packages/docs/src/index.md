@@ -5,7 +5,7 @@ layout: home
 hero:
   name: 'jin-frame'
   text: 'HTTP clients and OpenAPI generators'
-  tagline: A reusable, declarative, type-safe, and extendable HTTP request library.
+  tagline: Define HTTP requests as TypeScript classes and generate clients from OpenAPI.
   image:
     src: /assets/jin-frame-brand-icon.png
     alt: jin-frame

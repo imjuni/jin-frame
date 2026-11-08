@@ -9,15 +9,13 @@ outline: deep
 - `application/x-www-form-urlencoded`
 - `multipart/form-data`
 
-These formats make it easy to handle **file uploads** or **form field submissions**.
-
 ## application/x-www-form-urlencoded
 
 The `application/x-www-form-urlencoded` format serializes form fields into URL-encoded key-value pairs using the native `URLSearchParams` API. Set the `contentType` option to `application/x-www-form-urlencoded` and annotate each field with `@Body()`.
 
 ```ts
 @Post({
-  host: 'http://some.api.google.com/jinframe/:passing',
+  host: 'http://some.api.google.com/jinframe/{passing}',
   contentType: 'application/x-www-form-urlencoded',
 })
 class TestUrlencodedPostFrame extends JinFrame {
@@ -59,8 +57,6 @@ class UploadFrame extends JinFrame {
 
 - When `contentType` is set to `multipart/form-data`, jin-frame uses the native `FormData` API to build the request body automatically.
 - The `Content-Type` header (including the multipart boundary) is set by the runtime — do not set it manually.
-
-This makes it simple to upload a variety of data types, including images, documents, and binary files.
 
 ## Summary
 

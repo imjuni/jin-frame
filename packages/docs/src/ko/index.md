@@ -5,7 +5,7 @@ layout: home
 hero:
   name: "jin-frame"
   text: "HTTP 클라이언트와 OpenAPI 생성기"
-  tagline: A reusable, declarative, type-safe, and extendable HTTP request library.
+  tagline: TypeScript 클래스로 HTTP 요청을 정의하고 OpenAPI 문서에서 클라이언트를 생성합니다.
   image:
     src: /assets/jin-frame-brand-icon.png
     alt: jin-frame

@@ -32,7 +32,7 @@ pnpm add jin-frame --save
 import { Get, Param, Query, JinFrame } from 'jin-frame';
 import { randomUUID } from 'node:crypto';
 
-@Get({ 
+@Get({
   host: 'https://pokeapi.co',
   path: '/api/v2/pokemon/{name}',
 })
@@ -45,12 +45,12 @@ export class PokemonFrame extends JinFrame {
 }
 
 (async () => {
-  const frame = PokemonFrame.of({ 
-    name: 'pikachu', 
+  const frame = PokemonFrame.of({
+    name: 'pikachu',
     tid: randomUUID(),
   });
   const reply = await frame._execute();
-  
+
   // Show Pikachu Data
   console.log(reply.data);
 })();
@@ -103,30 +103,18 @@ class PokemonFrame extends JinFrame {
 }
 ```
 
-### Reasons
-
-1. **`declare`**  
-   - In TypeScript, the `declare` keyword means “this field has no value assigned directly, but only its type is declared.”  
-   - The actual value is injected at runtime by `jin-frame`, so there’s no need to initialize it inside the class.
-
-2. **`public`**  
-   - Explicitly specifies that the API field is an **input value** accessible from outside.
-
-3. **`readonly`**  
-   - Ensures immutability since the value should not change once defined.  
-   - Example: `@Param() name` is injected at creation time and will not change during execution.
+- `declare` supplies the field type without emitting JavaScript field initialization. Values are assigned when `of()` or the builder creates the instance.
+- `public` makes external access explicit. It is also TypeScript's default visibility.
+- `readonly` prevents field reassignment in TypeScript code. It does not freeze the object at runtime or prevent mutations to nested values.
 
 ## Requirements
 
 ### Decorator
 
-1. TypeScript
-1. Decorator
-   - Enable the `experimentalDecorators` and `emitDecoratorMetadata` options in your `tsconfig.json`.
+Enable the `experimentalDecorators` and `emitDecoratorMetadata` options in your `tsconfig.json`.
 
 ```jsonc
 {
-  "extends": "@tsconfig/node22/tsconfig.json",
   "compilerOptions": {
     // enable experimentalDecorators, emitDecoratorMetadata for using decorator
     "experimentalDecorators": true,
@@ -134,7 +122,3 @@ class PokemonFrame extends JinFrame {
   },
 }
 ```
-
-### Summary
-
-`declare public readonly` ensures **type safety** and **immutability**, while letting jin-frame populate values automatically at runtime. This is the idiomatic pattern in jin-frame, and it is recommended to always use this syntax when defining fields.
