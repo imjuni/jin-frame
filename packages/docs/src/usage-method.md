@@ -73,7 +73,7 @@ export class UploadFrame extends JinFrame {
 }
 
 // Execute
-const file = new JinFile(new File(['hello'], 'hello.txt'), 'hello.txt');
+const file = new JinFile('hello.txt', new File(['hello'], 'hello.txt'));
 const frame = UploadFrame.of({ title: 'greeting', attachments: [file] });
 await frame._execute();
 ```
@@ -113,23 +113,23 @@ All method decorators (`@Get`, `@Post`, …) accept common options:
 | `path`           | `string`                                                                              | Path. Supports RFC 6570 URI Template placeholders like `{id}`                |
 | `pathPrefix`     | `string`                                                                              | Path prefix to prepend to the path, such as `/api`                           |
 | `timeout`        | `number`                                                                              | Request timeout (ms). Uses library default if not set                        |
-| `retry`          | `{ max: number; interval?: number }` \*                                               | Retry policy. `max` is max attempts, `interval` is delay between retries(ms) |
+| `retry`          | `{ max: number; interval?: number }` \*                                               | Retry policy. `max` is the maximum number of retries, `interval` is delay between retries(ms) |
 | `method`         | `string`                                                                              | Normally set internally, but can be overridden for custom methods            |
 | `contentType`    | `'application/json' \| 'multipart/form-data' \| 'application/x-www-form-urlencoded'` | Specifies the request content type                                           |
 | `customBody`     | `unknown`                                                                             | Provide a **custom body** instead of using decorated fields                  |
 | `userAgent`      | `string`                                                                              | Sets User-Agent. May be ignored due to browser security restrictions         |
 | `authorization`  | `string \| { username: string; password: string }`                                    | Configure `Authorization` header directly or with Basic Auth                 |
-| `validators`     | `{ pass?: BaseValidator; fail?: BaseValidator }`                                      | Validators for pass and fail responses, run independently                    |
+| `validator` | `ResponseValidator` | Response validator receiving the complete response. See [Validation](./method/validation) |
 
 ## Body Transmission Rules & Content-Type
 
-- **`application/json` (default):** Sends body objects as JSON.  
-- **`multipart/form-data`:** Internal FormData handling works **only for POST requests**.  
-  - `JinFile` / `JinFile[]` are added as file parts.  
-  - Strings/numbers/booleans/objects are stringified and added as form parts.  
+- **`application/json` (default):** Sends body objects as JSON.
+- **`multipart/form-data`:** Internal FormData handling works for **POST, PUT, and PATCH requests**.
+  - `JinFile` / `JinFile[]` are added as file parts.
+  - Strings/numbers/booleans/objects are stringified and added as form parts.
 - **`application/x-www-form-urlencoded`:** Field values are encoded as `key=value&…` using `URLSearchParams`.
 
-> Note: `multipart/form-data` auto-conversion only works for **POST**. For `PUT/PATCH/DELETE` with multipart, use `customBody`.
+The runtime sets the multipart `Content-Type` header, including its boundary.
 
 ## Method Semantics (Idempotency)
 

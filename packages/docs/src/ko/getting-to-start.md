@@ -32,7 +32,7 @@ pnpm add jin-frame --save
 import { Get, Param, Query, JinFrame } from 'jin-frame';
 import { randomUUID } from 'node:crypto';
 
-@Get({ 
+@Get({
   host: 'https://pokeapi.co',
   path: '/api/v2/pokemon/{name}',
 })
@@ -45,12 +45,12 @@ export class PokemonFrame extends JinFrame {
 }
 
 (async () => {
-  const frame = PokemonFrame.of({ 
-    name: 'pikachu', 
+  const frame = PokemonFrame.of({
+    name: 'pikachu',
     tid: randomUUID(),
   });
   const reply = await frame._execute();
-  
+
   // Show Pikachu Data
   console.log(reply.data);
 })();
@@ -74,8 +74,8 @@ class PokemonPagingFrame extends JinFrame {
   declare public readonly offset: number;
 }
 
-@Retry({ max: 3, interval: 1000 }) // 재시도 최대 3번, 1000ms 간격
-@Timeout(2_000)  // 타임아웃 2초
+@Retry({ max: 3, interval: 1000 }) // Retry up to 3 times at 1-second intervals
+@Timeout(2_000)  // 2-second timeout
 @Get({
   host: 'https://pokeapi.co',
   path: '/api/v2/pokemon/{name}',
@@ -101,30 +101,18 @@ class PokemonFrame extends JinFrame {
 }
 ```
 
-### 이유
-
-1. **`declare`**
-   - TypeScript에서 `declare` 키워드는 “이 필드는 실제 값이 할당되지 않지만, 타입만 정의된다”는 의미입니다.
-   - 실제 값은 런타임에 `jin-frame`이 생성하여 주입하기 때문에, 클래스 내부에서 직접 초기화할 필요가 없습니다.
-
-2. **`public`**
-   - 접근 제어자를 명시적으로 작성하여 API 필드가 외부에서 접근 가능한 **입력값**임을 분명히 합니다.
-
-3. **`readonly`**
-   - 한번 정의된 값은 변경되지 않아야 하는 **불변 데이터**이므로, `readonly`로 지정하여 안전성을 높입니다.
-   - 예: `@Param() name`은 생성 시점에만 주입되며, 실행 도중 변경되지 않습니다.
+- `declare`는 필드의 타입만 선언하고 JavaScript 필드 초기화 코드를 생성하지 않습니다. 값은 `of()`나 builder로 객체를 만들 때 설정합니다.
+- `public`은 외부에서 접근할 수 있는 필드임을 명시합니다. TypeScript의 기본 접근 수준도 `public`입니다.
+- `readonly`는 TypeScript 코드에서 필드 재할당을 막습니다. 런타임에 객체를 동결하거나 중첩된 값의 변경을 막지는 않습니다.
 
 ## Requirements
 
 ### Decorator
 
-1. TypeScript
-1. Decorator
-   - `tsconfig.json` 파일에서 experimentalDecorators, emitDecoratorMetadata option을 활성화 해주세요
+`tsconfig.json` 파일에서 experimentalDecorators, emitDecoratorMetadata option을 활성화 해주세요
 
 ```jsonc
 {
-  "extends": "@tsconfig/node22/tsconfig.json",
   "compilerOptions": {
     // enable experimentalDecorators, emitDecoratorMetadata for using decorator
     "experimentalDecorators": true,
@@ -132,7 +120,3 @@ class PokemonFrame extends JinFrame {
   },
 }
 ```
-
-### 정리
-
-`declare public readonly`는 **타입 안정성**과 **불변성**을 보장하면서도, 런타임에는 jin-frame이 알아서 값을 채워 넣도록 하기 위한 관용적 패턴입니다. 따라서 jin-frame을 사용할 때는 항상 이 구문을 함께 사용하는 것이 권장됩니다.

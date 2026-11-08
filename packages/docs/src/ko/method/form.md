@@ -9,15 +9,13 @@ outline: deep
 - `application/x-www-form-urlencoded`
 - `multipart/form-data`
 
-이를 활용하면 **파일 업로드** 또는 **폼 필드 데이터 전송**을 손쉽게 구현할 수 있습니다.
-
 ## application/x-www-form-urlencoded
 
 `application/x-www-form-urlencoded` 방식은 네이티브 `URLSearchParams` API를 사용하여 폼 필드를 URL 인코딩된 키-값 쌍으로 직렬화합니다. `contentType` 옵션을 `application/x-www-form-urlencoded`로 지정하고, 각 필드에 `@Body()`를 붙여주면 됩니다.
 
 ```ts
 @Post({
-  host: 'http://some.api.google.com/jinframe/:passing',
+  host: 'http://some.api.google.com/jinframe/{passing}',
   contentType: 'application/x-www-form-urlencoded',
 })
 class TestUrlencodedPostFrame extends JinFrame {
@@ -59,8 +57,6 @@ class UploadFrame extends JinFrame {
 
 - `contentType`을 `multipart/form-data`로 설정하면, jin-frame이 네이티브 `FormData` API를 사용하여 요청 바디를 자동으로 구성합니다.
 - `Content-Type` 헤더(멀티파트 boundary 포함)는 런타임이 자동으로 설정합니다 — 직접 지정하지 않아도 됩니다.
-
-이를 통해 이미지, 문서, 바이너리 파일 등 다양한 데이터를 손쉽게 업로드할 수 있습니다.
 
 ## 결론
 

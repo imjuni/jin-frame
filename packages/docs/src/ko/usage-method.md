@@ -70,7 +70,7 @@ export class UploadFrame extends JinFrame {
 }
 
 // Execute
-const file = new JinFile(new File(['hello'], 'hello.txt'), 'hello.txt');
+const file = new JinFile('hello.txt', new File(['hello'], 'hello.txt'));
 const frame = UploadFrame.of({ title: 'greeting', attachments: [file] });
 await frame._execute();
 ```
@@ -110,14 +110,14 @@ export class DeleteUserFrame extends JinFrame {
 | `path`             | `string`                                                                             | 경로. `{id}` 처럼 **Path Param** 플레이스홀더 지원 (RFC 6570 URI Template)      |
 | `pathPrefix`       | `string`                                                                             | `/api` 와 같이 path에 추가할 prefix를 설정할 수 있습니다.                       |
 | `timeout`          | `number`                                                                             | 요청 타임아웃(ms). 미설정 시 라이브러리 기본값 사용                             |
-| `retry`            | `{ max: number; interval?: number }` \*                                              | 재시도 설정. `max`는 최대 시도 횟수, `interval`은 시도 간 대기(ms)              |
+| `retry`            | `{ max: number; interval?: number }` \*                                              | 재시도 설정. `max`는 최대 재시도 횟수, `interval`은 시도 간 대기(ms)              |
 | `method`           | `string`                                                                             | 내부적으로 설정되지만, 커스텀 메서드가 필요하면 명시 가능                       |
 | `contentType`      | `'application/json' \| 'multipart/form-data' \| 'application/x-www-form-urlencoded'` | 전송 포맷 지정                                                                  |
 | `customBody`       | `unknown`                                                                            | 데코레이터/필드 바디 대신 **커스텀 바디**를 직접 지정                           |
-| `validateStatus`   | `(status: number) => boolean`                                                        | 상태 코드 검증 함수. 재시도 조건과 함께 사용 가능                               |
+
 | `userAgent`        | `string`                                                                             | User-Agent 지정. 브라우저 보안 제약으로 무시될 수 있음(옵션으로는 설정 가능)    |
-| `authorization`    | `string` or `{ usename: string; password: string }`                                  | Header Authorization 필드 값을 설정하거나 Basic Auth 설정을 설정                |
-| `validator`        | `Validator`                                                                          | `Validator` 클래스를 상속하여 Validator를 전달합니다                            |
+| `authorization`    | `string` or `{ username: string; password: string }`                                  | Header Authorization 필드 값을 설정하거나 Basic Auth 설정을 설정                |
+| `validator` | `ResponseValidator` | 전체 응답을 받는 응답 검증기. [유효성 검사](./method/validation) 참고 |
 
 ## Body 전송 규칙 & Content-Type
 
@@ -141,14 +141,28 @@ export class DeleteUserFrame extends JinFrame {
 
 ```ts
 const frame = SomeFrame.of(/* ... */);
-const req = frame.request();
+const req = frame._requestWrap();
 
-console.log(frame.getOption('method')); // 설정된 HTTP 메서드
-console.log(frame.getData('param')); // 최종 Path Params
-console.log(frame.getData('query')); // 최종 Query
-console.log(frame.getData('header')); // 최종 Header (직렬화 전)
+console.log(frame._getOption('method')); // 설정된 HTTP 메서드
+console.log(frame._getData('param')); // 최종 Path Params
+console.log(frame._getData('query')); // 최종 Query
+console.log(frame._getData('header')); // 최종 Header (직렬화 전)
 console.log(req); // 최종 요청 설정 (JinRequestConfig)
 ```
 
-> 요청 중간 상태를 확인하고 싶으면 `.request()`로 요청 설정 객체를 받아보세요.  
+> 요청 중간 상태를 확인하고 싶으면 `._requestWrap()`로 요청 설정 객체를 받아보세요.
 > `._execute()`는 실제 네트워크 호출을 수행합니다.
+
+## 상태 코드 검증
+
+기본적으로 2xx 응답을 반환합니다. 다른 상태도 반환받으려면 `_execute()` 또는 `_create()` 호출에 `validateStatus`를 전달합니다. 6.0에서는 데코레이터 옵션으로 지정할 수 없습니다.
+
+```ts
+import { validateStatus } from 'jin-frame';
+
+const reply = await frame._execute({
+  validateStatus: validateStatus(200, 404),
+});
+```
+
+`validateStatus(200, 404)`는 반환 타입도 해당 상태로 좁힙니다. `() => true`처럼 boolean을 반환하는 콜백은 선언한 전체 응답 union을 유지합니다. 네트워크 오류처럼 HTTP 응답이 없는 실패는 여전히 예외를 발생시킵니다.

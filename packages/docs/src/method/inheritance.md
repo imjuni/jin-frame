@@ -4,7 +4,7 @@ outline: deep
 
 # Inheritance
 
-In **`jin-frame`**, inheritance can be used to group common functionality or extend only what is needed. This helps keep API request structures simple while allowing flexible handling of diverse endpoints.
+Define shared settings and hooks in a base frame class. Subclasses inherit them and can override settings for each endpoint.
 
 ## Separating Host and Path
 
@@ -51,7 +51,7 @@ class PokemonByNameId extends PokemonAPI<PokemonResponse> {
 
 ### Using the Builder Pattern
 
-When using the `of` factory method directly, you need to specify all fields for type safety. In this case, the Builder pattern makes it much easier.
+The builder callback can supply `name` while `getDefaultValues()` supplies `tid`.
 
 ```ts
 const frame = PokemonByNameId.of((b) => b.set('name', 'pikachu'));
@@ -148,16 +148,3 @@ class PokemonByNameId extends PokemonAPI<PokemonResponse> {
   }
 }
 ```
-
----
-
-## Summary
-
-Using inheritance provides several advantages:
-
-- **Centralized management:** Shared settings such as `host`, `timeout`, `hook`, and `authorization` can be managed in the parent class, improving efficiency.
-- **Extensibility:** Child classes only need to declare the `path`, `param`, or special settings, making extension straightforward.
-- **Flexible policy application:** Apply different `timeout` and `retry` policies per endpoint, and extend common hooks with additional logic when needed.
-- **Type safety:** The Builder pattern ensures safe field initialization, minimizing errors.
-
-In short, inheritance helps you keep shared logic simple while flexibly adapting to endpoint-specific needs, making API request structures **systematic and scalable**.
