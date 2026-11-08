@@ -118,8 +118,33 @@ export abstract class AbstractJinFrame {
 
   #data: FrameInternal;
 
-  protected get _startAt(): Date {
-    return this.#data.startAt;
+  /** Start of the most recently started execution, or construction time before execution. */
+  public get _startAt(): Date {
+    return new Date(this.#data.startAt);
+  }
+
+  public get _eachStartAt(): Date {
+    return new Date(this.#data.eachStartAt);
+  }
+
+  /** Undefined while the most recently started execution is in progress. */
+  public get _endAt(): Date | undefined {
+    return this.#data.endAt == null ? undefined : new Date(this.#data.endAt);
+  }
+
+  protected _beginExecution(): Date {
+    const startAt = new Date();
+    this.#data.startAt = startAt;
+    this.#data.eachStartAt = startAt;
+    this.#data.endAt = undefined;
+    return startAt;
+  }
+
+  protected _finishExecution(startAt: Date): void {
+    // An older overlapping execution must not overwrite the latest execution's state.
+    if (this.#data.startAt === startAt) {
+      this.#data.endAt = new Date();
+    }
   }
 
   protected get _option(): FrameOption {
@@ -416,11 +441,10 @@ export abstract class AbstractJinFrame {
   async _retry(
     req: JinRequestConfig,
     isValidateStatus: (ok: boolean, status: number) => boolean,
+    startAt = new Date(),
   ): Promise<DedupeResult> {
     const retry = { ...this.#data.retry, try: 0 };
     this.#data.retry = retry;
-    const startAt = new Date();
-
     const handle = async () => {
       let returnValue: DedupeResult | Error = new Error();
 
@@ -428,6 +452,9 @@ export abstract class AbstractJinFrame {
       for (let i = 0; i < retry.max; i += 1) {
         req.signal?.throwIfAborted();
         const eachStartAt = new Date();
+        if (this.#data.startAt === startAt) {
+          this.#data.eachStartAt = eachStartAt;
+        }
         try {
           retry.try += 1;
 

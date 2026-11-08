@@ -139,3 +139,94 @@ it("should separate HTTP methods when endpoint fields match", async () => {
   ]);
   expect(fetcher).toHaveBeenCalledTimes(2);
 });
+
+it("should expose updated execution timestamps when a frame succeeds and is reused", async () => {
+  vi.useFakeTimers();
+  vi.stubGlobal(
+    "fetch",
+    vi.fn(async () => {
+      await sleep(20);
+      return Response.json({ user: "same" });
+    }),
+  );
+  const frame = LifecycleFrame.of({});
+  expect(frame._endAt).toBeUndefined();
+  await vi.advanceTimersByTimeAsync(100);
+  const started = Date.now();
+  const result = frame._execute();
+  await vi.advanceTimersByTimeAsync(0);
+  expect(frame._startAt.getTime()).toBe(started);
+  expect(frame._eachStartAt.getTime()).toBe(started);
+  expect(frame._endAt).toBeUndefined();
+  await vi.advanceTimersByTimeAsync(20);
+  await result;
+  expect(frame._endAt?.getTime()).toBe(started + 20);
+  const snapshot = frame._startAt;
+  snapshot.setTime(0);
+  expect(frame._startAt.getTime()).toBe(started);
+  const next = frame._execute();
+  await vi.advanceTimersByTimeAsync(0);
+  expect(frame._endAt).toBeUndefined();
+  expect(frame._startAt.getTime()).toBe(started + 20);
+  await vi.advanceTimersByTimeAsync(20);
+  await next;
+  expect(frame._endAt?.getTime()).toBe(started + 40);
+});
+
+it("should record attempt and completion timestamps when retries fail", async () => {
+  vi.useFakeTimers();
+  vi.stubGlobal(
+    "fetch",
+    vi.fn(async () => new Response(null, { status: 500 })),
+  );
+  const frame = LifecycleFrame.of({});
+  const started = Date.now();
+  const result = frame._execute().catch((error: unknown) => error);
+  await vi.runAllTimersAsync();
+  await result;
+  expect(frame._startAt.getTime()).toBe(started);
+  expect(frame._eachStartAt.getTime()).toBe(started + 2000);
+  expect(frame._endAt?.getTime()).toBe(started + 2000);
+});
+
+it("should record completion when execution is cancelled", async () => {
+  vi.useFakeTimers();
+  vi.stubGlobal(
+    "fetch",
+    vi.fn(async () => new Response(null, { status: 500 })),
+  );
+  const frame = LifecycleFrame.of({});
+  const controller = new AbortController();
+  const result = frame._execute({ signal: controller.signal }).catch((error: unknown) => error);
+  await vi.advanceTimersByTimeAsync(10);
+  controller.abort();
+  await result;
+  expect(frame._endAt?.getTime()).toBe(Date.now());
+});
+
+it("should preserve the latest execution timestamps when an older request completes later", async () => {
+  vi.useFakeTimers();
+  const fetcher = vi
+    .fn()
+    .mockImplementationOnce(async () => {
+      await sleep(100);
+      return Response.json({ user: "older" });
+    })
+    .mockImplementationOnce(async () => {
+      await sleep(10);
+      return Response.json({ user: "latest" });
+    });
+  vi.stubGlobal("fetch", fetcher);
+  const frame = LifecycleFrame.of({});
+  const older = frame._execute({ signal: new AbortController().signal });
+  await vi.advanceTimersByTimeAsync(20);
+  const started = Date.now();
+  const latest = frame._execute({ signal: new AbortController().signal });
+  await vi.advanceTimersByTimeAsync(10);
+  await latest;
+  expect(frame._endAt?.getTime()).toBe(started + 10);
+  await vi.advanceTimersByTimeAsync(70);
+  await older;
+  expect(frame._startAt.getTime()).toBe(started);
+  expect(frame._endAt?.getTime()).toBe(started + 10);
+});

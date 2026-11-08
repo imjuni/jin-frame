@@ -117,7 +117,7 @@ export class JinFrame<Response extends JinResponse = JinResponse>
         $frame: TSelf;
       }
     > => {
-      const startAt = new Date();
+      const startAt = this._beginExecution();
       const debug: Omit<DebugInfo, "duration"> = {
         ts: {
           unix: `${getUnixTime(startAt)}.${startAt.getMilliseconds()}`,
@@ -130,7 +130,7 @@ export class JinFrame<Response extends JinResponse = JinResponse>
       try {
         await runAndUnwrap(this._preHook.bind(this), req);
 
-        const deduped = await this._retry(req, isValidateStatus);
+        const deduped = await this._retry(req, isValidateStatus, startAt);
         const { resp } = deduped;
 
         const isCloneRaw = option?.cloneRaw ?? this._option.cloneRaw;
@@ -244,6 +244,8 @@ export class JinFrame<Response extends JinResponse = JinResponse>
         });
 
         throw getError(jinFrameError, option?.getError);
+      } finally {
+        this._finishExecution(startAt);
       }
     };
 
