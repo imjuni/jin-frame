@@ -135,3 +135,7 @@ export default {
 
 
 [All packages](../packages) · [Getting started](./index) · [명령어](./commands) · [Configuration](./configuration)
+
+## Specification URL fallback
+
+With no host override and absent or empty servers, use only the remote specification origin. /swagger/json locates the document, not the API. For example, a /health operation from http://localhost:7878/swagger/json targets http://localhost:7878/health. Explicit host/server paths and relative server URL resolution remain supported. Local specification files need server information or an explicit host.

@@ -87,7 +87,7 @@ it("should resolve relative servers against spec URLs and fall back to spec host
   });
   expect(getServerFrameEndpoint(params, params.document)).toMatchObject({
     host: "https://example.com",
-    pathPrefix: "/openapi.json",
+    pathPrefix: undefined,
   });
   const { getHost } = await import("#generators/hosts/getHost.js");
   expect(getHost({ specTypeFilePath: "spec.json", document: { ...params.document, servers: [{ url: "/api" }] } })).toBe(

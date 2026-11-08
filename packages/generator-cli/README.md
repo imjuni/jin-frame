@@ -210,3 +210,7 @@ Run `frame-cli create --help` to see the available options.
 ## License
 
 [MIT](LICENSE)
+
+## Specification URL versus API server URL
+
+When servers is absent or empty, only the remote specification URL origin is used as the API host. Loading http://localhost:7878/swagger/json makes a /health operation target http://localhost:7878/health. The document path, query, and fragment are not API prefixes. Explicit host and servers[].url paths are preserved, and relative server URLs resolve against the specification URL. Local files without server information require an explicit host.
