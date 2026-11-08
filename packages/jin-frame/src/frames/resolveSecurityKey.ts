@@ -6,8 +6,12 @@ export async function resolveSecurityKey<T extends JinFrameRequestConfig & JinFr
   frameOption: FrameOption,
   option: T | undefined,
 ): Promise<T> {
-  if (option?.dynamicAuth != null) return option;
+  if (option?.dynamicAuth != null) {
+    return option;
+  }
   const frameAuth = frameOption.authorization;
-  if (typeof frameAuth !== "function") return (option ?? {}) as T;
+  if (typeof frameAuth !== "function") {
+    return (option ?? {}) as T;
+  }
   return { ...(option ?? {}), dynamicAuth: await frameAuth() } as T;
 }

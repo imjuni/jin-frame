@@ -48,7 +48,9 @@ it("should compile generated frames against OpenAPI response types and narrow ev
       specTypeFilePath: join(directory, "paths.ts"),
       useCodeFence: false,
     });
-    for (const { frame } of frames) writeFileSync(join(directory, frame.filePath), frame.source);
+    for (const { frame } of frames) {
+      writeFileSync(join(directory, frame.filePath), frame.source);
+    }
     const library = resolve("../jin-frame/src");
     const shim = join(directory, "jin-frame.ts");
     writeFileSync(

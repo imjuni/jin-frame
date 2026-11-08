@@ -9,16 +9,21 @@ export function createGeneratedProviderData(
   reference: ISecurityProviderReference,
 ): ISecurityProviderData | undefined {
   const base = { schemeName, className: reference.className, filePath: reference.filePath, tag: reference.tag };
-  if (scheme.type === "apiKey")
+  if (scheme.type === "apiKey") {
     return {
       ...base,
       builtinClassName: "ApiKeyProvider",
       constructorArguments: ["key", quote(scheme.name), quote(scheme.in), quote(schemeName)],
     };
-  if (scheme.type !== "http") return undefined;
-  if (scheme.scheme.toLowerCase() === "bearer")
+  }
+  if (scheme.type !== "http") {
+    return undefined;
+  }
+  if (scheme.scheme.toLowerCase() === "bearer") {
     return { ...base, builtinClassName: "BearerTokenProvider", constructorArguments: ["key", quote(schemeName)] };
-  if (scheme.scheme.toLowerCase() === "basic")
+  }
+  if (scheme.scheme.toLowerCase() === "basic") {
     return { ...base, builtinClassName: "BasicAuthProvider", constructorArguments: ["key", quote(schemeName)] };
+  }
   return undefined;
 }

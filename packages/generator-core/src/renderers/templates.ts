@@ -21,7 +21,9 @@ export const defaultTemplates: ITemplateSet = {
 
 export async function loadTemplates(templatePath?: string): Promise<ITemplateSet> {
   const templates = { ...defaultTemplates };
-  if (templatePath == null) return templates;
+  if (templatePath == null) {
+    return templates;
+  }
   for (const name of Object.keys(templates) as (keyof ITemplateSet)[]) {
     const path = resolve(templatePath, `${name}.eta`);
     try {

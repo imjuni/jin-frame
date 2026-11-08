@@ -9,7 +9,7 @@ export default defineConfig({
     "arrow-body-style": "off",
     "class-methods-use-this": "off",
     complexity: "off",
-    curly: "off",
+    curly: ["error", "all"],
     eqeqeq: "off",
     "func-style": "off",
     "max-classes-per-file": "off",
