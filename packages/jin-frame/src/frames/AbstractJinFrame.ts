@@ -417,13 +417,17 @@ export abstract class AbstractJinFrame {
     req: JinRequestConfig,
     isValidateStatus: (ok: boolean, status: number) => boolean,
   ): Promise<DedupeResult> {
-    const { retry } = this.#data;
+    const retry = { ...this.#data.retry, try: 0 };
+    this.#data.retry = retry;
+    const startAt = new Date();
 
     const handle = async () => {
       let returnValue: DedupeResult | Error = new Error();
 
       /* eslint-disable no-await-in-loop, no-restricted-syntax */
       for (let i = 0; i < retry.max; i += 1) {
+        req.signal?.throwIfAborted();
+        const eachStartAt = new Date();
         try {
           retry.try += 1;
 
@@ -439,7 +443,18 @@ export abstract class AbstractJinFrame {
             signal,
           });
 
-          const cacheKey = this.#option.dedupe ? this._getCacheKey() : undefined;
+          // Caller cancellation and non-replayable bodies must not be shared.
+          const cacheKey =
+            this.#option.dedupe && req.signal == null && (req.body == null || typeof req.body === "string")
+              ? safeStringify({
+                  fields: this._getCacheKey(),
+                  url: fetchReq.url,
+                  method: fetchReq.method,
+                  headers: [...fetchReq.headers.entries()].sort(([left], [right]) => left.localeCompare(right)),
+                  body: req.body,
+                  timeout: req.timeout,
+                })
+              : undefined;
           const promised =
             cacheKey != null
               ? // eslint-disable-next-line @typescript-eslint/promise-function-async
@@ -462,29 +477,36 @@ export abstract class AbstractJinFrame {
 
           await runAndUnwrap(this._retryFail.bind(this), req, resp.clone());
 
+          if (i + 1 >= retry.max) {
+            break;
+          }
           const current = new Date();
           const interval = getRetryInterval(
             retry,
-            getDuration(this.#data.startAt, current),
-            getDuration(this.#data.eachStartAt, current),
+            getDuration(startAt, current),
+            getDuration(eachStartAt, current),
             retryAfter,
           );
 
-          await sleep(interval);
+          await sleep(interval, req.signal);
         } catch (err) {
+          req.signal?.throwIfAborted();
           returnValue = isError(err, new Error("unknown error raised"));
 
           await runAndUnwrap(this._retryException.bind(this), req, returnValue);
 
+          if (i + 1 >= retry.max) {
+            break;
+          }
           const current = new Date();
           const interval = getRetryInterval(
             retry,
-            getDuration(this.#data.startAt, current),
-            getDuration(this.#data.eachStartAt, current),
+            getDuration(startAt, current),
+            getDuration(eachStartAt, current),
             undefined,
           );
 
-          await sleep(interval);
+          await sleep(interval, req.signal);
         }
       }
       /* eslint-enable no-await-in-loop, no-restricted-syntax */

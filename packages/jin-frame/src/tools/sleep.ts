@@ -42,11 +42,22 @@
  * // All complete after 200ms (the longest)
  * ```
  */
-export async function sleep(_interval: number): Promise<void> {
+export async function sleep(_interval: number, signal?: AbortSignal): Promise<void> {
   let interval = _interval < 0 ? 1 : _interval;
   interval = Number.isNaN(interval) ? 1 : interval;
 
-  return new Promise<void>((resolve) => {
-    setTimeout(() => resolve(), interval);
+  signal?.throwIfAborted();
+  return new Promise<void>((resolve, reject) => {
+    const timer: { id?: ReturnType<typeof setTimeout> } = {};
+    const onAbort = () => {
+      clearTimeout(timer.id);
+      signal?.removeEventListener("abort", onAbort);
+      reject(signal?.reason);
+    };
+    timer.id = setTimeout(() => {
+      signal?.removeEventListener("abort", onAbort);
+      resolve();
+    }, interval);
+    signal?.addEventListener("abort", onAbort, { once: true });
   });
 }

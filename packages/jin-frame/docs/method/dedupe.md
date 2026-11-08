@@ -227,3 +227,9 @@ console.log(RequestDedupeManager.hasPendingRequest('cache-key'));
 // Clear all pending requests (for testing)
 RequestDedupeManager.clearAllPendingRequests();
 ```
+
+### Runtime request isolation
+
+The execution key includes the actual URL, HTTP method, normalized headers (including authentication), string body, and timeout, in addition to the field-based cache key. Requests with different runtime hosts, paths, credentials, or bodies do not share responses. Field exclusion settings still affect `_getCacheKey()`, but cannot override these execution safeguards.
+
+Requests with a caller-provided `AbortSignal` bypass deduplication so cancellation cannot abort another caller's request. Requests with non-string bodies also bypass deduplication to avoid sharing streams or multipart bodies that cannot be compared safely.
