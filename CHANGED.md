@@ -1,5 +1,7 @@
 # Changed
 
+For consumer-facing compatibility changes, before/after examples, and the unreleased 6.0 migration guide, see [CHANGENOTE.md](./CHANGENOTE.md).
+
 ## Generator 1.0.0
 
 ### Generator CLI
