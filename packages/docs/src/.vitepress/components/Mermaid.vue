@@ -15,7 +15,9 @@ const mermaidRef = ref<HTMLElement>();
 const { isDark } = useData();
 
 const renderMermaid = async () => {
-  if (!mermaidRef.value) return;
+  if (!mermaidRef.value) {
+    return;
+  }
 
   try {
     // Set Mermaid theme from the current VitePress theme.

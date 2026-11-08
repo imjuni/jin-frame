@@ -17,7 +17,9 @@ export default defineConfig({
     {
       name: "eta-text",
       load(id) {
-        if (id.endsWith(".eta")) return `export default ${JSON.stringify(readFileSync(id, "utf8"))}`;
+        if (id.endsWith(".eta")) {
+          return `export default ${JSON.stringify(readFileSync(id, "utf8"))}`;
+        }
       },
     },
     tsconfigPaths({ projects: ["tsconfig.json"] }),

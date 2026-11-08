@@ -3,8 +3,11 @@ import consola from "consola";
 
 export function reportGeneratorEvent(event: GeneratorEvent): void {
   if (event.type === "diagnostic") {
-    if (event.severity === "warning") consola.warn(`[${event.code}] ${event.message}`);
-    else consola.info(`[${event.code}] ${event.message}`);
+    if (event.severity === "warning") {
+      consola.warn(`[${event.code}] ${event.message}`);
+    } else {
+      consola.info(`[${event.code}] ${event.message}`);
+    }
   } else if (event.type === "stage") {
     consola.info(`${event.stage}: ${event.state}`);
   } else {
