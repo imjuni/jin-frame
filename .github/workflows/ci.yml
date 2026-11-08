@@ -31,6 +31,7 @@ jobs:
           cache: 'pnpm'
       - run: pnpm i
       - run: pnpm run check
+      - run: pnpm --filter jin-frame run test:types
       - run: pnpm run build
       - run: pnpm run test:hook
       - run: pnpm run bundle

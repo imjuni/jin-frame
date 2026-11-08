@@ -130,3 +130,11 @@ const frame = ListUsersFrame.builder()
 - Fields prefixed with `_` (internal frame properties such as `_startAt`, `_option`)
 
 This means you only set the fields you actually declared on the subclass, not framework internals.
+
+## Compatibility notes
+
+Optional fields may be omitted before `build()`. For compatibility, `auto()` marks
+all fields as assigned, `from()` tracks optional input keys too, and `of()` callbacks
+do not enforce completeness. These paths cannot guarantee required values exist.
+`get()` returns a live readonly view, not a snapshot; later changes are visible,
+and nested objects are not frozen.
