@@ -41,11 +41,7 @@ export class RequestDedupeManager {
     const existingPromise = RequestDedupeManager.pendingRequests.get(cacheKey);
     if (existingPromise) {
       const buffered = await existingPromise;
-      const resp = new Response(buffered.body, {
-        status: buffered.status,
-        statusText: buffered.statusText,
-        headers: buffered.headers,
-      });
+      const resp = RequestDedupeManager.createResponse(buffered);
       return { resp, isDeduped: true };
     }
 
@@ -70,14 +66,16 @@ export class RequestDedupeManager {
     RequestDedupeManager.pendingRequests.set(cacheKey, promise);
 
     const buffered = await promise;
-    const nullBodyStatuses = [101, 103, 204, 205, 304];
-    const responseBody = nullBodyStatuses.includes(buffered.status) ? null : buffered.body;
-    const resp = new Response(responseBody, {
+    const resp = RequestDedupeManager.createResponse(buffered);
+    return { resp, isDeduped: false };
+  }
+
+  private static createResponse(buffered: BufferedResponse): Response {
+    return new Response([204, 205, 304].includes(buffered.status) ? null : buffered.body, {
       status: buffered.status,
       statusText: buffered.statusText,
       headers: buffered.headers,
     });
-    return { resp, isDeduped: false };
   }
 
   /**

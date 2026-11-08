@@ -54,15 +54,16 @@ export class JinFrame<Response extends JinResponse = JinResponse>
   protected _postHook(_req: JinRequestConfig, _reply: JinResp<Response>, _debugInfo: DebugInfo): void | Promise<void> {}
 
   public _requestWrap(option?: JinFrameRequestConfig & JinFrameCreateConfig): JinRequestConfig {
+    const startAt = new Date();
     try {
       return super._request(option);
     } catch (catched) {
       const source = catched as Error;
-      const duration = getDuration(this._startAt, new Date());
+      const duration = getDuration(startAt, new Date());
       const debug: Omit<DebugInfo, "req"> = {
         ts: {
-          unix: `${getUnixTime(this._startAt)}.${this._startAt.getMilliseconds()}`,
-          iso: formatISO(this._startAt),
+          unix: `${getUnixTime(startAt)}.${startAt.getMilliseconds()}`,
+          iso: formatISO(startAt),
         },
         isDeduped: false,
         duration,
@@ -160,7 +161,7 @@ export class JinFrame<Response extends JinResponse = JinResponse>
           rejectedResponse.valid = failValidated?.valid;
           rejectedResponse.$validated = failValidated;
 
-          const duration = getDuration(this._startAt, new Date());
+          const duration = getDuration(startAt, new Date());
 
           const debugInfo = {
             ...debug,
@@ -197,7 +198,7 @@ export class JinFrame<Response extends JinResponse = JinResponse>
         acceptedResponse.valid = validated.valid;
         acceptedResponse.$validated = validated;
 
-        const duration = getDuration(this._startAt, new Date());
+        const duration = getDuration(startAt, new Date());
         const debugInfo = { ...debug, duration, isDeduped: deduped.isDeduped };
 
         await runAndUnwrap(this._postHook.bind(this), req, acceptedResponse, debugInfo);
@@ -230,7 +231,7 @@ export class JinFrame<Response extends JinResponse = JinResponse>
           throw getError(caught, option?.getError);
         }
 
-        const duration = getDuration(this._startAt, new Date());
+        const duration = getDuration(startAt, new Date());
         const { status, statusText } = getStatusFromError(caught);
 
         const jinFrameError = new JinRespError<Response>({
