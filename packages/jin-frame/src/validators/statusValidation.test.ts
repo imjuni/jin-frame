@@ -2,36 +2,45 @@ import { afterEach, expect, it, vi } from "vitest";
 import { Get } from "#decorators/methods/Get";
 import { JinFrame } from "#frames/JinFrame";
 import { BaseValidator } from "#validators/BaseValidator";
-import type { ValidationInput, ValidatorMap } from "#validators/BaseValidator";
+import type { ValidationInput, ResponseValidator } from "#validators/BaseValidator";
 
 type Replies = { status: 200; data: { name: string } } | { status: 404; data: { message: string } };
-class NameValidator extends BaseValidator<Extract<Replies, { status: 200 }>, string, string> {
-  getData(reply: ValidationInput<Extract<Replies, { status: 200 }>>) {
-    return reply.data.name;
-  }
-  validator(name: string) {
-    return name ? { valid: true as const } : { valid: false as const, error: ["missing name"] };
+class NameValidator extends BaseValidator<Replies, string> {
+  validator(response: ValidationInput<Replies>) {
+    if (response.status === 200) {
+      return response.data.name ? { valid: true as const } : { valid: false as const, error: ["missing name"] };
+    }
+    return response.data.message ? { valid: true as const } : { valid: false as const, error: ["missing message"] };
   }
 }
-const validMap = { 200: new NameValidator({ type: "value" }) } satisfies ValidatorMap<Replies>;
-const invalidMap: ValidatorMap<Replies> = {
-  // @ts-expect-error A 200 validator cannot validate a 404 response.
-  404: new NameValidator({ type: "value" }),
-};
-void invalidMap;
-@Get({ host: "https://example.test", path: "/", validators: validMap })
+const validator = new NameValidator({ type: "value" }) satisfies ResponseValidator<Replies>;
+@Get({ host: "https://example.test", path: "/", validator })
 class Frame extends JinFrame<Replies> {}
 afterEach(() => vi.unstubAllGlobals());
 
-it.each([204, 404, 500])("should skip validation when status %i has no validator", async (status) => {
+it.each([204, 404, 500])(
+  "should return valid results when no validator is registered for status %i",
+  async (status) => {
+    @Get({ host: "https://example.test" })
+    class UnvalidatedFrame extends JinFrame {}
+    vi.stubGlobal(
+      "fetch",
+      vi.fn(async () => new Response(status === 204 ? null : "{}", { status })),
+    );
+    await expect(UnvalidatedFrame.of({})._execute({ validateStatus: () => true })).resolves.toMatchObject({
+      status,
+      valid: true,
+    });
+  },
+);
+it("should let the validator select the error schema by status", async () => {
   vi.stubGlobal(
     "fetch",
-    vi.fn(async () => new Response(status === 204 ? null : "{}", { status })),
+    vi.fn(async () => Response.json({ message: "not found" }, { status: 404 })),
   );
   await expect(Frame.of({})._execute({ validateStatus: () => true })).resolves.toMatchObject({
-    status,
+    status: 404,
     valid: true,
-    $validated: { valid: true },
   });
 });
 it("should attach failure when a status validator uses value mode", async () => {
@@ -53,7 +62,7 @@ it.each([200, 404])("should preserve HTTP context when extraction throws for sta
       return { valid: true as const };
     }
   }
-  @Get({ host: "https://example.test", validators: { [status]: new ThrowingValidator({ type: "exception" }) } })
+  @Get({ host: "https://example.test", validator: new ThrowingValidator({ type: "exception" }) })
   class ThrowingFrame extends JinFrame {}
   vi.stubGlobal(
     "fetch",
@@ -68,13 +77,13 @@ it.each([200, 404])("should preserve HTTP context when extraction throws for sta
 it.each([false, true])("should select the same validator regardless of HTTP acceptance %s", async (accept) => {
   class InvalidValidator extends BaseValidator {
     getData(reply: ValidationInput) {
-      return reply.data;
+      return reply;
     }
     async validator() {
       return { valid: false as const, error: ["invalid"] };
     }
   }
-  @Get({ host: "https://example.test", validators: { 404: new InvalidValidator({ type: "exception" }) } })
+  @Get({ host: "https://example.test", validator: new InvalidValidator({ type: "exception" }) })
   class InvalidFrame extends JinFrame {}
   vi.stubGlobal(
     "fetch",
@@ -90,13 +99,13 @@ it.each([false, true])("should select the same validator regardless of HTTP acce
 it("should preserve HTTP response when an asynchronous validator throws", async () => {
   class AsyncValidator extends BaseValidator {
     getData(reply: ValidationInput) {
-      return reply.data;
+      return reply;
     }
     async validator(): Promise<never> {
       throw new Error("schema failed");
     }
   }
-  @Get({ host: "https://example.test", validators: { 500: new AsyncValidator({ type: "value" }) } })
+  @Get({ host: "https://example.test", validator: new AsyncValidator({ type: "value" }) })
   class AsyncFrame extends JinFrame {}
   vi.stubGlobal(
     "fetch",
@@ -109,10 +118,57 @@ it("should preserve HTTP response when an asynchronous validator throws", async 
   });
 });
 
-it("should reject unlisted status keys in typed maps", () => {
-  const map: ValidatorMap<Replies> = {
-    // @ts-expect-error Status 500 is not declared in Replies.
-    500: new NameValidator({ type: "value" }),
+it("should preserve status and body correlation in the validator contract", () => {
+  const unrelated: ResponseValidator<{ status: 200; data: { age: number } }> = {
+    type: "value",
+    // @ts-expect-error A validator for Replies cannot validate an unrelated payload.
+    validate: validator.validate.bind(validator),
   };
-  expect(map).toBeDefined();
+  expect(unrelated).toBeDefined();
 });
+
+it.each([200, 204, 404, 500])(
+  "should select a schema inside the whole-response validator for status %i",
+  async (status) => {
+    const successSchema = vi.fn((_data: unknown) => ({ valid: true as const }));
+    const errorSchema = vi.fn((_data: unknown) => ({ valid: true as const }));
+    class SchemaValidator extends BaseValidator {
+      validator(response: ValidationInput) {
+        const schema =
+          response.status === 200
+            ? successSchema
+            : response.status === 404 || response.status === 500
+              ? errorSchema
+              : undefined;
+        return schema?.(response.data) ?? { valid: true as const };
+      }
+    }
+    const registered = new SchemaValidator({ type: "value" });
+    const extraction = vi.spyOn(registered, "getData");
+    @Get({ host: "https://example.test", validator: registered })
+    class SchemaFrame extends JinFrame {}
+    vi.stubGlobal(
+      "fetch",
+      vi.fn(
+        async () =>
+          new Response(status === 204 ? null : JSON.stringify({ message: "body" }), {
+            status,
+            headers: { "x-test": "present" },
+          }),
+      ),
+    );
+    await expect(SchemaFrame.of({})._execute({ validateStatus: () => true })).resolves.toMatchObject({
+      status,
+      valid: true,
+    });
+    expect(extraction).toHaveBeenCalledWith(
+      expect.objectContaining({
+        status,
+        headers: expect.objectContaining({ "x-test": "present" }),
+        raw: expect.any(Response),
+      }),
+    );
+    expect(successSchema).toHaveBeenCalledTimes(status === 200 ? 1 : 0);
+    expect(errorSchema).toHaveBeenCalledTimes(status === 404 || status === 500 ? 1 : 0);
+  },
+);

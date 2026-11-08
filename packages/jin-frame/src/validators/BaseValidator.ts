@@ -3,26 +3,16 @@ import type { JinRespBase } from "#interfaces/JinRespBase";
 import type { ValidationResult } from "#interfaces/ValidationResult";
 import type { ValidationResultType } from "#interfaces/ValidationResultType";
 
-export type ValidationInput<Response extends JinResponse = JinResponse> = JinRespBase & Response & { ok: boolean };
+/** Complete HTTP response available before validation results are assigned. */
+export type ValidationInput<Replies extends JinResponse = JinResponse> = JinRespBase & Replies & { ok: boolean };
 
-export interface ResponseValidator<Response extends JinResponse = JinResponse> {
+export interface ResponseValidator<Replies extends JinResponse = JinResponse> {
   readonly type: ValidationResultType;
-  validate: (reply: ValidationInput<Response>) => Promise<ValidationResult>;
+  validate: (response: ValidationInput<Replies>) => Promise<ValidationResult>;
 }
 
-export type ValidatorMap<Response extends JinResponse = JinResponse> = number extends Response["status"]
-  ? Record<number, ResponseValidator<never> | undefined>
-  : {
-      [Status in Response["status"]]?: ResponseValidator<
-        Response extends unknown ? (Status extends Response["status"] ? Response & { status: Status } : never) : never
-      >;
-    };
-
-export abstract class BaseValidator<
-  Response extends JinResponse = JinResponse,
-  TData = Response["data"],
-  TError = unknown,
-> {
+/** Validate a response union, selecting schemas by status inside validator(). */
+export abstract class BaseValidator<Replies extends JinResponse = JinResponse, TError = unknown> {
   readonly #type: ValidationResultType;
 
   constructor({ type }: { type: ValidationResultType }) {
@@ -31,9 +21,15 @@ export abstract class BaseValidator<
   get type(): ValidationResultType {
     return this.#type;
   }
-  abstract getData(reply: ValidationInput<Response>): TData;
-  abstract validator(data: TData): ValidationResult<TError> | Promise<ValidationResult<TError>>;
-  async validate(reply: ValidationInput<Response>): Promise<ValidationResult<TError>> {
-    return this.validator(this.getData(reply));
+
+  /** Preserve status, body, and metadata for status-specific schema selection. */
+  getData(response: ValidationInput<Replies>): ValidationInput<Replies> {
+    return response;
+  }
+
+  abstract validator(response: ValidationInput<Replies>): ValidationResult<TError> | Promise<ValidationResult<TError>>;
+
+  async validate(response: ValidationInput<Replies>): Promise<ValidationResult<TError>> {
+    return this.validator(this.getData(response));
   }
 }

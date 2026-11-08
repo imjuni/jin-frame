@@ -2,54 +2,73 @@
 outline: deep
 ---
 
-# Validation
+# Response validation
 
-Register validators by HTTP status. Missing validators produce `valid: true` and `$validated: { valid: true }`. `validateStatus` controls acceptance independently of validator selection.
+A single validator receives the whole response and selects a schema by status. The default getData() returns its input unchanged; validator() receives status and data together. `BaseValidator<Replies, TError>` uses the same { status, data } union as the frame.
 
-## BaseValidator
+## Selecting schemas by status
+
+This example uses Zod, installed separately; jin-frame does not depend on a schema library. The validator decides what to do when a status such as 204 has no schema.
 
 ```ts
+import { z } from 'zod';
 import { BaseValidator, Get, JinFrame, Validator } from 'jin-frame';
-import type { ValidationInput, ValidatorMap, ValidationResult } from 'jin-frame';
+import type { ValidationInput, ValidationResult } from 'jin-frame';
 
+const userSchema = z.object({ name: z.string() });
+const errorSchema = z.object({ message: z.string() });
 type Replies =
-  | { status: 200; data: { name: string } }
-  | { status: 404; data: { message: string } };
-type Success = Extract<Replies, { status: 200 }>;
+  | { status: 200; data: z.infer<typeof userSchema> }
+  | { status: 204; data: undefined }
+  | { status: 404; data: z.infer<typeof errorSchema> }
+  | { status: 500; data: z.infer<typeof errorSchema> };
 
-class UserValidator extends BaseValidator<Success, string, string> {
-  getData(reply: ValidationInput<Success>): string {
-    return reply.data.name;
+const schemas: Partial<Record<Replies['status'], z.ZodType>> = {
+  200: userSchema,
+  404: errorSchema,
+  500: errorSchema,
+};
+
+class ApiValidator extends BaseValidator<Replies, z.ZodIssue> {
+  // Optional: the default implementation already returns the whole response.
+  getData(response: ValidationInput<Replies>): ValidationInput<Replies> {
+    return response;
   }
 
-  validator(name: string): ValidationResult<string> {
-    return typeof name === 'string' && name.length > 0
+  validator(response: ValidationInput<Replies>): ValidationResult<z.ZodIssue> {
+    const schema = schemas[response.status];
+    if (schema === undefined) return { valid: true };
+    const result = schema.safeParse(response.data);
+    return result.success
       ? { valid: true }
-      : { valid: false, error: ['missing name'] };
+      : { valid: false, error: result.error.issues };
   }
 }
 
-const validators = {
-  200: new UserValidator({ type: 'exception' }),
-} satisfies ValidatorMap<Replies>;
-
-@Get({ host: 'https://api.example.com', path: '/user', validators })
+@Get({ host: 'https://api.example.com', path: '/user',
+  validator: new ApiValidator({ type: 'value' }),
+})
 class UserFrame extends JinFrame<Replies> {}
 
-const reply = await UserFrame.of({})._execute();
+const reply = await UserFrame.of({})._execute({ validateStatus: () => true });
+if (!reply.$validated.valid) {
+  console.error(reply.$validated.error);
+}
 ```
 
-`BaseValidator<Response, TData, TError>` takes a `{ status, data }` response type. Implement both `getData()` to extract the validation input and `validator()` to check it synchronously or asynchronously. `ValidationInput` includes status, data, headers, raw, and ok, but no validation results. Type arguments do not prove that the server returned valid data; check actual values with your schema.
+## Input and registration
 
-## Registration
+`ValidationInput<Replies>` includes status, data, statusText, headers, raw, and ok, but no valid or $validated fields. Overrides of getData() must also return the whole response type; returning only the body would lose the relationship between status and data.
+
+validator() supports synchronous or asynchronous results. TError types individual validator errors; frame response errors are exposed as unknown. Validation does not replace or transform the body. Type arguments do not prove that a server response is valid; check actual values with your schema.
 
 ```ts
-@Validator<Replies>(validators)
+@Validator<Replies>(new ApiValidator({ type: 'exception' }))
 @Get({ host: 'https://api.example.com', path: '/user' })
-class ValidatedUserFrame extends JinFrame<Replies> {}
+class DecoratedFrame extends JinFrame<Replies> {}
 ```
 
-Import `Validator` for this example. Use `ValidatorMap<Replies>` or `@Validator<Replies>` to check status-specific input types. Existing decorator and inheritance precedence applies; maps are not merged by status.
+Register using the validator method option or @Validator(). Existing decorator and inheritance precedence applies; validators are not combined.
 
 ## Failure policy
 
@@ -60,56 +79,6 @@ Import `Validator` for this example. Use `ValidatorMap<Replies>` or `@Validator<
 | Accepted | Invalid, exception mode | JinValidationError |
 | Rejected | Any validation result | JinRespError with response and validation result |
 
-If extraction or validation throws, JinRespError retains the actual HTTP response and the original cause. Validation does not transform or replace response data.
+validateStatus decides HTTP acceptance only. The same validator runs for accepted and rejected responses and selects schemas internally. Without a registered validator, valid is true and $validated is { valid: true }, but rejected HTTP statuses still throw.
 
-## Validating 404 and 500 responses in value mode
-
-This example accepts 404 and 500 responses and validates their bodies. Statuses sharing a body shape can reuse one validator class. Status 200 has no validator and therefore receives a valid result.
-
-```ts
-import { BaseValidator, Get, JinFrame, validateStatus } from 'jin-frame';
-import type { ValidationInput, ValidationResult, ValidatorMap } from 'jin-frame';
-
-type Responses =
-  | { status: 200; data: { name: string } }
-  | { status: 404; data: { message: string } }
-  | { status: 500; data: { message: string } };
-type ErrorResponse = Extract<Responses, { status: 404 | 500 }>;
-
-class ErrorBodyValidator extends BaseValidator<ErrorResponse, unknown, string> {
-  getData(reply: ValidationInput<ErrorResponse>): unknown {
-    return reply.data;
-  }
-
-  validator(data: unknown): ValidationResult<string> {
-    return typeof data === 'object' && data !== null &&
-      'message' in data && typeof data.message === 'string'
-      ? { valid: true }
-      : { valid: false, error: ['message must be a string'] };
-  }
-}
-
-const validators = {
-  404: new ErrorBodyValidator({ type: 'value' }),
-  500: new ErrorBodyValidator({ type: 'value' }),
-} satisfies ValidatorMap<Responses>;
-
-@Get({ host: 'https://api.example.com', path: '/user', validators })
-class ApiFrame extends JinFrame<Responses> {}
-
-const reply = await ApiFrame.of({})._execute({
-  validateStatus: validateStatus(200, 404, 500),
-});
-
-if (!reply.$validated.valid) {
-  console.error(reply.$validated.error);
-}
-```
-
-`reply.valid` is a boolean summary. Narrow `reply.$validated.valid` before reading the error list. TError types the validator result itself; the frame exposes validation errors as unknown. Extracted values and schema parsing results do not replace response data.
-
-## Exceptions and HTTP context
-
-Exception mode applies when a validator returns `{ valid: false, error: [...] }`. Only accepted responses throw JinValidationError. Rejected 404 and 500 responses throw JinRespError regardless of validation success; inspect resp.$validated for the validation result. Missing validators do not make rejected HTTP statuses return normally.
-
-Errors thrown by getData() or an asynchronous validator() are preserved in JinRespError.cause together with the received resp.status, resp.data, resp.headers, and resp.raw. Network failures without an HTTP response still have resp === undefined.
+If getData() or validator() throws, JinRespError preserves the original cause and the actual HTTP status, body, headers, and raw response. This differs from returning { valid: false }. Network failures without an HTTP response still have resp === undefined.

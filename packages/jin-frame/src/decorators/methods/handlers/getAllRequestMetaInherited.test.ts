@@ -36,7 +36,7 @@ class GetAllRequestMetaInheritedTest004 extends GetAllRequestMetaInheritedTest00
 
 @Security([new BasicAuthProvider("final-auth"), new BearerTokenProvider("final-bearer")], "final-session-token")
 @Timeout(2000)
-@Validator({ 200: new NoopValidator({ type: "exception" }) })
+@Validator(new NoopValidator({ type: "exception" }))
 @Get({ path: "overwrite/double/path" })
 class GetAllRequestMetaInheritedTest005 extends GetAllRequestMetaInheritedTest004 {}
 
@@ -80,7 +80,7 @@ describe("getAllRequestMetaInherited", () => {
       ],
       retries: [{ max: 2, interval: 500 }],
       timeouts: [2000, 3000, 1000],
-      validators: [{ 200: new NoopValidator({ type: "exception" }) }],
+      validators: [new NoopValidator({ type: "exception" })],
       dedupes: [],
       securities: [
         [new BasicAuthProvider("final-auth"), new BearerTokenProvider("final-bearer")],

@@ -3,7 +3,7 @@ import type { Method } from "#interfaces/options/Method";
 import type { Milliseconds } from "#interfaces/options/Milliseconds";
 import type { AuthorizationData } from "#interfaces/security/AuthorizationData";
 import type { SecurityProvider } from "#interfaces/security/SecurityProvider";
-import type { ValidatorMap } from "#validators/BaseValidator";
+import type { ResponseValidator } from "#validators/BaseValidator";
 
 export interface FrameOption {
   /**
@@ -70,11 +70,11 @@ export interface FrameOption {
   authorization?: AuthorizationData;
 
   /**
-   * Response validators keyed by HTTP status. Missing entries are valid by default.
+   * Single validator receiving the complete response union. Missing validators are valid by default.
    * HTTP acceptance is controlled independently by validateStatus.
    * Validation failures throw only for accepted responses in exception mode.
    */
-  validators?: ValidatorMap;
+  validator?: ResponseValidator<never>;
 
   /**
    * When enabled, identical concurrent requests are deduplicated — only one network call

@@ -143,7 +143,7 @@ export class JinFrame<Response extends JinResponse = JinResponse>
         const data = text.length > 0 ? parsed : undefined;
 
         if (!isValidateStatus(resp.ok, resp.status)) {
-          const failValidator = this._option.validators?.[resp.status];
+          const failValidator = this._option.validator;
 
           const rejectedResponse = {
             ok: false,
@@ -195,7 +195,7 @@ export class JinFrame<Response extends JinResponse = JinResponse>
         } as unknown as JinResp<Response>;
 
         receivedResponse = acceptedResponse;
-        const passValidator = this._option.validators?.[resp.status];
+        const passValidator = this._option.validator;
         const validated: ValidationResult =
           passValidator != null ? await passValidator.validate(acceptedResponse as never) : { valid: true as const };
 

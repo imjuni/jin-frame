@@ -34,7 +34,7 @@ if (reply.status === 200) {
 
 호출 옵션에 `validateStatus`가 없으면 반환 타입은 명세의 2xx 응답으로 좁혀집니다. `validateStatus(200, 404)`는 타입 가드로 해당 상태를 선택합니다. `() => true`처럼 boolean을 반환하는 콜백은 전체 응답 union을 유지합니다. 데코레이터에 지정한 콜백은 런타임 수용 여부를 제어하지만 호출의 반환 타입에는 반영되지 않으므로, 2xx 외 상태를 수용한다면 호출 옵션에도 대응하는 검증기를 전달합니다.
 
-`ok`는 `validateStatus`가 응답을 수용했는지 나타내는 boolean입니다. `data` 타입은 `status`로 좁힙니다. `validators: { 200: validator }`로 상태별 검증기를 등록합니다. 미등록 상태는 검증 성공으로 처리합니다.
+`ok`는 `validateStatus`가 응답을 수용했는지 나타내는 boolean입니다. `data` 타입은 `status`로 좁힙니다. `validator: new ApiValidator()`로 전체 응답을 받는 검증기를 등록하고 내부에서 상태별 스키마를 선택합니다.
 
 ## 오류 처리
 
@@ -48,22 +48,17 @@ if (reply.status === 200) {
 
 [생성기 패키지](./generator)를 1.0.0으로 올리고 클라이언트를 재생성합니다. 생성된 프레임은 명세의 숫자 상태 코드 2xx~5xx를 단일 응답 union으로 사용합니다. 본문이 없는 응답은 `data: undefined`를 사용하며 `default`, `2XX` 같은 범위 키는 숫자 리터럴 union에서 제외합니다.
 
+
 ## 검증기 이전
 
-`validators.pass/fail`을 `validators: { 200: validator, 404: errorValidator }`로 교체합니다. `BaseValidator`의 첫 번째 타입 인수는 `JinResp<Response>` 대신 `{ status, data }` 응답 타입을 받습니다. `getData()`와 `validator()`를 모두 구현해야 합니다. `ValidatorMap<Response>`로 상태와 검증기의 타입을 연결합니다. [검증 가이드](./method/validation)를 참고하세요.
-
-### 등록 설정 변경 예시
+기존 pass/fail 설정과 상태별 검증기 맵을 단일 `validator`로 교체합니다. `BaseValidator<Replies, TError>`는 전체 응답 union을 받으며 별도 TData 타입 인수는 없습니다. `getData()`는 기본적으로 전체 응답을 반환하므로 보통 재정의할 필요가 없습니다. `validator(response)` 안에서 상태를 검사하고 적절한 스키마로 `response.data`를 검증합니다.
 
 ```ts
-// Before 6.0
+// Before
 validators: { pass: userValidator, fail: errorValidator }
 
-// Since 6.0
-validators: {
-  200: userValidator,
-  404: errorValidator,
-  500: errorValidator,
-}
+// After
+validator: new ApiValidator({ type: 'exception' })
 ```
 
-기존 pass/fail 검증기가 처리하던 상태를 명시적으로 나열합니다. 미등록 상태는 검증 성공으로 처리되므로 필요한 상태를 빠뜨리지 않아야 합니다. `BaseValidator`는 추상 클래스이며 기본 no-op 구현 대신 `getData()`와 `validator()`를 구현해야 합니다.
+[전체 응답 검증 예제](./method/validation)
