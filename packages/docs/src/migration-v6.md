@@ -34,7 +34,7 @@ if (reply.status === 200) {
 
 Without a call-level `validateStatus`, the returned type selects documented 2xx responses. `validateStatus(200, 404)` uses a type predicate to select those statuses. A boolean callback such as `() => true` keeps the complete response union. A decorator-level callback controls runtime acceptance but does not infer the call's return type; pass a matching call-level validator when accepting non-2xx responses.
 
-`ok` remains a boolean indicating acceptance by `validateStatus`; use `status` to narrow `data`. The `validators.pass/fail` settings still select validators for accepted and rejected responses.
+`ok` remains a boolean indicating acceptance by `validateStatus`; use `status` to narrow `data`. Register status-specific validators with `validators: { 200: validator }`. Missing status validators produce a valid result.
 
 ## Errors
 
@@ -47,3 +47,23 @@ Use `_execute()` for requests. Instance methods use the `_` prefix; static const
 ## Regenerate clients
 
 Upgrade the [generator packages](./generator) to 1.0.0 and regenerate clients. Generated frames use a single response union covering documented numeric 2xx–5xx statuses. Bodyless responses use `data: undefined`. `default` and range keys such as `2XX` are excluded from the numeric literal union.
+
+## Validator migration
+
+Replace `validators.pass/fail` with `validators: { 200: validator, 404: errorValidator }`. The first BaseValidator type argument is the `{ status, data }` response rather than `JinResp<Response>`. Implement both getData() and validator(), and use `ValidatorMap<Response>` to check status-specific inputs. See the [validation guide](./method/validation).
+
+### Registration migration example
+
+```ts
+// Before 6.0
+validators: { pass: userValidator, fail: errorValidator }
+
+// Since 6.0
+validators: {
+  200: userValidator,
+  404: errorValidator,
+  500: errorValidator,
+}
+```
+
+List every status formerly handled by pass/fail validators. Unlisted statuses pass validation, so include every status that requires a schema check. BaseValidator is abstract: implement both getData() and validator() instead of relying on a default no-op implementation.
