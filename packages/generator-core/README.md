@@ -1,5 +1,11 @@
 # @jin-frame/generator-core
 
+[Unified documentation](https://imjuni.github.io/jin-frame/generator-core/)
+
+
+Version 1.0.0 targets `jin-frame` 6.x.
+
+
 Core package for generating `jin-frame` request classes from an OpenAPI document.
 
 `@jin-frame/generator-cli` uses this package internally. Use `generator-core` directly when you want to build a custom generation pipeline or integrate frame generation into another tool.
@@ -24,8 +30,8 @@ dist/
 ## Installation
 
 ```sh
-pnpm add -D @jin-frame/generator-core openapi-typescript ts-morph typescript
-pnpm add jin-frame
+pnpm add -D @jin-frame/generator-core@^1.0.0 openapi-typescript typescript@^6
+pnpm add jin-frame@^6.0.0
 ```
 
 `@jin-frame/generator-core` is used at generation time. `jin-frame` is required at runtime by the generated frames.
@@ -234,3 +240,12 @@ providers can be configured separately. Observers are synchronous and scoped to
 each invocation. Exceptions thrown by observers propagate to the caller, and
 failed operations do not emit a completed event. Generation errors remain
 exceptions rather than diagnostic events.
+
+## Generate API documentation
+
+```sh
+pnpm docs:typedoc
+pnpm docs:build
+```
+
+[generator-core API](https://imjuni.github.io/jin-frame/api/generator-core/)

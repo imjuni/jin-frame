@@ -1,0 +1,15 @@
+{
+  "entryPoints": ["../../jin-frame/src"],
+  "tsconfig": "../../jin-frame/tsconfig.prod.json",
+  "entryPointStrategy": "expand",
+  "plugin": ["typedoc-plugin-markdown", "typedoc-vitepress-theme"],
+  "out": "../src/api",
+  "excludePrivate": true,
+  "excludeInternal": true,
+  "readme": "none",
+  "exclude": ["**/__tests__/*", "**/*.test.ts", "**/*.test.tsx", "**/*.spec.ts", "**/*.spec.tsx"],
+  "docsRoot": "../src",
+  "sidebar": {
+    "autoConfiguration": true
+  }
+}

@@ -1,5 +1,8 @@
 # jin-frame
 
+[Unified documentation](https://imjuni.github.io/jin-frame/packages)
+
+
 ![ts](https://flat.badgen.net/badge/Built%20With/TypeScript/blue)
 [![Download Status](https://img.shields.io/npm/dw/jin-frame.svg?style=flat-square)](https://npmcharts.com/compare/jin-frame?minimal=true)
 [![Github Star](https://img.shields.io/github/stars/imjuni/jin-frame.svg?style=flat-square)](https://github.com/imjuni/jin-frame)
@@ -30,6 +33,10 @@ Why `jin-frame`?
 6. Builder pattern with compile-time field completeness checking
 7. Inheritance-friendly — share host/auth in a base class, override path in subclasses
 8. Runtime URL override — change host, pathPrefix, or path per `_execute()` call
+
+## Release 6.0.0
+
+Use `jin-frame` 6.0.0 with `@jin-frame/generator-cli` and `@jin-frame/generator-core` 1.0.0. When upgrading from 5.x, follow the [6.0 migration guide](https://imjuni.github.io/jin-frame/migration-v6).
 
 ## Table of Contents <!-- omit in toc -->
 
@@ -71,7 +78,8 @@ pnpm add jin-frame --save
 | Version | HTTP Client | Notes |
 |---------|-------------|-------|
 | < 5.0   | Axios       | Requires `axios` as a peer dependency |
-| >= 5.0  | native `fetch` | No HTTP client dependency; Node.js ^22.23.4 required |
+| 5.x | native `fetch` | Previous response type API |
+| 6.x | native `fetch` | Status-discriminated response unions; Node.js ^22.23.4 required |
 
 ## Usage
 
@@ -202,6 +210,14 @@ if (reply.status === 200) {
 }
 ```
 
+### Generated response status unions
+
+The OpenAPI generator combines documented numeric 2xx–5xx responses into a `{ status, data }` union passed as the single `JinFrame` type argument. Checking `status` narrows `data` to that response's type. Responses without a body use `undefined` data.
+
+Non-2xx responses throw by default. Use `_execute({ validateStatus: () => true })` to receive error responses directly. The generated class always declares all documented numeric statuses. Without a call-level validator, the return type selects 2xx responses; `() => true` returns the full union. Use `validateStatus(200, 404)` to select specific statuses at runtime and in the return type. Range keys such as `2XX` and `default` are not included in the numeric literal union.
+
+This is a breaking type API change. Migrate `JinFrame<DTO>` to `JinFrame<{ status: number; data: DTO }>` or a status-specific union. `JinPassResp` and `JinFailResp` are replaced by `JinResp<Response>`. The `validators.pass/fail` settings still select validators for accepted and rejected responses.
+
 ## Retry, Timeout
 
 ```ts
@@ -286,8 +302,8 @@ See the full [Naming Convention](https://imjuni.github.io/jin-frame/method/namin
 The generator packages create type-safe `jin-frame` request classes from Swagger/OpenAPI v2 and OpenAPI v3 documents.
 
 ```sh
-pnpm add -D @jin-frame/generator-cli openapi-typescript ts-morph typescript
-pnpm add jin-frame
+pnpm add -D @jin-frame/generator-cli@^1.0.0 openapi-typescript typescript@^6
+pnpm add jin-frame@^6.0.0
 
 frame-cli create ./openapi.yml --output ./generated
 ```
@@ -314,6 +330,8 @@ The generator packages require Node.js 22.23.4 or a later 22.x patch.
 
 ## Documentation
 
+The [documentation workspace](packages/docs/README.md) owns the guides and API references for all three packages. Use `pnpm docs:dev` locally and `pnpm docs:build` to build the site.
+
 Full documentation: **[https://imjuni.github.io/jin-frame/](https://imjuni.github.io/jin-frame/)**
 
 - [Getting Started](https://imjuni.github.io/jin-frame/getting-to-start)
@@ -331,13 +349,6 @@ Full documentation: **[https://imjuni.github.io/jin-frame/](https://imjuni.githu
 This software is licensed under the [MIT](LICENSE).
 
 
-### Generated response status unions
-
-The OpenAPI generator combines documented numeric 2xx–5xx responses into a `{ status, data }` union passed as the single `JinFrame` type argument. Checking `status` narrows `data` to that response's type. Responses without a body use `undefined` data.
-
-Non-2xx responses throw by default. Use `_execute({ validateStatus: () => true })` to receive error responses directly. This option changes runtime acceptance only; the generated union always includes all documented numeric statuses. Range keys such as `2XX` and `default` are not included in the numeric literal union.
-
-This is a breaking type API change. Migrate `JinFrame<DTO>` to `JinFrame<{ status: number; data: DTO }>` or a status-specific union. `JinPassResp` and `JinFailResp` are replaced by `JinResp<Response>`. The `validators.pass/fail` settings still select validators for accepted and rejected responses.
 
 ## Errors Without an HTTP Response
 

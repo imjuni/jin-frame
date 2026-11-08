@@ -6,6 +6,8 @@
     "node": "^22.23.4"
   },
   "scripts": {
+    "docs:typedoc": "pnpm --filter @jin-frame/docs run docs:typedoc",
+    "docs:build": "pnpm --filter @jin-frame/docs run build",
     "check": "ultracite check",
     "check:write": "ultracite fix",
     "format": "oxfmt .",
@@ -14,7 +16,9 @@
     "build": "turbo run build",
     "bundle": "turbo run bundle",
     "test:hook": "turbo run test:hook",
-    "prepare": "husky"
+    "prepare": "husky",
+    "docs:dev": "pnpm --filter @jin-frame/docs run dev",
+    "docs:preview": "pnpm --filter @jin-frame/docs run preview"
   },
   "devDependencies": {
     "husky": "9.1.7",

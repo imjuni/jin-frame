@@ -15,6 +15,11 @@
     "test:hook": {
       "dependsOn": ["build"],
       "outputs": ["coverage/**"]
+    },
+    "@jin-frame/docs#build": {
+      "dependsOn": ["jin-frame#build", "@jin-frame/generator-core#build"],
+      "cache": false,
+      "outputs": ["src/.vitepress/dist/**"]
     }
   }
 }

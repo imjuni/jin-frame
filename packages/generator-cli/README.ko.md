@@ -1,5 +1,11 @@
 # @jin-frame/generator-cli
 
+[통합 문서](https://imjuni.github.io/jin-frame/ko/generator-cli/)
+
+
+1.0.0 버전은 `jin-frame` 6.x를 대상으로 합니다.
+
+
 OpenAPI 문서에서 `jin-frame` 요청 클래스를 생성하는 CLI 패키지입니다.
 
 CLI 실행 이름은 `frame-cli`입니다.
@@ -21,8 +27,8 @@ dist/
 ## 설치
 
 ```sh
-pnpm add -D @jin-frame/generator-cli openapi-typescript ts-morph typescript
-pnpm add jin-frame
+pnpm add -D @jin-frame/generator-cli@^1.0.0 openapi-typescript typescript@^6
+pnpm add jin-frame@^6.0.0
 ```
 
 ## create

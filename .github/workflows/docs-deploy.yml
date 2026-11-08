@@ -8,8 +8,16 @@ on:
   push:
     branches: [master]
     paths:
-      - 'packages/jin-frame/docs/**'
-      - 'packages/jin-frame/assets/**'
+      - 'packages/docs/**'
+      - 'assets/**'
+      - 'package.json'
+      - 'packages/jin-frame/tsconfig*.json'
+      - 'packages/jin-frame/src/**'
+      - 'packages/generator-core/src/**'
+      - 'packages/generator-core/tsconfig*.json'
+      - 'packages/*/package.json'
+      - 'pnpm-lock.yaml'
+      - '.github/workflows/docs-deploy.yml'
 
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
@@ -37,7 +45,7 @@ jobs:
           fetch-depth: 0 # Not needed if lastUpdated is not enabled
       - uses: pnpm/action-setup@v3 # Uncomment this block if you're using pnpm
         with:
-          version: 9 # Not needed if you've set "packageManager" in package.json
+          version: 10.16.0
       # - uses: oven-sh/setup-bun@v1 # Uncomment this if you're using Bun
       - name: Setup Node
         uses: actions/setup-node@v4
@@ -48,20 +56,12 @@ jobs:
         uses: actions/configure-pages@v4
       - name: Install dependencies
         run: pnpm install
-      - name: Build TypeDoc
-        run: |
-          pnpm --filter jin-frame run docs:typedoc
-      - name: Build with VitePress
-        run: |
-          mkdir ./packages/jin-frame/docs/public
-          cp -r ./assets ./packages/jin-frame/docs/assets
-          cp -r ./assets ./packages/jin-frame/docs/public/assets
-          pnpm --filter jin-frame run docs:build:prod
-          mv ./packages/jin-frame/docs .
+      - name: Build documentation and API references
+        run: pnpm --filter @jin-frame/docs run build:prod
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          path: docs/.vitepress/dist
+          path: packages/docs/src/.vitepress/dist
 
   # Deployment job
   deploy:

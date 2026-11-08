@@ -1,0 +1,28 @@
+{
+  "name": "@jin-frame/docs",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": "^22.23.4"
+  },
+  "scripts": {
+    "assets": "node scripts/prepare-assets.mjs",
+    "docs:typedoc:frame": "typedoc --options .configs/typedoc.jin-frame.json",
+    "docs:typedoc:core": "typedoc --options .configs/typedoc.generator-core.json",
+    "docs:typedoc": "pnpm run docs:typedoc:frame && pnpm run docs:typedoc:core",
+    "dev": "pnpm run assets && pnpm run docs:typedoc && vitepress dev src",
+    "build": "pnpm run assets && pnpm run docs:typedoc && vitepress build src",
+    "build:prod": "BASE_DIR='/jin-frame/' pnpm run build",
+    "preview": "vitepress preview src"
+  },
+  "devDependencies": {
+    "mermaid": "^11.12.0",
+    "typedoc": "^0.28.19",
+    "typedoc-plugin-markdown": "^4.8.0",
+    "typedoc-vitepress-theme": "^1.1.2",
+    "vitepress": "^1.6.4",
+    "typescript": "6.0.3",
+    "vue": "^3.5.18"
+  }
+}
