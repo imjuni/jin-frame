@@ -1,3 +1,4 @@
+import { NoopValidator } from "../../../__tests__/NoopValidator";
 import { describe, expect, it } from "vitest";
 import { Get } from "#decorators/methods/Get";
 import { getAllRequestMetaInherited } from "#decorators/methods/handlers/getAllMethodMetaInherited";
@@ -11,7 +12,6 @@ import { Put } from "#decorators/methods/Put";
 import { ApiKeyProvider } from "#providers/security/ApiKeyProvider";
 import { BasicAuthProvider } from "#providers/security/BasicAuthProvider";
 import { BearerTokenProvider } from "#providers/security/BearerTokenProvider";
-import { BaseValidator } from "#validators/BaseValidator";
 
 @Security(new BearerTokenProvider("base-auth"), "Bearer base-token")
 @Get({ host: "http://some.host.com" })
@@ -36,7 +36,7 @@ class GetAllRequestMetaInheritedTest004 extends GetAllRequestMetaInheritedTest00
 
 @Security([new BasicAuthProvider("final-auth"), new BearerTokenProvider("final-bearer")], "final-session-token")
 @Timeout(2000)
-@Validator({ pass: new BaseValidator({ type: "exception" }) })
+@Validator({ 200: new NoopValidator({ type: "exception" }) })
 @Get({ path: "overwrite/double/path" })
 class GetAllRequestMetaInheritedTest005 extends GetAllRequestMetaInheritedTest004 {}
 
@@ -80,7 +80,7 @@ describe("getAllRequestMetaInherited", () => {
       ],
       retries: [{ max: 2, interval: 500 }],
       timeouts: [2000, 3000, 1000],
-      validators: [{ pass: new BaseValidator({ type: "exception" }) }],
+      validators: [{ 200: new NoopValidator({ type: "exception" }) }],
       dedupes: [],
       securities: [
         [new BasicAuthProvider("final-auth"), new BearerTokenProvider("final-bearer")],

@@ -3,7 +3,7 @@ import type { Method } from "#interfaces/options/Method";
 import type { Milliseconds } from "#interfaces/options/Milliseconds";
 import type { AuthorizationData } from "#interfaces/security/AuthorizationData";
 import type { SecurityProvider } from "#interfaces/security/SecurityProvider";
-import type { BaseValidator } from "#validators/BaseValidator";
+import type { ValidatorMap } from "#validators/BaseValidator";
 
 export interface FrameOption {
   /**
@@ -70,11 +70,11 @@ export interface FrameOption {
   authorization?: AuthorizationData;
 
   /**
-   * Validators for pass and fail responses.
-   * - pass: runs when HTTP response is successful; can throw JinValidationError if type is 'exception'
-   * - fail: runs when HTTP response fails; only sets valid flag, never throws JinValidationError
+   * Response validators keyed by HTTP status. Missing entries are valid by default.
+   * HTTP acceptance is controlled independently by validateStatus.
+   * Validation failures throw only for accepted responses in exception mode.
    */
-  validators?: { pass?: BaseValidator; fail?: BaseValidator };
+  validators?: ValidatorMap;
 
   /**
    * When enabled, identical concurrent requests are deduplicated — only one network call

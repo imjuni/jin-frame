@@ -20,6 +20,7 @@ import type { JinRequestConfig } from "#interfaces/JinRequestConfig";
 import type { ValidationResult } from "#interfaces/ValidationResult";
 import type { ValidationResultType } from "#interfaces/ValidationResultType";
 import { BaseValidator } from "#validators/BaseValidator";
+import type { ValidationInput } from "#validators/BaseValidator";
 
 const messageSchema = z.object({
   message: z.string(),
@@ -134,7 +135,7 @@ class Test004PostFrame extends JinFrame<MessageResponse> {
 }
 
 class Test005PostFrameValidator extends BaseValidator<
-  JinResp<{ status: number; data: { message: string } }>,
+  { status: number; data: { message: string } },
   { message: string },
   z.core.$ZodIssue
 > {
@@ -142,7 +143,7 @@ class Test005PostFrameValidator extends BaseValidator<
     super({ type });
   }
 
-  override getData(reply: JinResp<{ status: number; data: { message: string } }>): {
+  override getData(reply: ValidationInput<{ status: number; data: { message: string } }>): {
     message: string;
   } {
     return reply.data;
@@ -161,7 +162,7 @@ class Test005PostFrameValidator extends BaseValidator<
 
 @Post({
   host: "http://some.api.google.com/jinframe/{passing}",
-  validators: { pass: new Test005PostFrameValidator("exception") },
+  validators: { 200: new Test005PostFrameValidator("exception") },
 })
 class Test005PostFrame extends JinFrame<MessageResponse> {
   @Param()
@@ -176,7 +177,7 @@ class Test005PostFrame extends JinFrame<MessageResponse> {
 
 @Post({
   host: "http://some.api.google.com/jinframe/{passing}",
-  validators: { pass: new Test005PostFrameValidator("value") },
+  validators: { 200: new Test005PostFrameValidator("value") },
 })
 class Test006PostFrame extends JinFrame<MessageResponse> {
   @Param()
@@ -189,7 +190,7 @@ class Test006PostFrame extends JinFrame<MessageResponse> {
   declare public readonly password: string;
 }
 
-@Validator({ pass: new Test005PostFrameValidator("exception") })
+@Validator({ 200: new Test005PostFrameValidator("exception") })
 @Post({
   host: "http://some.api.google.com/jinframe/{passing}",
 })
@@ -1113,9 +1114,13 @@ describe("JinFrame fail validation test", () => {
       ),
     );
 
-    class FailValidator extends BaseValidator<unknown, unknown, string> {
+    class FailValidator extends BaseValidator<{ status: number; data: unknown }, unknown, string> {
       constructor() {
         super({ type: "exception" });
+      }
+
+      getData(reply: { data: unknown }) {
+        return reply.data;
       }
 
       override validator(_data: unknown): ValidationResult<string> {
@@ -1125,7 +1130,7 @@ describe("JinFrame fail validation test", () => {
 
     @Post({
       host: "http://some.api.google.com/jinframe/{passing}",
-      validators: { fail: new FailValidator() },
+      validators: { 404: new FailValidator() },
     })
     class FailValidationFrame extends JinFrame {
       @Param()
@@ -1169,9 +1174,13 @@ describe("JinFrame fail validation test", () => {
       ),
     );
 
-    class StrictValidator extends BaseValidator<unknown, unknown, string> {
+    class StrictValidator extends BaseValidator<{ status: number; data: unknown }, unknown, string> {
       constructor() {
         super({ type: "exception" });
+      }
+
+      getData(reply: { data: unknown }) {
+        return reply.data;
       }
 
       override validator(_data: unknown): ValidationResult<string> {
@@ -1181,7 +1190,7 @@ describe("JinFrame fail validation test", () => {
 
     @Post({
       host: "http://some.api.google.com/jinframe/{passing}",
-      validators: { fail: new StrictValidator() },
+      validators: { 403: new StrictValidator() },
     })
     class StrictFrame extends JinFrame {
       @Param()

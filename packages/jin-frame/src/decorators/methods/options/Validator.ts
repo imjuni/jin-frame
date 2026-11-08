@@ -1,14 +1,12 @@
+import type { JinResponse } from "#interfaces/JinResp";
 import { REQUEST_VALIDATOR_DECORATOR } from "#decorators/methods/handlers/REQUEST_VALIDATOR_DECORATOR";
-import type { BaseValidator } from "#validators/BaseValidator";
+import type { ValidatorMap } from "#validators/BaseValidator";
 import "reflect-metadata";
 
-export function Validator(_option: { pass?: BaseValidator; fail?: BaseValidator }) {
+export function Validator<Response extends JinResponse = JinResponse>(_option: ValidatorMap<Response>) {
   return function validatorHandle(target: object): void {
     const option = Object.freeze(_option);
-    const prev =
-      (Reflect.getOwnMetadata(REQUEST_VALIDATOR_DECORATOR, target) as
-        | { pass?: BaseValidator; fail?: BaseValidator }[]
-        | undefined) ?? [];
+    const prev = (Reflect.getOwnMetadata(REQUEST_VALIDATOR_DECORATOR, target) as ValidatorMap[] | undefined) ?? [];
 
     Reflect.defineMetadata(REQUEST_VALIDATOR_DECORATOR, [...prev, option], target);
   };

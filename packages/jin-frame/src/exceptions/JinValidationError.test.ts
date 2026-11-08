@@ -1,3 +1,4 @@
+import { NoopValidator } from "../__tests__/NoopValidator";
 import { getReasonPhrase } from "http-status-codes";
 import { describe, expect, it } from "vitest";
 import { Get } from "#decorators/methods/Get";
@@ -6,7 +7,6 @@ import { JinFrame } from "#frames/JinFrame";
 import type { JinResp } from "#interfaces/JinResp";
 import type { JinRequestConfig } from "#interfaces/JinRequestConfig";
 import { getDuration } from "#tools/getDuration";
-import { BaseValidator } from "#validators/BaseValidator";
 
 @Get({ host: "https://api.example.com", path: "/test" })
 class TestFrame extends JinFrame {}
@@ -24,7 +24,7 @@ describe("JinValidationError", () => {
       valid: false,
       $validated: { valid: false, error: [] },
     };
-    const validator = new BaseValidator({ type: "exception" });
+    const validator = new NoopValidator({ type: "exception" });
     const jf = new JinValidationError({
       debug: {
         ts: {

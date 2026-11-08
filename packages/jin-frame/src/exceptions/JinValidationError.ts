@@ -2,7 +2,7 @@ import type { JinFrame } from "#frames/JinFrame";
 import type { DebugInfo } from "#interfaces/DebugInfo";
 import type { JinResp, JinResponse } from "#interfaces/JinResp";
 import type { ValidationResult } from "#interfaces/ValidationResult";
-import type { BaseValidator } from "#validators/BaseValidator";
+import type { ResponseValidator } from "#validators/BaseValidator";
 
 export class JinValidationError<Response extends JinResponse = JinResponse, ValidationError = unknown> extends Error {
   __discriminator = "JinValidationError";
@@ -17,7 +17,7 @@ export class JinValidationError<Response extends JinResponse = JinResponse, Vali
 
   #statusText: string;
 
-  #validator: BaseValidator;
+  #validator: ResponseValidator<never>;
 
   #validated: ValidationResult<ValidationError>;
 
@@ -33,7 +33,7 @@ export class JinValidationError<Response extends JinResponse = JinResponse, Vali
     frame: JinFrame<Response>;
     resp: JinResp<Response>;
     message: string;
-    validator: BaseValidator;
+    validator: ResponseValidator<never>;
     validated: ValidationResult<ValidationError>;
   }) {
     super(message);
@@ -67,7 +67,7 @@ export class JinValidationError<Response extends JinResponse = JinResponse, Vali
     return this.#statusText;
   }
 
-  get validator(): BaseValidator {
+  get validator(): ResponseValidator<never> {
     return this.#validator;
   }
 
