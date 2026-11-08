@@ -5,7 +5,7 @@ export function getFrameInternalData(option?: Partial<Omit<FrameOption, "method"
   const frameData: FrameInternal = {
     startAt: new Date(),
     eachStartAt: new Date(),
-    endAt: new Date(),
+    endAt: undefined,
     query: {},
     header: {},
     param: {},

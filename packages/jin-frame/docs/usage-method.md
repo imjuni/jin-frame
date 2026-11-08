@@ -173,3 +173,16 @@ if (selected.status === 404) {
 A regular boolean callback such as `validateStatus: () => true` returns the complete documented response union. Status predicates narrow the union to their accepted codes. Broad `status: number` declarations retain their broad type under the default policy.
 
 In version 6, `validateStatus` is a call option only; method decorators no longer accept it. Move decorator policies to `_execute()` or `_create()` call options so the runtime policy and inferred response type stay aligned. The generator continues to model explicit numeric response codes; `2XX` and `default` response entries are not generated.
+
+### Execution timestamps
+
+A frame retains timestamps for its most recently started execution:
+
+```typescript
+await frame._execute();
+console.log(frame._startAt, frame._eachStartAt, frame._endAt);
+```
+
+`_startAt` records execution start, `_eachStartAt` records the latest HTTP attempt, and `_endAt` records completion after success, failure, or cancellation. Before the first execution, start timestamps reflect construction time and `_endAt` is undefined. Starting another execution clears `_endAt` until that execution completes. `_create()` updates these timestamps when its returned function is invoked.
+
+The getters return Date copies. Overlapping executions retain the state of the most recently started execution; completion of an older execution does not overwrite that state. Each response's debug duration is calculated independently of these shared snapshot values.

@@ -15,5 +15,5 @@ export interface FrameInternal {
 
   eachStartAt: Date;
 
-  endAt: Date;
+  endAt: Date | undefined;
 }
