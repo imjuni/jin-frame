@@ -1,5 +1,11 @@
 # @jin-frame/generator-core
 
+[통합 문서](https://imjuni.github.io/jin-frame/ko/generator-core/)
+
+
+1.0.0 버전은 `jin-frame` 6.x를 대상으로 합니다.
+
+
 OpenAPI 문서에서 `jin-frame` 요청 클래스를 생성하기 위한 core 패키지입니다.
 
 `@jin-frame/generator-cli`는 이 패키지를 사용해 CLI 입력과 설정 파일을 처리합니다. 직접 생성 파이프라인을 구성하거나 별도 도구에 붙이고 싶다면 `generator-core`를 사용합니다.
@@ -24,8 +30,8 @@ dist/
 ## 설치
 
 ```sh
-pnpm add -D @jin-frame/generator-core openapi-typescript ts-morph typescript
-pnpm add jin-frame
+pnpm add -D @jin-frame/generator-core@^1.0.0 openapi-typescript typescript@^6
+pnpm add jin-frame@^6.0.0
 ```
 
 `@jin-frame/generator-core`는 생성 시점에 사용하고, `jin-frame`은 생성된 frame을 실행할 때 필요합니다.
@@ -209,3 +215,12 @@ const source = await createOpenapiTs(document, {
 ## License
 
 [MIT](LICENSE)
+
+## API 문서 생성
+
+```sh
+pnpm docs:typedoc
+pnpm docs:build
+```
+
+[generator-core API](https://imjuni.github.io/jin-frame/api/generator-core/)

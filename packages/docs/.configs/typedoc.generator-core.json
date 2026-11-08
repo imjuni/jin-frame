@@ -1,0 +1,15 @@
+{
+  "entryPoints": ["../../generator-core/src"],
+  "tsconfig": "../../generator-core/tsconfig.prod.json",
+  "entryPointStrategy": "expand",
+  "plugin": ["typedoc-plugin-markdown", "typedoc-vitepress-theme"],
+  "out": "../src/api/generator-core",
+  "excludePrivate": true,
+  "excludeInternal": true,
+  "readme": "none",
+  "exclude": ["**/__tests__/**", "**/*.test.ts", "**/*.spec.ts", "**/*.testcase.ts"],
+  "docsRoot": "../src",
+  "sidebar": {
+    "autoConfiguration": true
+  }
+}

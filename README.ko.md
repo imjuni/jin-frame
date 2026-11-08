@@ -1,5 +1,8 @@
 # jin-frame
 
+[통합 문서](https://imjuni.github.io/jin-frame/ko/packages)
+
+
 ![ts](https://flat.badgen.net/badge/Built%20With/TypeScript/blue)
 [![Download Status](https://img.shields.io/npm/dw/jin-frame.svg?style=flat-square)](https://npmcharts.com/compare/jin-frame?minimal=true)
 [![Github Star](https://img.shields.io/github/stars/imjuni/jin-frame.svg?style=flat-square)](https://github.com/imjuni/jin-frame)
@@ -30,6 +33,10 @@ TypeScript 데코레이터와 클래스를 사용해 HTTP 요청을 선언적으
 6. **Builder 패턴** — 컴파일 시점 필드 완전성 체크
 7. **상속 친화적** — 부모 클래스에 host/auth 정의, 자식 클래스에서 path만 오버라이드
 8. **런타임 URL 오버라이드** — `_execute()` 호출 시 host, pathPrefix, path 변경 가능
+
+## 6.0.0 릴리즈
+
+`jin-frame` 6.0.0과 `@jin-frame/generator-cli`·`@jin-frame/generator-core` 1.0.0을 함께 사용합니다. 5.x에서 업그레이드할 때는 [6.0 마이그레이션 가이드](https://imjuni.github.io/jin-frame/ko/migration-v6)를 확인하세요.
 
 ## 목차 <!-- omit in toc -->
 
@@ -68,7 +75,8 @@ pnpm add jin-frame --save
 | 버전 | HTTP 클라이언트 | 비고 |
 |------|----------------|------|
 | < 5.0 | Axios | `axios` peer dependency 필요 |
-| >= 5.0 | 네이티브 `fetch` | HTTP 클라이언트 의존성 없음, Node.js ^22.23.4 필요 |
+| 5.x | 네이티브 `fetch` | 기존 응답 타입 API |
+| 6.x | 네이티브 `fetch` | 상태 코드별 응답 union, Node.js ^22.23.4 필요 |
 
 ## 사용법
 
@@ -200,6 +208,14 @@ if (reply.status === 200) {
 }
 ```
 
+### 생성된 상태 코드별 응답 타입
+
+OpenAPI 생성기는 명세의 숫자 상태 코드(2xx~5xx)를 `{ status, data }` union으로 묶어 `JinFrame`의 단일 타입 인수로 전달합니다. `status`를 검사하면 해당 응답의 `data` 타입이 좁혀집니다. 본문이 없는 응답의 `data`는 `undefined`입니다.
+
+기본적으로 2xx 외의 응답은 기존처럼 예외를 발생시킵니다. 오류 응답을 직접 받으려면 `_execute({ validateStatus: () => true })`를 사용합니다. 생성된 클래스는 항상 명세의 전체 숫자 상태 코드를 선언합니다. 호출 옵션에 검증기가 없으면 반환 타입은 2xx로 좁혀지고, `() => true`를 전달하면 전체 union을 반환합니다. `validateStatus(200, 404)`를 사용하면 런타임과 반환 타입에서 해당 상태를 선택합니다. `default`와 `2XX` 같은 범위 키는 숫자 리터럴 union에 포함하지 않습니다.
+
+이 변경은 타입 API의 호환성을 변경합니다. 기존 `JinFrame<DTO>`는 `JinFrame<{ status: number; data: DTO }>`로, 상태별 응답이 있으면 해당 union으로 이전합니다. `JinPassResp`·`JinFailResp`는 `JinResp<Response>`로 통합되었습니다. `validators.pass/fail` 설정은 응답 수용·거부 경로의 검증기를 선택하는 용도로 유지됩니다.
+
 ## Retry, Timeout
 
 ```ts
@@ -296,6 +312,8 @@ const reply = await frame._execute({
 
 ## 문서
 
+[문서 워크스페이스](packages/docs/README.md)에서 세 패키지의 가이드와 API 레퍼런스를 함께 관리합니다. 로컬 실행은 `pnpm docs:dev`, 빌드는 `pnpm docs:build`를 사용합니다.
+
 전체 문서: **[https://imjuni.github.io/jin-frame/ko/](https://imjuni.github.io/jin-frame/ko/)**
 
 - [시작하기](https://imjuni.github.io/jin-frame/ko/getting-to-start)
@@ -313,13 +331,6 @@ const reply = await frame._execute({
 This software is licensed under the [MIT](LICENSE).
 
 
-### 생성된 상태 코드별 응답 타입
-
-OpenAPI 생성기는 명세의 숫자 상태 코드(2xx~5xx)를 `{ status, data }` union으로 묶어 `JinFrame`의 단일 타입 인수로 전달합니다. `status`를 검사하면 해당 응답의 `data` 타입이 좁혀집니다. 본문이 없는 응답의 `data`는 `undefined`입니다.
-
-기본적으로 2xx 외의 응답은 기존처럼 예외를 발생시킵니다. 오류 응답을 직접 받으려면 `_execute({ validateStatus: () => true })`를 사용합니다. 이 옵션은 런타임 판정만 변경하며 생성되는 응답 union은 항상 동일합니다. `default`와 `2XX` 같은 범위 키는 숫자 리터럴 union에 포함하지 않습니다.
-
-이 변경은 타입 API의 호환성을 변경합니다. 기존 `JinFrame<DTO>`는 `JinFrame<{ status: number; data: DTO }>`로, 상태별 응답이 있으면 해당 union으로 이전합니다. `JinPassResp`·`JinFailResp`는 `JinResp<Response>`로 통합되었습니다. `validators.pass/fail` 설정은 응답 수용·거부 경로의 검증기를 선택하는 용도로 유지됩니다.
 
 ## 응답이 없는 오류 처리
 
