@@ -142,3 +142,6 @@ git-short.sh
 
 # Temporary VitePress configuration bundles
 packages/docs/src/.vitepress/*.timestamp-*.mjs
+
+# Local package artifacts
+/artifacts/

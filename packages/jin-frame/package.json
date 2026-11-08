@@ -4,6 +4,7 @@
   "description": "Reusable HTTP API request definition library",
   "packageManager": "pnpm@10.16.0",
   "scripts": {
+    "artifact": "pnpm run bundle && pnpm pack --pack-destination ../../artifacts",
     "build": "tsc --noEmit --incremental --project tsconfig.prod.json",
     "dts": "tsc -p tsconfig.dts.json",
     "dts-gen": "rollup --config .configs/rollup.config.mjs",
