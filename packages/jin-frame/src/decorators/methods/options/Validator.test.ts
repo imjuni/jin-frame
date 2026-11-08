@@ -8,11 +8,11 @@ class IamClass {}
 describe("Validator", () => {
   it("should set validators metadata correctly when Validator decorator applied to class", () => {
     const validator = new NoopValidator({ type: "exception" });
-    const handle = Validator({ 200: validator });
+    const handle = Validator(validator);
     handle(IamClass);
 
     const meta = getRequestMeta(IamClass);
 
-    expect(meta.option.validators).toEqual({ 200: validator });
+    expect(meta.option.validator).toEqual(validator);
   });
 });

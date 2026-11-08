@@ -10,14 +10,14 @@ import type { FrameOption } from "#interfaces/options/FrameOption";
 import type { FrameRetry } from "#interfaces/options/FrameRetry";
 import type { MethodEntry } from "#interfaces/options/MethodEntry";
 import type { Milliseconds } from "#interfaces/options/Milliseconds";
-import type { ValidatorMap } from "#validators/BaseValidator";
+import type { ResponseValidator } from "#validators/BaseValidator";
 import "reflect-metadata";
 
 export function getAllRequestMetaInherited(ctor: AbstractConstructor<unknown> | Constructor<unknown>): {
   methods: readonly MethodEntry[];
   retries: readonly FrameRetry[];
   timeouts: readonly Milliseconds[];
-  validators: readonly ValidatorMap[];
+  validators: readonly ResponseValidator<never>[];
   dedupes: readonly boolean[];
   authorizations: readonly FrameOption["authorization"][];
   securities: readonly FrameOption["security"][];
@@ -25,7 +25,7 @@ export function getAllRequestMetaInherited(ctor: AbstractConstructor<unknown> | 
   const methods: MethodEntry[] = [];
   const retries: FrameRetry[] = [];
   const timeouts: Milliseconds[] = [];
-  const validators: ValidatorMap[] = [];
+  const validators: ResponseValidator<never>[] = [];
   const dedupes: boolean[] = [];
   const authorizations: FrameOption["authorization"][] = [];
   const securities: FrameOption["security"][] = [];
@@ -39,7 +39,8 @@ export function getAllRequestMetaInherited(ctor: AbstractConstructor<unknown> | 
     const method = (Reflect.getOwnMetadata(REQUEST_METHOD_DECORATOR, c) as MethodEntry[] | undefined) ?? [];
     const retry = (Reflect.getOwnMetadata(REQUEST_RETRY_DECORATOR, c) as FrameRetry[] | undefined) ?? [];
     const timeout = (Reflect.getOwnMetadata(REQUEST_TIMEOUT_DECORATOR, c) as Milliseconds[] | undefined) ?? [];
-    const validator = (Reflect.getOwnMetadata(REQUEST_VALIDATOR_DECORATOR, c) as ValidatorMap[] | undefined) ?? [];
+    const validator =
+      (Reflect.getOwnMetadata(REQUEST_VALIDATOR_DECORATOR, c) as ResponseValidator<never>[] | undefined) ?? [];
     const dedupe = (Reflect.getOwnMetadata(REQUEST_DEDUPE_DECORATOR, c) as boolean[] | undefined) ?? [];
     const authorization =
       (Reflect.getOwnMetadata(REQUEST_AUTHORIZATION_DECORATOR, c) as FrameOption["authorization"][] | undefined) ?? [];

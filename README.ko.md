@@ -214,7 +214,7 @@ OpenAPI 생성기는 명세의 숫자 상태 코드(2xx~5xx)를 `{ status, data 
 
 기본적으로 2xx 외의 응답은 기존처럼 예외를 발생시킵니다. 오류 응답을 직접 받으려면 `_execute({ validateStatus: () => true })`를 사용합니다. 생성된 클래스는 항상 명세의 전체 숫자 상태 코드를 선언합니다. 호출 옵션에 검증기가 없으면 반환 타입은 2xx로 좁혀지고, `() => true`를 전달하면 전체 union을 반환합니다. `validateStatus(200, 404)`를 사용하면 런타임과 반환 타입에서 해당 상태를 선택합니다. `default`와 `2XX` 같은 범위 키는 숫자 리터럴 union에 포함하지 않습니다.
 
-이 변경은 타입 API의 호환성을 변경합니다. 기존 `JinFrame<DTO>`는 `JinFrame<{ status: number; data: DTO }>`로, 상태별 응답이 있으면 해당 union으로 이전합니다. `JinPassResp`·`JinFailResp`는 `JinResp<Response>`로 통합되었습니다. `validators: { 200: validator }`로 상태별 검증기를 등록합니다. 미등록 상태는 검증 성공으로 처리합니다.
+이 변경은 타입 API의 호환성을 변경합니다. 기존 `JinFrame<DTO>`는 `JinFrame<{ status: number; data: DTO }>`로, 상태별 응답이 있으면 해당 union으로 이전합니다. `JinPassResp`·`JinFailResp`는 `JinResp<Response>`로 통합되었습니다. `validator: new ApiValidator()`로 전체 응답을 받는 검증기를 등록하고 내부에서 상태별 스키마를 선택합니다.
 
 ## Retry, Timeout
 

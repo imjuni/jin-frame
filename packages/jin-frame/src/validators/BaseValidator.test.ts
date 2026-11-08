@@ -1,6 +1,8 @@
 import { NoopValidator } from "../__tests__/NoopValidator";
 import { describe, expect, it } from "vitest";
 
+const response = { data: "name", status: 200, statusText: "OK", headers: {}, raw: new Response(), ok: true };
+
 describe("Validator", () => {
   it("should create validator instance with correct type when constructor called with exception type", () => {
     const validator = new NoopValidator({ type: "exception" });
@@ -10,13 +12,13 @@ describe("Validator", () => {
 
   it("should return original data when getData method called with input data", () => {
     const validator = new NoopValidator({ type: "exception" });
-    const data = validator.getData({ data: "name" });
-    expect(data).toBe("name");
+    const data = validator.getData(response);
+    expect(data).toBe(response);
   });
 
   it("should return valid result when validator method called with valid data", () => {
     const validator = new NoopValidator({ type: "exception" });
-    const data = validator.validator("name");
+    const data = validator.validator(response);
     expect(data).toEqual({ valid: true });
   });
 
