@@ -1,21 +1,14 @@
 import type { ConstructorFunction } from "#tools/type-utilities/ConstructorFunction";
 import type { PublicFieldsOf } from "#tools/type-utilities/PublicFieldsOf";
 
+// Empty object assignability distinguishes optional keys from required keys.
+// eslint-disable-next-line @typescript-eslint/no-empty-object-type
+type RequiredKeys<T> = { [K in keyof T]-?: {} extends Pick<T, K> ? never : K }[keyof T];
+
 /**
- * Builder interface for constructing JinFrame instances with compile-time field tracking.
- *
- * `TSet` accumulates the union of field keys explicitly provided via `set()` or `from()`.
- * `build()` is only callable when `TSet` covers every public field key, enforcing that
- * all fields are assigned before the instance is created.
- *
- * **Known DX limitation with `getDefaultValues()`**
- *
- * Fields supplied by `getDefaultValues()` must be declared optional (`field?: T`) so that
- * `build()` does not require them to be explicitly set through the builder.
- * The trade-off is that TypeScript then widens their access type to `T | undefined`,
- * requiring null checks even though the value is always present at runtime.
- * Fully resolving this would require the type system to infer which fields are covered by
- * `getDefaultValues()` — currently not achievable without modifying `AbstractJinFrame`.
+ * Tracks explicitly assigned fields. Only required public fields gate build().
+ * For compatibility, auto() marks all fields as assigned and from() tracks all
+ * input keys, including optional keys. These paths do not prove runtime presence.
  */
 export interface BuilderFor<
   C extends ConstructorFunction<unknown>,
@@ -34,5 +27,5 @@ export interface BuilderFor<
   // distributes over unions, which would allow partial matches. Wrapping in a tuple
   // forces a holistic check — build() becomes callable only when TSet contains every
   // public field key.
-  build: [keyof PublicFieldsOf<InstanceType<C>>] extends [TSet] ? () => InstanceType<C> : never;
+  build: [RequiredKeys<PublicFieldsOf<InstanceType<C>>>] extends [TSet] ? () => InstanceType<C> : never;
 }
