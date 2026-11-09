@@ -2,181 +2,65 @@
 outline: deep
 ---
 
-# Querystring
+# Query parameters
 
-`jin-frame`에서 클래스 필드에 `@Query()` 데코레이터를 선언하면 해당 필드 값이 **URL 쿼리스트링으로 직렬화**되어 요청에 포함됩니다.
+`@Query()`는 field 값을 URL query string에 추가합니다. `replaceAt`으로 코드의 이름과 전송 이름을 분리하고 array 직렬화는 서버 계약에 맞춥니다.
 
-## 간단한 예제
+## Example
 
-```ts
-@Get({ host: 'https://api.example.com', path: '/search' })
-export class SearchFrame extends JinFrame {
-  @Query() declare readonly q: string;
-  @Query() declare readonly page?: number;
-  @Query() declare readonly tags?: string[]; // → ?tags=red&tags=blue
-  @Query() declare readonly debug?: boolean; // → ?debug=true
-}
+```ts twoslash
+import { Get, JinFrame, Query } from 'jin-frame';
 
-// 실행
-const frame = SearchFrame.of({ q: 'pikachu', page: 2, tags: ['red', 'blue'], debug: true });
-const reply = await frame._execute();
+@Get({
+  host: 'https://api.example.com',
+  path: '/search',
+})
+class ExampleFrame extends JinFrame {
+  // Rename a TypeScript field to the API's query parameter.
+  @Query({ replaceAt: 'q' })
+  declare readonly search: string;
 
-console.log(reply.config.url);
-// https://api.example.com/search?q=pikachu&page=2&tags=red&tags=blue&debug=true
-```
-
-## 지원 타입과 직렬화 방식
-
-`@Query()`가 지원하는 타입과 URL 직렬화 결과는 다음과 같습니다.
-
-<!-- markdownlint-disable MD033 -->
-
-| 타입                 | 옵션    | 예제 값            | 직렬화 결과                          |
-| -------------------- | ------- | ------------------ | ------------------------------------ |
-| `string`             |         | `'pikachu'`        | `?q=pikachu`                         |
-| `number`             |         | `2`                | `?page=2`                            |
-| `boolean`            |         | `true`             | `?debug=true`                        |
-| `string[]`           | comma ✗ | `['a','b']`        | `?tags=a&tags=b`                     |
-| `string[]`           | comma ✓ | `['a','b']`        | `?tags=a,b`                          |
-| `number[]`           | bit ✗   | `[1,2,4]`          | `?ids=1&ids=2&ids=4`                 |
-| `number[]`           | bit ✓   | `[1,2,4]`          | `?ids=7`<br />(비트 OR: 1\|2\|4 = 7) |
-| `undefined` / `null` |         | `undefined`/`null` | **생략됨**<br />(쿼리 키 생성 안 됨) |
-
-<!-- markdownlint-ensable MD033 -->
-
-- 배열 기본 직렬화는 **반복 키(repeated key)** 방식입니다.
-- 숫자/불리언 값은 문자열로 변환되어 전송됩니다.
-- `undefined` / `null`은 자동으로 생략됩니다.
-
-## 배열 옵션
-
-### 기본 배열 직렬화 (반복 키)
-
-```ts
-@Get({ host: 'https://api.example.com', path: '/filter' })
-export class ArrayQueryFrame extends JinFrame {
-  @Query() declare readonly tags?: string[];
-}
-
-const reply = await ArrayQueryFrame.of({ tags: ['red', 'blue'] })._execute();
-// → ?tags=red&tags=blue
-```
-
-### 쉼표 구분 배열
-
-`@Query({ comma: true })` 옵션을 사용하면 배열을 **쉼표 구분 문자열**로 직렬화할 수 있습니다.
-
-```ts
-@Get({ host: 'https://api.example.com', path: '/filter' })
-export class CommaQueryFrame extends JinFrame {
-  @Query({ comma: true })
-  declare readonly tags?: string[];
-}
-
-const reply = await CommaQueryFrame.of({ tags: ['red', 'blue', 'green'] })._execute();
-// → ?tags=red,blue,green
-```
-
-### 비트 OR 배열 (숫자 전용)
-
-`@Query({ bit: { enable: true } })`를 사용하면 숫자 배열을 **비트 OR 합산 값**으로 직렬화할 수 있습니다.
-
-```ts
-@Get({ host: 'https://api.example.com', path: '/flags' })
-export class BitwiseQueryFrame extends JinFrame {
-  @Query({ bit: { enable: true } })
-  declare readonly flags?: number[];
-}
-
-const reply = await BitwiseQueryFrame.of({ flags: [1, 2, 4] })._execute();
-// → ?flags=7   (1 | 2 | 4 = 7)
-```
-
-> API 서버가 비트 마스크 값을 기대할 때 유용합니다.
-
-### 배열 키 포맷 지정
-
-`@Query({ keyFormat: '...' })` 옵션으로 배열 쿼리의 **키 형식**을 지정할 수 있습니다.
-
-```ts
-@Get({ host: 'https://api.example.com', path: '/items' })
-export class KeyFormatFrame extends JinFrame {
+  // Serialize arrays as repeated bracketed query keys.
   @Query({ keyFormat: 'brackets' })
   declare readonly tags?: string[];
-  
-  @Query({ keyFormat: 'indices' })
-  declare readonly ids?: number[];
 }
 
-const reply = await KeyFormatFrame.of({ 
-  tags: ['red', 'blue'], 
-  ids: [10, 20] 
-})._execute();
-// → ?tags[]=red&tags[]=blue&ids[0]=10&ids[1]=20
+// Build the request without contacting the placeholder server.
+const frame = ExampleFrame.of({ search: 'hello world', tags: ['red', 'blue'] });
+const request = frame._request();
+console.log(request.url);
 ```
 
-지원하는 키 포맷:
+## Options
 
-- **기본값**: `?tags=red&tags=blue` (반복 키)
-- **`brackets`**: `?tags[]=red&tags[]=blue`
-- **`indices`**: `?tags[0]=red&tags[1]=blue`
-- **`one-indices`**: `?tags[1]=red&tags[2]=blue` (1부터 시작)
+| Option | Type | Default | Description |
+| --- | --- | --- | --- |
+| `replaceAt` | `string` | field 이름 | 전송할 query 키 이름입니다. |
+| `encode` | `boolean` | `true` | query 값을 URI 인코딩합니다. |
+| `comma` | `boolean` | `false` | array 값을 쉼표로 연결합니다. |
+| `separator` | `',' \| ' ' \| '\|'` | `undefined` | array 연결 구분자입니다. 지정하면 comma보다 우선합니다. |
+| `keyFormat` | `'brackets' \| 'indices' \| 'one-indices'` | `undefined` | array query 키 형식입니다. 미지정 시 같은 키를 반복합니다. |
+| `bit.enable` | `boolean` | `false` | 숫자 array를 비트 OR 값으로 합칩니다. |
+| `bit.withZero` | `boolean` | `false` | 비트 OR 결과가 0이어도 포함합니다. |
+| `formatters` | `Formatter \| Formatter[]` | `undefined` | 직렬화 전에 값을 변환합니다. |
+| `cacheKeyExclude` | `boolean` | `false` | 중복 제거 키에서만 제외하며 query 전송은 유지합니다. |
 
-## URL 인코딩
+`bit`는 `{ enable: true, withZero: false }` 형태로 지정합니다.
 
-모든 키와 값은 URL에 추가되기 전에 안전하게 **URL 인코딩**됩니다.
+## Array serialization
 
-```ts
-@Get({ host: 'https://api.example.com', path: '/search' })
-export class EncodedFrame extends JinFrame {
-  @Query() declare readonly q: string;
-}
+| option | 형태 |
+| --- | --- |
+| `keyFormat: 'brackets'` | `tags[]=red&tags[]=blue` |
+| `keyFormat: 'indices'` | `tags[0]=red&tags[1]=blue` |
+| `keyFormat: 'one-indices'` | `tags[1]=red&tags[2]=blue` |
+| `comma: true` | 쉼표 연결 |
+| `separator: ' '`, `separator: '\|'` | 공백·파이프 연결 |
 
-const reply = await EncodedFrame.of({ q: 'hello world & tea' })._execute();
-// → ?q=hello%20world%20%26%20tea
-```
+URL의 예약 문자는 percent encoding됩니다. 논리적인 query 값은 화면상의 인코딩 string보다 디코딩한 항목으로 비교합니다.
 
-## 선택적 쿼리
+## Optional fields and transforms
 
-값이 없으면 해당 쿼리 키는 **생략**됩니다.
+선택 field가 없으면 생략합니다. 빈 string·0·false는 undefined와 다릅니다. `formatters`로 인코딩 전에 string·Date를 변환할 수 있습니다. `cacheKeyExclude: true`는 중복 판단에서만 제외하며 값 전송을 막지 않습니다.
 
-```ts
-@Get({ host: 'https://api.example.com', path: '/items' })
-export class OptionalQueryFrame extends JinFrame {
-  @Query() declare readonly q?: string;
-  @Query() declare readonly page?: number;
-}
-
-const reply = await OptionalQueryFrame.of({})._execute();
-// → https://api.example.com/items   (쿼리 없음)
-```
-
-## Param, Header와 함께 사용하기
-
-```ts
-@Get({ host: 'https://api.example.com', path: '/orgs/:orgId/users' })
-export class ListUsersFrame extends JinFrame {
-  @Param() declare readonly orgId: string;
-  @Query() declare readonly page?: number;
-  @Header() declare readonly Authorization: string;
-}
-
-const reply = await ListUsersFrame.of({
-  orgId: 'acme',
-  page: 1,
-  Authorization: 'Bearer token',
-})._execute();
-// → GET /orgs/acme/users?page=1
-```
-
-## 디버깅 팁
-
-요청 직전에 `frame.getData('query')`를 사용해 최종 쿼리 맵을 확인할 수 있습니다.
-
-```ts
-const frame = SearchFrame.of({ q: 'pikachu', tags: ['red', 'blue'] });
-const req = frame.request();
-
-console.log(frame.getData('query')); // { q: 'pikachu', tags: ['red','blue'] }
-console.log(req.url); // 최종 URL
-```
+[formatter](./formatters)와 [중복 제거](../method/dedupe)를 참고하세요.

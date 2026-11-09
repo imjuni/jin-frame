@@ -2,121 +2,65 @@
 outline: deep
 ---
 
-# Getting To Start
+# Getting started
 
-jin-frame 6.0.0은 Node.js ^22.23.4와 TypeScript >= 5.0을 사용합니다. 생성기 1.0.0은 TypeScript >= 6과 openapi-typescript >= 7이 필요합니다. [6.0 마이그레이션](./migration-v6)과 [OpenAPI 생성기](./generator)를 확인하세요.
+jin-frame 6은 HTTP request를 class로 정의하고 네이티브 `fetch`로 실행합니다. request를 보내는 애플리케이션에 런타임을 설치합니다. 생성기는 선택적인 개발 도구입니다.
 
-## Installation
-
-npm
+## Install
 
 ```sh
-npm install jin-frame --save
+pnpm add jin-frame@^6
+pnpm add -D typescript
 ```
 
-yarn
+패키지는 Node.js `^22.23.4`, TypeScript >= 5를 요구합니다. 레거시 decorator를 켜고 TypeScript로 컴파일합니다. Node의 type 제거 기능만으로는 decorator를 변환할 수 없습니다.
 
-```sh
-yarn add jin-frame --save
-```
-
-pnpm
-
-```sh
-pnpm add jin-frame --save
-```
-
-## Quick Example
-
-```ts
-import { Get, Param, Query, JinFrame } from 'jin-frame';
-import { randomUUID } from 'node:crypto';
-
-@Get({
-  host: 'https://pokeapi.co',
-  path: '/api/v2/pokemon/{name}',
-})
-export class PokemonFrame extends JinFrame {
-  @Param()
-  declare public readonly name: string;
-
-  @Query()
-  declare public readonly tid: string;
-}
-
-(async () => {
-  const frame = PokemonFrame.of({
-    name: 'pikachu',
-    tid: randomUUID(),
-  });
-  const reply = await frame._execute();
-
-  // Show Pikachu Data
-  console.log(reply.data);
-})();
-```
-
-## Customization Examples
-
-Endpoint 별로 각종 설정을 다르게 적용할 수도 있습니다.
-
-```ts
-@Timeout(10_000)  // 10s timeout
-@Get({
-  host: 'https://pokeapi.co',
-  path: '/api/v2/pokemon',
-})
-class PokemonPagingFrame extends JinFrame {
-  @Query()
-  declare public readonly limit: number;
-
-  @Query()
-  declare public readonly offset: number;
-}
-
-@Retry({ max: 3, interval: 1000 }) // Retry up to 3 times at 1-second intervals
-@Timeout(2_000)  // 2-second timeout
-@Get({
-  host: 'https://pokeapi.co',
-  path: '/api/v2/pokemon/{name}',
-})
-export class PokemonDetailFrame extends JinFrame {
-  @Param()
-  declare public readonly name: string;
-}
-```
-
-## Why `declare public readonly`?
-
-jin-frame에서 Frame 클래스를 정의할 때는 필드에 보통 다음과 같이 `declare public readonly`를 사용합니다.
-
-```ts
-@Get({ path: '/api/v2/pokemon/{name}' })
-class PokemonFrame extends JinFrame {
-  @Param()
-  declare public readonly name: string;
-
-  @Query()
-  declare public readonly limit?: number;
-}
-```
-
-- `declare`는 필드의 타입만 선언하고 JavaScript 필드 초기화 코드를 생성하지 않습니다. 값은 `of()`나 builder로 객체를 만들 때 설정합니다.
-- `public`은 외부에서 접근할 수 있는 필드임을 명시합니다. TypeScript의 기본 접근 수준도 `public`입니다.
-- `readonly`는 TypeScript 코드에서 필드 재할당을 막습니다. 런타임에 객체를 동결하거나 중첩된 값의 변경을 막지는 않습니다.
-
-## Requirements
-
-### Decorator
-
-`tsconfig.json` 파일에서 experimentalDecorators, emitDecoratorMetadata option을 활성화 해주세요
+## TypeScript configuration
 
 ```jsonc
 {
   "compilerOptions": {
-    // enable experimentalDecorators, emitDecoratorMetadata for using decorator
+    "target": "ES2023",
+    "module": "NodeNext",
+    "strict": true,
     "experimentalDecorators": true,
-    "emitDecoratorMetadata": true,
-  },
+    "emitDecoratorMetadata": true
+  }
 }
 ```
+
+최상위 await 예제는 package.json에 `"type": "module"`을 설정합니다. `tsc`로 컴파일한 JavaScript를 Node로 실행합니다.
+
+## First request
+
+식별자에 마우스를 올리면 type와 설명을 볼 수 있습니다. 이 예제는 공개 PokeAPI를 호출합니다. 다른 문서의 `api.example.com` 주소는 자신의 서버 주소로 교체해야 합니다.
+
+```ts twoslash
+import { Get, JinFrame, Param } from 'jin-frame';
+
+/** A successful Pokémon detail response. */
+type PokemonReply = { status: 200; data: { name: string; id: number } };
+
+@Get({
+  host: 'https://pokeapi.co',
+  path: '/api/v2/pokemon/{name}',
+})
+class PokemonFrame extends JinFrame<PokemonReply> {
+  // Bind this field to the URL placeholder.
+  @Param()
+  declare readonly name: string;
+}
+
+// Create an instance with the required request field.
+const frame = PokemonFrame.of({ name: 'pikachu' });
+const reply = await frame._execute();
+
+// The response union determines the body type; it does not validate server data.
+console.log(reply.data.name);
+```
+
+## Declaring fields
+
+`declare`는 field 초기화 코드 생성을 막습니다. `readonly`는 TypeScript 재할당을 제한하며 중첩 object를 동결하지 않습니다. 선택 field는 `?`로 선언하고 생략할 수 있습니다. 필수 공개 field가 없으면 `Frame.of()`로 생성합니다.
+
+[HTTP Methods](./usage-method), [Builder](./method/builder), [response 검증](./method/validation)을 이어서 확인하세요.

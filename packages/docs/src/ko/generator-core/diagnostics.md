@@ -2,10 +2,10 @@
 outline: deep
 ---
 
-# 진행 상태와 진단
+# Progress and diagnostics
 
 
-`createFrames`, `createOpenapiTs`는 `onEvent` 옵션을 지원합니다. `load(path, { onEvent })`도 같은 관찰자를 전달받습니다. 관찰자가 없으면 이벤트를 출력하지 않습니다.
+`createFrames`, `createOpenapiTs`는 `onEvent` option을 지원합니다. `load(path, { onEvent })`도 같은 관찰자를 전달받습니다. 관찰자가 없으면 이벤트를 출력하지 않습니다.
 
 ```ts
 await createFrames({

@@ -2,152 +2,46 @@
 outline: deep
 ---
 
-# ObjectBody
+# Object bodies
 
-In **`jin-frame`**, when you declare a class field with the `@ObjectBody()` decorator, the entire object is **serialized into the HTTP Request Body** and sent as-is. This is useful when you want to handle a whole object at once rather than splitting it into multiple `@Body()` fields.
+`@ObjectBody()` uses a field value as the body itself, without a wrapper property. Use it for a root-level array, string, number, boolean, or object.
 
-## Quick Example
+## Example
 
-```ts
-interface IUser {
-  username: string;
-  age?: number;
-  tags?: string[];
-  isAdmin?: boolean;
+```ts twoslash
+import { Post, JinFrame, ObjectBody } from 'jin-frame';
+
+@Post({
+  host: 'https://api.example.com',
+  path: '/users',
+})
+class ExampleFrame extends JinFrame {
+  // Merge this object's properties into the request body itself.
+  @ObjectBody()
+  declare readonly payload: { name: string; active: boolean };
 }
 
-@Post({ host: 'https://api.example.com', path: '/users' })
-export class CreateUserFrame extends JinFrame {
-  @ObjectBody() declare readonly user: IUser;
-}
-
-// Execute
-const frame = CreateUserFrame.of({
-  user: { username: 'pikachu', age: 7, tags: ['red', 'blue'], isAdmin: false },
-});
-const reply = await frame._execute();
-
-console.log(reply.config.data);
-// { "username": "pikachu", "age": 7, "tags": ["red","blue"], "isAdmin": false }
+// Build the request without contacting the placeholder server.
+const frame = ExampleFrame.of({ payload: { name: 'ironman', active: true } });
+const request = frame._request();
+console.log(request.body);
 ```
 
-## Difference: Body vs ObjectBody
+## Options
 
-| Category     | `@Body`                                  | `@ObjectBody`                                |
-| ------------ | ---------------------------------------- | -------------------------------------------- |
-| Declaration  | Define each field individually           | Define the entire object as a single field   |
-| Usage        | `@Body() declare readonly name: string;` | `@ObjectBody() declare readonly user: User;` |
-| Serialization| Multiple fields are merged into the body | The declared object is serialized as-is      |
-| Use Case     | APIs focusing on simple fields           | Passing a full DTO/interface in one shot     |
+| Option | Type | Default | Description |
+| --- | --- | --- | --- |
+| `order` | `number` | `Number.MAX_SAFE_INTEGER` | Merge in ascending order; later properties can overwrite earlier ones. |
+| `formatters` | `SingleBodyFormatter \| SingleBodyFormatter[]` | `undefined` | Transform body fields; findFrom selects a nested value. |
+| `cacheKeyExcludePaths` | `string[]` | `undefined` | Body paths excluded only from dedupe identity. |
+| `encode` | `boolean` | `true` | Retained as field metadata; body assembly does not apply URI encoding. |
 
-## Nested Objects
+## Body shape
 
-`@ObjectBody()` also supports nested object structures and serializes them as-is.
+The example sends `{ "name": "ironman", "active": true }`, not `{ "payload": ... }`. Use one object-body field per request when possible to make the wire contract clear. Arrays and primitive values require a server body contract that accepts those shapes.
 
-```ts
-interface IProfile {
-  name: string;
-  age: number;
-}
+## Multiple sources
 
-interface IUserSettings {
-  theme: string;
-  notifications: boolean;
-}
+`order` sorts object-body fields in ascending order; later merges can overwrite earlier properties. `@Body()` fields also participate in body assembly. Inspect `_request().body` for the combined result when sources overlap.
 
-interface IUser {
-  profile: IProfile;
-  settings?: IUserSettings;
-}
-
-@Post({ host: 'https://api.example.com', path: '/users' })
-export class NestedUserFrame extends JinFrame {
-  @ObjectBody() declare readonly user: IUser;
-}
-
-const reply = await NestedUserFrame.of({
-  user: {
-    profile: { name: 'pikachu', age: 7 },
-    settings: { theme: 'dark', notifications: true },
-  },
-})._execute();
-
-// Body → { "profile": { "name": "pikachu", "age": 7 }, "settings": { "theme": "dark", "notifications": true } }
-```
-
----
-
-## Array Support
-
-Objects containing arrays are serialized as-is.
-
-```ts
-interface IBatch {
-  ids: number[];
-}
-
-@Post({ host: 'https://api.example.com', path: '/batch' })
-export class BatchFrame extends JinFrame {
-  @ObjectBody() declare readonly data: IBatch;
-}
-
-const reply = await BatchFrame.of({ data: { ids: [1, 2, 3] } })._execute();
-// Body → { "ids": [1,2,3] }
-```
-
-## Optional Fields
-
-If a value inside the object is `undefined` or `null`, it is automatically omitted.
-
-```ts
-interface IUser {
-  username: string;
-  nickname?: string;
-}
-
-@Post({ host: 'https://api.example.com', path: '/users' })
-export class OptionalUserFrame extends JinFrame {
-  @ObjectBody() declare readonly user: IUser;
-}
-
-const reply = await OptionalUserFrame.of({ user: { username: 'pikachu' } })._execute();
-// Body → { "username": "pikachu" }
-```
-
-## Combining with Params & Headers
-
-```ts
-interface IUser {
-  username: string;
-  age: number;
-}
-
-@Post({ host: 'https://api.example.com', path: '/orgs/:orgId/users' })
-export class CreateUserInOrgFrame extends JinFrame {
-  @Param() declare readonly orgId: string;
-  @Header() declare readonly Authorization: string;
-  @ObjectBody() declare readonly user: IUser;
-}
-
-const reply = await CreateUserInOrgFrame.of({
-  orgId: 'acme',
-  Authorization: 'Bearer token',
-  user: { username: 'pikachu', age: 7 },
-})._execute();
-
-// POST /orgs/acme/users
-// Headers: { Authorization: "Bearer token" }
-// Body: { "username": "pikachu", "age": 7 }
-```
-
-## Debugging Tip
-
-Right before sending the request, you can check the **final body data** with `frame.getData('body')`.
-
-```ts
-const frame = CreateUserFrame.of({ user: { username: 'pikachu', age: 7 } });
-const req = frame.request();
-
-console.log(frame.getData('body')); // { username: 'pikachu', age: 7 }
-console.log(req.data); // Final serialized body
-```
+Formatters operate before merging. `cacheKeyExcludePaths` changes dedupe identity only, and does not redact the transmitted object. Avoid sharing mutable payloads across concurrent requests.

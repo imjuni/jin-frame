@@ -41,4 +41,4 @@ pnpm add jin-frame@^6.0.0
 
 
 
-[All packages](../packages) · [Getting started](./index) · [명령어](./commands) · [Configuration](./configuration)
+[All packages](../packages) · [Getting started](./index) · [Commands](./commands) · [Configuration](./configuration)

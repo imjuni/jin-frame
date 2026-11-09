@@ -1,64 +1,34 @@
-# jin-frame이란?
+---
+outline: deep
+---
 
-## Introduction
+# What is jin-frame?
 
-jin-frame은 HTTP 요청을 TypeScript 클래스로 정의하고 네이티브 `fetch`로 전송하는 라이브러리입니다. 데코레이터로 클래스 필드를 경로 매개변수, 쿼리 문자열, 헤더, 요청 본문에 연결합니다.
+jin-frame은 TypeScript용 선언적 HTTP 클라이언트입니다. 메서드·URL·type가 있는 입력·인증·재시도·response 계약을 엔드포인트 class에 모읍니다. Axios가 아닌 네이티브 fetch로 실행합니다.
 
-요청 클래스에는 엔드포인트의 URL, 입력 필드, 타임아웃, 재시도 설정을 모아 둡니다. 여러 엔드포인트가 사용하는 호스트나 인증 설정은 부모 클래스에 정의할 수 있습니다.
+## Choose the right entry point
 
-## Why jin-frame?
+| 목적 | 문서 |
+| --- | --- |
+| 직접 request class 작성 | [시작하기](./getting-to-start) |
+| Swagger/OpenAPI에서 클라이언트 생성 | [CLI](./generator-cli/) |
+| 빌드·자체 도구에 생성기 통합 | [Generator core](./generator-core/) |
+| 기존 클라이언트 업그레이드 | [v6 마이그레이션](./migration-v6) |
 
-- **HTTP API를 TypeScript 클래스로 정의합니다.** HTTP 메서드, 엔드포인트, 타임아웃, 재시도 정책, 인증 설정을 요청 필드와 함께 선언합니다.
-- **API별 운영 요구사항을 설정에 반영합니다.** 엔드포인트마다 다른 타임아웃, 재시도 정책과 요청 옵션을 지정합니다.
-- **응답을 검증하고 중복 요청을 줄입니다.** 검증기로 응답 데이터를 확인하고, 동시에 실행되는 동일한 요청은 중복 제거 기능으로 하나의 네트워크 호출을 공유합니다.
-- **상속으로 API 설정의 계층을 표현합니다.** 부모 클래스에 공통 설정을 정의하고 자식 클래스에서 재정의해 API의 계층 구조를 반영합니다.
+## Request lifecycle
 
-## 요청과 응답 타입
+1. `of()` 또는 `builder()`가 instance를 만들고 default value를 적용합니다.
+2. `_execute()`가 비동기 인증값을 해석하고 URL·field·인증 컨텍스트를 구성합니다.
+3. pre-hook 실행 후 조건에 맞는 중복 제거·시도별 타임아웃·재시도로 fetch를 감쌉니다.
+4. response를 역직렬화하고 상태·body를 검증합니다.
+5. 허용 response는 반환하며 거부 상태·처리 실패는 예외가 됩니다.
 
-`of()`는 클래스에 선언한 필드로 요청 객체를 만듭니다. 상태 코드마다 응답 본문이 다른 API라면 `{ status, data }` union을 선언하고 `status`를 확인해 `data` 타입을 좁힙니다.
+## Type safety and runtime safety
 
-타입 선언은 서버 응답을 런타임에 검증하지 않습니다. 반환된 데이터가 스키마에 맞는지 확인하려면 [응답 검증기](./method/validation)를 등록합니다.
+상태·body 유니온은 HTTP 상태와 body의 type 관계를 보존합니다. `validateStatus`는 호출에서 허용할 상태를 선택합니다. Zod 같은 Validator는 서버의 실제 값을 검사합니다. 서로 다른 책임이므로 TypeScript 선언이나 HTTP 코드 허용만으로 JSON이 검증되지는 않습니다.
 
-## 엔드포인트별 설정
+## Organization
 
-아래 목록 요청의 타임아웃은 10초입니다. 상세 요청은 타임아웃이 2초이고, 실패하면 1초 간격으로 최대 세 번 재시도합니다.
+부모 프레임에 공통 호스트·header, field에 request 데이터, provider에 인증값을 둡니다. 훅으로 전송 로직을 흩뜨리지 않고 로그·측정을 추가합니다. 생성 클라이언트와 직접 작성한 프레임은 같은 런타임을 사용합니다.
 
-```ts
-import { Get, JinFrame, Param, Query } from 'jin-frame';
-
-@Get({
-  host: 'https://pokeapi.co',
-  path: '/api/v2/pokemon',
-  timeout: 10_000, // 10 seconds
-})
-class PokemonPagingFrame extends JinFrame {
-  @Query()
-  declare readonly limit: number;
-
-  @Query()
-  declare readonly offset: number;
-}
-
-@Get({
-  host: 'https://pokeapi.co',
-  path: '/api/v2/pokemon/{name}',
-  timeout: 2_000, // 2 seconds
-  retry: { max: 3, interval: 1000 }, // Retry up to 3 times at 1-second intervals
-})
-export class PokemonFrame extends JinFrame {
-  @Param()
-  declare public readonly name: string;
-
-  @Query()
-  declare public readonly tid: string;
-}
-```
-
-## 공통 요청 동작
-
-- [훅](./method/hook)은 요청 전후와 재시도 시점에 실행됩니다.
-- [상속](./method/inheritance)으로 여러 요청 클래스의 설정과 훅을 공유합니다.
-- [폼 데이터](./method/form)는 URL 인코딩 필드와 multipart 파일 업로드를 지원합니다.
-- [모킹](./method/mocking)은 MSW로 요청을 가로채 API 서버 호출 없이 테스트합니다.
-
-요청 클래스를 패키지로 내보내 여러 프로젝트에서 사용할 수도 있습니다. 설치와 실행 예제는 [시작하기](./getting-to-start)를 참고하세요.
+가이드 예제는 레거시 TypeScript decorator와 공개 `jin-frame` 패키지를 사용합니다. Hover 예제는 사이트 빌드 중 type 검사합니다.

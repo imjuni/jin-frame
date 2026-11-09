@@ -4,198 +4,79 @@ outline: deep
 
 # Authorization
 
-**`jin-frame`**은 `@Security`와 `SecurityKey`를 통해 데코레이터 기반 인증 시스템을 제공합니다.
+Security provider는 인증값을 header·query·쿠키로 변환합니다. `authorization`만으로 header를 만들지 않습니다. constructor 첫 인자는 provider 이름이 아니라 키 또는 동기 키 반환 function입니다.
 
-> **v5.0 주요 변경사항**
-> - `@Authorization` 데코레이터가 제거되었습니다. 대신 `@Security`의 두 번째 인자로 키를 전달합니다.
-> - `OAuth2Provider`가 제거되었습니다. Bearer 토큰 시나리오에는 `BearerTokenProvider`를 사용하세요.
+## Bearer tokens
 
-## 기본 사용법
+request를 구성할 때 function에서 현재 값을 읽습니다. string `dynamicAuth`가 있으면 function을 평가하지 않습니다. constructor에 비동기 function은 전달하지 않습니다.
 
-`@Security`에 프로바이더와 키를 함께 전달합니다:
+```ts twoslash
+import { BearerTokenProvider, Get, JinFrame } from 'jin-frame';
 
-```ts
-import { Get, Security, JinFrame } from 'jin-frame';
-import { BearerTokenProvider } from 'jin-frame/providers';
+// Replace this value when your application refreshes its token.
+let accessToken = 'initial-token';
+const bearer = new BearerTokenProvider(() => accessToken);
 
-@Security(new BearerTokenProvider(), 'my-bearer-token')
 @Get({
   host: 'https://api.example.com',
-  path: '/user/{id}',
+  path: '/me',
+  security: bearer,
 })
-export class UserProfileFrame extends JinFrame {
-  @Param()
-  declare public readonly id: string;
-}
-```
-
-## Security Providers
-
-### BearerTokenProvider
-
-`Authorization: Bearer <token>` 헤더를 추가합니다. `Bearer ` 접두사가 없으면 자동으로 붙여줍니다.
-
-```ts
-import { BearerTokenProvider } from 'jin-frame/providers';
-
-@Security(new BearerTokenProvider(), 'user-token-12345')
-@Get({ host: 'https://api.example.com', path: '/profile' })
-export class ProfileFrame extends JinFrame {}
-```
-
-### ApiKeyProvider
-
-API 키를 헤더 또는 쿼리 파라미터에 주입합니다.
-
-```ts
-import { ApiKeyProvider } from 'jin-frame/providers';
-
-// 헤더에 API Key 설정
-@Security(new ApiKeyProvider(undefined, 'X-API-Key', 'header', 'api-key'), 'secret-api-key-value')
-@Get({ host: 'https://api.example.com', path: '/data' })
-export class DataFrame extends JinFrame {}
-
-// 쿼리 파라미터에 API Key 설정
-@Security(new ApiKeyProvider(undefined, 'apikey', 'query', 'api-key'), 'secret-api-key-value')
-@Get({ host: 'https://api.example.com', path: '/public-data' })
-export class PublicDataFrame extends JinFrame {}
-```
-
-### BasicAuthProvider
-
-`username:password`를 Base64로 인코딩하여 `Authorization: Basic ...` 헤더로 전송합니다.
-
-```ts
-import { BasicAuthProvider } from 'jin-frame/providers';
-
-@Security(new BasicAuthProvider(), { username: 'admin', password: 'secret123' })
-@Get({ host: 'https://api.example.com', path: '/admin/users' })
-export class AdminUserFrame extends JinFrame {}
-```
-
-## SecurityKey — 지연/비동기 키 해석
-
-`SecurityKey` 타입은 `string | (() => string | Promise<string>)`입니다. 이를 통해 환경 변수, 시크릿 매니저 등 다양한 소스에서 요청 시점에 토큰을 가져올 수 있습니다.
-
-```ts
-@Security(new BearerTokenProvider(), 'static-token')
-
-// 환경 변수에서 (요청 시점에 해석)
-@Security(new BearerTokenProvider(), () => process.env.API_TOKEN ?? '')
-
-// 시크릿 매니저에서 비동기로 가져오기
-@Security(new BearerTokenProvider(), async () => vault.getSecret('api-token'))
-```
-
-비동기 키 해석 전체 예제:
-
-```ts
-@Get({
-  host: 'https://api.example.com',
-  path: '/secure',
-})
-@Security(new BearerTokenProvider(), async () => await vault.getSecret('api-token'))
-class SecureFrame extends JinFrame<{ status: number; data: Response }> {}
-```
-
-## BearerTokenProvider.setKey()
-
-`setKey()`를 사용하면 프로바이더 인스턴스를 재생성하지 않고 런타임에 Bearer 토큰을 업데이트할 수 있습니다. 토큰 갱신 후 사용하기에 적합합니다.
-
-```ts
-const bearerProvider = new BearerTokenProvider();
-
-// 토큰 갱신 후 업데이트
-bearerProvider.setKey(newAccessToken);
-
-@Security(bearerProvider)
-@Get({ host: 'https://api.example.com', path: '/profile' })
 class ProfileFrame extends JinFrame {}
+
+// Inspect the generated header without sending a request.
+const frame = ProfileFrame.of();
+console.log(frame._request().headers);
+
+// Override only this execution; the shared provider is unchanged.
+const reply = await frame._execute({ dynamicAuth: 'per-request-token' });
 ```
 
-## 다중 Security Provider
+## API keys and Basic credentials
 
-하나의 프레임에 여러 프로바이더를 붙일 수 있습니다. 각 프로바이더는 독립적으로 키를 처리합니다.
+```ts twoslash
+import { ApiKeyProvider, BasicAuthProvider, BearerTokenProvider } from 'jin-frame';
 
-```ts
-@Security([
-  new BearerTokenProvider(),
-  new ApiKeyProvider(undefined, 'X-Client-ID', 'header', 'client-id'),
-], 'multi-auth-token')
-@Get({ host: 'https://api.example.com', path: '/secure' })
-export class MultiSecurityFrame extends JinFrame {}
+// Choose a header, query parameter, or cookie destination.
+const headerKey = new ApiKeyProvider('secret', 'X-API-Key');
+const queryKey = new ApiKeyProvider(() => 'current-key', 'api_key', 'query');
+const cookieKey = new ApiKeyProvider('session-value', 'session', 'cookie');
+
+// Basic consumes encoded user:password; Bearer adds the scheme prefix.
+const basic = new BasicAuthProvider(() => btoa('user:password'));
+const bearer = new BearerTokenProvider('access-token');
+
+// The common provider can send a complete Authorization value too.
+const custom = new ApiKeyProvider(() => 'Bearer access-token', 'Authorization');
 ```
 
-## 클래스 상속과 인증 재정의
+Basic과 Bearer는 `ApiKeyProvider`를 상속하며 접두사가 없을 때만 인증 스킴을 붙입니다. `setKey(string또는function)`는 이후 request가 공유하는 키 원본을 바꿉니다.
 
-자식 클래스에서 부모의 인증 설정을 재정의할 수 있습니다:
+## Priority and composition
 
-```ts
-@Security(new BearerTokenProvider(), 'base-token')
-@Get({ host: 'https://api.example.com' })
-class BaseApiFrame extends JinFrame {}
+명시적인 `Authorization` header가 있으면 provider를 사용하지 않습니다. 다음은 호출 option의 Basic `auth`입니다. 나머지는 string `dynamicAuth`, provider 자체 키, decorator의 `authorization` 순으로 선택합니다. Basic은 기존 `{ username, password }` 인증값도 지원합니다.
 
-@Security(new ApiKeyProvider(undefined, 'X-API-Key', 'header', 'specialized-auth'), 'specialized-api-key')
-@Get({ path: '/specialized' })
-class SpecializedApiFrame extends BaseApiFrame {}
-```
+array의 provider를 순서대로 처리하고 header·query를 병합합니다. 같은 키는 뒤의 값이 우선합니다. 서로 다른 인증값은 각 constructor에 전달합니다. 공통 `dynamicAuth`는 이름으로 구분하지 않고 모든 provider에 전달합니다. 이름은 메타데이터이며 Basic·Bearer의 두 번째 인자, API 키의 네 번째 인자입니다.
 
-## 환경별 설정
+## Async credentials
 
-```ts
-@Security(new BearerTokenProvider(), () => process.env.API_TOKEN ?? 'development-token')
+```ts twoslash
+import { BearerTokenProvider, Get, JinFrame, Security } from 'jin-frame';
+
+/** Replace with an asynchronous secret manager call. */
+async function loadToken(): Promise<string> {
+  return 'resolved-token';
+}
+
+// _execute() resolves the supplier before constructing the request.
+@Security(new BearerTokenProvider(), loadToken)
 @Get({
-  host: process.env.API_HOST ?? 'https://dev-api.example.com',
-  path: '/data',
+  host: 'https://api.example.com',
+  path: '/me',
 })
-export class DataFrame extends JinFrame {}
+class AsyncProfileFrame extends JinFrame {}
+
+const reply = await AsyncProfileFrame.of()._execute();
 ```
 
-## v4.x에서 마이그레이션
-
-### Before (v4.x)
-
-```ts
-@Security(new BearerTokenProvider(undefined, 'my-auth'))
-@Authorization('user-token-12345')
-@Get({ host: 'https://api.example.com', path: '/user/{id}' })
-export class UserProfileFrame extends JinFrame {
-  @Param()
-  declare public readonly id: string;
-}
-```
-
-### After (v5.0)
-
-```ts
-@Security(new BearerTokenProvider(), 'user-token-12345')
-@Get({ host: 'https://api.example.com', path: '/user/{id}' })
-export class UserProfileFrame extends JinFrame {
-  @Param()
-  declare public readonly id: string;
-}
-```
-
-### OAuth2Provider 마이그레이션
-
-`OAuth2Provider`가 제거되었습니다. `BearerTokenProvider`로 대체하세요:
-
-```ts
-@Security(new OAuth2Provider('oauth2', 'Bearer'))
-@Authorization({ accessToken: 'oauth-access-token-xyz', tokenType: 'Bearer' })
-
-// After (v5.0)
-@Security(new BearerTokenProvider(), 'oauth-access-token-xyz')
-```
-
-## Provider 생성자 키
-
-생성자는 키 문자열 또는 동기 키 반환 함수를 받습니다. Basic 키는 Base64 인코딩 값입니다.
-이름은 키 설정 뒤에 선택적으로 전달하는 메타데이터입니다.
-비동기 함수는 기존 `@Security(provider, async () => token)` 형태를 사용합니다.
-
-```ts
-new ApiKeyProvider('secret', 'X-API-Key');
-new BearerTokenProvider(() => process.env.API_TOKEN ?? '');
-new BasicAuthProvider(() => btoa('user:pass'));
-```
+동기 메서드 `_request()`는 비동기 인증값을 해석하지 않으므로 이 경우 `_execute()`를 사용합니다. provider는 빈 string을 거부하지 않습니다. 누락된 키 검사는 애플리케이션에서 수행하며 로그의 인증값도 자동 마스킹하지 않습니다.

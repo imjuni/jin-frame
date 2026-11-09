@@ -1,5 +1,5 @@
 export interface FrameRetry {
-  /** Maximum number of retry attempts. */
+  /** Maximum total HTTP attempts, including the initial request. */
   max: number;
 
   /**

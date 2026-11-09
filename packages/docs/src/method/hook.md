@@ -2,315 +2,50 @@
 outline: deep
 ---
 
-# Hooks
+# Lifecycle hooks
 
-`JinFrame` provides two lifecycle hooks that run **before** and **after** each HTTP request. Override them in a subclass to add logging, token injection, metrics, or any cross-cutting concern without modifying the frame's core request logic.
+Hooks observe or adjust request execution. Keep business response handling in the caller and shared transport behavior in a base frame.
 
-## \_preHook
+## Request and response hooks
 
-Runs just before the HTTP request is dispatched. Receives the fully-built `JinRequestConfig` so you can inspect or mutate it (for example, to inject a fresh token).
-
-```ts
+```ts twoslash
 import { Get, JinFrame } from 'jin-frame';
-import type { JinRequestConfig } from 'jin-frame';
+import type { DebugInfo, JinRequestConfig, JinResp } from 'jin-frame';
 
-@Get({ host: 'https://api.example.com', path: '/users/{id}' })
-class GetUserFrame extends JinFrame<{ status: number; data: User }> {
-  @Param()
-  declare public readonly id: string;
+type Replies = { status: 200; data: { name: string } };
 
-  protected override async _preHook(req: JinRequestConfig): Promise<void> {
-    const token = await getAccessToken(); // e.g. refresh if expired
-    req.headers = { ...req.headers, Authorization: `Bearer ${token}` };
+@Get({
+  host: 'https://api.example.com',
+  path: '/me',
+})
+class ProfileFrame extends JinFrame<Replies> {
+  protected override _preHook(request: JinRequestConfig): void {
+    // Mutating the built request changes the outgoing HTTP request.
+    request.headers = { ...request.headers, 'X-Client': 'web' };
+  }
+
+  protected override _postHook(request: JinRequestConfig, reply: JinResp<Replies>, debug: DebugInfo): void {
+    // Log metadata only; avoid leaking headers or response secrets.
+    console.log(request.method, reply.status, debug.duration);
   }
 }
 ```
 
-### Signature
+## Hook boundaries
 
-```ts
-protected _preHook(req: JinRequestConfig): void | Promise<void>
-```
+| Hook | Input | Timing |
+| --- | --- | --- |
+| `_preHook` | JinRequestConfig | Once before the transport/retry sequence. |
+| `_postHook` | Request, response, debug info | After an HTTP response is processed, including rejected statuses. |
+| `_retryFail` | Request, native Response clone | Rejected HTTP attempts, including the final attempt. |
+| `_retryException` | Request, Error | Transport exceptions, including the final attempt. |
 
-| Parameter | Type               | Description                        |
-| --------- | ------------------ | ---------------------------------- |
-| `req`     | `JinRequestConfig` | The request config about to be sent |
+Hooks can return `void` or `Promise<void>`. `_postHook` cannot receive an HTTP response when none exists. Catch `_execute()` for the final outcome; retry hooks are observations, not recovery return values.
 
-> Mutating `req` inside `_preHook` **does** affect the outgoing request.
+## Exceptions and ordering
 
----
+A throwing pre-hook prevents the request. A throwing post-hook or validator can reject execution after the server has responded. The final wrapped error retains available response information and cause. Do not infer that an absent successful return means the server did not perform a write.
 
-## \_postHook
+## Shared hooks
 
-Runs after the HTTP response is received (whether pass or fail). Receives the request config, the discriminated-union response, and debug timing info.
-
-```ts
-import { Get, JinFrame } from 'jin-frame';
-import type { JinRequestConfig, JinResp, DebugInfo } from 'jin-frame';
-
-@Get({ host: 'https://api.example.com', path: '/users/{id}' })
-class GetUserFrame extends JinFrame<{ status: number; data: User }> {
-  @Param()
-  declare public readonly id: string;
-
-  protected override _postHook(
-    req: JinRequestConfig,
-    reply: JinResp<{ status: number; data: User }>,
-    debug: DebugInfo,
-  ): void {
-    console.log(`[${reply.ok ? 'OK' : 'FAIL'}] ${req.url} — ${debug.duration}ms`);
-  }
-}
-```
-
-### Signature
-
-```ts
-protected _postHook(
-  req: JinRequestConfig,
-  reply: JinResp<OperationResponse>,
-  debugInfo: DebugInfo,
-): void | Promise<void>
-```
-
-| Parameter   | Type                    | Description                            |
-| ----------- | ----------------------- | -------------------------------------- |
-| `req`       | `JinRequestConfig`      | The request config that was sent       |
-| `reply`     | `JinResp<OperationResponse>`   | Response union discriminated by numeric `status` |
-| `debugInfo` | `DebugInfo`             | Timing and deduplication metadata      |
-
-### DebugInfo
-
-```ts
-interface DebugInfo {
-  ts: { unix: string; iso: string }; // Request start timestamp
-  duration: number;                  // Total request duration in ms
-  isDeduped: boolean;                // Whether this response was deduplicated
-  req: JinRequestConfig;             // Request config snapshot
-}
-```
-
----
-
-`ok` indicates whether `validateStatus` accepted the response. It is a boolean, not a type discriminator. A 404 accepted with `validateStatus: () => true` has `ok: true`. Narrow `data` by `status`. The hook receives the same response union for accepted and rejected HTTP responses.
-
-## \_retryFail
-
-Called after each attempt that receives a **non-success HTTP response** (i.e. `validateStatus` returns `false`). Fires once per failed attempt, including the last one before retries are exhausted.
-
-Use this hook to log retry attempts, update metrics, or notify an external system about transient failures.
-
-```ts
-import { Post, JinFrame } from 'jin-frame';
-import type { JinRequestConfig } from 'jin-frame';
-
-@Post({ host: 'https://api.example.com', path: '/submit', retry: { max: 3, interval: 500 } })
-class SubmitFrame extends JinFrame<{ status: number; data: Result }> {
-  @Body()
-  declare public readonly payload: string;
-
-  protected override _retryFail(req: JinRequestConfig, res: Response): void {
-    console.warn(`[retry-fail] ${req.url} → ${res.status} (attempt ${this._getData('retry')?.try})`);
-  }
-}
-```
-
-### Signature
-
-```ts
-protected _retryFail(req: JinRequestConfig, res: Response): void | Promise<void>
-```
-
-| Parameter | Type               | Description                                              |
-| --------- | ------------------ | -------------------------------------------------------- |
-| `req`     | `JinRequestConfig` | The request config that was sent                         |
-| `res`     | `Response`         | A clone of the Response object (body can be read safely) |
-
-> `_retryFail` fires for **every** failed attempt, not only when retries are exhausted. Use `_postHook` if you need the final result.
-
----
-
-## \_retryException
-
-Called after each attempt that **throws an error** (network down, timeout, connection refused, etc.). Fires once per error attempt, including the last one.
-
-Use this hook to log connectivity problems or trigger alerting on repeated exceptions.
-
-```ts
-import { Post, JinFrame } from 'jin-frame';
-import type { JinRequestConfig } from 'jin-frame';
-
-@Post({ host: 'https://api.example.com', path: '/submit', retry: { max: 3, interval: 500 } })
-class SubmitFrame extends JinFrame<{ status: number; data: Result }> {
-  @Body()
-  declare public readonly payload: string;
-
-  protected override _retryException(req: JinRequestConfig, err: Error): void {
-    console.error(`[retry-exception] ${req.url} → ${err.message}`);
-  }
-}
-```
-
-### Signature
-
-```ts
-protected _retryException(req: JinRequestConfig, err: Error): void | Promise<void>
-```
-
-| Parameter | Type               | Description                              |
-| --------- | ------------------ | ---------------------------------------- |
-| `req`     | `JinRequestConfig` | The request config that was sent         |
-| `err`     | `Error`            | The error thrown during the fetch attempt |
-
-> `_retryException` fires on every network-level error, including the final one. `_postHook` is not called when no HTTP response is available; catch the final rejection from `_execute()` instead.
-
----
-
-## Hook Execution Flow
-
-The diagram below shows when each hook fires relative to the overall request lifecycle.
-
-```mermaid
-sequenceDiagram
-    participant Caller
-    participant JinFrame
-    participant Server as HTTP Server
-
-    Caller->>JinFrame: _execute(option)
-    JinFrame->>JinFrame: resolveSecurityKey()
-    JinFrame->>JinFrame: _requestWrap() → req
-    JinFrame->>JinFrame: _preHook(req)
-
-    loop up to retry.max attempts
-        JinFrame->>Server: fetch(req)
-        alt success — validateStatus = true
-            Server-->>JinFrame: Response (ok)
-            Note over JinFrame: exit loop immediately
-        else status failure — validateStatus = false
-            Server-->>JinFrame: Response (not ok)
-            JinFrame->>JinFrame: _retryFail(req, Response)
-            Note over JinFrame: sleep(interval) → next attempt
-        else network / timeout error
-            Server-->>JinFrame: throws Error
-            JinFrame->>JinFrame: _retryException(req, Error)
-            Note over JinFrame: sleep(interval) → next attempt
-        end
-    end
-
-    Note over JinFrame: retries exhausted or succeeded
-
-    alt last result = Response
-        JinFrame->>JinFrame: parse response body
-        alt validateStatus passes
-            JinFrame->>JinFrame: run pass validator
-            JinFrame->>JinFrame: _postHook(req, JinResp, debugInfo)
-            alt validator passes OR type = 'value'
-                JinFrame-->>Caller: JinResp ✓
-            else validator fails AND type = 'exception'
-                JinFrame-->>Caller: throw JinValidationError
-            end
-        else validateStatus fails (retries exhausted)
-            JinFrame->>JinFrame: run fail validator
-            JinFrame->>JinFrame: _postHook(req, JinResp, debugInfo)
-            JinFrame-->>Caller: throw JinRespError
-        end
-    else last result = Error (network error, retries exhausted)
-        JinFrame->>JinFrame: wrap → JinRespError
-        JinFrame-->>Caller: throw JinRespError
-    end
-```
-
-### Hook summary
-
-| Hook               | Fires                    | Times     | Typical use                             |
-| ------------------ | ------------------------ | --------- | --------------------------------------- |
-| `_preHook`         | Before the retry loop    | Once      | Token injection, request logging        |
-| `_retryFail`       | Each bad-status attempt  | 0 – N     | Retry logging, transient-error metrics  |
-| `_retryException`  | Each network-error attempt | 0 – N   | Connectivity alerting, error logging    |
-| `_postHook`        | After the retry loop     | Once      | Response logging, metrics, cache bust   |
-
----
-
-## Shared Base Frame Pattern
-
-The hooks pattern is especially useful when combined with inheritance. Define hooks once in a base frame and all subclasses inherit the behaviour automatically.
-
-```ts
-import { JinFrame } from 'jin-frame';
-import type { JinRequestConfig, JinResp, DebugInfo } from 'jin-frame';
-
-type UserResponse =
-  | { status: 200; data: User }
-  | { status: 201; data: User }
-  | { status: 404; data: { message: string } };
-
-abstract class ApiBase<OperationResponse extends { status: number; data: unknown }> extends JinFrame<OperationResponse> {
-  protected override async _preHook(req: JinRequestConfig): Promise<void> {
-    const token = await tokenStore.get();
-    req.headers = { ...req.headers, Authorization: `Bearer ${token}` };
-  }
-
-  protected override _postHook(
-    req: JinRequestConfig,
-    reply: JinResp<OperationResponse>,
-    debug: DebugInfo,
-  ): void {
-    metrics.record({ url: req.url, status: reply.status, duration: debug.duration });
-  }
-}
-
-@Get({ host: 'https://api.example.com', path: '/users/{id}' })
-class GetUserFrame extends ApiBase<UserResponse> {
-  @Param()
-  declare public readonly id: string;
-}
-
-@Post({ host: 'https://api.example.com', path: '/users' })
-class CreateUserFrame extends ApiBase<UserResponse> {
-  @Body()
-  declare public readonly name: string;
-}
-```
-
----
-
-## Common Use Cases
-
-| Use Case                     | Hook                | Example                                             |
-| ---------------------------- | ------------------- | --------------------------------------------------- |
-| Token injection / refresh    | `_preHook`          | Attach `Authorization` header before each request   |
-| Request logging              | `_preHook`          | Log the outgoing URL and method                     |
-| Retry attempt logging        | `_retryFail`        | Log status code and retry count on each failure     |
-| Connectivity error logging   | `_retryException`   | Log network error message on each exception         |
-| Response logging             | `_postHook`         | Log final status code and latency                   |
-| Metrics / tracing            | `_postHook`         | Record duration in a metrics collector              |
-| Error alerting               | `_postHook`         | Send alert when `reply.ok === false`                |
-| Cache invalidation           | `_postHook`         | Bust a cache after a successful mutation            |
-
-
-## Errors Without an HTTP Response
-
-`JinRespError.resp` is either a complete HTTP response or `undefined`. A network failure without a response does not create a synthetic response with `data`, `headers`, or `raw`. The original error is preserved in `cause`.
-
-When an HTTP status is rejected, `resp` retains the actual response's `status`, `data`, `headers`, `raw`, and validation result. Without `resp`, the error-level `status` and `statusText` are diagnostic values. The defaults, `500` and `Internal Server Error`, do not mean that a server returned HTTP 500.
-
-`validateStatus: () => true` still rejects on network failures. Hook or deserialization errors can also be wrapped in `JinRespError` without a response, so inspect `cause` rather than assuming every absent `resp` means a network outage.
-
-```ts
-import { JinRespError } from 'jin-frame';
-
-try {
-  await frame._execute();
-} catch (error) {
-  if (!(error instanceof JinRespError)) throw error;
-
-  const response = error.resp;
-  if (response === undefined) {
-    console.error(error.message, error.cause);
-  } else {
-    console.error(response.status, response.data, response.headers);
-  }
-}
-```
-
-`_postHook` is not called for network failures without an HTTP response. Use `_retryException` to observe individual attempts and catch `_execute()` to handle the final failure. If `getError` transforms the error, the caller receives the error returned by that handler.
+Override hooks on a common frame and call `super` when both parent and child behavior is needed. Mutating an instance for per-request state can race during concurrent executions; prefer local values or separate frame instances.

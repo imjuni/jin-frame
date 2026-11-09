@@ -4,198 +4,79 @@ outline: deep
 
 # Authorization
 
-**`jin-frame`** provides a decorator-based authentication system through `@Security` and `SecurityKey`.
+Security providers turn credentials into headers, query parameters, or cookies. `authorization` alone does not create a header. The first constructor argument is now a key or synchronous key supplier, not a provider name.
 
-> **Breaking changes in v5.0**
-> - `@Authorization` decorator has been removed. Pass the security key as the second argument to `@Security` instead.
-> - `OAuth2Provider` has been removed. Use `BearerTokenProvider` for Bearer token scenarios.
+## Bearer tokens
 
-## Basic Usage
+Suppliers read the current value when a request is built. They are not evaluated if a string `dynamicAuth` overrides them. Do not pass async functions to provider constructors.
 
-Pass the provider and key together to `@Security`:
+```ts twoslash
+import { BearerTokenProvider, Get, JinFrame } from 'jin-frame';
 
-```ts
-import { Get, Security, JinFrame } from 'jin-frame';
-import { BearerTokenProvider } from 'jin-frame/providers';
+// Replace this value when your application refreshes its token.
+let accessToken = 'initial-token';
+const bearer = new BearerTokenProvider(() => accessToken);
 
-@Security(new BearerTokenProvider(), 'my-bearer-token')
 @Get({
   host: 'https://api.example.com',
-  path: '/user/{id}',
+  path: '/me',
+  security: bearer,
 })
-export class UserProfileFrame extends JinFrame {
-  @Param()
-  declare public readonly id: string;
-}
-```
-
-## Security Providers
-
-### BearerTokenProvider
-
-Adds an `Authorization: Bearer <token>` header. The `Bearer ` prefix is added automatically if not already present.
-
-```ts
-import { BearerTokenProvider } from 'jin-frame/providers';
-
-@Security(new BearerTokenProvider(), 'user-token-12345')
-@Get({ host: 'https://api.example.com', path: '/profile' })
-export class ProfileFrame extends JinFrame {}
-```
-
-### ApiKeyProvider
-
-Injects an API key into a header or query parameter.
-
-```ts
-import { ApiKeyProvider } from 'jin-frame/providers';
-
-// API Key in header
-@Security(new ApiKeyProvider(undefined, 'X-API-Key', 'header', 'api-key'), 'secret-api-key-value')
-@Get({ host: 'https://api.example.com', path: '/data' })
-export class DataFrame extends JinFrame {}
-
-// API Key in query parameter
-@Security(new ApiKeyProvider(undefined, 'apikey', 'query', 'api-key'), 'secret-api-key-value')
-@Get({ host: 'https://api.example.com', path: '/public-data' })
-export class PublicDataFrame extends JinFrame {}
-```
-
-### BasicAuthProvider
-
-Encodes `username:password` as a Base64 `Authorization: Basic ...` header.
-
-```ts
-import { BasicAuthProvider } from 'jin-frame/providers';
-
-@Security(new BasicAuthProvider(), { username: 'admin', password: 'secret123' })
-@Get({ host: 'https://api.example.com', path: '/admin/users' })
-export class AdminUserFrame extends JinFrame {}
-```
-
-## SecurityKey — Lazy / Async Key Resolution
-
-The `SecurityKey` type is `string | (() => string | Promise<string>)`. This allows the token to be resolved at request time from environment variables, secret managers, or any async source.
-
-```ts
-@Security(new BearerTokenProvider(), 'static-token')
-
-// From environment variable (resolved at request time)
-@Security(new BearerTokenProvider(), () => process.env.API_TOKEN ?? '')
-
-// Async from a secret manager
-@Security(new BearerTokenProvider(), async () => vault.getSecret('api-token'))
-```
-
-A full example using async key resolution:
-
-```ts
-@Get({
-  host: 'https://api.example.com',
-  path: '/secure',
-})
-@Security(new BearerTokenProvider(), async () => await vault.getSecret('api-token'))
-class SecureFrame extends JinFrame<{ status: number; data: Response }> {}
-```
-
-## BearerTokenProvider.setKey()
-
-`setKey()` lets you update the Bearer token at runtime without reconstructing the provider. This is useful after a token refresh.
-
-```ts
-const bearerProvider = new BearerTokenProvider();
-
-// Update token after refresh
-bearerProvider.setKey(newAccessToken);
-
-@Security(bearerProvider)
-@Get({ host: 'https://api.example.com', path: '/profile' })
 class ProfileFrame extends JinFrame {}
+
+// Inspect the generated header without sending a request.
+const frame = ProfileFrame.of();
+console.log(frame._request().headers);
+
+// Override only this execution; the shared provider is unchanged.
+const reply = await frame._execute({ dynamicAuth: 'per-request-token' });
 ```
 
-## Multiple Security Providers
+## API keys and Basic credentials
 
-You can attach multiple providers to a single frame. Each provider processes the key independently.
+```ts twoslash
+import { ApiKeyProvider, BasicAuthProvider, BearerTokenProvider } from 'jin-frame';
 
-```ts
-@Security([
-  new BearerTokenProvider(),
-  new ApiKeyProvider(undefined, 'X-Client-ID', 'header', 'client-id'),
-], 'multi-auth-token')
-@Get({ host: 'https://api.example.com', path: '/secure' })
-export class MultiSecurityFrame extends JinFrame {}
+// The destination is independent of the optional provider metadata name.
+const headerKey = new ApiKeyProvider('secret', 'X-API-Key');
+const queryKey = new ApiKeyProvider(() => 'current-key', 'api_key', 'query');
+const cookieKey = new ApiKeyProvider('session-value', 'session', 'cookie');
+
+// Basic expects Base64-encoded user:password; Bearer adds its own prefix.
+const basic = new BasicAuthProvider(() => btoa('user:password'));
+const bearer = new BearerTokenProvider('access-token');
+
+// Full HTTP credentials can also use the common provider directly.
+const custom = new ApiKeyProvider(() => 'Bearer access-token', 'Authorization');
 ```
 
-## Class Inheritance and Override
+Basic and Bearer extend `ApiKeyProvider`. Their formatter adds the scheme prefix only when missing. `setKey(stringOrSupplier)` replaces the shared source for future requests.
 
-A child class can override the parent's security configuration:
+## Priority and composition
 
-```ts
-@Security(new BearerTokenProvider(), 'base-token')
-@Get({ host: 'https://api.example.com' })
-class BaseApiFrame extends JinFrame {}
+A literal `Authorization` header bypasses providers. Call-level Basic `auth` is next. Otherwise, providers resolve string `dynamicAuth`, their own key, then decorator `authorization`. Basic retains legacy `{ username, password }` authorization support.
 
-@Security(new ApiKeyProvider(undefined, 'X-API-Key', 'header', 'specialized-auth'), 'specialized-api-key')
-@Get({ path: '/specialized' })
-class SpecializedApiFrame extends BaseApiFrame {}
-```
+A provider array is processed in order. Headers and queries are merged; later values for the same key win. Give each provider its own constructor key when credentials differ. A shared `dynamicAuth` applies to every provider, not to a provider selected by name. Names are metadata, supplied as the second Basic/Bearer argument or fourth API-key argument.
 
-## Environment-Specific Configuration
+## Async credentials
 
-```ts
-@Security(new BearerTokenProvider(), () => process.env.API_TOKEN ?? 'development-token')
+```ts twoslash
+import { BearerTokenProvider, Get, JinFrame, Security } from 'jin-frame';
+
+/** Replace with your secret manager's asynchronous lookup. */
+async function loadToken(): Promise<string> {
+  return 'resolved-token';
+}
+
+// _execute() awaits the authorization supplier before building the request.
+@Security(new BearerTokenProvider(), loadToken)
 @Get({
-  host: process.env.API_HOST ?? 'https://dev-api.example.com',
-  path: '/data',
+  host: 'https://api.example.com',
+  path: '/me',
 })
-export class DataFrame extends JinFrame {}
+class AsyncProfileFrame extends JinFrame {}
+
+const reply = await AsyncProfileFrame.of()._execute();
 ```
 
-## Migration from v4.x
-
-### Before (v4.x)
-
-```ts
-@Security(new BearerTokenProvider(undefined, 'my-auth'))
-@Authorization('user-token-12345')
-@Get({ host: 'https://api.example.com', path: '/user/{id}' })
-export class UserProfileFrame extends JinFrame {
-  @Param()
-  declare public readonly id: string;
-}
-```
-
-### After (v5.0)
-
-```ts
-@Security(new BearerTokenProvider(), 'user-token-12345')
-@Get({ host: 'https://api.example.com', path: '/user/{id}' })
-export class UserProfileFrame extends JinFrame {
-  @Param()
-  declare public readonly id: string;
-}
-```
-
-### OAuth2Provider Migration
-
-`OAuth2Provider` has been removed. Replace it with `BearerTokenProvider`:
-
-```ts
-@Security(new OAuth2Provider('oauth2', 'Bearer'))
-@Authorization({ accessToken: 'oauth-access-token-xyz', tokenType: 'Bearer' })
-
-// After (v5.0)
-@Security(new BearerTokenProvider(), 'oauth-access-token-xyz')
-```
-
-## Provider constructor keys
-
-Constructors accept a key or synchronous key supplier; Basic credentials must be Base64-encoded.
-Provider names are optional metadata passed after the key configuration.
-For asynchronous suppliers, continue using `@Security(provider, async () => token)`.
-
-```ts
-new ApiKeyProvider('secret', 'X-API-Key');
-new BearerTokenProvider(() => process.env.API_TOKEN ?? '');
-new BasicAuthProvider(() => btoa('user:pass'));
-```
+`_request()` is synchronous and does not resolve async authorization. Use `_execute()` for this path. Empty strings are not rejected by providers; validate missing credentials in application code. Authentication does not redact logs automatically.

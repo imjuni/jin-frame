@@ -46,7 +46,7 @@ pnpm add jin-frame@^6.0.0
 
 
 
-[All packages](../packages) · [Getting started](./index) · [생성 파이프라인](./pipeline) · [Configuration](./configuration)
+[All packages](../packages) · [Getting started](./index) · [Generation pipeline](./pipeline) · [Configuration](./configuration)
 
 ## API reference
 

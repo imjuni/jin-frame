@@ -2,168 +2,54 @@
 outline: deep
 ---
 
-# Header
+# Headers
 
-`jin-frame`에서 클래스 필드에 `@Header()` 데코레이터를 선언하면, 해당 필드 값이 **HTTP 헤더로 직렬화**되어 요청에 포함됩니다.
+`@Header()`는 field를 HTTP header에 연결합니다. `replaceAt`으로 전송할 header 이름을 지정합니다.
 
-## 간단한 예제
+## Example
 
-```ts
-@Get({ host: 'https://api.example.com', path: '/search' })
-export class SearchFrame extends JinFrame {
-  @Header() declare readonly Authorization: string;
-  @Header() declare readonly 'X-Tracking-Id'?: string;
-  @Header() declare readonly 'X-Tags'?: string[]; // → X-Tags: red (반복)  X-Tags: blue
-  @Header() declare readonly 'X-Debug'?: boolean; // → X-Debug: true
+```ts twoslash
+import { Get, JinFrame, Header } from 'jin-frame';
+
+@Get({
+  host: 'https://api.example.com',
+  path: '/me',
+})
+class ExampleFrame extends JinFrame {
+  // Map a convenient field name to its HTTP header name.
+  @Header({ replaceAt: 'X-Request-Id' })
+  declare readonly requestId: string;
+
+  @Header({ replaceAt: 'Accept-Language' })
+  declare readonly language?: string;
 }
 
-// 실행
-const frame = SearchFrame.of({
-  Authorization: 'Bearer token',
-  'X-Tracking-Id': '1234',
-  'X-Tags': ['red', 'blue'],
-  'X-Debug': true,
-});
-const reply = await frame._execute();
-
-// 전송된 헤더:
-// Authorization: Bearer token
-// X-Tracking-Id: 1234
-// X-Tags: red
-// X-Tags: blue
-// X-Debug: true
+// Build the request without contacting the placeholder server.
+const frame = ExampleFrame.of({ requestId: 'request-123', language: 'en' });
+const request = frame._request();
+console.log(request.headers);
 ```
 
-## 지원 타입과 직렬화 방식
+## Options
 
-`@Header()`가 지원하는 타입과 직렬화 결과는 다음과 같습니다.
+| Option | Type | Default | Description |
+| --- | --- | --- | --- |
+| `replaceAt` | `string` | field 이름 | field 이름 대신 사용할 전송 이름입니다. |
+| `encode` | `boolean` | `true` | 값에 URI 인코딩을 적용합니다. |
+| `comma` | `boolean` | `false` | array 요소를 쉼표로 연결합니다. |
+| `bit.enable` | `boolean` | `false` | 숫자 array를 비트 OR 값으로 합칩니다. |
+| `bit.withZero` | `boolean` | `false` | 비트 OR 결과가 0이어도 포함합니다. |
+| `formatters` | `Formatter \| Formatter[]` | `undefined` | 직렬화 전에 값을 변환합니다. |
+| `cacheKeyExclude` | `boolean` | `false` | 전송 값은 유지하고 중복 제거 키에서만 제외합니다. |
 
-<!-- markdownlint-disable MD033 -->
+`bit`는 `{ enable: true, withZero: false }` 형태로 지정합니다.
 
-| 타입                 | 옵션    | 예제 값            | 직렬화 결과 (헤더 라인)                  |
-| -------------------- | ------- | ------------------ | ---------------------------------------- |
-| `string`             |         | `'token'`          | `X-Auth: token`                          |
-| `number`             |         | `2`                | `X-Page: 2`                              |
-| `boolean`            |         | `true`             | `X-Debug: true`                          |
-| `string[]`           | comma ✗ | `['a','b']`        | `X-Tags: "[\"a\", \"b\"]"`               |
-| `string[]`           | comma ✓ | `['a','b']`        | `X-Tags: a,b`                            |
-| `number[]`           | bit ✗   | `[1,2,4]`          | `X-Flags: "[\"1\", \"2\", \"4\"]"`       |
-| `number[]`           | bit ✓   | `[1,2,4]`          | `X-Flags: 7`<br />(비트 OR: 1\|2\|4 = 7) |
-| `undefined` / `null` |         | `undefined`/`null` | **생략됨** (헤더 생성 안 됨)             |
+## Header names and values
 
-<!-- markdownlint-ensable MD033 -->
+`replaceAt`은 전송 이름을 고르고 field는 type가 있는 Factory 입력으로 유지됩니다. 값 없는 선택 field는 생략합니다. API 계약에 맞춰 `comma`, `bit`, `formatters`를 쓸 수 있지만 header는 중첩 JSON object가 아닙니다.
 
-- 배열 기본 직렬화는 **반복 헤더** 방식입니다.
-- 숫자/불리언은 문자열로 변환되어 전송됩니다.
-- `undefined` / `null` 값은 자동으로 생략됩니다.
+## Authentication and browser restrictions
 
-## 배열 옵션
+명시적인 `Authorization` header가 있으면 security provider를 사용하지 않습니다. constructor 토큰 function을 header field로 덮어쓰지 않도록 확인합니다. 브라우저는 Cookie·User-Agent 같은 header를 제한할 수 있으며 CORS 규칙도 적용됩니다.
 
-### 기본 배열 직렬화 (반복 헤더)
-
-```ts
-@Get({ host: 'https://api.example.com', path: '/filter' })
-export class ArrayHeaderFrame extends JinFrame {
-  @Header() declare readonly 'X-Tags'?: string[];
-}
-
-await ArrayHeaderFrame.of({ 'X-Tags': ['red', 'blue'] })._execute();
-// → X-Tags: red
-// → X-Tags: blue
-```
-
-### 쉼표 구분 배열
-
-`@Header({ comma: true })`를 사용하면 배열이 **쉼표 구분 문자열**로 직렬화됩니다.
-
-```ts
-@Get({ host: 'https://api.example.com', path: '/filter' })
-export class CommaHeaderFrame extends JinFrame {
-  @Header({ comma: true })
-  declare readonly 'X-Tags'?: string[];
-}
-
-await CommaHeaderFrame.of({ 'X-Tags': ['red', 'blue', 'green'] })._execute();
-// → X-Tags: red,blue,green
-```
-
-### 비트 OR 배열 (숫자 전용)
-
-`@Header({ bit: { enable: true } })`를 사용하면 숫자 배열이 **비트 OR 합산 값**으로 직렬화됩니다.
-
-```ts
-@Get({ host: 'https://api.example.com', path: '/flags' })
-export class BitwiseHeaderFrame extends JinFrame {
-  @Header({ bit: { enable: true } })
-  declare readonly 'X-Flags'?: number[];
-}
-
-await BitwiseHeaderFrame.of({ 'X-Flags': [1, 2, 4] })._execute();
-// → X-Flags: 7   (1 | 2 | 4 = 7)
-```
-
-> API 서버가 비트 마스크 값을 요구할 때 유용합니다.
-
-## 헤더 값 인코딩
-
-쿼리스트링과 달리 헤더 값은 **퍼센트 인코딩되지 않습니다**.  
-모든 값은 문자열(필요 시 formatter 적용)로 변환되어 그대로 전송됩니다.
-
-```ts
-@Get({ host: 'https://api.example.com', path: '/search' })
-export class EncodedHeaderFrame extends JinFrame {
-  @Header() declare readonly 'X-Note': string;
-}
-
-await EncodedHeaderFrame.of({ 'X-Note': 'hello & tea' })._execute();
-// → X-Note: hello & tea
-```
-
-## 선택적 헤더
-
-값이 없으면 해당 헤더는 **생성되지 않습니다**.
-
-```ts
-@Get({ host: 'https://api.example.com', path: '/items' })
-export class OptionalHeaderFrame extends JinFrame {
-  @Header() declare readonly 'X-Trace'?: string;
-  @Header() declare readonly 'X-Page'?: number;
-}
-
-await OptionalHeaderFrame.of({})._execute();
-// → X-Trace, X-Page 헤더 없음
-```
-
-## Param, Query와 함께 사용하기
-
-```ts
-@Get({ host: 'https://api.example.com', path: '/orgs/:orgId/users' })
-export class ListUsersHeaderFrame extends JinFrame {
-  @Param() declare readonly orgId: string;
-  @Query() declare readonly page?: number;
-  @Header() declare readonly Authorization: string;
-}
-
-await ListUsersHeaderFrame.of({
-  orgId: 'acme',
-  page: 1,
-  Authorization: 'Bearer token',
-})._execute();
-// → GET /orgs/acme/users?page=1
-// → Authorization: Bearer token
-```
-
-## 디버깅 팁
-
-요청 직전에 `frame.getData('header')`를 사용해 **최종 헤더 맵**을 확인할 수 있습니다.
-
-```ts
-const frame = SearchFrame.of({
-  Authorization: 'Bearer token',
-  'X-Tags': ['red', 'blue'],
-});
-const req = frame.request();
-
-console.log(frame.getData('header')); // { Authorization: 'Bearer token', 'X-Tags': ['red','blue'] } (직렬화 전 원본)
-console.log(req.headers); // 직렬화된 최종 헤더
-```
+multipart Content-Type은 직접 넣지 않습니다. FormData가 boundary를 생성합니다. `cacheKeyExclude`로 사용자 식별 정보를 제외하면 서로 다른 호출자가 response를 공유할 수 있으므로 주의합니다.

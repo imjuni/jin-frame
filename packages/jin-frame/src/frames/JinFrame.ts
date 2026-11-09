@@ -33,19 +33,16 @@ export class JinFrame<Response extends JinResponse = JinResponse>
   implements JinFrameFunction<Response>
 {
   /**
-   * Execute before request. If you can change request object that is affected request.
-   *
-   * @param this this instance
-   * @param req request object
-   * */
+   * Runs once before transport attempts; mutations affect the outgoing request.
+   * @param _req - The assembled request configuration.
+   */
   protected _preHook(_req: JinRequestConfig): void | Promise<void> {}
 
   /**
-   * Execute after request.
-   *
-   * @param this this instance
-   * @param req request object
-   * @param result [discriminated union](https://www.typescriptlang.org/docs/handbook/typescript-in-5-minutes-func.html#discriminated-unions) pass or fail
+   * Observes a processed HTTP response, including rejected statuses.
+   * @param _req - The outgoing request configuration.
+   * @param _reply - The complete status-discriminated response and validation result.
+   * @param _debugInfo - Execution timing and deduplication metadata.
    */
   protected _postHook(_req: JinRequestConfig, _reply: JinResp<Response>, _debugInfo: DebugInfo): void | Promise<void> {}
 
@@ -255,11 +252,11 @@ export class JinFrame<Response extends JinResponse = JinResponse>
   /**
    * Generate a request config and invoke HTTP APIs.
    *
-   * Function-based `SecurityKey` values (set via `@Security(provider, () => key)`) are resolved
-   * here before building the request. Use this method when the authorization key is dynamic.
+   * Function-based authorization values are awaited before building the request.
+   * Provider constructor suppliers remain synchronous and are evaluated during request assembly.
    *
    * @param option request configuration options
-   * @returns JinResp with pass or fail discriminated union
+   * @returns The status-discriminated response accepted by the call-level status policy.
    */
   public _execute<TSelf extends this = this>(
     option?: JinFrameRequestConfig &

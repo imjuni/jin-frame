@@ -2,142 +2,64 @@
 outline: deep
 ---
 
-# Builder 패턴
-
-`JinFrame`은 생성자 없이 프레임 인스턴스를 만들 수 있는 두 가지 정적 팩토리 메서드 — `builder()`와 `of()` — 를 제공합니다. 두 메서드 모두 TypeScript의 팬텀 타입 추적을 활용해 누락된 필드를 **컴파일 타임**에 잡아냅니다.
+# Factory and Builder
 
 ## of()
 
-`of()`는 일반 객체 또는 빌더 콜백으로 인스턴스를 생성합니다. 프레임을 만드는 가장 간단한 방법입니다.
+object로 field를 전달하거나 콜백으로 Builder를 설정합니다. 필수 공개 field가 없으면 첫 인자를 생략합니다. constructor 인자는 field 인자 뒤에 전달하며, field가 없으면 `undefined`를 자리표시자로 사용합니다.
 
-필수 공개 필드가 없으면 `Frame.of()` 또는 `Frame.of(undefined)`를 사용할 수 있습니다. 필드 없이 생성자 인자를 전달하려면 `Frame.of(undefined, ...ctorArgs)`를 사용합니다.
+```ts twoslash
+import { Get, JinFrame, Param, Query } from 'jin-frame';
 
-### 일반 객체
-
-```ts
-import { Get, Param, Query, JinFrame } from 'jin-frame';
-
-@Get({ host: 'https://api.example.com', path: '/users/{id}' })
-class GetUserFrame extends JinFrame<{ status: number; data: User }> {
+@Get({
+  host: 'https://api.example.com',
+  path: '/users/{id}',
+})
+class UserFrame extends JinFrame {
   @Param()
-  declare public readonly id: string;
+  declare readonly id: string;
 
   @Query()
-  declare public readonly expand?: string;
+  declare readonly expand?: string;
 }
 
-const frame = GetUserFrame.of({ id: '123', expand: 'roles' });
-const reply = await frame._execute();
+// Optional fields do not gate build().
+const user = UserFrame.builder().set('id', '123').build();
+const same = UserFrame.of({ id: '123' });
+const fromCallback = UserFrame.of((b) => b.set('id', '123'));
+
+@Get({
+  host: 'https://api.example.com',
+  path: '/health',
+})
+class HealthFrame extends JinFrame {}
+
+// No required public fields: an empty object is unnecessary.
+const health = HealthFrame.of();
 ```
 
-### 빌더 콜백
+## Builder operations
 
-```ts
-const frame = GetUserFrame.of((b) =>
-  b.set('id', '123').set('expand', 'roles'),
-);
-```
+| 메서드 | 동작 |
+| --- | --- |
+| `set(key, value)` | 공개 데이터 field를 선언된 type로 설정합니다. |
+| `from(object)` | object의 열거 가능한 string 키 field를 복사합니다. |
+| `auto()` | 호출 시점에 class default value를 Builder에 복사합니다. |
+| `get()` | 스냅샷이 아닌 현재 상태의 읽기 전용 type 뷰를 반환합니다. |
+| `build()` | 새 instance를 만들고 default value, Builder 값 순으로 병합합니다. |
 
----
+메서드와 `_` 접두사 field는 제외됩니다. private·protected field는 공개 입력이 아닙니다. 선택 field는 `build()` 전에 설정하지 않아도 됩니다.
 
-## builder()
+## Defaults and type guarantees
 
-`builder()`는 `BuilderFor<C>` 객체를 반환합니다. 팬텀 타입 파라미터 `TSet`이 set한 키를 누적하며, **모든 필수 공개 필드가 할당된 뒤에만 `build()`가 호출 가능**해집니다. 필드를 빠뜨리면 런타임이 아닌 컴파일 에러로 즉시 알 수 있습니다.
+`of()`와 `build()` 모두 default value를 적용합니다. `auto()`는 default value를 Builder에 추가로 복사하므로 먼저 설정한 값을 덮어쓰며, 이후 `set()`이 우선합니다. `auto()`와 `build()`가 각각 default value 메서드를 호출하므로 두 메서드를 함께 쓸 때 부수 효과에 유의합니다.
 
-```ts
-const frame = GetUserFrame.builder()
-  .set('id', '123')
-  .set('expand', 'roles')
-  .build(); // ✅ 모든 필드 설정 완료 — build() 호출 가능
+호환성을 위해 `auto()`는 모든 field를 완료로 처리하고, `from()`은 선택적 입력 키도 추적하며, 콜백은 완전성을 검사하지 않습니다. 이 경로들은 런타임의 필수 값 존재를 보장하지 않습니다. 필요한 입력 검사는 별도로 수행합니다.
 
-const frame2 = GetUserFrame.builder()
-  .set('expand', 'roles')
-  .build(); // ❌ 컴파일 에러: 'id' 누락
-```
+`get()`은 얕은 실시간 참조입니다. 이후 설정이 이전 조회 결과에도 반영됩니다. 생성된 프레임의 중첩 object 역시 참조를 공유하며 깊은 복사나 동결을 하지 않습니다.
 
-### 체인 메서드
+## Constructor arguments
 
-| 메서드          | 설명                                                           |
-| --------------- | -------------------------------------------------------------- |
-| `.set(k, v)`    | 공개 필드 하나를 설정. `k`에서 `v`의 타입이 자동 추론됩니다.   |
-| `.from(obj)`    | 부분 객체로 여러 필드를 한 번에 설정합니다.                    |
-| `.auto()`       | `getDefaultValues()`에서 정의한 클래스 기본값을 적용합니다.    |
-| `.get()`        | 빌드 없이 현재 상태의 읽기 전용 참조을 반환합니다.                       |
-| `.build()`      | 프레임을 인스턴스화합니다. 모든 필수 필드가 설정된 후에만 호출 가능. |
+`UserFrame.of(fields, ...constructorArgs)` 또는 `UserFrame.builder(...constructorArgs)`로 전달합니다. field 없이 constructor 인자만 필요하면 `Frame.of(undefined, argument)`를 사용합니다. field 생략이 constructor 필수 인자까지 선택적으로 만들지는 않습니다.
 
-```ts
-const frame = GetUserFrame.builder()
-  .auto()               // 기본값 먼저 적용
-  .from({ id: '123' }) // 이후 덮어쓰기
-  .build();
-```
-
----
-
-## 생성자 인자
-
-생성자에 인자가 필요한 프레임은 `of()`에서 필드 객체 뒤에, `builder()`에서는 첫 번째 인자로 넘깁니다.
-
-```ts
-@Get({ host: 'https://api.example.com', path: '/users/{id}' })
-class AuthedFrame extends JinFrame<{ status: number; data: User }> {
-  constructor(private readonly tenant: string) {
-    super();
-  }
-
-  @Param()
-  declare public readonly id: string;
-}
-
-// of() — 필드 객체 먼저, 생성자 인자는 그 뒤
-const frame = AuthedFrame.of({ id: '123' }, 'acme');
-
-// builder() — 생성자 인자를 builder()에 전달
-const frame2 = AuthedFrame.builder('acme').set('id', '123').build();
-```
-
----
-
-## 기본값 설정
-
-정적 메서드 `getDefaultValues()`를 오버라이드하면 `auto()`와 `build()` 시 자동으로 적용될 기본값을 제공할 수 있습니다.
-
-```ts
-import type { PublicFieldsOf } from 'jin-frame';
-
-@Get({ host: 'https://api.example.com', path: '/users' })
-class ListUsersFrame extends JinFrame<{ status: number; data: User[] }> {
-  @Query()
-  declare public readonly page: number;
-
-  @Query()
-  declare public readonly limit: number;
-
-  protected static override getDefaultValues(): Partial<PublicFieldsOf<ListUsersFrame>> {
-    return { page: 1, limit: 20 };
-  }
-}
-
-const frame = ListUsersFrame.builder()
-  .auto()         // page=1, limit=20 기본값 적용
-  .set('page', 3) // page 덮어쓰기
-  .build();
-```
-
----
-
-## 타입 안전성 상세
-
-`builder()`와 `of()`가 사용하는 `PublicFieldsOf<T>` 타입은 다음을 자동으로 제외합니다:
-
-- 메서드 (함수 타입 프로퍼티)
-- `_` 접두사 필드 (`_startAt`, `_option` 등 프레임 내부 프로퍼티)
-
-따라서 서브클래스에서 직접 선언한 필드만 설정 대상이 되며, 프레임워크 내부 구조는 노출되지 않습니다.
-
-## 호환성과 타입 검사 범위
-
-선택 필드는 `build()` 전에 생략할 수 있습니다. 호환성을 위해 `auto()`는 모든 필드를
-설정 완료로 처리하고, `from()`은 입력의 선택적 키도 추적하며, `of()` 콜백은
-완전성을 검사하지 않습니다. 이 경로들은 필수 값의 실제 존재를 보장하지 않습니다.
-`get()`은 현재 상태를 참조하는 읽기 전용 뷰입니다. 이후 변경이 반영되며 중첩 객체는 동결되지 않습니다.
+[상속과 default value type](./inheritance)을 참고하세요.
