@@ -4,7 +4,7 @@ outline: deep
 
 # Migrating to v6
 
-Use runtime `jin-frame` 6.x with generator packages 1.x. Regenerate clients after updating the generator. Node.js must satisfy the declared `^22.23.4` engine; generators use TypeScript >= 6 and openapi-typescript >= 7.
+Use runtime `jin-frame` 6.x with generator packages 1.x. Regenerate clients after updating the generator. Node.js must satisfy the declared `>=22.23.4` engine; generators use TypeScript >= 6 and openapi-typescript >= 7.
 
 ## Migration checklist
 

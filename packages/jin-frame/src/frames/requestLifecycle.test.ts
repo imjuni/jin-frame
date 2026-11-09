@@ -21,6 +21,19 @@ afterEach(() => {
   RequestDedupeManager.clearAllPendingRequests();
 });
 
+it("should preserve raw binary bodies when concurrent executions enable cloneRaw", async () => {
+  const bytes = new Uint8Array([0, 128, 255, 65]);
+  const fetcher = vi.fn(async () => new Response(bytes));
+  vi.stubGlobal("fetch", fetcher);
+  const results = await Promise.all([
+    LifecycleFrame.of({})._execute({ cloneRaw: true }),
+    LifecycleFrame.of({})._execute({ cloneRaw: true }),
+  ]);
+  expect(fetcher).toHaveBeenCalledTimes(1);
+  const bodies = await Promise.all(results.map((result) => result.raw.arrayBuffer()));
+  expect(bodies.map((body) => new Uint8Array(body))).toEqual([bytes, bytes]);
+});
+
 it.each([204, 205, 304])("should reconstruct both callers when status is %i", async (status) => {
   const requester = vi.fn(async () => new Response(null, { status }));
   const results = await Promise.all([

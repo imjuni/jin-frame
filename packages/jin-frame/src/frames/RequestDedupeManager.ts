@@ -45,10 +45,10 @@ export class RequestDedupeManager {
       return { resp, isDeduped: true };
     }
 
-    // Buffer the response so multiple callers can each read the body independently
+    // Preserve raw bytes so each caller can read binary or text bodies independently.
     const promise = requesterFn()
       .then(async (reply) => {
-        const body = await reply.text();
+        const body = await reply.arrayBuffer();
         RequestDedupeManager.pendingRequests.delete(cacheKey);
         return {
           status: reply.status,

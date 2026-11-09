@@ -1,6 +1,6 @@
 # OpenAPI Generator 1.0.0
 
-`@jin-frame/generator-cli` 1.0.0은 Swagger/OpenAPI v2와 OpenAPI v3 문서에서 jin-frame 6.x 클라이언트를 생성합니다. Node.js ^22.23.4, TypeScript >= 6, openapi-typescript >= 7이 필요합니다.
+`@jin-frame/generator-cli` 1.0.0은 Swagger/OpenAPI v2와 OpenAPI v3 문서에서 jin-frame 6.x 클라이언트를 생성합니다. Node.js >=22.23.4, TypeScript >= 6, openapi-typescript >= 7이 필요합니다.
 
 ```sh
 pnpm add jin-frame@^6.0.0

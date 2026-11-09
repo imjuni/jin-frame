@@ -760,7 +760,7 @@ Update fake-timer tests and latency expectations that counted a terminal retry d
 
 #### 8. Runtime, packaging, and generators
 
-The workspace currently declares Node.js `^22.23.4` and uses TypeScript `6.0.3`. CI exercises Node 22, 24, and 26, but that does not broaden the published `engines` range. Resolve engine-policy requirements before adopting a different Node major. TypeScript 7 preparation is not a claim that the current compiler has been replaced by TypeScript 7.
+The workspace currently declares Node.js `>=22.23.4` and uses TypeScript `6.0.3`. CI exercises Node 22, 24, and 26. TypeScript 7 preparation is not a claim that the current compiler has been replaced by TypeScript 7.
 
 `jin-frame` retains ESM and CommonJS runtime entry points. Generator core is ESM-only; the CLI is an executable-only ESM package and does not expose an importable library API. Use generator core for programmatic integration.
 

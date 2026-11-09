@@ -70,7 +70,7 @@ pnpm add jin-frame --save
 |---------|-------------|-------|
 | < 5.0   | Axios       | Requires `axios` as a peer dependency |
 | 5.x | native `fetch` | Previous response type API |
-| 6.x | native `fetch` | Status-discriminated response unions; Node.js ^22.23.4 required |
+| 6.x | native `fetch` | Status-discriminated response unions; Node.js >=22.23.4 required |
 
 ## Usage
 
@@ -344,7 +344,7 @@ to diagnose the failure rather than treating the error's status as a server resp
 
 ## jin-frame Requirements
 
-- Node.js ^22.23.4
+- Node.js >=22.23.4
 - TypeScript >= 5.0
 - `experimentalDecorators` and `emitDecoratorMetadata` enabled in `tsconfig.json`
 
