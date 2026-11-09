@@ -36,6 +36,8 @@ import type { WithDefaultValues } from "#tools/type-utilities/WithDefaultValues"
 import "reflect-metadata";
 import type { JinRequestConfig } from "#interfaces/JinRequestConfig";
 import { getUrlValue } from "#tools/getUrlValue";
+import { isValidateStatusDefault } from "#tools/isValidateStatusDefault";
+import type { StatusValidator } from "#tools/validateStatus";
 
 export abstract class AbstractJinFrame {
   static getEndpoint(): URL {
@@ -117,6 +119,9 @@ export abstract class AbstractJinFrame {
     Object.assign(inst as object, defaults, args);
     return inst;
   }
+
+  /** Runtime default policy. Overrides do not change inferred response types. */
+  public readonly _validateStatus: StatusValidator = isValidateStatusDefault;
 
   protected _retryFail(_req: JinRequestConfig, _res: Response): void | Promise<void> {}
 
