@@ -76,3 +76,24 @@ HTTP response가 있으면 오류에 실제 상태·header·raw response와 확�
 공통 BaseFrame에서 `public override readonly _validateStatus = (ok: boolean, status: number) => ...`를 선언하면 하위 프레임이 정책을 상속합니다. 기본 구현은 `ok`를 반환하며, 호출 옵션의 `validateStatus`가 멤버보다 우선합니다. 이 정책은 재시도와 최종 응답 판정에 함께 적용됩니다.
 
 멤버 override는 반환 타입 추론에 반영되지 않습니다. 호출 옵션을 생략하면 기존처럼 선언된 2xx 응답만 추론합니다. 허용 범위를 확장한 사용자가 타입과 실제 응답의 차이를 관리해야 합니다. 상태에 맞는 타입 추론이 필요하면 호출 옵션을 사용하세요.
+
+jin-frame 6.1.0부터 사용할 수 있습니다. 다음 예제는 404도 허용하는 정책을 하위 프레임에 공유합니다.
+
+```ts
+import { Get, JinFrame } from 'jin-frame';
+
+class BaseFrame extends JinFrame {
+  public override readonly _validateStatus = (ok: boolean, status: number) =>
+    ok || status === 404;
+}
+
+@Get({ host: 'https://api.example.com', path: '/users/1' })
+class UserFrame extends BaseFrame {}
+
+const frame = UserFrame.of();
+await frame._execute();
+await frame._create()();
+
+// A call-level policy takes precedence over the inherited member.
+await frame._execute({ validateStatus: (ok) => ok });
+```
