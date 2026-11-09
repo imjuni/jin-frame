@@ -76,3 +76,24 @@ Use `cloneRaw: true` when the raw response body must remain readable after parsi
 Declare `public override readonly _validateStatus = (ok: boolean, status: number) => ...` in a shared BaseFrame to let subclasses inherit its policy. The default implementation returns `ok`. Call-level `validateStatus` takes precedence over the member. The policy controls both retries and final response acceptance.
 
 Member overrides do not affect return type inference. Calls without a call-level validator still infer only declared 2xx responses. Users expanding acceptance through an override are responsible for handling the difference between inferred types and runtime responses. Use call options when status-aware inference is needed.
+
+Available since jin-frame 6.1.0.
+
+```ts
+import { Get, JinFrame } from 'jin-frame';
+
+class BaseFrame extends JinFrame {
+  public override readonly _validateStatus = (ok: boolean, status: number) =>
+    ok || status === 404;
+}
+
+@Get({ host: 'https://api.example.com', path: '/users/1' })
+class UserFrame extends BaseFrame {}
+
+const frame = UserFrame.of();
+await frame._execute();
+await frame._create()();
+
+// A call-level policy takes precedence over the inherited member.
+await frame._execute({ validateStatus: (ok) => ok });
+```

@@ -342,6 +342,31 @@ processing failures. An aborted caller signal also stops requests and retries, r
 with `JinRespError`; inspect `cause` for the abort reason. Without `error.resp`, no HTTP response is attached; use `cause`
 to diagnose the failure rather than treating the error's status as a server response.
 
+### Shared status policy (6.1.0)
+
+Override `_validateStatus` in a common BaseFrame to share HTTP acceptance across subclasses. The default returns `ok` (2xx). Call options take precedence, and the selected policy controls retries and final response acceptance.
+
+```ts
+import { Get, JinFrame } from 'jin-frame';
+
+class BaseFrame extends JinFrame {
+  public override readonly _validateStatus = (ok: boolean, status: number) =>
+    ok || status === 404;
+}
+
+@Get({ host: 'https://api.example.com', path: '/users/1' })
+class UserFrame extends BaseFrame {}
+
+const frame = UserFrame.of();
+await frame._execute();
+await frame._create()();
+
+// A call-level policy takes precedence over the inherited member.
+await frame._execute({ validateStatus: (ok) => ok });
+```
+
+Member overrides change runtime behavior only. Without a call-level validator, return types still select declared 2xx responses. Users accepting additional statuses through an override are responsible for handling that type difference. Use `validateStatus(200, 404)` in call options when you need status-aware return type inference.
+
 ## jin-frame Requirements
 
 - Node.js >=22.23.4
