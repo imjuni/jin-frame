@@ -2,6 +2,10 @@
 
 Release history and consumer migration notes are maintained in this file. See [compatibility and migration](#compatibility-and-migration) for before/after examples and the [6.0 guide](./packages/docs/src/migration-v6.md) for design rationale.
 
+## 6.1.0
+
+- Added an inheritable `_validateStatus` member for shared BaseFrame status policies. Call-level validators take precedence for retries and final response acceptance. Member overrides do not change the existing default 2xx return type inference.
+
 ## 6.0.0
 
 - Fixed generator host fallback when OpenAPI servers is absent or empty: use the remote specification origin rather than treating the document path as an API prefix. Explicit host and server prefixes remain unchanged.
