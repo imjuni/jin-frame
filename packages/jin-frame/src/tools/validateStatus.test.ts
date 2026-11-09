@@ -48,3 +48,34 @@ it("should apply the default success policy and allow call overrides when receiv
     server.close();
   }
 });
+
+it("should inherit a base frame policy and prioritize call options when executing requests", async () => {
+  const { Get } = await import("#decorators/methods/Get");
+  const { http, HttpResponse } = await import("msw");
+  const { setupServer } = await import("msw/node");
+  class BaseFrame extends UserFrame {
+    public override readonly _validateStatus = (_ok: boolean, status: number) => status === 404;
+  }
+  @Get({ host: "https://status.test", path: "/inherited" })
+  class InheritedFrame extends BaseFrame {}
+  let attempts = 0;
+  const server = setupServer(
+    http.get("https://status.test/inherited", () => {
+      attempts += 1;
+      return HttpResponse.json({ message: "Missing" }, { status: 404 });
+    }),
+  );
+  server.listen({ onUnhandledRequest: "error" });
+  try {
+    const frame = InheritedFrame.of();
+    const response = await frame._execute();
+    expectTypeOf(response.status).toEqualTypeOf<200>();
+    expect(response).toMatchObject({ status: 404, data: { message: "Missing" } });
+    expect(await frame._create()()).toMatchObject({ status: 404 });
+    expect(attempts).toBe(2);
+    await expect(frame._execute({ validateStatus: () => false })).rejects.toMatchObject({ resp: { status: 404 } });
+    await expect(frame._create({ validateStatus: () => false })()).rejects.toMatchObject({ resp: { status: 404 } });
+  } finally {
+    server.close();
+  }
+});

@@ -15,7 +15,6 @@ import type { JinFrameRequestConfig } from "#interfaces/options/JinFrameRequestC
 import type { ValidationResult } from "#interfaces/ValidationResult";
 import { getDuration } from "#tools/getDuration";
 import { getError } from "#tools/getError";
-import { isValidateStatusDefault } from "#tools/isValidateStatusDefault";
 import { runAndUnwrap } from "#tools/runAndUnwrap";
 import "reflect-metadata";
 import { resolveSecurityKey } from "#frames/resolveSecurityKey";
@@ -102,7 +101,7 @@ export class JinFrame<Response extends JinResponse = JinResponse>
     }
   > {
     const req = this._requestWrap(option);
-    const isValidateStatus = option?.validateStatus ?? isValidateStatusDefault;
+    const isValidateStatus = option?.validateStatus ?? this._validateStatus.bind(this);
 
     const jinFrameHandle = async (): Promise<
       JinResp<Response> & {

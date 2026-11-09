@@ -70,3 +70,9 @@ When an HTTP response exists, errors retain its status, headers, raw response, a
 ## Raw response and timing
 
 Use `cloneRaw: true` when the raw response body must remain readable after parsing. It increases memory use. Frame timestamps `_startAt`, `_eachStartAt`, and `_endAt` describe the most recently started execution, not an immutable log of every concurrent call.
+
+### Shared default policy
+
+Declare `public override readonly _validateStatus = (ok: boolean, status: number) => ...` in a shared BaseFrame to let subclasses inherit its policy. The default implementation returns `ok`. Call-level `validateStatus` takes precedence over the member. The policy controls both retries and final response acceptance.
+
+Member overrides do not affect return type inference. Calls without a call-level validator still infer only declared 2xx responses. Users expanding acceptance through an override are responsible for handling the difference between inferred types and runtime responses. Use call options when status-aware inference is needed.
