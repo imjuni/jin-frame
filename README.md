@@ -18,7 +18,7 @@ Define HTTP requests as TypeScript classes and send them using native `fetch`.
 
 <!-- markdownlint-disable MD033 -->
 <p align="center">
-   <img src="../../assets/jin-frame-brand-icon.png" alt="brand" width="500"/>
+   <img src="https://raw.githubusercontent.com/imjuni/jin-frame/master/assets/jin-frame-brand-icon.png" alt="brand" width="500"/>
 </p>
 <!-- markdownlint-enable MD033 -->
 
