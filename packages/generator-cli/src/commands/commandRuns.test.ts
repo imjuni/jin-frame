@@ -47,3 +47,43 @@ it("should register generation commands when defining the CLI", () => {
   expect(frameCommand.run).toBe(frameCommandRun);
   expect(templateEjectCommand.meta).toEqual(expect.objectContaining({ name: "template-eject" }));
 });
+
+it.each([createCommandRun, frameCommandRun])(
+  "should reject and clean up when the specification is invalid",
+  async (run) => {
+    const dir = await mkdtemp(join(tmpdir(), "command-failure-"));
+    try {
+      const spec = join(dir, "invalid.json");
+      await writeFile(spec, "{invalid json");
+      await expect(
+        run({
+          args: { spec, output: join(dir, "out"), type: join(dir, "paths.d.ts"), "log-level": "error" },
+        } as Parameters<typeof createCommandRun>[0] & Parameters<typeof frameCommandRun>[0]),
+      ).rejects.toThrow();
+    } finally {
+      await rm(dir, { recursive: true, force: true });
+    }
+  },
+);
+
+it.each([createCommandRun, frameCommandRun])(
+  "should propagate write failures when the output path is a file",
+  async (run) => {
+    const dir = await mkdtemp(join(tmpdir(), "command-write-failure-"));
+    try {
+      const spec = join(dir, "spec.json");
+      const type = join(dir, "paths.d.ts");
+      const output = join(dir, "blocked");
+      await writeFile(type, "export interface paths {}");
+      await writeFile(output, "existing file");
+      await writeFile(spec, JSON.stringify({ openapi: "3.0.3", info: { title: "Test", version: "1" }, paths: {} }));
+      await expect(
+        run({ args: { spec, output, type, "log-level": "error" } } as Parameters<typeof createCommandRun>[0] &
+          Parameters<typeof frameCommandRun>[0]),
+      ).rejects.toThrow();
+      expect(await readFile(output, "utf8")).toBe("existing file");
+    } finally {
+      await rm(dir, { recursive: true, force: true });
+    }
+  },
+);
