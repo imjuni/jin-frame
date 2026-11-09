@@ -13,7 +13,7 @@ pnpm add jin-frame@^6
 pnpm add -D typescript
 ```
 
-The package declares Node.js `^22.23.4` and TypeScript >= 5. Use TypeScript with legacy decorators enabled; Node's type stripping alone does not compile these decorators.
+The package declares Node.js `>=22.23.4` and TypeScript >= 5. Use TypeScript with legacy decorators enabled; Node's type stripping alone does not compile these decorators.
 
 ## TypeScript configuration
 

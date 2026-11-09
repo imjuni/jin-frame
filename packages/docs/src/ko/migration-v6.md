@@ -4,7 +4,7 @@ outline: deep
 
 # Migrating to v6
 
-런타임 `jin-frame` 6.x와 생성기 1.x를 함께 사용하고 생성기 변경 후 클라이언트를 다시 생성합니다. Node.js는 선언된 엔진 `^22.23.4`를 충족해야 합니다. 생성기는 TypeScript >= 6, openapi-typescript >= 7을 사용합니다.
+런타임 `jin-frame` 6.x와 생성기 1.x를 함께 사용하고 생성기 변경 후 클라이언트를 다시 생성합니다. Node.js는 선언된 엔진 `>=22.23.4`를 충족해야 합니다. 생성기는 TypeScript >= 6, openapi-typescript >= 7을 사용합니다.
 
 ## Migration checklist
 

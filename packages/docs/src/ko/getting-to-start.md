@@ -13,7 +13,7 @@ pnpm add jin-frame@^6
 pnpm add -D typescript
 ```
 
-패키지는 Node.js `^22.23.4`, TypeScript >= 5를 요구합니다. 레거시 decorator를 켜고 TypeScript로 컴파일합니다. Node의 type 제거 기능만으로는 decorator를 변환할 수 없습니다.
+패키지는 Node.js `>=22.23.4`, TypeScript >= 5를 요구합니다. 레거시 decorator를 켜고 TypeScript로 컴파일합니다. Node의 type 제거 기능만으로는 decorator를 변환할 수 없습니다.
 
 ## TypeScript configuration
 

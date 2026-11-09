@@ -68,7 +68,7 @@ pnpm add jin-frame --save
 |------|----------------|------|
 | < 5.0 | Axios | `axios` peer dependency 필요 |
 | 5.x | 네이티브 `fetch` | 기존 응답 타입 API |
-| 6.x | 네이티브 `fetch` | 상태 코드별 응답 union, Node.js ^22.23.4 필요 |
+| 6.x | 네이티브 `fetch` | 상태 코드별 응답 union, Node.js >=22.23.4 필요 |
 
 ## 사용법
 
@@ -307,7 +307,7 @@ try {
 
 ## 요구사항
 
-- Node.js ^22.23.4
+- Node.js >=22.23.4
 - TypeScript >= 5.0
 - `tsconfig.json`에서 `experimentalDecorators`, `emitDecoratorMetadata` 활성화
 

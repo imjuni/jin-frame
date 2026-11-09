@@ -4,7 +4,7 @@
   "private": true,
   "type": "module",
   "engines": {
-    "node": "^22.23.4"
+    "node": ">=22.23.4"
   },
   "scripts": {
     "assets": "node scripts/prepare-assets.mjs",

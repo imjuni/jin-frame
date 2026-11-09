@@ -7,6 +7,38 @@ describe("RequestDedupeManager", () => {
   });
 
   describe("dedupe", () => {
+    it.each([1, 3])("should preserve binary bytes when %i callers share a request", async (callerCount) => {
+      const bytes = Uint8Array.from({ length: 256 }, (_, index) => index);
+      const requester = vi.fn(
+        async () =>
+          new Response(bytes, {
+            status: 200,
+            headers: { "Content-Type": "application/octet-stream", "Content-Length": String(bytes.length) },
+          }),
+      );
+      const results = await Promise.all(
+        Array.from({ length: callerCount }, () => RequestDedupeManager.dedupe("binary", requester)),
+      );
+
+      expect(requester).toHaveBeenCalledTimes(1);
+      expect(results.map((result) => result.isDeduped)).toEqual(
+        Array.from({ length: callerCount }, (_, index) => index > 0),
+      );
+      for (const { resp } of results) {
+        expect(resp.headers.get("Content-Type")).toBe("application/octet-stream");
+        expect(resp.headers.get("Content-Length")).toBe(String(bytes.length));
+      }
+      const bodies = await Promise.all(results.map(({ resp }) => resp.arrayBuffer()));
+      expect(bodies.map((body) => new Uint8Array(body))).toEqual(results.map(() => bytes));
+      const firstBody = bodies[0];
+      if (firstBody == null) {
+        throw new Error("Expected the first response body");
+      }
+      new Uint8Array(firstBody)[0] = 255;
+      expect(bodies.slice(1).map((body) => new Uint8Array(body)[0])).toEqual(results.slice(1).map(() => 0));
+      expect(RequestDedupeManager.getPendingRequestsCount()).toBe(0);
+    });
+
     it("should execute request and return response with isDeduped: false for first call", async () => {
       const mockResponse = new Response(JSON.stringify("test data"), {
         status: 200,

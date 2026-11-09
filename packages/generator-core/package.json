@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "description": "A core module for generating jin-frame classes from an OpenAPI specification.",
   "engines": {
-    "node": "^22.23.4"
+    "node": ">=22.23.4"
   },
   "scripts": {
     "artifact": "pnpm pack --pack-destination ../../artifacts",
