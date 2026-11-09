@@ -10,7 +10,7 @@
     "pub": "pnpm -r --parallel --filter jin-frame --filter @jin-frame/generator-core run pub && pnpm --filter @jin-frame/generator-cli run pub",
     "unpub": "pnpm -r --parallel --no-bail --filter jin-frame --filter @jin-frame/generator-core --filter @jin-frame/generator-cli run unpub",
     "docs:typedoc": "pnpm --filter @jin-frame/docs run docs:typedoc",
-    "docs:build": "pnpm --filter @jin-frame/docs run build",
+    "docs:build": "turbo run build --filter=@jin-frame/docs",
     "check": "ultracite check",
     "check:write": "ultracite fix",
     "format": "oxfmt .",
@@ -20,7 +20,7 @@
     "bundle": "turbo run bundle",
     "test:hook": "turbo run test:hook",
     "prepare": "husky",
-    "docs:dev": "pnpm --filter @jin-frame/docs run dev",
+    "docs:dev": "pnpm --filter jin-frame run bundle && pnpm --filter @jin-frame/docs run dev",
     "docs:preview": "pnpm --filter @jin-frame/docs run preview"
   },
   "devDependencies": {
