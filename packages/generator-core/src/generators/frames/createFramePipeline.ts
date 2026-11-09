@@ -36,20 +36,13 @@ export function createFramePipeline({ params, context, templates }: ICreateFrame
       : undefined;
   const baseFrame = baseFrameData == null ? undefined : createBaseFrameFromData(baseFrameData, templates);
 
-  const frames = endpoints
-    .map((endpoint) => ({
-      endpoint,
-      data: createFrameData(endpoint),
-    }))
-    .map(({ endpoint, data }, index) => {
-      const frame = createFrameFromData(data, templates);
-      params.onEvent?.({ type: "progress", stage: "generate-frames", completed: index + 1, total: endpoints.length });
-      return {
-        method: endpoint.method,
-        pathKey: endpoint.pathKey,
-        frame,
-      };
-    });
+  const frames: ICreateFramesResult[] = [];
+  for (const [index, endpoint] of endpoints.entries()) {
+    const data = createFrameData(endpoint);
+    const frame = createFrameFromData(data, templates);
+    frames.push({ method: endpoint.method, pathKey: endpoint.pathKey, frame });
+    params.onEvent?.({ type: "progress", stage: "generate-frames", completed: index + 1, total: endpoints.length });
+  }
   const securityProviders = securityProviderData.providers.map((provider) => ({
     method: "get" as const,
     pathKey: "/",
