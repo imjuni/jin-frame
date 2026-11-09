@@ -61,3 +61,69 @@ it("should forward stage and diagnostic events when running in CI", () => {
   expect(info).toHaveBeenCalledWith("load-spec: started");
   expect(warn).toHaveBeenCalledWith("[UNSUPPORTED_SECURITY_SCHEME] Configure a provider");
 });
+
+it("should animate, preserve diagnostics, and finish stages when running interactively", () => {
+  const level = consola.level;
+  consola.level = 3;
+  vi.useFakeTimers();
+  vi.stubEnv("CI", "");
+  vi.stubEnv("TERM", "xterm");
+  const tty = Object.getOwnPropertyDescriptor(process.stderr, "isTTY");
+  Object.defineProperty(process.stderr, "isTTY", { configurable: true, value: true });
+  const write = vi.spyOn(process.stderr, "write").mockImplementation(() => true);
+  const warn = vi.spyOn(consola, "warn").mockImplementation(() => {});
+  const reporter = createProgressReporter();
+  try {
+    reporter.onEvent({ type: "stage", stage: "load-spec", state: "started" });
+    vi.advanceTimersByTime(160);
+    expect(write.mock.calls.flat().join("")).toContain("⠹");
+    reporter.onEvent({
+      type: "diagnostic",
+      severity: "warning",
+      code: "UNSUPPORTED_SECURITY_SCHEME",
+      schemeName: "oauth",
+      message: "Missing provider",
+    });
+    expect(warn).toHaveBeenCalledWith("[UNSUPPORTED_SECURITY_SCHEME] Missing provider");
+    reporter.onEvent({ type: "stage", stage: "load-spec", state: "completed" });
+    reporter.onEvent({
+      type: "diagnostic",
+      severity: "info",
+      code: "UNSUPPORTED_SECURITY_SCHEME",
+      schemeName: "oauth",
+      message: "Provider skipped",
+    });
+    expect(vi.getTimerCount()).toBe(0);
+    reporter.onEvent({ type: "progress", stage: "generate-frames", completed: 0, total: 0 });
+    expect(write.mock.calls.flat().join("")).toContain("100% · 0/0");
+    reporter.fail();
+    expect(vi.getTimerCount()).toBe(0);
+  } finally {
+    reporter.dispose();
+    consola.level = level;
+    if (tty) {
+      Object.defineProperty(process.stderr, "isTTY", tty);
+    } else {
+      Reflect.deleteProperty(process.stderr, "isTTY");
+    }
+  }
+});
+
+it("should emit a plain completion summary when output is not interactive", () => {
+  vi.stubEnv("CI", "true");
+  const level = consola.level;
+  consola.level = 3;
+  const info = vi.spyOn(consola, "info").mockImplementation(() => {});
+  const error = vi.spyOn(consola, "error").mockImplementation(() => {});
+  const reporter = createProgressReporter();
+  try {
+    reporter.fail();
+    expect(error).not.toHaveBeenCalled();
+    reporter.finish(4, "./output");
+    expect(info).toHaveBeenCalledWith("Wrote 4 files");
+    expect(info).toHaveBeenCalledWith(expect.stringContaining("→ ./output"));
+  } finally {
+    reporter.dispose();
+    consola.level = level;
+  }
+});
