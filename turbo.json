@@ -17,7 +17,8 @@
       "outputs": ["coverage/**"]
     },
     "@jin-frame/docs#build": {
-      "dependsOn": ["jin-frame#build", "@jin-frame/generator-core#build"],
+      "dependsOn": ["jin-frame#bundle", "@jin-frame/generator-core#build"],
+      "env": ["BASE_DIR"],
       "cache": false,
       "outputs": ["src/.vitepress/dist/**"]
     }

@@ -13,7 +13,7 @@
     "docs:typedoc": "pnpm run docs:typedoc:frame && pnpm run docs:typedoc:core",
     "dev": "pnpm run assets && pnpm run docs:typedoc && vitepress dev src",
     "build": "pnpm run assets && pnpm run docs:typedoc && vitepress build src",
-    "build:prod": "BASE_DIR='/jin-frame/' pnpm run build",
+    "build:prod": "BASE_DIR='/jin-frame/' pnpm exec turbo run build --filter=@jin-frame/docs",
     "preview": "vitepress preview src"
   },
   "devDependencies": {
