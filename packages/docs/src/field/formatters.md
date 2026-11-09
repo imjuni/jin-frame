@@ -1,220 +1,61 @@
+---
+outline: deep
+---
+
 # Formatters
 
-The decorators `@Query()`, `@Param()`, `@Body()`, `@ObjectBody()`, and `@Header()` provide the **formatters** option to process values before they are serialized.
+Formatters transform request values before serialization. They do not validate responses. Query/path/header formatters handle primitives and arrays; body formatters additionally support selecting a nested path using `findFrom`.
 
-Processing steps differ slightly depending on the decorator:
+## Normalize request fields
 
-- For `@Query()`, `@Param()`, and `@Header()`:  
-  **Collect value → apply formatter (sequential chain) → apply array options (comma/bit) → URL encoding**
-- For `@Body()` and `@ObjectBody()`:  
-  **Collect value → apply formatter (sequential chain)**
+```ts twoslash
+import { Get, JinFrame, Query } from 'jin-frame';
 
-> Rules
->
-> - Returning `undefined` or `null` will cause the key to be **omitted**.
-> - For **array fields**, formatters are applied **individually to each element**.
-> - `formatters` can be a single object or an **array of objects** applied sequentially.
-> - Return values can be primitives (`string`, `number`, `boolean`) or arrays.
-> - Example: transformations like **string → Date → epoch time** can be chained together.
+@Get({
+  host: 'https://api.example.com',
+  path: '/search',
+})
+class SearchFrame extends JinFrame {
+  @Query({ formatters: { string: (value) => value.trim().toLowerCase() } })
+  declare readonly query: string;
 
-## Formatter Options
-
-| Field         | Type                                          | Description                                                                                                                                    |
-| ------------- | --------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------- |
-| `order`       | `('string' \| 'number' \| 'dateTime')[]`      | Specifies the order in which formatters are applied. Default is `['number', 'string', 'dateTime']`.                                            |
-| `ignoreError` | `boolean`                                     | Determines whether to discard the value on error. If `true`, errors are ignored and the value is excluded; if `false`, an exception is thrown. |
-| `number`      | `(value: number) => number \| Date \| string` | Formatter for numeric values. May return `number`, `Date`, or `string`.                                                                        |
-| `string`      | `(value: string) => string \| Date`           | Formatter for string values. May return `string` or `Date`.                                                                                    |
-| `dateTime`    | `(value: Date) => string`                     | Formatter for `Date` values. Must return a `string`.                                                                                           |
-
-## Notes
-
-Formatters operate only if the input type matches (`string`, `number`, or `Date`). If the input type does not match, the transformation may be skipped or the value may be omitted.
-
-- If a transformation does not work as expected, first check that the **input type is correct**.
-- If necessary, use the `ignoreError` option to suppress errors and safely exclude invalid values.
-
-## Single Value Formatting
-
-```ts
-@Get({ host: 'https://api.example.com', path: '/search' })
-export class FormatterSingleFrame extends JinFrame {
-  @Query({
-    formatters: { string: (v: string) => v.trim().toLowerCase() }, // string → lowercase
-  })
-  declare readonly q?: string;
-
-  @Query({
-    formatters: { number: (v: number) => Number(v.toFixed(2)) }, // number → round to 2 decimals
-  })
-  declare readonly price?: number;
-
-  @Query({
-    formatters: {
-      dateTime: (d: Date) =>
-        `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`,
-    },
-    // Date → yyyy-MM-dd
-  })
-  declare readonly date?: Date;
+  // Dates become the explicit string representation expected by this API.
+  @Query({ formatters: { dateTime: (value) => value.toISOString().slice(0, 10) } })
+  declare readonly day?: Date;
 }
 
-const reply = await FormatterSingleFrame.of({
-  q: '  Pikachu ',
-  price: 12.345,
-  date: new Date('2025-08-21'),
-})._execute();
-// → ?q=pikachu&price=12.35&date=2025-08-21
+// Inspect the formatted query parameters, not the original field values.
+const request = SearchFrame.of({ query: '  PIKACHU  ', day: new Date('2026-01-01T00:00:00Z') })._request();
+console.log(request.url);
 ```
 
-## Array Element Formatting (per element)
+## Options
 
-```ts
-@Get({ host: 'https://api.example.com', path: '/filter' })
-export class FormatterArrayFrame extends JinFrame {
-  @Query({
-    formatters: { string: (tag: string) => tag.trim().toLowerCase() }, // applied to each array element
-  })
-  declare readonly tags?: string[];
-}
+| Option | Type | Default | Description |
+| --- | --- | --- | --- |
+| `order` | `('number' \| 'string' \| 'dateTime')[]` | `['number', 'string', 'dateTime']` | Order of typed handlers within one formatter. |
+| `ignoreError` | `boolean` | `undefined` | Errors are discarded by default; false propagates them. |
+| `number` | `(value: number) => number \| string \| Date` | `undefined` | Transform numeric values. |
+| `string` | `(value: string) => string \| Date` | `undefined` | Transform strings; primitive numbers/booleans can be converted to strings first. |
+| `dateTime` | `(value: Date) => string` | `undefined` | Serialize Date values. |
+| `findFrom` | `string` | `undefined` | Body formatters only: select a nested value by dotted path. |
 
-const reply = await FormatterArrayFrame.of({ tags: ['  RED ', '  Blue'] })._execute();
-// → ?tags=red&tags=blue
-```
+## Typed handlers
 
-## Multiple Formatters (chained)
+| Handler | Input | Output |
+| --- | --- | --- |
+| `number` | number | number, string, or Date |
+| `string` | string | string or Date |
+| `dateTime` | Date | string |
 
-### Pass an array of formatters
+The default handler order is number, string, dateTime. Override `order` when a conversion chain requires another order. A string-to-Date conversion can feed the dateTime handler. An array of formatter objects applies multiple stages.
 
-```ts
-@Get({ host: 'https://api.example.com', path: '/convert' })
-export class FormatterChainFrame extends JinFrame {
-  @Query({
-    formatters: [
-      { string: (s: string) => s.trim() }, // string → trimmed string
-      { string: (s: string) => new Date(s) }, // string → Date
-      { dateTime: (d: Date) => `${Math.floor(d.getTime())}` }, // Date → epoch(ms)
-    ],
-  })
-  declare readonly dates?: string[];
-}
+## Errors and omission
 
-const reply = await FormatterChainFrame.of({ dates: ['2025-08-01', '2025-08-02'] })._execute();
-// → ?dates=1754006400000&dates=1754092800000
-```
+Formatter errors discard values by default. Set `ignoreError: false` to propagate exceptions. Do not assume invalid values become valid just because their TypeScript annotation matches. Arrays are processed element by element before their serialization options.
 
-### Use the `order` option
+## Body paths
 
-```ts
-@Get({ host: 'https://api.example.com', path: '/convert' })
-export class FormatterChainFrame extends JinFrame {
-  @Query({
-    formatters: [
-      {
-        order: ['number', 'string', 'dateTime'], // number → string → dateTime
-        string: (s: string) => new Date(s.trim()), // string → Date
-        dateTime: (d: Date) => `${Math.floor(d.getTime())}`, // Date → epoch(ms)
-      },
-    ],
-  })
-  declare readonly dates?: string[];
-}
-```
+Use `findFrom` on body formatters to transform a selected property of a structured payload. This is not available on query/header/path formatters. Inspect `_request().body` after formatting and merging when debugging nested data.
 
-## Arrays + Comma Serialization with Formatters
-
-```ts
-@Get({ host: 'https://api.example.com', path: '/filter' })
-export class FormatterCommaFrame extends JinFrame {
-  @Query({
-    comma: true, // serialize array with commas
-    formatters: { string: (tag: string) => `c-${tag.trim()}` }, // add prefix to each element
-  })
-  declare readonly tags?: string[];
-}
-
-const reply = await FormatterCommaFrame.of({ tags: ['red', ' blue ', 'green,'] })._execute();
-// → ?tags=c-red,c-blue,c-green
-```
-
-## Numeric Arrays + Bitwise OR with Normalization
-
-```ts
-@Get({ host: 'https://api.example.com', path: '/flags' })
-export class FormatterBitFrame extends JinFrame {
-  @Query({
-    bit: { enable: true }, // enable bitwise OR
-    formatters: { number: (f?: number) => (Number.isFinite(f) && f! >= 0 ? Number(f) : undefined) },
-    // exclude negative or NaN values
-  })
-  declare readonly flags?: number[];
-}
-
-const reply = await FormatterBitFrame.of({ flags: [1, 2, 4] })._execute();
-// → ?flags=7
-```
-
-## Enum / Mapping Conversion
-
-```ts
-const TAG_MAP: Record<string, string> = { red: 'R', blue: 'B', green: 'G' };
-
-@Get({ host: 'https://api.example.com', path: '/filter' })
-export class FormatterMapFrame extends JinFrame {
-  @Query({
-    formatters: { string: (tag?: string) => (tag ? TAG_MAP[tag] : undefined) }, // mapping conversion
-  })
-  declare readonly tags?: string[];
-}
-
-const reply = await FormatterMapFrame.of({ tags: ['red', 'blue', 'green'] })._execute();
-// → ?tags=R&tags=B&tags=G
-```
-
-## Formatter in @Body and @ObjectBody
-
-`@Body()` and `@ObjectBody()` work with objects, so you must explicitly specify which field the formatter should apply to.  
-Use the `findFrom` option to **designate the path**.
-
-```ts
-@Post({ host: 'http://some.api.google.com/jinframe/:passing' })
-class ObjectFormatterExample extends JinFrame {
-  @Param()
-  declare public readonly passing: string;
-
-  @ObjectBody({
-    formatters: [
-      {
-        findFrom: 'name', // apply formatter to the "name" field
-        string(value) {
-          return `${value}::111`;
-        },
-      },
-      {
-        findFrom: 'date', // apply formatter to the "date" field
-        dateTime(value) {
-          const f = lightFormat(value, 'yyyy-MM-dd');
-          return f;
-        },
-      },
-    ],
-  })
-  declare public readonly ability: {
-    name: string;
-    date: Date;
-    desc: string;
-  };
-}
-```
-
-## Summary
-
-Formatters can be used for various purposes, such as:
-
-- String normalization
-- Date transformation
-- Array serialization optimization
-- Bitmask handling
-- Enum/mapping conversion
-
-Especially in `@Body` and `@ObjectBody`, you can apply fine-grained control at the DTO object level, making it possible to manage even complex API requests declaratively and cleanly.
+See the generated API reference for complete Formatter and SingleBodyFormatter types, and [response validation](../method/validation) for Zod checks.

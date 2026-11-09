@@ -9,7 +9,7 @@ outline: deep
 Generate both `paths.d.ts` and frame files from an OpenAPI document.
 
 ```sh
-frame-cli create ./openapi.yml --output ./generated
+pnpm exec frame-cli create ./openapi.yml --output ./generated
 ```
 
 The generated output usually looks like this:
@@ -39,7 +39,7 @@ clear generation error.
 Generate only frame files when you already have an `openapi-typescript` type definition file.
 
 ```sh
-frame-cli frame ./openapi.yml \
+pnpm exec frame-cli frame ./openapi.yml \
   --type ./generated/paths.d.ts \
   --output ./generated
 ```
@@ -50,7 +50,7 @@ frame-cli frame ./openapi.yml \
 The `create` command can pass some `openapi-typescript` options with the `oat-*` prefix.
 
 ```sh
-frame-cli create ./openapi.yml \
+pnpm exec frame-cli create ./openapi.yml \
   --output ./generated \
   --oat-alphabetize \
   --oat-export-type
@@ -60,4 +60,13 @@ Run `frame-cli create --help` to see the available options.
 
 
 
-[All packages](../packages) · [Getting started](./index) · [명령어](./commands) · [Configuration](./configuration)
+[All packages](../packages) · [Getting started](./index) · [Commands](./commands) · [Configuration](./configuration)
+
+## template-eject
+
+Export the bundled Eta templates to the project’s `templates` directory. Existing files are preserved.
+
+```sh
+# Export editable frame, base-frame, host-function, and security-provider templates.
+pnpm exec frame-cli template-eject
+```

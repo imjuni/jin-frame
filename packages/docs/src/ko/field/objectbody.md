@@ -2,152 +2,46 @@
 outline: deep
 ---
 
-# ObjectBody
+# Object bodies
 
-`jin-frame`에서는 클래스 필드에 `@ObjectBody()` 데코레이터를 선언하면, 객체 전체를 **HTTP Request Body**로 직렬화하여 전송할 수 있습니다. 이는 여러 필드를 각각 `@Body()`로 분리하지 않고, 하나의 객체 단위로 관리하고 싶을 때 유용합니다.
+`@ObjectBody()`는 field 이름으로 감싸지 않고 값을 body 자체로 사용합니다. object뿐 아니라 array·string·number·boolean을 body에 직접 전달할 때 사용합니다.
 
-## Quick Example
+## Example
 
-```ts
-interface IUser {
-  username: string;
-  age?: number;
-  tags?: string[];
-  isAdmin?: boolean;
+```ts twoslash
+import { Post, JinFrame, ObjectBody } from 'jin-frame';
+
+@Post({
+  host: 'https://api.example.com',
+  path: '/users',
+})
+class ExampleFrame extends JinFrame {
+  // Merge this object's properties into the request body itself.
+  @ObjectBody()
+  declare readonly payload: { name: string; active: boolean };
 }
 
-@Post({ host: 'https://api.example.com', path: '/users' })
-export class CreateUserFrame extends JinFrame {
-  @ObjectBody() declare readonly user: IUser;
-}
-
-// Execute
-const frame = CreateUserFrame.of({
-  user: { username: 'pikachu', age: 7, tags: ['red', 'blue'], isAdmin: false },
-});
-const reply = await frame._execute();
-
-console.log(reply.config.data);
-// { "username": "pikachu", "age": 7, "tags": ["red","blue"], "isAdmin": false }
+// Build the request without contacting the placeholder server.
+const frame = ExampleFrame.of({ payload: { name: 'ironman', active: true } });
+const request = frame._request();
+console.log(request.body);
 ```
 
-## 차이점: Body vs ObjectBody
+## Options
 
-| 구분        | `@Body`                                  | `@ObjectBody`                                |
-| ----------- | ---------------------------------------- | -------------------------------------------- |
-| 선언 방식   | 각 필드를 개별적으로 정의                | 객체 전체를 단일 필드로 정의                 |
-| 사용 예시   | `@Body() declare readonly name: string;` | `@ObjectBody() declare readonly user: User;` |
-| 직렬화 결과 | 여러 필드가 병합되어 Body를 구성         | 필드에 선언한 객체를 그대로 Body로 직렬화    |
-| 활용 상황   | 단순한 필드 위주의 API 요청              | DTO/인터페이스 전체를 한 번에 Body로 전달    |
+| Option | Type | Default | Description |
+| --- | --- | --- | --- |
+| `order` | `number` | `Number.MAX_SAFE_INTEGER` | 오름차순으로 병합하며 뒤의 속성이 앞의 값을 덮어쓸 수 있습니다. |
+| `formatters` | `SingleBodyFormatter \| SingleBodyFormatter[]` | `undefined` | body field를 변환하며 findFrom으로 중첩 값을 선택합니다. |
+| `cacheKeyExcludePaths` | `string[]` | `undefined` | 중복 제거 키에서만 제외할 body 경로입니다. |
+| `encode` | `boolean` | `true` | field 설정으로 유지되며 body 조립에서는 URI 인코딩을 적용하지 않습니다. |
 
-## Nested Objects
+## Body shape
 
-`@ObjectBody()`는 중첩 객체를 포함한 구조도 그대로 직렬화합니다.
+예제는 `{ "payload": ... }`가 아니라 `{ "name": "ironman", "active": true }`를 전송합니다. 전송 계약을 명확히 하려면 가능한 한 request당 object body field를 하나만 사용합니다. array·원시값은 서버가 해당 body를 받는 계약인지 확인합니다.
 
-```ts
-interface IProfile {
-  name: string;
-  age: number;
-}
+## Multiple sources
 
-interface IUserSettings {
-  theme: string;
-  notifications: boolean;
-}
+`order` 오름차순으로 object body를 병합하며 뒤의 값이 앞의 속성을 덮어쓸 수 있습니다. `@Body()`도 body 조립에 참여합니다. 경로가 겹치면 `_request().body`로 최종 결과를 확인합니다.
 
-interface IUser {
-  profile: IProfile;
-  settings?: IUserSettings;
-}
-
-@Post({ host: 'https://api.example.com', path: '/users' })
-export class NestedUserFrame extends JinFrame {
-  @ObjectBody() declare readonly user: IUser;
-}
-
-const reply = await NestedUserFrame.of({
-  user: {
-    profile: { name: 'pikachu', age: 7 },
-    settings: { theme: 'dark', notifications: true },
-  },
-})._execute();
-
-// Body → { "profile": { "name": "pikachu", "age": 7 }, "settings": { "theme": "dark", "notifications": true } }
-```
-
----
-
-## Array Support
-
-배열을 포함한 객체도 그대로 직렬화됩니다.
-
-```ts
-interface IBatch {
-  ids: number[];
-}
-
-@Post({ host: 'https://api.example.com', path: '/batch' })
-export class BatchFrame extends JinFrame {
-  @ObjectBody() declare readonly data: IBatch;
-}
-
-const reply = await BatchFrame.of({ data: { ids: [1, 2, 3] } })._execute();
-// Body → { "ids": [1,2,3] }
-```
-
-## Optional Fields
-
-객체 내부의 값이 `undefined` 또는 `null`이면 자동으로 생략됩니다.
-
-```ts
-interface IUser {
-  username: string;
-  nickname?: string;
-}
-
-@Post({ host: 'https://api.example.com', path: '/users' })
-export class OptionalUserFrame extends JinFrame {
-  @ObjectBody() declare readonly user: IUser;
-}
-
-const reply = await OptionalUserFrame.of({ user: { username: 'pikachu' } })._execute();
-// Body → { "username": "pikachu" }
-```
-
-## Combining with Params & Headers
-
-```ts
-interface IUser {
-  username: string;
-  age: number;
-}
-
-@Post({ host: 'https://api.example.com', path: '/orgs/:orgId/users' })
-export class CreateUserInOrgFrame extends JinFrame {
-  @Param() declare readonly orgId: string;
-  @Header() declare readonly Authorization: string;
-  @ObjectBody() declare readonly user: IUser;
-}
-
-const reply = await CreateUserInOrgFrame.of({
-  orgId: 'acme',
-  Authorization: 'Bearer token',
-  user: { username: 'pikachu', age: 7 },
-})._execute();
-
-// POST /orgs/acme/users
-// Headers: { Authorization: "Bearer token" }
-// Body: { "username": "pikachu", "age": 7 }
-```
-
-## Debugging Tip
-
-요청 직전에 `frame.getData('body')`로 **최종 Body 데이터**를 확인할 수 있습니다.
-
-```ts
-const frame = CreateUserFrame.of({ user: { username: 'pikachu', age: 7 } });
-const req = frame.request();
-
-console.log(frame.getData('body')); // { username: 'pikachu', age: 7 }
-console.log(req.data); // 최종 직렬화된 Body
-```
+formatter는 병합 전에 실행됩니다. `cacheKeyExcludePaths`는 중복 판단만 바꾸며 전송 데이터를 마스킹하지 않습니다. 동시 request에서 변경 가능한 payload 공유를 피합니다.

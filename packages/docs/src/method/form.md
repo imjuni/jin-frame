@@ -2,63 +2,49 @@
 outline: deep
 ---
 
-# Form
+# Forms and file uploads
 
-**`jin-frame`** supports **form data submission**, which can be handled in two main ways:
+Choose a content type explicitly. URL-encoded forms serialize key/value fields with URLSearchParams; multipart requests use native FormData and support files on POST, PUT, and PATCH.
 
-- `application/x-www-form-urlencoded`
-- `multipart/form-data`
+## Multipart example
 
-## application/x-www-form-urlencoded
+```ts twoslash
+import { Body, JinFile, JinFrame, Post } from 'jin-frame';
 
-The `application/x-www-form-urlencoded` format serializes form fields into URL-encoded key-value pairs using the native `URLSearchParams` API. Set the `contentType` option to `application/x-www-form-urlencoded` and annotate each field with `@Body()`.
-
-```ts
 @Post({
-  host: 'http://some.api.google.com/jinframe/{passing}',
-  contentType: 'application/x-www-form-urlencoded',
-})
-class TestUrlencodedPostFrame extends JinFrame {
-  @Param()
-  declare public readonly passing: string;
-
-  @Body()
-  declare public readonly username: string;
-
-  @Body()
-  declare public readonly password: string;
-}
-```
-
-jin-frame encodes all `@Body()` fields into `application/x-www-form-urlencoded` format automatically — no extra configuration needed.
-
-## multipart/form-data
-
-The `multipart/form-data` format is mainly used for **file uploads** or **complex data submissions**. jin-frame uses the native `FormData` API to build the request body. Use `JinFile` to wrap file data and annotate fields with `@Body()`.
-
-Supported HTTP methods: `POST`, `PUT`, `PATCH`.
-
-```ts
-@Post({
-  host: 'http://some.api.google.com/fileupload-case04',
+  host: 'https://api.example.com',
+  path: '/uploads',
   contentType: 'multipart/form-data',
 })
 class UploadFrame extends JinFrame {
   @Body()
-  declare public readonly description: string;
+  declare readonly description: string;
 
+  // JinFile carries the filename alongside the native Blob content.
   @Body()
-  declare public readonly myFile: JinFile<Buffer>;
-
-  @Body()
-  declare public readonly myFiles: JinFile<Buffer>[];
+  declare readonly attachment: JinFile<Blob>;
 }
+
+const frame = UploadFrame.of({
+  description: 'Example document',
+  attachment: new JinFile('hello.txt', new Blob(['Hello'], { type: 'text/plain' })),
+});
+
+// Inspect FormData without sending a request or manually setting its boundary.
+const request = frame._request();
+console.log(request.body);
 ```
 
-- When `contentType` is set to `multipart/form-data`, jin-frame uses the native `FormData` API to build the request body automatically.
-- The `Content-Type` header (including the multipart boundary) is set by the runtime — do not set it manually.
+## Boundary handling
 
-## Summary
+Do not set Content-Type manually for multipart requests. The request configuration omits it so fetch can generate the boundary corresponding to the FormData body. A hard-coded boundary can make the body unreadable by the server.
 
-- Use `application/x-www-form-urlencoded` for simple key-value data submissions.
-- Use `multipart/form-data` when uploading files or sending complex structured data.
+## URL-encoded forms
+
+Set `contentType: 'application/x-www-form-urlencoded'` on a POST/PUT/PATCH decorator and use `@Body()` fields. The assembled object is encoded by URLSearchParams. Use a separate API endpoint appropriate for credentials; never log passwords from request inspection.
+
+## File inputs and limits
+
+`JinFile` accepts File, Blob, Buffer, or a Node ReadStream. Choose the input type for your environment. An array of files is represented by `JinFile<T>[]`. Streams and multipart bodies are not eligible for concurrent request deduplication; see [dedupe](./dedupe).
+
+Use [body fields](../field/body) for individual properties and [object bodies](../field/objectbody) for whole payload objects.

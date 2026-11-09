@@ -2,187 +2,105 @@
 outline: deep
 ---
 
-# HTTP Method Decorators
+# HTTP Methods
 
-**`jin-frame`** provides method decorators for declaring HTTP requests **at the class level**.
+Use decorators such as `@Get()` and `@Post()` to choose the HTTP method and URL. Field decorators such as `@Param()`, `@Query()`, and `@Body()` supply the request values.
 
-Supported decorators: `@Get`, `@Post`, `@Put`, `@Patch`, `@Delete`, `@Link`, `@Unlink`, `@Purge`, `@Search`
+## Method decorators
 
-> Key point: Declare **endpoint settings (host, path, timeout, retry, content type, etc.)** as decorator options, and specify **path/query/header/body** fields using `@Param`, `@Query`, `@Header`, `@Body` (or `@ObjectBody`).
+| Decorator | HTTP method | Purpose |
+| --- | --- | --- |
+| `@Get()` | `GET` | Read a resource. |
+| `@Post()` | `POST` | Create a resource or submit an action. |
+| `@Put()` | `PUT` | Replace a resource. |
+| `@Patch()` | `PATCH` | Update part of a resource. |
+| `@Delete()` | `DELETE` | Delete a resource. |
+| `@Head()` | `HEAD` | Retrieve response headers without a body. |
+| `@Options()` | `OPTIONS` | Inspect endpoint communication options. |
+| `@Search()` | `SEARCH` | Use an API-defined search method. |
+| `@Purge()` | `PURGE` | Use an API-defined cache purge method. |
+| `@Link()` | `LINK` | Use an API-defined resource-linking method. |
+| `@Unlink()` | `UNLINK` | Use an API-defined resource-unlinking method. |
+| `@Trace()` | `TRACE` | Declare TRACE; native fetch rejects this method. |
 
-## Quick Examples
+These decorators select method names; actual transmission depends on fetch and server support.
 
-### GET (Query + Path)
+## Common options
 
-```ts
-@Timeout(10_000) // 10s timeout
+Defaults below assume no inherited configuration.
+
+| Option | Type | Default | Description |
+| --- | --- | --- | --- |
+| `host` | `string \| (() => string)` | `undefined` | API host, including protocol; accepts URL placeholders. |
+| `pathPrefix` | `string \| (() => string)` | `undefined` | Shared path inserted before path. |
+| `path` | `string \| (() => string)` | `undefined` | Endpoint path, including URL placeholders. |
+| `contentType` | `string` | `'application/json'` | Body serialization format. |
+| `timeout` | `number` | `120000` | Timeout per HTTP attempt in milliseconds. |
+| `retry` | `FrameRetry` | `undefined` | Attempt limit and retry delay; default is one attempt. |
+| `security` | `SecurityProvider \| SecurityProvider[]` | `undefined` | Providers that construct authentication context. |
+| `authorization` | `AuthorizationData` | `undefined` | Fallback credentials passed to security providers. |
+| `validator` | `ResponseValidator` | `undefined` | One validator for the complete HTTP response. |
+| `dedupe` | `boolean` | `undefined` | Enable concurrent request deduplication when true. |
+| `customBody` | `unknown` | `undefined` | Custom body instead of decorated body assembly. |
+| `userAgent` | `string` | `undefined` | User-Agent header for the request. |
+
+URL placeholders work in the protocol, host, path prefix, and path. See [URL templates](./method/url-template) for an example.
+
+## GET and POST example
+
+```ts twoslash
+import { Body, Get, JinFrame, Param, Post } from 'jin-frame';
+
 @Get({
   host: 'https://api.example.com',
-  path: '/orgs/{orgId}/users',
-  authorization: process.env.YOUR_AUTH_TOKEN,
+  path: '/users/{id}',
+  timeout: 2_000,
 })
-export class ListUsersFrame extends JinFrame {
+class GetUserFrame extends JinFrame<{ status: 200; data: { name: string } }> {
+  // Substitute the field into the URL.
   @Param()
-  declare readonly orgId: string;
-
-  @Query()
-  declare readonly page?: number;
+  declare readonly id: string;
 }
 
-// Execute
-const frame = ListUsersFrame.of({ orgId: 'acme', page: 1 });
-const reply = await frame._execute();
-```
-
-### POST (JSON Body)
-
-```ts
-@Timeout(5_000) // 5s timeout
 @Post({
   host: 'https://api.example.com',
   path: '/users',
-  // Defaults to application/json when contentType is not specified
 })
-export class CreateUserFrame extends JinFrame {
+class CreateUserFrame extends JinFrame<{ status: 201; data: { id: string } }> {
+  // Include the field in the JSON request body.
   @Body()
   declare readonly name: string;
-
-  @Body()
-  declare readonly email: string;
 }
 
-// Execute
-const frame = CreateUserFrame.of({ name: 'Alice', email: 'alice@acme.com' });
-const res = await frame._execute();
+// Inspect requests without contacting the example server.
+const getRequest = GetUserFrame.of({ id: '123' })._request();
+const postRequest = CreateUserFrame.of({ name: 'ironman' })._request();
+console.log(getRequest.method, getRequest.url);
+console.log(postRequest.method, postRequest.body);
 ```
 
-### POST (multipart/form-data, File Upload)
+## Executing requests
 
-```ts
-@Post({
-  host: 'https://upload.example.com',
-  path: '/files',
-  contentType: 'multipart/form-data',
-})
-export class UploadFrame extends JinFrame {
-  @Body()
-  declare readonly title: string;
+| Method | Behavior |
+| --- | --- |
+| `_request()` | Build request configuration without sending. |
+| `_create()` | Return a function that executes the request. |
+| `_execute()` | Resolve async authorization and execute. |
 
-  @Body()
-  declare readonly attachments: JinFile[]; // Supports JinFile or JinFile[]
-}
+Send a request with `await GetUserFrame.of({ id: '123' })._execute()`.
 
-// Execute
-const file = new JinFile('hello.txt', new File(['hello'], 'hello.txt'));
-const frame = UploadFrame.of({ title: 'greeting', attachments: [file] });
-await frame._execute();
-```
+## Call options
 
-### PUT / PATCH / DELETE
+| Option | Behavior |
+| --- | --- |
+| `host, pathPrefix, path` | Override the URL for this call. |
+| `url` | Provide a full URL instead of composing host and path. |
+| `validateStatus` | Choose accepted HTTP statuses. |
+| `dynamicAuth` | Override authentication for this call. |
+| `auth` | Supply Basic username/password credentials. |
+| `signal` | Cancel through an AbortSignal. |
+| `timeout` | Override the per-attempt timeout in milliseconds. |
+| `cloneRaw` | Preserve a readable raw response copy. |
+| `deserialize` | Parse response text with a custom function. |
 
-```ts
-@Patch({
-  host: 'https://api.example.com',
-  path: '/users/{id}',
-})
-export class UpdateUserFrame extends JinFrame {
-  @Param()
-  declare readonly id: string;
-
-  @Body()
-  declare readonly name?: string;
-}
-
-@Delete({
-  host: 'https://api.example.com',
-  path: '/users/{id}',
-})
-export class DeleteUserFrame extends JinFrame {
-  @Param()
-  declare readonly id: string;
-}
-```
-
-## Decorator Options
-
-All method decorators (`@Get`, `@Post`, …) accept common options:
-
-| Option           | Type                                                                                  | Description                                                                  |
-| ---------------- | ------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------- |
-| `host`           | `string`                                                                              | Base URL (including protocol). Example: `https://api.example.com`            |
-| `path`           | `string`                                                                              | Path. Supports RFC 6570 URI Template placeholders like `{id}`                |
-| `pathPrefix`     | `string`                                                                              | Path prefix to prepend to the path, such as `/api`                           |
-| `timeout`        | `number`                                                                              | Request timeout (ms). Uses library default if not set                        |
-| `retry`          | `{ max: number; interval?: number }` \*                                               | Retry policy. `max` is the maximum number of retries, `interval` is delay between retries(ms) |
-| `method`         | `string`                                                                              | Normally set internally, but can be overridden for custom methods            |
-| `contentType`    | `'application/json' \| 'multipart/form-data' \| 'application/x-www-form-urlencoded'` | Specifies the request content type                                           |
-| `customBody`     | `unknown`                                                                             | Provide a **custom body** instead of using decorated fields                  |
-| `userAgent`      | `string`                                                                              | Sets User-Agent. May be ignored due to browser security restrictions         |
-| `authorization`  | `string \| { username: string; password: string }`                                    | Configure `Authorization` header directly or with Basic Auth                 |
-| `validator` | `ResponseValidator` | Response validator receiving the complete response. See [Validation](./method/validation) |
-
-## Body Transmission Rules & Content-Type
-
-- **`application/json` (default):** Sends body objects as JSON.
-- **`multipart/form-data`:** Internal FormData handling works for **POST, PUT, and PATCH requests**.
-  - `JinFile` / `JinFile[]` are added as file parts.
-  - Strings/numbers/booleans/objects are stringified and added as form parts.
-- **`application/x-www-form-urlencoded`:** Field values are encoded as `key=value&…` using `URLSearchParams`.
-
-The runtime sets the multipart `Content-Type` header, including its boundary.
-
-## Method Semantics (Idempotency)
-
-- `GET`: Read-only. Pass data via **query/header/path** (no body).
-- `POST`: Creation/action. Commonly includes a **body**.
-- `PUT` / `PATCH`: Update. Can include body.
-- `DELETE`: Deletion. Can include body/query depending on server rules.
-
-## Debugging Tip
-
-```ts
-const frame = SomeFrame.of(/* ... */);
-const req = frame._requestWrap();
-
-console.log(frame._getOption('method')); // Configured HTTP method
-console.log(frame._getData('param'));    // Final Path Params
-console.log(frame._getData('query'));    // Final Query Params
-console.log(frame._getData('header'));   // Final Headers (before serialization)
-console.log(req);                        // Final request config
-```
-
-> Use `_requestWrap()` to inspect the request config before sending.
-> `_execute()` builds the config and performs the network call in one step.
-
-### Typed status validation
-
-All frames use HTTP 2xx as their default success policy. `_execute()` and `_create()` infer the successful variants of the declared response union without an additional class field.
-
-```typescript
-import { validateStatus } from 'jin-frame';
-
-const response = await frame._execute();
-// Only documented successful responses.
-
-const selected = await frame._execute({ validateStatus: validateStatus(200, 404) });
-if (selected.status === 404) {
-  selected.data; // The documented 404 body.
-}
-```
-
-A regular boolean callback such as `validateStatus: () => true` returns the complete documented response union. Status predicates narrow the union to their accepted codes. Broad `status: number` declarations retain their broad type under the default policy.
-
-In version 6, `validateStatus` is a call option only; method decorators no longer accept it. Move decorator policies to `_execute()` or `_create()` call options so the runtime policy and inferred response type stay aligned. The generator continues to model explicit numeric response codes; `2XX` and `default` response entries are not generated.
-
-### Execution timestamps
-
-A frame retains timestamps for its most recently started execution:
-
-```typescript
-await frame._execute();
-console.log(frame._startAt, frame._eachStartAt, frame._endAt);
-```
-
-`_startAt` records execution start, `_eachStartAt` records the latest HTTP attempt, and `_endAt` records completion after success, failure, or cancellation. Before the first execution, start timestamps reflect construction time and `_endAt` is undefined. Starting another execution clears `_endAt` until that execution completes. `_create()` updates these timestamps when its returned function is invoked.
-
-The getters return Date copies. Overlapping executions retain the state of the most recently started execution; completion of an older execution does not overwrite that state. Each response's debug duration is calculated independently of these shared snapshot values.
+Pass `validateStatus` when executing, not in an HTTP decorator. See [status unions and errors](./method/responses) for response handling.

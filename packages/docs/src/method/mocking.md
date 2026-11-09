@@ -2,152 +2,59 @@
 outline: deep
 ---
 
-# Mocking
+# Testing with MSW
 
-**`jin-frame`** internally uses the `fetch` API. In test environments, you can use [MSW (Mock Service Worker)](https://mswjs.io/) to intercept requests at the network level without calling a real server.
+MSW intercepts native fetch requests without changing frame code. Test request construction, accepted responses, rejected statuses, and network failures separately.
 
-## Installation
-
-```bash
-npm install --save-dev msw
+```sh
+pnpm add -D msw vitest
 ```
 
-## Basic Setup
+## A complete Node test
 
-MSW intercepts requests at the network layer, so no changes to your jin-frame code are required.
-
-```ts
-import { setupServer } from 'msw/node';
-import { http, HttpResponse } from 'msw';
-
-const server = setupServer();
-
-beforeEach(() => {
-  server.listen({ onUnhandledRequest: 'bypass' });
-});
-
-afterEach(() => {
-  server.resetHandlers();
-  server.close();
-});
-```
-
-## Simple Example
+The handler host/path must match the frame. Replace global server handlers per test and close the server after the suite.
 
 ```ts
-import { setupServer } from 'msw/node';
+import { afterAll, afterEach, beforeAll, expect, it } from 'vitest';
 import { http, HttpResponse } from 'msw';
-import { Get, JinFrame } from 'jin-frame';
-import { Query } from 'jin-frame';
+import { setupServer } from 'msw/node';
+import { Get, JinFrame, Param } from 'jin-frame';
 
-@Get({ host: 'https://api.example.com', path: '/users' })
-class UserFrame extends JinFrame<{ status: number; data: { users: { id: number; name: string }[] } }> {
-  @Query()
-  declare public readonly searchText: string;
+@Get({
+  host: 'https://api.example.com',
+  path: '/users/{id}',
+})
+class UserFrame extends JinFrame<{ status: 200; data: { id: string; name: string } }> {
+  @Param()
+  declare readonly id: string;
 }
 
-const server = setupServer();
-
-beforeEach(() => {
-  server.listen({ onUnhandledRequest: 'bypass' });
-});
-
-afterEach(() => {
-  server.resetHandlers();
-  server.close();
-});
-
-it('should return mocked users', async () => {
-  server.use(
-    http.get('https://api.example.com/users', () =>
-      HttpResponse.json({ users: [{ id: 1, name: 'John Smith' }] }),
-    ),
-  );
-
-  const frame = UserFrame.of({ searchText: 'John' });
-  const reply = await frame._execute();
-
-  console.log(reply.data);
-  // { users: [{ id: 1, name: 'John Smith' }] }
-});
-```
-
-## Mocking POST Requests
-
-You can also inspect request bodies inside the handler:
-
-```ts
-import { http, HttpResponse, PathParams } from 'msw';
-
-interface LoginBody {
-  username: string;
-  password: string;
-}
-
-server.use(
-  http.post<PathParams, LoginBody>(
-    'https://api.example.com/login',
-    async ({ request }) => {
-      const body = await request.json();
-      if (body.username === 'ironman' && body.password === 'marvel') {
-        return HttpResponse.json({ token: 'secret-token' });
-      }
-      return new HttpResponse('Unauthorized', { status: 401 });
-    },
-  ),
-);
-```
-
-## Simulating Error Responses
-
-```ts
-server.use(
-  http.get('https://api.example.com/users', () =>
-    new HttpResponse('Internal Server Error', { status: 500 }),
-  ),
-);
-
-await expect(frame._execute()).rejects.toMatchObject({
-  resp: { status: 500 },
-});
-```
-
-## Per-Test Handler Override
-
-`server.use()` called inside a test case overrides the default handler only for that test. `server.resetHandlers()` in `afterEach` restores the original state.
-
-```ts
 const server = setupServer(
-  // Default handler: always returns 404
-  http.get('https://api.example.com/items', () =>
-    new HttpResponse('Not Found', { status: 404 }),
-  ),
+  http.get('https://api.example.com/users/:id', ({ params }) => {
+    // MSW uses :id syntax; jin-frame URL templates use {id}.
+    return HttpResponse.json({ id: params.id, name: 'Iron Man' });
+  }),
 );
 
-it('should return 200 when item exists', async () => {
-  // Override for this test only
-  server.use(
-    http.get('https://api.example.com/items', () =>
-      HttpResponse.json({ id: 1, name: 'item' }),
-    ),
-  );
+beforeAll(() => server.listen({ onUnhandledRequest: 'error' }));
+afterEach(() => server.resetHandlers());
+afterAll(() => server.close());
 
-  const reply = await frame._execute();
+it('should return user data when the API responds successfully', async () => {
+  const reply = await UserFrame.of({ id: '123' })._execute();
+
+  // Assert the response contract without contacting a real API server.
   expect(reply.status).toBe(200);
+  expect(reply.data).toEqual({ id: '123', name: 'Iron Man' });
 });
 ```
 
-## Key Features
+## Failure scenarios
 
-- **No real server required** — simulate request/response cycles even when the external API server is unavailable.
-- **Network-level interception** — works with any HTTP client (fetch, axios, etc.) without code changes.
-- **Per-test handler control** — `server.use()` adds one-time overrides; `server.resetHandlers()` restores defaults.
-- **Request body inspection** — read the actual request payload inside handlers to verify correctness.
+Use `server.use()` to return `new HttpResponse(null, { status: 500 })` and assert rejection with `JinRespError.resp.status`. Return `HttpResponse.error()` for a network failure and assert `resp` is undefined. Avoid asserting a synthetic response status for transport errors.
 
-## Use Cases
+For timeouts and retries, keep intervals short or use fake timers deliberately. Do not run tests against public PokeAPI for reproducible CI. For schema validation, return malformed JSON-shaped bodies and assert the chosen `value` or `exception` policy.
 
-- During development, when an **external API server is not yet available**
-- In QA environments, when you need to **reproduce specific error scenarios**
-- In CI/CD pipelines, when running tests that **remove network dependencies**
+## Configuration-only tests
 
-💡 For more details, refer to the [official MSW documentation](https://mswjs.io/docs/).
+Use `_request()` to assert URL, headers, and body without setting up MSW. It does not perform fetch or await asynchronous authentication suppliers. Use `_execute()` when testing those suppliers.

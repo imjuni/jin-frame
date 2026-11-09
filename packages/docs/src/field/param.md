@@ -2,153 +2,58 @@
 outline: deep
 ---
 
-# Param
+# Path parameters
 
-In **`jin-frame`**, when you declare a class field with the `@Param()` decorator, the field value is **bound to the URL path parameter** and included in the request.
+`@Param()` supplies values for RFC 6570 placeholders throughout the URL: protocol, host, path prefix, and path.
 
-> Path parameters use **RFC 6570 URI Template** syntax (`{variable}`, not `:variable`). See [URL Template](../method/url-template.md) for details.
+## Example
 
-## Quick Example
+```ts twoslash
+import { Get, JinFrame, Param } from 'jin-frame';
 
-```ts
-@Get({ host: 'https://api.example.com', path: '/users/{userId}/posts/{postId}' })
-export class UserPostFrame extends JinFrame {
-  @Param() declare readonly userId: string;
-  @Param() declare readonly postId: number;
+@Get({
+  host: '{protocol}://{tenant}.api.example.com',
+  pathPrefix: '/v{version}',
+  path: '/users/{id}',
+})
+class UserFrame extends JinFrame {
+  // Expand the protocol and hostname placeholders.
+  @Param()
+  declare readonly protocol: 'http' | 'https';
+
+  @Param()
+  declare readonly tenant: string;
+
+  // Expand the shared path prefix.
+  @Param()
+  declare readonly version: number;
+
+  // Map the local field name to the {id} placeholder.
+  @Param({ replaceAt: 'id' })
+  declare readonly userId: string;
 }
 
-// Execute
-const frame = UserPostFrame.of({ userId: 'alice', postId: 42 });
-const reply = await frame._execute();
-
-// Final URL:
-// https://api.example.com/users/alice/posts/42
-```
-
-## Supported Types & Serialization
-
-The types supported by `@Param()` and their serialized results are as follows:
-
-| Type                 | Option  | Example Value      | Serialized Result (in Path)    |
-| -------------------- | ------- | ------------------ | ------------------------------ |
-| `string`             |         | `'alice'`          | `/users/alice`                 |
-| `number`             |         | `42`               | `/posts/42`                    |
-| `boolean`            |         | `true`             | `/flags/true`                  |
-| `string[]`           | comma ✗ | `['a','b']`        | `/users/"[\"a\",\"b\"]"`       |
-| `string[]`           | comma ✓ | `['a','b']`        | `/users/a,b`                   |
-| `number[]`           | bit ✗   | `[1,2,4]`          | `/users/"[\"1\",\"2\",\"3\"]"` |
-| `number[]`           | bit ✓   | `[1,2,4]`          | `/users/7`                     |
-| `Date` + formatter   |         | `new Date(...)`    | `/date/2025-08-21`             |
-| `undefined` / `null` |         | `undefined`/`null` | **Error** (incomplete path)    |
-
-- Path parameters do **not** allow `undefined` or `null`. If a value is missing, an **exception will be thrown**.
-- By default, all values are converted to strings and URL-safe encoded.
-
-## Array Options
-
-### Default Array Serialization (Raw Arrays)
-
-Arrays without options are serialized as JSON-like strings.
-
-```ts
-@Get({ host: 'https://api.example.com', path: '/users/{tags}' })
-export class ArrayParamFrame extends JinFrame {
-  @Param() declare readonly tags?: string[];
-}
-
-await ArrayParamFrame.of({ tags: ['red', 'blue'] })._execute();
-// → /users/"[\"red\",\"blue\"]"
-```
-
-### Comma-Separated Arrays
-
-Use `@Param({ comma: true })` to serialize arrays as **comma-separated values**.
-
-```ts
-@Get({ host: 'https://api.example.com', path: '/users/{tags}' })
-export class CommaParamFrame extends JinFrame {
-  @Param({ comma: true })
-  declare readonly tags?: string[];
-}
-
-await CommaParamFrame.of({ tags: ['red', 'blue', 'green'] })._execute();
-// → /users/red,blue,green
-```
-
-### Bitwise OR Arrays (Numbers Only)
-
-Use `@Param({ bit: { enable: true } })` to serialize numeric arrays as a **bitwise OR sum**.
-
-```ts
-@Get({ host: 'https://api.example.com', path: '/flags/{flags}' })
-export class BitwiseParamFrame extends JinFrame {
-  @Param({ bit: { enable: true } })
-  declare readonly flags?: number[];
-}
-
-await BitwiseParamFrame.of({ flags: [1, 2, 4] })._execute();
-// → /flags/7   (1 | 2 | 4 = 7)
-```
-
-> Useful when the API expects bitmask values.
-
-## Param Encoding
-
-All param values are URL-safe encoded.
-
-```ts
-@Get({ host: 'https://api.example.com', path: '/tags/{tag}' })
-export class EncodedParamFrame extends JinFrame {
-  @Param() declare readonly tag: string;
-}
-
-await EncodedParamFrame.of({ tag: 'hello world & tea' })._execute();
-// → /tags/hello%20world%20%26%20tea
-```
-
-## Optional Params? (Not Allowed)
-
-Path parameters are always **required**. Missing values result in an **error** because the URL cannot be built.
-
-```ts
-@Get({ host: 'https://api.example.com', path: '/items/{id}' })
-export class OptionalParamFrame extends JinFrame {
-  @Param() declare readonly id?: number;
-}
-
-await OptionalParamFrame.of({})._execute();
-// → Error (missing id)
-```
-
-## Combining with Query & Header
-
-```ts
-@Get({ host: 'https://api.example.com', path: '/orgs/{orgId}/users/{userId}' })
-export class ListUsersParamFrame extends JinFrame {
-  @Param() declare readonly orgId: string;
-  @Param() declare readonly userId: string;
-  @Query() declare readonly page?: number;
-  @Header() declare readonly Authorization: string;
-}
-
-await ListUsersParamFrame.of({
-  orgId: 'acme',
+const frame = UserFrame.of({
+  protocol: 'https',
+  tenant: 'acme',
+  version: 2,
   userId: 'alice',
-  page: 1,
-  Authorization: 'Bearer token',
-})._execute();
-// → GET /orgs/acme/users/alice?page=1
-// → Authorization: Bearer token
+});
+
+// https://acme.api.example.com/v2/users/alice
+console.log(frame._request().url);
 ```
 
-## Debugging Tip
+## Options
 
-Right before sending the request, you can check the **final param map** with `frame.getData('param')`.
+| Option | Type | Default | Description |
+| --- | --- | --- | --- |
+| `replaceAt` | `string` | Field name | Placeholder name when it differs from the field name. |
+| `encode` | `boolean` | `true` | Apply URI encoding to the value. |
+| `comma` | `boolean` | `false` | Join array elements with commas. |
+| `bit.enable` | `boolean` | `false` | Combine a numeric array using bitwise OR. |
+| `bit.withZero` | `boolean` | `false` | Include a bitwise result even when it is zero. |
+| `formatters` | `Formatter \| Formatter[]` | — | Transform values before string serialization. |
+| `cacheKeyExclude` | `boolean` | `false` | Exclude from dedupe identity while retaining the value in the URL. |
 
-```ts
-const frame = UserPostFrame.of({ userId: 'alice', postId: 42 });
-const req = frame.request();
-
-console.log(frame.getData('param')); // { userId: 'alice', postId: 42 }
-console.log(req.url); // https://api.example.com/users/alice/posts/42
-```
+Configure `bit` as `{ enable: true, withZero: false }`. See [formatters](./formatters) for transformations and [URL templates](../method/url-template) for composition and call-level overrides.

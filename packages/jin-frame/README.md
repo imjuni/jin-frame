@@ -109,7 +109,10 @@ import { Get, Post, Param, Header, Body, JinFrame } from 'jin-frame';
 import { randomUUID } from 'node:crypto';
 
 // Share the host and URL prefix across subclasses.
-@Get({ host: 'https://pokeapi.co', pathPrefix: '/api/v2' })
+@Get({
+  host: 'https://pokeapi.co',
+  pathPrefix: '/api/v2',
+})
 class PokeApiFrame extends JinFrame {
   // Map the inherited field to the X-Request-Id header.
   @Header({ replaceAt: 'X-Request-Id' })
@@ -200,8 +203,14 @@ Retry failed requests with a configurable interval.
 import { Get, JinFrame, Retry } from 'jin-frame';
 
 // Retry up to 5 times with a 1-second interval.
-@Retry({ max: 5, interval: 1000 })
-@Get({ host: 'https://pokeapi.co', path: '/api/v2/pokemon/pikachu' })
+@Retry({
+  max: 5,
+  interval: 1000,
+})
+@Get({
+  host: 'https://pokeapi.co',
+  path: '/api/v2/pokemon/pikachu',
+})
 class RetryPokemonFrame extends JinFrame {}
 ```
 
@@ -214,7 +223,10 @@ import { Get, JinFrame, Timeout } from 'jin-frame';
 
 // Abort each request attempt after 2 seconds.
 @Timeout(2000)
-@Get({ host: 'https://pokeapi.co', path: '/api/v2/pokemon/pikachu' })
+@Get({
+  host: 'https://pokeapi.co',
+  path: '/api/v2/pokemon/pikachu',
+})
 class TimeoutPokemonFrame extends JinFrame {}
 ```
 
@@ -251,7 +263,10 @@ class PokemonValidator extends BaseValidator {
 
 // Throw JinValidationError when an accepted response fails validation.
 @Validator(new PokemonValidator({ type: 'exception' }))
-@Get({ host: 'https://pokeapi.co', path: '/api/v2/pokemon/pikachu' })
+@Get({
+  host: 'https://pokeapi.co',
+  path: '/api/v2/pokemon/pikachu',
+})
 class ValidatedPokemonFrame extends JinFrame {}
 ```
 
@@ -323,7 +338,8 @@ try {
 ```
 
 `validateStatus: () => true` accepts every HTTP status, but cannot prevent network or
-processing failures. Without `error.resp`, no HTTP response is attached; use `cause`
+processing failures. An aborted caller signal also stops requests and retries, rejecting
+with `JinRespError`; inspect `cause` for the abort reason. Without `error.resp`, no HTTP response is attached; use `cause`
 to diagnose the failure rather than treating the error's status as a server response.
 
 ## jin-frame Requirements

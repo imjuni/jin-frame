@@ -21,16 +21,19 @@ import {
 const specPath = "./openapi.yml";
 const output = "./generated";
 
+// Load JSON or YAML from a file path or specification URL.
 const loaded = await load(specPath);
 if (loaded == null) {
   throw new Error(`Failed to load spec from ${specPath}`);
 }
 
+// Check the document version before converting it.
 const validated = validate(loaded.data);
 if (!validated.valid) {
   throw new Error("Invalid OpenAPI document");
 }
 
+// Normalize Swagger v2 to the v3 document accepted by frame generation.
 const converted = await convertor(validated);
 const source = await createOpenapiTs(converted.document, {
   version: 3,
@@ -41,6 +44,7 @@ const specTypeFilePath = pathe.join(output, "paths.d.ts");
 await fs.mkdir(output, { recursive: true });
 await fs.writeFile(specTypeFilePath, source);
 
+// Generate source descriptors; the caller decides how to write them.
 const frames = await createFrames({
   document: converted.document,
   specTypeFilePath,
@@ -50,6 +54,7 @@ const frames = await createFrames({
   baseFrame: "ServerHostFrame",
 });
 
+// Persist every descriptor, including base frames and security providers.
 for (const frame of frames) {
   const dirPath = safePathJoin(output, frame.frame.tag);
   const filePath = pathe.join(dirPath, frame.frame.filePath);
@@ -93,4 +98,4 @@ Security provider files are generated when the document contains a supported sec
 
 
 
-[All packages](../packages) · [Getting started](./index) · [생성 파이프라인](./pipeline) · [Configuration](./configuration)
+[All packages](../packages) · [Getting started](./index) · [Generation pipeline](./pipeline) · [Configuration](./configuration)

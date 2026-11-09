@@ -9,7 +9,7 @@ outline: deep
 The CLI looks for `frame-cli.config.*` in the current working directory. You can also pass an explicit config file with `--config`.
 
 ```sh
-frame-cli create ./openapi.yml \
+pnpm exec frame-cli create ./openapi.yml \
   --output ./generated \
   --config ./frame-cli.config.ts
 ```
@@ -18,6 +18,7 @@ Example:
 
 ```ts
 export default {
+  // Default API host; endpoint overrides can replace it.
   host: "https://api.example.com",
   timeout: 60_000,
   baseFrame: "ServerHostFrame",
@@ -53,7 +54,7 @@ CLI options take precedence over config file values.
 You can apply host, timeout, and retry options to specific endpoints.
 
 ```sh
-frame-cli create ./openapi.yml \
+pnpm exec frame-cli create ./openapi.yml \
   --output ./generated \
   --timeout "/pets/{petId}=3000" \
   --host "/pets/{petId}=https://pet-api.example.com" \
@@ -89,7 +90,7 @@ The default `string` strategy writes the resolved server URL directly into the g
 Use `function` when the generated frame should reference a host resolver defined by your application.
 
 ```sh
-frame-cli create ./openapi.yml \
+pnpm exec frame-cli create ./openapi.yml \
   --output ./generated \
   --host-strategy function \
   --host-function-name getApiHost \
@@ -99,7 +100,7 @@ frame-cli create ./openapi.yml \
 Use `env-function` to generate an inline resolver based on an environment variable.
 
 ```sh
-frame-cli create ./openapi.yml \
+pnpm exec frame-cli create ./openapi.yml \
   --output ./generated \
   --host-strategy env-function \
   --host-env-var API_ENV \
@@ -123,6 +124,7 @@ Custom providers can be mapped in the config file. Each key must match a securit
 ```ts
 export default {
   securityProviderDir: "auth",
+  // Map OpenAPI scheme names to application-owned provider classes.
   securityProviders: {
     oauth2: {
       className: "AppOAuthProvider",
@@ -134,8 +136,26 @@ export default {
 
 
 
-[All packages](../packages) · [Getting started](./index) · [명령어](./commands) · [Configuration](./configuration)
+[All packages](../packages) · [Getting started](./index) · [Commands](./commands) · [Configuration](./configuration)
 
 ## Specification URL fallback
 
 With no host override and absent or empty servers, use only the remote specification origin. /swagger/json locates the document, not the API. For example, a /health operation from http://localhost:7878/swagger/json targets http://localhost:7878/health. Explicit host/server paths and relative server URL resolution remain supported. Local specification files need server information or an explicit host.
+
+## Generated provider constructors
+
+Generated providers accept an optional key string or synchronous supplier. Update custom templates that previously passed a name as the first constructor argument. Without a constructor key, decorator authorization remains the fallback.
+
+```ts
+import { BearerTokenProvider } from 'jin-frame';
+
+// Generated subclasses preserve the OpenAPI scheme name as metadata.
+export class BearerAuthProvider extends BearerTokenProvider {
+  constructor(key?: ConstructorParameters<typeof BearerTokenProvider>[0]) {
+    super(key, 'bearerAuth');
+  }
+}
+
+// Resolve the current key whenever a request is built.
+const provider = new BearerAuthProvider(() => process.env.API_TOKEN ?? '');
+```

@@ -36,7 +36,7 @@ export interface FrameOption {
    */
   pathPrefix?: string | (() => string);
 
-  /** Path of the API endpoint. Supports path-parameter placeholders such as `:id`. */
+  /** Path of the API endpoint. Supports path-parameter RFC 6570 placeholders such as `{id}`. */
   path?: string | (() => string);
 
   /** HTTP method of the endpoint. */

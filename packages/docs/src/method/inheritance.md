@@ -2,149 +2,50 @@
 outline: deep
 ---
 
-# Inheritance
+# Inheritance and defaults
 
-Define shared settings and hooks in a base frame class. Subclasses inherit them and can override settings for each endpoint.
+Keep shared URL settings and fields in a base frame. A subclass overrides endpoint-specific options; inherited decorated fields still participate in the request.
 
-## Separating Host and Path
+## Typed defaults
 
-In an MSA architecture, you often communicate with multiple servers. Since the server address (`host`) can change, it is useful to separate `host` and `path` for easier management.
+Static `this` is not a reliable substitute for the child instance type. The base contract returns `object`; annotate each override with `Partial<PublicFieldsOf<YourClass>>` to check field names and values.
 
-### Parent Class Definition
+```ts twoslash
+import { Get, Header, JinFrame, Param } from 'jin-frame';
+import type { PublicFieldsOf } from 'jin-frame';
 
-```ts
-import { randomUUID } from 'crypto';
+@Get({
+  host: 'https://pokeapi.co',
+  pathPrefix: '/api/v2',
+})
+class PokeApiFrame extends JinFrame {
+  // Inherit the field and its HTTP header mapping.
+  @Header({ replaceAt: 'X-Request-Id' })
+  declare readonly requestId: string;
 
-@Timeout(3_000)
-@Get({ host: 'https://pokeapi.co' })
-class PokemonAPI<OperationResponse extends { status: number; data: unknown } = { status: number; data: unknown }> extends JinFrame<OperationResponse> {
-  @Query()
-  declare public readonly tid: string;
-
-  protected static override getDefaultValues(): Partial<TFieldsOf<InstanceType<typeof PokemonAPI>>> {
-    return { tid: randomUUID() };
+  protected static override getDefaultValues(): Partial<PublicFieldsOf<PokeApiFrame>> {
+    // Generate a value when the factory applies defaults.
+    return { requestId: crypto.randomUUID() };
   }
 }
-```
 
-- **Shared settings:** `host`, `timeout`
-- **Automatic field injection:** `tid` is automatically filled with a UUID for request tracking.
-
-### Child Class Definition
-
-```ts
-type PokemonResponse =
-  | { status: 200; data: IPokemonData }
-  | { status: 404; data: { message: string } };
-```
-
-```ts
-@Get({ path: '/api/v2/pokemon/{name}' })
-class PokemonByNameId extends PokemonAPI<PokemonResponse> {
+@Get({ path: '/pokemon/{name}' })
+class PokemonFrame extends PokeApiFrame {
   @Param()
-  declare public readonly name: string;
+  declare readonly name: string;
 }
-```
 
-- Inherits the parent class’s `host` and `timeout`.
-- The child class only needs to define the `path` and the required `param`.
-
-### Using the Builder Pattern
-
-The builder callback can supply `name` while `getDefaultValues()` supplies `tid`.
-
-```ts
-const frame = PokemonByNameId.of((b) => b.set('name', 'pikachu'));
-const reply = await frame._execute();
-
-// from style
-const frame = PokemonByNameId.of((b) => b.from({ name: 'pikachu' }));
+// The callback supplies name while inherited defaults supply requestId.
+const frame = PokemonFrame.of((b) => b.set('name', 'pikachu'));
 const reply = await frame._execute();
 ```
 
----
+## Merge order
 
-## Managing Timeout and Retry Settings
+Construction runs first, then defaults, then explicit factory/builder values. Explicit `undefined` is also a value and can overwrite a default. Inherited required fields remain required in the object form of `of()` even when defaults supply them; use the callback form or supply those fields explicitly.
 
-If the child class redefines the same configuration, it overrides the parent’s setting. This allows you to apply different timeouts or retry policies per endpoint.
+A child's `getDefaultValues()` replaces its parent's method. Use `{ ...super.getDefaultValues(), ...childDefaults }` when both sets are needed. Reusing a frame preserves its assigned defaults; each execution does not regenerate them.
 
-```ts
-@Timeout(5_000)
-@Get({ host: 'https://pokeapi.co' })
-class PokeBaseFrame<OperationResponse extends { status: number; data: unknown } = { status: number; data: unknown }> extends JinFrame<OperationResponse> {
-}
+## Response types
 
-@Retry({ max: 5, interval: 1000 })
-@Timeout(10_000) // timeout overwrite 5,000 > 10,000
-@Get({ path: '/api/v2/pokemon/{name}' })
-class PokemonByNameId extends PokeBaseFrame {
-  @Param()
-  declare public readonly name: string;
-}
-
-// timeout use parent configuration: 5,000
-@Get({ path: '/api/v2/pokemon' })
-class PokemonPaging extends PokeBaseFrame {
-  @Query()
-  declare readonly limit: number;
-
-  @Query()
-  declare readonly offset: number;
-}
-```
-
-- **PokemonByNameId**: 10s timeout, retry up to 5 times with 1s interval
-- **PokemonPaging**: 5s timeout, no retry
-
----
-
-## Hook Extension
-
-Hooks can also be extended in an inheritance structure. This allows you to place common logging or exception handling logic in the parent class and supplement it in the child class as needed.
-
-### Parent Class Hook
-
-```ts
-@Timeout(3_000)
-@Get({ host: 'https://pokeapi.co' })
-class PokemonAPI<OperationResponse extends { status: number; data: unknown } = { status: number; data: unknown }> extends JinFrame<OperationResponse> {
-  @Query()
-  declare public readonly tid: string;
-
-  override async _postHook(
-    _req: JinRequestConfig,
-    reply: JinResp<OperationResponse>,
-    _debugInfo: DebugInfo,
-  ) {
-    if (!reply.ok) {
-      // Common error logging
-    }
-  }
-}
-```
-
-The reason hook methods use the `_` prefix is that `jin-frame` applies this to all instance methods to prevent collisions with user-declared field names. See [Naming Convention](./naming-convention.md) for the full rules.
-
-### Extending Hook in Child Class
-
-```ts
-@Get({ path: '/api/v2/pokemon/{name}' })
-class PokemonByNameId extends PokemonAPI<PokemonResponse> {
-  @Param()
-  public declare readonly name: string;
-
-  override async _postHook(
-    _req: JinRequestConfig,
-    reply: JinResp<PokemonResponse>,
-    _debugInfo: DebugInfo,
-  ) {
-    // Execute parent hook
-    await super._postHook(_req, reply, _debugInfo);
-
-    if (reply.status === 200) {
-      // Data is narrowed to IPokemonData.
-      console.log(reply.data);
-    }
-  }
-}
-```
+If a base is reused across response contracts, make it generic over `Response extends { status: number; data: unknown }` and extend `JinFrame<Response>`. Each concrete endpoint should declare its own status/data union instead of reusing an unrelated body type.
