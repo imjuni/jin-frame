@@ -1,4 +1,4 @@
-import { reportGeneratorEvent } from "#commands/reportGeneratorEvent.js";
+import { createProgressReporter } from "../ux/createProgressReporter.js";
 import { createFrames, createOpenapiTs, load, safePathJoin } from "@jin-frame/generator-core";
 import type { CommandContext } from "citty";
 import consola, { LogLevels, type LogType } from "consola";
@@ -15,57 +15,67 @@ export const createCommandRun = async ({ args }: CommandContext<typeof createCom
   const params = createCommandArgvSchema.parse(input);
 
   consola.level = LogLevels[params.logLevel as LogType];
-  const specPath = params.spec.toString();
+  const progress = createProgressReporter();
+  try {
+    const specPath = params.spec.toString();
 
-  consola.debug(`Loading spec from "${specPath}"`);
-  const spec = await load(specPath, { onEvent: reportGeneratorEvent });
+    consola.debug(`Loading spec from "${specPath}"`);
+    const spec = await load(specPath, { onEvent: progress.onEvent });
 
-  if (spec == null) {
-    throw new Error(`Failed to load spec from "${specPath}"`);
+    if (spec == null) {
+      throw new Error(`Failed to load spec from "${specPath}"`);
+    }
+
+    consola.debug(`Resolving spec from "${specPath}"`);
+    const converted = await resolveOpenapiDocument(spec.data, specPath);
+
+    const specSourceCode = await createOpenapiTs(converted.document, {
+      ...transformArgvToOpenapiTsOptions(params),
+      onEvent: progress.onEvent,
+    });
+
+    consola.debug(`Writing to ${params.output}`);
+    const specFilePath = pathe.join(params.output, "paths.d.ts");
+
+    const frames = await createFrames({
+      onEvent: progress.onEvent,
+      document: converted.document,
+      templatePath: params.templatePath,
+      specTypeFilePath: specFilePath,
+      specFilePath: specPath,
+      host: params.host,
+      output: params.output,
+      useCodeFence: params.codeFence ?? false,
+      timeout: params.timeout,
+      baseFrame: params.baseFrame,
+      hostStrategy: params.hostStrategy,
+      hostEnvVar: params.hostEnvVar,
+      hostFunctionName: params.hostFunctionName,
+      hostFunctionImport: params.hostFunctionImport,
+      serverMapping: params.serverMapping,
+      securityProviderDir: params.securityProviderDir,
+      securityProviders: params.securityProviders,
+      overrides: {
+        hosts: params.hosts,
+        retries: params.retries,
+        timeouts: params.timeouts,
+      },
+    });
+    consola.debug(`Frames: ${frames.length}`);
+
+    progress.writing();
+    await writeGeneratedFiles(params.output, [
+      { relativePath: "paths.d.ts", source: specSourceCode },
+      ...frames.map((frame) => ({
+        relativePath: safePathJoin(frame.frame.tag, frame.frame.filePath),
+        source: frame.frame.source,
+      })),
+    ]);
+    progress.finish(frames.length + 1, params.output);
+  } catch (error) {
+    progress.fail();
+    throw error;
+  } finally {
+    progress.dispose();
   }
-
-  consola.debug(`Resolving spec from "${specPath}"`);
-  const converted = await resolveOpenapiDocument(spec.data, specPath);
-
-  const specSourceCode = await createOpenapiTs(converted.document, {
-    ...transformArgvToOpenapiTsOptions(params),
-    onEvent: reportGeneratorEvent,
-  });
-
-  consola.debug(`Writing to ${params.output}`);
-  const specFilePath = pathe.join(params.output, "paths.d.ts");
-
-  const frames = await createFrames({
-    onEvent: reportGeneratorEvent,
-    document: converted.document,
-    templatePath: params.templatePath,
-    specTypeFilePath: specFilePath,
-    specFilePath: specPath,
-    host: params.host,
-    output: params.output,
-    useCodeFence: params.codeFence ?? false,
-    timeout: params.timeout,
-    baseFrame: params.baseFrame,
-    hostStrategy: params.hostStrategy,
-    hostEnvVar: params.hostEnvVar,
-    hostFunctionName: params.hostFunctionName,
-    hostFunctionImport: params.hostFunctionImport,
-    serverMapping: params.serverMapping,
-    securityProviderDir: params.securityProviderDir,
-    securityProviders: params.securityProviders,
-    overrides: {
-      hosts: params.hosts,
-      retries: params.retries,
-      timeouts: params.timeouts,
-    },
-  });
-  consola.debug(`Frames: ${frames.length}`);
-
-  await writeGeneratedFiles(params.output, [
-    { relativePath: "paths.d.ts", source: specSourceCode },
-    ...frames.map((frame) => ({
-      relativePath: safePathJoin(frame.frame.tag, frame.frame.filePath),
-      source: frame.frame.source,
-    })),
-  ]);
 };
