@@ -4,7 +4,7 @@
 
 | 패키지 | 버전 | 역할 | 문서 |
 | --- | --- | --- | --- |
-| `jin-frame` | 6.0.0 | 생성되거나 직접 작성한 HTTP request 실행 | [시작하기](./getting-to-start) |
+| `jin-frame` | 6.1.0 | 생성되거나 직접 작성한 HTTP request 실행 | [시작하기](./getting-to-start) |
 | `@jin-frame/generator-cli` | 1.0.0 | OpenAPI에서 명령으로 type와 프레임 생성 | [CLI 안내](./generator-cli/) |
 | `@jin-frame/generator-core` | 1.0.0 | 코드에서 생성 파이프라인 구성 | [Core 안내](./generator-core/) |
 

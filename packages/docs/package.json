@@ -7,7 +7,7 @@
     "node": ">=22.23.4"
   },
   "scripts": {
-    "assets": "node scripts/prepare-assets.mjs",
+    "assets": "node scripts/prepare-assets.mjs && node scripts/prepare-changenote.mjs",
     "docs:typedoc:frame": "typedoc --options .configs/typedoc.jin-frame.json",
     "docs:typedoc:core": "typedoc --options .configs/typedoc.generator-core.json",
     "docs:typedoc": "pnpm run docs:typedoc:frame && pnpm run docs:typedoc:core",

@@ -2,6 +2,8 @@
 
 `@jin-frame/generator-cli` 1.0.0 generates jin-frame 6.x clients from Swagger/OpenAPI v2 and OpenAPI v3 documents. Use Node.js >=22.23.4, TypeScript >= 6, and openapi-typescript >= 7.
 
+Type generation is powered by [openapi-typescript](https://openapi-ts.dev/). jin-frame uses its generated TypeScript definitions to build endpoint classes with request parameters and execution settings.
+
 ```sh
 pnpm add jin-frame@^6.0.0
 pnpm add -D @jin-frame/generator-cli@^1.0.0 openapi-typescript typescript@^6

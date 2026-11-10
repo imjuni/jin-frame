@@ -8,7 +8,8 @@
 [![License](https://img.shields.io/npm/l/jin-frame.svg?style=flat-square)](https://github.com/imjuni/jin-frame/blob/master/LICENSE)
 [![ci](https://github.com/imjuni/jin-frame/actions/workflows/ci.yml/badge.svg?style=flat-square)](https://github.com/imjuni/jin-frame/actions/workflows/ci.yml)
 [![codecov](https://codecov.io/gh/imjuni/jin-frame/branch/master/graph/badge.svg?style=flat-square&token=R7R2PdJcS9)](https://codecov.io/gh/imjuni/jin-frame)
-[![code style: Biome](https://img.shields.io/badge/code_style-Biome-60a5fa.svg?style=flat-square)](https://biomejs.dev/)
+[![code style: oxlint](https://img.shields.io/badge/code_style-oxlint-60a5fa.svg?style=flat-square)](https://oxc.rs/docs/guide/usage/linter)
+[![code style: oxfmt](https://img.shields.io/badge/code_style-oxfmt-60a5fa.svg?style=flat-square)](https://oxc.rs/docs/guide/usage/formatter)
 
 ## Introduction
 
@@ -26,6 +27,7 @@ TypeScript 데코레이터와 클래스를 사용해 HTTP 요청을 선언적으
 
 - **HTTP API를 TypeScript 클래스로 정의합니다.** HTTP 메서드, 엔드포인트, 타임아웃, 재시도 정책, 인증 설정을 요청 필드와 함께 선언합니다.
 - **API별 운영 요구사항을 설정에 반영합니다.** 엔드포인트마다 다른 타임아웃, 재시도 정책과 요청 옵션을 지정합니다.
+- **타입 안전성으로 실수를 줄입니다.** 요청 필드의 타입과 빌더의 필수 필드를 컴파일 시점에 확인하고, HTTP 상태 코드에 따라 응답 데이터 타입을 좁힙니다.
 - **응답을 검증하고 중복 요청을 줄입니다.** 검증기로 응답 데이터를 확인하고, 동시에 실행되는 동일한 요청은 중복 제거 기능으로 하나의 네트워크 호출을 공유합니다.
 - **상속으로 API 설정의 계층을 표현합니다.** 부모 클래스에 공통 설정을 정의하고 자식 클래스에서 재정의해 API의 계층 구조를 반영합니다.
 
