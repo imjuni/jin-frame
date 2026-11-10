@@ -48,6 +48,7 @@ TypeScript 데코레이터와 클래스를 사용해 HTTP 요청을 선언적으
 - [네이밍 컨벤션](#네이밍-컨벤션)
 - [요구사항](#요구사항)
 - [문서](#문서)
+- [Support](#support)
 - [License](#license)
 
 ## 설치
@@ -337,6 +338,12 @@ try {
 - [Authorization](https://imjuni.github.io/jin-frame/ko/method/authorization)
 - [유효성 검사](https://imjuni.github.io/jin-frame/ko/method/validation)
 - [네이밍 컨벤션](https://imjuni.github.io/jin-frame/ko/method/naming-convention)
+
+## Support
+
+jin-frame이 유용하셨다면 저장소에 [Star를 남기거나](https://github.com/imjuni/jin-frame/stargazers) 개발을 [후원해 주시면](https://github.com/sponsors/imjuni) 감사하겠습니다.
+
+보내주시는 응원과 지원에 진심으로 감사드립니다!
 
 ## License
 
