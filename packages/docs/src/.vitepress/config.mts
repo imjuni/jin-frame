@@ -27,6 +27,7 @@ const getThemeConfig = (_locale?: string) => {
     item("OpenAPI core", "generator-core/"),
     item("Packages", "packages"),
     item("ChangeNote", "changenote"),
+    item("Support", "support"),
   ];
   const socialLinks = [
     { icon: "npm", link: "https://www.npmjs.com/package/jin-frame" },
@@ -78,6 +79,7 @@ const getThemeConfig = (_locale?: string) => {
     ]),
     { text: "jin-frame API", collapsed: true, items: typedocSidebar },
     { text: "generator-core API", collapsed: true, items: coreTypedocSidebar },
+    item("Support", "support"),
   ];
 
   return {
