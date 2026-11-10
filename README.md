@@ -8,7 +8,8 @@
 [![License](https://img.shields.io/npm/l/jin-frame.svg?style=flat-square)](https://github.com/imjuni/jin-frame/blob/master/LICENSE)
 [![ci](https://github.com/imjuni/jin-frame/actions/workflows/ci.yml/badge.svg?style=flat-square)](https://github.com/imjuni/jin-frame/actions/workflows/ci.yml)
 [![codecov](https://codecov.io/gh/imjuni/jin-frame/branch/master/graph/badge.svg?style=flat-square&token=R7R2PdJcS9)](https://codecov.io/gh/imjuni/jin-frame)
-[![code style: Biome](https://img.shields.io/badge/code_style-Biome-60a5fa.svg?style=flat-square)](https://biomejs.dev/)
+[![code style: oxlint](https://img.shields.io/badge/code_style-oxlint-60a5fa.svg?style=flat-square)](https://oxc.rs/docs/guide/usage/linter)
+[![code style: oxfmt](https://img.shields.io/badge/code_style-oxfmt-60a5fa.svg?style=flat-square)](https://oxc.rs/docs/guide/usage/formatter)
 
 ## Introduction
 
@@ -24,17 +25,22 @@ Define HTTP requests as TypeScript classes and send them using native `fetch`.
 
 ## Why jin-frame?
 
-- **Define HTTP APIs as TypeScript classes.** Declare the HTTP method, endpoint, timeout, retry policy, and security settings alongside the request fields.
-- **Configure each API for production use.** Set different timeouts, retry policies, and other request options for endpoints with different operational requirements.
-- **Validate responses and deduplicate requests.** Use validators to check response data and request deduplication to share a single network call among identical concurrent requests.
-- **Organize API settings through inheritance.** Define shared settings in base classes and override them in subclasses to reflect your API hierarchy.
+Real-world APIs have different workloads and performance requirements. **Define execution policies declaratively for each endpoint, with TypeScript’s type safety.**
+
+jin-frame brings these policies into the endpoint definition:
+
+- **One endpoint, one class.** Keep request parameters, HTTP methods, and execution policies together in a TypeScript class, making each endpoint’s behavior visible in one place.
+- **Reuse policies through inheritance.** Share hosts, authentication, and request settings across base classes, then override only what each endpoint needs.
+- **Declare policies with decorators.** Configure timeouts, retries, and other request behaviors per endpoint, so call sites reuse those policies without repeating configuration.
+- **Catch mistakes with type safety.** Check request field types and required builder fields at compile time, and narrow response data types by HTTP status code.
+- **Build reliability into each endpoint.** Validate response data, deduplicate identical concurrent requests, and configure retry policies as part of the request definition.
+- **Generate classes from OpenAPI.** Use the companion generators to turn API specifications into TypeScript endpoint classes and types, with options and custom templates to fit your project.
 
 ## Table of Contents <!-- omit in toc -->
 
 - [Introduction](#introduction)
 - [Why jin-frame?](#why-jin-frame)
 - [Install](#install)
-- [Version](#version)
 - [Usage](#usage)
 - [Inheritance](#inheritance)
 - [Builder Pattern](#builder-pattern)
@@ -46,6 +52,7 @@ Define HTTP requests as TypeScript classes and send them using native `fetch`.
   - [Validation](#validation)
 - [Authorization](#authorization)
 - [Response Validation and Errors](#response-validation-and-errors)
+  - [Shared status policy (6.1.0)](#shared-status-policy-610)
 - [jin-frame Requirements](#jin-frame-requirements)
 - [Documentation](#documentation)
 - [License](#license)
@@ -63,14 +70,6 @@ yarn add jin-frame --save
 ```sh
 pnpm add jin-frame --save
 ```
-
-## Version
-
-| Version | HTTP Client | Notes |
-|---------|-------------|-------|
-| < 5.0   | Axios       | Requires `axios` as a peer dependency |
-| 5.x | native `fetch` | Previous response type API |
-| 6.x | native `fetch` | Status-discriminated response unions; Node.js >=22.23.4 required |
 
 ## Usage
 

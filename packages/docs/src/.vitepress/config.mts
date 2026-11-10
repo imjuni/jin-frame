@@ -22,10 +22,11 @@ const getThemeConfig = (_locale?: string) => {
   });
 
   const nav = [
-    item("Guide", "getting-to-start"),
+    item("jin-frame", "getting-to-start"),
+    item("OpenAPI generators", "generator-cli/"),
+    item("OpenAPI core", "generator-core/"),
     item("Packages", "packages"),
-    item("OpenAPI generators", "generator"),
-    item("Migration", "migration-v6"),
+    item("ChangeNote", "changenote"),
   ];
   const socialLinks = [
     { icon: "npm", link: "https://www.npmjs.com/package/jin-frame" },
@@ -70,7 +71,11 @@ const getThemeConfig = (_locale?: string) => {
       item("Core configuration", "generator-core/configuration"),
       item("Diagnostics", "generator-core/diagnostics"),
     ]),
-    group("Reference", [item("Package versions", "packages"), item("Migrate to v6", "migration-v6")]),
+    group("Reference", [
+      item("Package versions", "packages"),
+      item("Migrate to v6", "migration-v6"),
+      item(_locale === "ko" ? "변경 이력" : "Changenote", "changenote"),
+    ]),
     { text: "jin-frame API", collapsed: true, items: typedocSidebar },
     { text: "generator-core API", collapsed: true, items: coreTypedocSidebar },
   ];
